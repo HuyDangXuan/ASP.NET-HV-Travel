@@ -1,0 +1,262 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Đăng ký HV Travel Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bcdee",
+                        "primary-dark": "#0ea5e9",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c30",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mesh-gradient {
+            background-color: #f6f8f8;
+            background-image: radial-gradient(at 0% 0%, rgba(43, 205, 238, 0.05) 0, transparent 50%), radial-gradient(at 50% 0%, rgba(43, 205, 238, 0.02) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(43, 205, 238, 0.05) 0, transparent 50%);
+        }
+
+        .dark .mesh-gradient {
+            background-color: #101f22;
+            background-image: radial-gradient(at 0% 0%, rgba(43, 205, 238, 0.1) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(43, 205, 238, 0.1) 0, transparent 50%);
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.3s ease-out forwards;
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
+        }
+        @@keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @@keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+    <div class="flex min-h-screen w-full">
+        <!-- Left Side: Visual/Branding (Consistent with Login) -->
+        <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden animate-fade-in">
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105" data-alt="Breath-taking aerial view of Mu Cang Chai rice terraces in Vietnam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVFPaa2-Ghm50eobjNhSJP5dzUPfhFFB90BgCvIevVUQQ08T6INBGXe-EkSWevqJw8eyRJLjPDP2MBlOrZzjKSLKoq8H_CiOIu3i0PiHxZtTrnIpMV2F_02voW6WT-hSn5qCIE8fQVVq3Uq1k-ZagZghGkKJlMpc7Jp8G0d5IU4uqpYPqBNy2toPkcIXQAVJ6gsWquQkgscA1yWDMEhzj5Q-daoY2xOYCmTef94YOPg5w-oTK6y8My_R0lgn6REfWpEPN0RrL6ww');">
+            </div>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <!-- Glassmorphic Overlay Content -->
+            <div class="absolute inset-0 flex flex-col justify-between p-12">
+                <div class="flex items-center gap-3">
+                  <div class="relative grid h-11 w-11 place-items-center rounded-full text-white shadow-md
+                              bg-gradient-to-br from-primary to-sky-500 ring-1 ring-white/15">
+                    <div class="absolute -inset-1 rounded-full blur-lg opacity-30 bg-gradient-to-br from-primary to-sky-500"></div>
+                    <span class="material-symbols-outlined relative text-[22px] leading-none">explore</span>
+                  </div>
+
+                  <h2 class="text-xl font-bold tracking-tight text-white">
+                    HV <span class="text-white/80">Travel</span>
+                  </h2>
+                </div>
+                <div class="glass-effect rounded-xl p-10 max-w-lg mb-8">
+                    <h1 class="text-white text-5xl font-black leading-tight tracking-tight mb-4">
+                        Khám Phá Trái Tim Việt Nam.
+                    </h1>
+                    <p class="text-white/90 text-lg font-medium leading-relaxed">
+                        Quản lý trải nghiệm cao cấp và thiết kế những hành trình khó quên cho du khách hiện đại.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Registration Form -->
+        <div class="w-full lg:w-1/2 mesh-gradient flex items-center justify-center p-6 sm:p-12 relative mb-0">
+            <div class="w-full max-w-[440px] flex flex-col gap-6 animate-fade-in-up">
+                <!-- Page Heading (Synced with Login) -->
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-primary font-bold tracking-wider uppercase text-xs">Đăng Ký Tài Khoản</h3>
+                    <h2 class="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight">Tạo Tài Khoản Mới</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-base">Khám phá sức mạnh của hệ thống HV Travel Admin ngay hôm nay.</p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="flex flex-col gap-2 bg-white dark:bg-surface-dark p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <p class="text-slate-900 dark:text-white text-xs font-bold uppercase tracking-wider">Tiến trình đăng ký</p>
+                        <p class="text-primary text-xs font-bold">Bước 1/2</p>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <form class="flex flex-col gap-4" method="post" asp-action="Register" asp-controller="Auth">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
+                            <span class="font-medium">Lỗi!</span> @ViewBag.Error
+                        </div>
+                    }
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Họ và tên</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">person</span>
+                            </div>
+                            <input name="fullName" class="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Nguyễn Văn A" type="text" required />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Email công việc</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">mail</span>
+                            </div>
+                            <input name="email" class="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="name@company.com" type="email" required />
+                        </div>
+                    </div>
+                    <!-- Company Name - Optional/Not mapped yet -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Tên công ty</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">business</span>
+                            </div>
+                            <input class="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Tên doanh nghiệp của bạn" type="text" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Mật khẩu</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">lock</span>
+                            </div>
+                            <input name="password" class="w-full pl-11 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="••••••••" type="password" required />
+                            <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors" type="button">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button class="w-full h-14 bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg hover:shadow-primary/30 text-white font-bold rounded-xl transition-all transform active:scale-[0.98] flex items-center justify-center gap-2" type="submit">
+                            Bắt đầu ngay
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="flex items-center gap-4 my-2">
+                        <div class="flex-1 h-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase">Hoặc</span>
+                        <div class="flex-1 h-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Bạn đã có tài khoản?</p>
+                        <a class="flex items-center gap-1 text-primary text-sm font-bold hover:underline transition-all group" asp-action="Login">
+                            Đăng nhập ngay
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+                <!-- Theme Toggle / Language (Visual only) -->
+            <div class="absolute top-8 right-8 flex items-center gap-3">
+              <!-- Language -->
+              <button
+                type="button"
+                aria-label="Language"
+                class="group inline-flex h-10 w-10 items-center justify-center rounded-full
+                      border border-slate-200 dark:border-slate-700
+                      bg-white/70 dark:bg-surface-dark/60 backdrop-blur
+                      text-slate-500 dark:text-slate-400
+                      shadow-sm hover:shadow-md
+                      hover:bg-white dark:hover:bg-surface-dark
+                      transition-all duration-200
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              >
+                <span class="material-symbols-outlined text-[20px] leading-none transition-transform duration-200 group-hover:scale-110">
+                  translate
+                </span>
+              </button>
+              <!-- Theme -->
+              <button
+                type="button"
+                aria-label="Toggle theme"
+                class="group inline-flex h-10 w-10 items-center justify-center rounded-full
+                      border border-slate-200 dark:border-slate-700
+                      bg-white/70 dark:bg-surface-dark/60 backdrop-blur
+                      text-slate-500 dark:text-slate-400
+                      shadow-sm hover:shadow-md
+                      hover:bg-white dark:hover:bg-surface-dark
+                      transition-all duration-200
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                onclick="toggleTheme()"
+              >
+                <span class="material-symbols-outlined text-[20px] leading-none dark:hidden transition-transform duration-200 group-hover:rotate-6">
+                  dark_mode
+                </span>
+                <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-6">
+                  light_mode
+                </span>
+              </button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!-- Script that forces dark mode based on system or local storage -->
+    <script>
+        // Check local storage or system preference on load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Toggle theme and save preference
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+    </script>
+</body>
+</html>

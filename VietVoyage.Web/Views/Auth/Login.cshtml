@@ -1,0 +1,251 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>HV Travel Admin Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bcdee",
+                        "primary-dark": "#0ea5e9",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c30",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mesh-gradient {
+            background-color: #f6f8f8;
+            background-image: radial-gradient(at 0% 0%, rgba(43, 205, 238, 0.05) 0, transparent 50%), radial-gradient(at 50% 0%, rgba(43, 205, 238, 0.02) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(43, 205, 238, 0.05) 0, transparent 50%);
+        }
+
+        .dark .mesh-gradient {
+            background-color: #101f22;
+            background-image: radial-gradient(at 0% 0%, rgba(43, 205, 238, 0.1) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(43, 205, 238, 0.1) 0, transparent 50%);
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.3s ease-out forwards;
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
+        }
+        @@keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @@keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+    <!-- Script that forces dark mode based on system or local storage (shared with dashboard) -->
+    <script>
+        // Check local storage or system preference on load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Toggle theme and save preference
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Left Side: Visual/Hero Section -->
+        <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden animate-fade-in">
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105" data-alt="Breath-taking aerial view of Mu Cang Chai rice terraces in Vietnam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVFPaa2-Ghm50eobjNhSJP5dzUPfhFFB90BgCvIevVUQQ08T6INBGXe-EkSWevqJw8eyRJLjPDP2MBlOrZzjKSLKoq8H_CiOIu3i0PiHxZtTrnIpMV2F_02voW6WT-hSn5qCIE8fQVVq3Uq1k-ZagZghGkKJlMpc7Jp8G0d5IU4uqpYPqBNy2toPkcIXQAVJ6gsWquQkgscA1yWDMEhzj5Q-daoY2xOYCmTef94YOPg5w-oTK6y8My_R0lgn6REfWpEPN0RrL6ww');">
+            </div>
+            <div class="absolute inset-0 bg-black/20"></div>
+            <!-- Glassmorphic Overlay Content -->
+            <div class="absolute inset-0 flex flex-col justify-between p-12">
+                <div class="flex items-center gap-3">
+                  <div class="relative grid h-11 w-11 place-items-center rounded-full text-white shadow-md
+                              bg-gradient-to-br from-primary to-sky-500 ring-1 ring-white/15">
+                    <div class="absolute -inset-1 rounded-full blur-lg opacity-30 bg-gradient-to-br from-primary to-sky-500"></div>
+                    <span class="material-symbols-outlined relative text-[22px] leading-none">explore</span>
+                  </div>
+
+                  <h2 class="text-xl font-bold tracking-tight text-white">
+                    HV <span class="text-white/80">Travel</span>
+                  </h2>
+                </div>
+                <div class="glass-effect rounded-xl p-10 max-w-lg mb-8">
+                    <h1 class="text-white text-5xl font-black leading-tight tracking-tight mb-4">
+                        Khám Phá Trái Tim Việt Nam.
+                    </h1>
+                    <p class="text-white/90 text-lg font-medium leading-relaxed">
+                        Quản lý trải nghiệm cao cấp và thiết kế những hành trình khó quên cho du khách hiện đại.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Right Side: Login Form -->
+        <div class="w-full lg:w-1/2 mesh-gradient flex items-center justify-center p-6 sm:p-12 relative">
+            <div class="w-full max-w-[440px] flex flex-col gap-8 animate-fade-in-up">
+                <!-- Page Heading -->
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-primary font-bold tracking-wider uppercase text-xs">Truy Cập Quản Trị</h3>
+                    <h2 class="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight">Cổng Quản Trị</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-base">Chào mừng trở lại! Vui lòng nhập thông tin để quản lý.</p>
+                </div>
+                <form class="flex flex-col gap-6" method="post" asp-action="Login" asp-controller="Auth">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
+                            <span class="font-medium">Lỗi!</span> @ViewBag.Error
+                        </div>
+                    }
+                    <!-- Email Field -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Địa Chỉ Email</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">mail</span>
+                            </div>
+                            <input name="email" class="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Nhập email quản trị của bạn" type="email" />
+                        </div>
+                    </div>
+                    <!-- Password Field -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Mật Khẩu</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined text-[20px]">lock</span>
+                            </div>
+                            <input name="password" class="w-full pl-11 pr-12 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Nhập mật khẩu" type="password" />
+                            <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors" type="button">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Options Row -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <div class="relative flex items-center">
+                                <input class="peer h-5 w-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary transition-all bg-white dark:bg-surface-dark" type="checkbox" />
+                            </div>
+                            <span class="text-sm font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-white transition-colors">Ghi nhớ đăng nhập</span>
+                        </label>
+                        <a class="text-sm font-bold text-primary hover:underline underline-offset-4" asp-action="ForgotPassword">Quên mật khẩu?</a>
+                    </div>
+                    <!-- Login Button -->
+                    <button type="submit" class="w-full h-14 bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg hover:shadow-primary/30 text-white font-bold rounded-xl transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                        <span>Đăng Nhập</span>
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </form>
+                <!-- Divider -->
+                <div class="flex items-center gap-4 my-2">
+                    <div class="flex-1 h-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                    <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase">Đăng Nhập Xã Hội</span>
+                    <div class="flex-1 h-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                </div>
+                <!-- Social Logins -->
+                <div class="flex items-center justify-center gap-4">
+                    <button class="flex-1 flex items-center justify-center gap-2 h-12 border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                        <svg class="w-5 h-5" viewbox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-white">Google</span>
+                    </button>
+                    <button class="flex-1 flex items-center justify-center gap-2 h-12 border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
+                        <svg class="w-5 h-5 fill-slate-900 dark:fill-white" viewbox="0 0 24 24">
+                            <path d="M17.05 20.28c-.96.95-2.11 1.43-3.46 1.43-1.25 0-2.31-.41-3.21-1.22-.9-.81-1.91-1.21-3.05-1.21s-2.16.4-3.07 1.21c-.91.81-1.95 1.22-3.13 1.22-1.36 0-2.52-.48-3.48-1.43C-3.32 19.33-3.8 18.17-3.8 16.81s.48-2.52 1.43-3.48c.96-.95 2.11-1.43 3.48-1.43 1.18 0 2.22.41 3.13 1.22.91.81 1.93 1.21 3.07 1.21s2.15-.4 3.05-1.21c.9-.81 1.96-1.22 3.21-1.22 1.35 0 2.5.48 3.46 1.43.95.96 1.43 2.12 1.43 3.48s-.48 2.52-1.43 3.48zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path>
+                            <path d="M13.4 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"></path>
+                        </svg>
+                        <span class="text-sm font-semibold text-slate-700 dark:text-white">Apple</span>
+                    </button>
+                </div>
+                <p class="text-center text-sm text-slate-500 dark:text-slate-400 mt-4">
+                    Chưa có tài khoản?
+                    <a class="text-primary font-bold hover:underline" asp-action="Register">Liên hệ Super Admin</a>
+                </p>
+            </div>
+            <!-- Theme Toggle / Language (Visual only) -->
+            <div class="absolute top-8 right-8 flex items-center gap-3">
+              <!-- Language -->
+              <button
+                type="button"
+                aria-label="Language"
+                class="group inline-flex h-10 w-10 items-center justify-center rounded-full
+                      border border-slate-200 dark:border-slate-700
+                      bg-white/70 dark:bg-surface-dark/60 backdrop-blur
+                      text-slate-500 dark:text-slate-400
+                      shadow-sm hover:shadow-md
+                      hover:bg-white dark:hover:bg-surface-dark
+                      transition-all duration-200
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              >
+                <span class="material-symbols-outlined text-[20px] leading-none transition-transform duration-200 group-hover:scale-110">
+                  translate
+                </span>
+              </button>
+              <!-- Theme -->
+              <button
+                type="button"
+                aria-label="Toggle theme"
+                class="group inline-flex h-10 w-10 items-center justify-center rounded-full
+                      border border-[#dbe4e6]/80 dark:border-[#2d4044]
+                      bg-white/70 dark:bg-[#0f1f22]/60 backdrop-blur
+                      text-[#4f737a] dark:text-[#b9d2d6]
+                      shadow-sm hover:shadow-md
+                      hover:bg-white dark:hover:bg-[#1a2e32]
+                      transition-all duration-200
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                onclick="toggleTheme()"
+              >
+                <span class="material-symbols-outlined text-[20px] leading-none dark:hidden transition-transform duration-200 group-hover:rotate-6">
+                  dark_mode
+                </span>
+                <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-6">
+                  light_mode
+                </span>
+              </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

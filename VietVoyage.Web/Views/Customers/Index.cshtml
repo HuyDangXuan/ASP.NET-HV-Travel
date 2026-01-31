@@ -1,0 +1,538 @@
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<style>
+    /* Donut Chart CSS */
+    .donut-chart {
+        background: conic-gradient(#2bcdee 0% 65%, #a5f3fc 65% 85%, #e2e8f0 85% 100%);
+        border-radius: 50%;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Khách Hàng</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Khách Hàng</h1>
+    </div>
+    <div class="flex items-center gap-3 flex-1 sm:justify-end">
+        <!-- Search Bar -->
+        <div class="relative w-full max-w-md">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="material-symbols-outlined text-slate-400 !text-[20px]">search</span>
+            </div>
+            <input class="block w-full rounded-xl border-none bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3 text-sm text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6" placeholder="Tìm kiếm theo tên, email, hoặc sđt..." type="text" />
+        </div>
+        <!-- Filter Dropdown -->
+        <div class="relative">
+            <button onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                <span class="material-symbols-outlined !text-[20px]">filter_list</span>
+            </button>
+            <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
+                </div>
+                <div class="p-4 flex flex-col gap-5">
+                    <!-- Segments -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Phân Khúc</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" checked />
+                                <span class="text-sm text-slate-700 dark:text-slate-300">VIP</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" checked />
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Khách Mới</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Nguy Cơ Rời Bỏ</span>
+                            </label>
+                             <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Không Hoạt Động</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Spending Range -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase">Chi Tiêu</label>
+                            <span class="text-xs font-bold text-primary">0₫ - 500m₫+</span>
+                        </div>
+                        <input type="range" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" min="0" max="100" />
+                    </div>
+                    <!-- Orders Count -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase">Số Đơn Đặt</label>
+                            <span class="text-xs font-bold text-primary">0 - 50+</span>
+                        </div>
+                        <input type="range" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" min="0" max="50" />
+                    </div>
+                </div>
+                <!-- Actions -->
+                <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                    <button onclick="resetFilters()" class="flex-1 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">Đặt Lại</button>
+                    <button onclick="applyFilters()" class="flex-1 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg shadow-lg shadow-primary/30 transition-all">Áp Dụng</button>
+                </div>
+            </div>
+        </div>
+        <button class="flex items-center gap-2 px-4 h-10 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-bold shadow-md shadow-primary/20 transition-all">
+            <span class="material-symbols-outlined !text-[20px]">add</span>
+            <span class="hidden sm:inline">Thêm Khách Hàng</span>
+        </button>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    <!-- Total Customers -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/5 rounded-full group-hover:bg-indigo-500/10 transition-colors"></div>
+        <div class="flex justify-between items-start relative z-10">
+            <div class="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500">
+                <span class="material-symbols-outlined">groups</span>
+            </div>
+            <span class="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-md">
+                <span class="material-symbols-outlined !text-sm mr-1">trending_up</span> +2.5%
+            </span>
+        </div>
+        <div class="flex items-center gap-3 justify-between relative z-10">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tổng Khách Hàng</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">12,405</p>
+        </div>
+    </div>
+    <!-- New Customers -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-32 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:bg-primary/10 transition-colors"></div>
+        <div class="flex justify-between items-start relative z-10">
+            <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                <span class="material-symbols-outlined">person_add</span>
+            </div>
+            <span class="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-md">
+                <span class="material-symbols-outlined !text-sm mr-1">trending_up</span> +12%
+            </span>
+        </div>
+        <div class="flex items-center gap-3 justify-between relative z-10">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Khách Mới (Tuần Này)</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">+45</p>
+        </div>
+    </div>
+    <!-- Donut Chart Widget -->
+    <div class="col-span-1 md:col-span-2 bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-6 relative overflow-hidden h-32 group">
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-slate-500/5 rounded-full group-hover:bg-slate-500/10 transition-colors"></div>
+        <div class="flex flex-col justify-center z-10 relative">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Phân Khúc Khách Hàng</p>
+            <div class="flex flex-wrap gap-3 mt-2">
+                <div class="flex items-center gap-2">
+                    <div class="size-2 rounded-full bg-primary"></div>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">VIP (65%)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="size-2 rounded-full bg-sky-200"></div>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Mới (20%)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="size-2 rounded-full bg-slate-200"></div>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Không Hoạt Động (15%)</span>
+                </div>
+            </div>
+        </div>
+        <div class="relative size-24 shrink-0 flex items-center justify-center mr-4 z-10">
+            <div class="donut-chart size-full"></div>
+            <div class="absolute inset-0 m-auto bg-white dark:bg-slate-900 size-16 rounded-full flex items-center justify-center shadow-inner">
+                <span class="material-symbols-outlined text-slate-400">pie_chart</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Main Table Area -->
+<div class="flex flex-col lg:flex-row h-full gap-6">
+    <!-- Table Section -->
+    <div class="flex-1 flex flex-col min-h-[500px]">
+        <!-- Segment Tabs -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+            <button onclick="filterCustomers('all', this)" class="filter-tab active px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-medium shadow-md shadow-slate-900/10 transition-all">Tất Cả</button>
+            <button onclick="filterCustomers('vip', this)" class="filter-tab px-4 py-2 rounded-xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-all">VIP</button>
+            <button onclick="filterCustomers('new', this)" class="filter-tab px-4 py-2 rounded-xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-all">Mới</button>
+            <button onclick="filterCustomers('churn', this)" class="filter-tab px-4 py-2 rounded-xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium border border-slate-200 dark:border-slate-700 hover:border-primary/30 transition-all">Nguy Cơ Rời Bỏ</button>
+        </div>
+        <!-- Data Table Card -->
+        <div class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col flex-1 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                            <th class="p-4 pl-6 text-left">Khách Hàng</th>
+                            <th class="p-4 text-left">Liên Hệ</th>
+                            <th class="p-4 text-left">Phân Khúc</th>
+                            <th class="p-4 text-right">Chi Tiêu</th>
+                            <th class="p-4 text-center">Đơn Đặt</th>
+                            <th class="p-4 pr-6 text-left">Hoạt Động Cuối</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        <!-- Row 1 (Active) -->
+                        <tr data-segment="vip" onclick="toggleCustomerSidebar()" class="customer-row group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-l-4 border-primary">
+                            <td class="p-4 pl-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                                        <img alt="Nguyen Van A portrait" class="size-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEcuip7QN29LzlUaukSzw1TgG5p1Hfw6IbJOAHs9ICHZdgZ11ps3EHw4rDwOEVF0KeDTKdVsNP_CHUumeNu5fOXHgMW8rGlF_RCmQ68GdSJbZ_lIj_eCfo3b-bS_i7XXlPKC9kjOPVpm29GdgdE72XCIp831JkI7WcUHJeGabqQDj_xt8ETun5DNhZnuckVYou77stQoonRvynMFY4jWts7W_6CVPaNV4os7MD4VQKnWIOPX8aGGITE3lP_zED8suQ2std2e3vQQ" />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white">Nguyen Van A</p>
+                                        <p class="text-xs text-slate-500">ID: #CUS-8821</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">mail</span>
+                                        nguyenvana@gmail.com
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">call</span>
+                                        +84 912 345 678
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                                    VIP
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">150,000,000 ₫</p>
+                            </td>
+                            <td class="p-4 text-center">
+                                <span class="inline-flex items-center justify-center size-7 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">12</span>
+                            </td>
+                            <td class="p-4 pr-6">
+                                <p class="text-xs text-slate-500">2 giờ trước</p>
+                            </td>
+                        </tr>
+                        <!-- Row 2 -->
+                        <tr data-segment="new" onclick="toggleCustomerSidebar()" class="customer-row group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-l-4 border-transparent">
+                            <td class="p-4 pl-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-sm font-bold shrink-0">
+                                        TH
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white">Tran Thi Huong</p>
+                                        <p class="text-xs text-slate-500">ID: #CUS-9102</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">mail</span>
+                                        huong.tran@company.vn
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">call</span>
+                                        +84 988 111 222
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800">
+                                    Mới
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">4,500,000 ₫</p>
+                            </td>
+                            <td class="p-4 text-center">
+                                <span class="inline-flex items-center justify-center size-7 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">1</span>
+                            </td>
+                            <td class="p-4 pr-6">
+                                <p class="text-xs text-slate-500">1 ngày trước</p>
+                            </td>
+                        </tr>
+                        <!-- Row 3 -->
+                        <tr data-segment="standard" onclick="toggleCustomerSidebar()" class="customer-row group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-l-4 border-transparent">
+                            <td class="p-4 pl-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                                        <img alt="Le Minh K portrait" class="size-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCi3LjdsB91Fyp3EwZBZJNY8_I4mQLHvSgyDB_tVo4W8BL2qL5-zM6Huo0S9LUbMYD35-m9--rc-WlmnMKEqWoj1aJStVNHN4ZindCMvLGtg66RuVynF4W0LTtTc4Zpm7fJ6VyLJ34cnokrKxYlHdJakFLmDqQmWqGxBUQU5jSsqW97uIo3XxcvLmp3QKGismPNotgpr5JQAmUtZmnY_j71xazZ34uxuSi-E66Zi5Vk8RXZWM46YUK1jbPhfVFgVDD3woOlfl61Cg" />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white">Le Minh K</p>
+                                        <p class="text-xs text-slate-500">ID: #CUS-7734</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">mail</span>
+                                        leminh.k@outlook.com
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">call</span>
+                                        +84 905 999 888
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+                                    Tiêu Chuẩn
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">12,200,000 ₫</p>
+                            </td>
+                            <td class="p-4 text-center">
+                                <span class="inline-flex items-center justify-center size-7 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">3</span>
+                            </td>
+                            <td class="p-4 pr-6">
+                                <p class="text-xs text-slate-500">5 ngày trước</p>
+                            </td>
+                        </tr>
+                        <!-- Row 4 -->
+                        <tr data-segment="churn" onclick="toggleCustomerSidebar()" class="customer-row group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-l-4 border-transparent">
+                            <td class="p-4 pl-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-sm font-bold shrink-0">
+                                        PJ
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white">Pham Jasmine</p>
+                                        <p class="text-xs text-slate-500">ID: #CUS-5541</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                                        <span class="material-symbols-outlined !text-[14px] text-slate-400">mail</span>
+                                        j.pham@design.vn
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-100 dark:bg-orange-900/20 dark:border-orange-800">
+                                    Nguy Cơ Rời Bỏ
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">8,900,000 ₫</p>
+                            </td>
+                            <td class="p-4 text-center">
+                                <span class="inline-flex items-center justify-center size-7 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">2</span>
+                            </td>
+                            <td class="p-4 pr-6">
+                                <p class="text-xs text-slate-500">3 tuần trước</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
+                <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 10</span> trong số <span class="font-bold text-slate-900 dark:text-white">240</span> kết quả</p>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                        <span class="material-symbols-outlined text-lg">chevron_left</span>
+                    </button>
+                    <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+                    <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">2</button>
+                    <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">3</button>
+                    <span class="text-slate-400 text-xs">...</span>
+                    <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">24</button>
+                    <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-lg">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Side Drawer (Detail View) -->
+    <!-- Side Drawer (Detail View) -->
+    <aside id="customer-detail-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] z-40 bg-white dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-100 dark:border-slate-800 flex flex-col">
+        <!-- Drawer Header -->
+        <div class="relative h-20 bg-gradient-to-r from-cyan-500 to-blue-600 shrink-0" data-alt="Gradient background header in cyan and blue">
+            <button onclick="toggleCustomerSidebar()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
+                <span class="material-symbols-outlined !text-[20px]">close</span>
+            </button>
+        </div>
+        <div class="px-6 pb-6 -mt-10 flex flex-col flex-1 overflow-y-auto relative z-10">
+            <!-- Profile Info -->
+            <div class="flex justify-between items-end mb-4">
+                <div class="size-20 rounded-full border-4 border-white dark:border-slate-900 overflow-hidden shadow-sm bg-slate-200">
+                    <img alt="Nguyen Van A detailed portrait" class="size-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7K-MIuST5hQc5iOXeG2HKv0efQ_a6pPdH2UN6RwDOB-4JXTJ7htbRJk2w7lCrffiFX7uPK1SqC1RnhlVBCPrQPHn60jCs9B-3r3sBLOgwqM3yO0nrT937kEgljk2sBZM8mfKcjdAOo4JrzesuEnlCI5hFDGoA69fbFHGnAYHnDk7BXb5YUXwyuTNOOKVgCUNuGc_gGIZ59MCh8lLSk5yIo0jWg21-QpRaQUaWb2xc1SQwkM3Tm3fhLCVNjNcF7zUU-wo2eSXp2g" />
+                </div>
+            </div>
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    Nguyen Van A
+                    <span class="material-symbols-outlined filled text-primary !text-[18px]" title="Verified">verified</span>
+                </h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Hanoi, Vietnam • <span class="text-emerald-500">Đang hoạt động</span></p>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                        <p class="text-xs text-slate-500 uppercase tracking-wide">Tổng Chi Tiêu</p>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">150m ₫</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                        <p class="text-xs text-slate-500 uppercase tracking-wide">Điểm Thưởng</p>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">4,520</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Tabs -->
+            <div class="border-b border-slate-200 dark:border-slate-700 mb-4">
+                <nav aria-label="Tabs" class="flex gap-6">
+                    <button class="border-b-2 border-primary py-2 px-1 text-sm font-semibold text-primary">Lịch Sử Đặt Vé</button>
+                    <button class="border-b-2 border-transparent py-2 px-1 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300">Ghi Chú CRM</button>
+                </nav>
+            </div>
+            <!-- Tab Content -->
+            <div class="flex flex-col gap-4">
+                <!-- Booking Item -->
+                <div class="group relative flex gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="flex flex-col items-center gap-1 mt-1">
+                        <div class="w-10 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Th10</span>
+                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">15</span>
+                        </div>
+                    </div>
+                    <div class="w-px bg-slate-200 dark:bg-slate-700 my-1"></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Bay tới Đà Nẵng</p>
+                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded">Hoàn Thành</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                            VN234 <span class="text-[10px]">•</span> Thương Gia
+                        </p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-xs font-medium text-slate-500">HAN</span>
+                            <span class="material-symbols-outlined !text-[14px] text-slate-400">arrow_forward</span>
+                            <span class="text-xs font-medium text-slate-500">DAD</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Booking Item -->
+                <div class="group relative flex gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="flex flex-col items-center gap-1 mt-1">
+                        <div class="w-10 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Th9</span>
+                            <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">02</span>
+                        </div>
+                    </div>
+                    <div class="w-px bg-slate-200 dark:bg-slate-700 my-1"></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Đặt Phòng Khách Sạn</p>
+                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded">Hoàn Thành</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">
+                            InterContinental Nha Trang
+                        </p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-xs font-medium text-slate-500">3 Đêm</span>
+                            <span class="text-[10px] text-slate-300">•</span>
+                            <span class="text-xs font-medium text-slate-500">Phòng Gia Đình</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Quick Note Input -->
+            <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                <label class="sr-only" for="note">Thêm ghi chú</label>
+                <div class="relative">
+                    <textarea class="block w-full rounded-xl border-0 py-2 pl-3 pr-10 text-slate-900 bg-slate-50 dark:bg-slate-800 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 resize-none" id="note" placeholder="Thêm ghi chú nội bộ..." rows="2"></textarea>
+                    <div class="absolute bottom-2 right-2 flex items-center">
+                        <button class="p-1 rounded-md text-slate-400 hover:text-primary transition-colors" type="button">
+                            <span class="material-symbols-outlined !text-[20px]">send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<!-- Scripts -->
+<script>
+    function toggleCustomerSidebar() {
+        const sidebar = document.getElementById('customer-detail-sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('translate-x-full');
+        }
+    }
+    
+    function toggleFilterMenu() {
+        const menu = document.getElementById('filter-menu');
+        menu.classList.toggle('hidden');
+    }
+    
+    // Close filter menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('filter-menu');
+        const button = event.target.closest('button[onclick="toggleFilterMenu()"]');
+        const insideMenu = event.target.closest('#filter-menu');
+        
+        if (!button && !insideMenu && !menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+        }
+    });
+
+    function resetFilters() {
+        // Reset checkboxes
+        const checkboxes = document.querySelectorAll('#filter-menu input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = false);
+        
+        // Reset ranges
+        const ranges = document.querySelectorAll('#filter-menu input[type="range"]');
+        ranges.forEach(range => range.value = 0); // Assuming 0 is Min
+    }
+
+    function applyFilters() {
+        // Placeholder for filter logic
+        toggleFilterMenu(); // Close menu
+        // Trigger actual filter function here
+    }
+
+    function filterCustomers(segment, btn) {
+        // Update active tab styling
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.remove('bg-slate-900', 'text-white', 'shadow-md', 'shadow-slate-900/10');
+            tab.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-700');
+            // Remove specific hover classes if needed, or rely on base classes
+        });
+
+        // Add active style to clicked button
+        btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-700');
+        btn.classList.add('bg-slate-900', 'text-white', 'shadow-md', 'shadow-slate-900/10');
+
+        // Filter rows
+        const rows = document.querySelectorAll('.customer-row');
+        rows.forEach(row => {
+            if (segment === 'all' || row.getAttribute('data-segment') === segment) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    }
+</script>
