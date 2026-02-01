@@ -1,0 +1,189 @@
+@model HVTravel.Domain.Entities.Booking
+@{
+    ViewData["Title"] = "Chỉnh sửa Đơn đặt vé";
+}
+
+<style type="text/tailwindcss">
+    @@layer components {
+        .input-field {
+            @@apply w-full bg-[#f6f8f8] dark:bg-slate-800 border-none rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 dark:placeholder:text-slate-500;
+        }
+        .section-card {
+            @@apply bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6;
+        }
+        .label-text {
+            @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
+        }
+    }
+</style>
+
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+    <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <a class="hover:text-primary transition-colors" asp-action="Index">Đơn Đặt Vé</a>
+    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <span class="text-slate-900 dark:text-white font-medium">Chỉnh sửa</span>
+    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <span class="text-slate-900 dark:text-white font-medium">#@Model.BookingCode</span>
+</nav>
+
+<!-- Page Header -->
+<div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Chỉnh sửa Đơn đặt vé</h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Đang chỉnh sửa đơn hàng mã <span class="font-bold text-primary">#@Model.BookingCode</span> cho tour @(Model.TourSnapshot?.Name).</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <span class="px-4 py-2 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 text-xs font-bold rounded-full uppercase tracking-wider">@Model.Status</span>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="BookingCode" />
+    <input type="hidden" asp-for="TourId" />
+    <input type="hidden" asp-for="CustomerId" />
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
+        <div class="lg:col-span-7 space-y-8">
+            <!-- Status & Quantity -->
+            <section class="section-card">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">settings_applications</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Trạng thái &amp; Số lượng</h2>
+                </div>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                             <label class="label-text">Trạng thái Đơn hàng</label>
+                             <select asp-for="Status" class="input-field">
+                                 <option value="Pending">Pending</option>
+                                 <option value="Paid">Paid</option>
+                                 <option value="Confirmed">Confirmed</option>
+                                 <option value="Completed">Completed</option>
+                                 <option value="Cancelled">Cancelled</option>
+                                 <option value="Refunded">Refunded</option>
+                             </select>
+                        </div>
+                        <div>
+                             <label class="label-text">Trạng thái Thanh toán</label>
+                             <select asp-for="PaymentStatus" class="input-field">
+                                 <option value="Unpaid">Unpaid</option>
+                                 <option value="Partial">Partial</option>
+                                 <option value="Full">Full</option>
+                                 <option value="Refunded">Refunded</option>
+                             </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="label-text">Tổng số khách</label>
+                            <input asp-for="ParticipantsCount" class="input-field" min="1" type="number" />
+                        </div>
+                        <div>
+                            <label class="label-text">Tổng tiền (VND)</label>
+                            <input asp-for="TotalAmount" class="input-field" type="number" step="1000" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Info -->
+            <section class="section-card">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">person</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Thông tin khách hàng</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label-text">Họ và tên</label>
+                        <input asp-for="ContactInfo.Name" class="input-field" placeholder="Nhập tên khách hàng" type="text" />
+                    </div>
+                    <div>
+                        <label class="label-text">Số điện thoại</label>
+                        <input asp-for="ContactInfo.Phone" class="input-field" placeholder="Nhập số điện thoại" type="tel" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="label-text">Email</label>
+                        <input asp-for="ContactInfo.Email" class="input-field" placeholder="email@vi-du.com" type="email" />
+                    </div>
+                </div>
+            </section>
+
+            <!-- Internal Notes -->
+            <section class="section-card">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Ghi chú</h2>
+                </div>
+                <div>
+                    <label class="label-text">Ghi chú cho đơn hàng</label>
+                    <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" placeholder="Ghi chú yêu cầu đặc biệt của khách..."></textarea>
+                </div>
+            </section>
+        </div>
+
+        <!-- Invoice Preview (Read only mostly) -->
+        <div class="lg:col-span-5 lg:sticky lg:top-24">
+            <div class="flex items-center justify-between mb-4 px-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-sm">receipt_long</span>
+                    <p class="text-sm font-bold text-[#111718] dark:text-white uppercase tracking-[0.2em]">THÔNG TIN HÓA ĐƠN</p>
+                </div>
+                <span class="px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black rounded-full uppercase tracking-tighter">Current Value</span>
+            </div>
+            <div class="bg-white dark:bg-surface-dark rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800">
+                <div class="p-8 border-b border-dashed border-slate-100 dark:border-slate-800">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-[#111718] dark:text-white">Chi tiết</h3>
+                            <p class="text-xs text-[#618389] dark:text-slate-400">ID Đơn hàng: @Model.BookingCode</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase">Ngày tạo</p>
+                            <p class="text-sm font-bold text-[#111718] dark:text-white">@Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-sm pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-[#618389] dark:text-slate-400">Khách hàng</span>
+                            <span class="font-bold text-[#111718] dark:text-white">@Model.ContactInfo?.Name</span>
+                        </div>
+                         <div class="flex justify-between items-center text-sm">
+                            <span class="text-[#618389] dark:text-slate-400">Tour</span>
+                            <span class="font-bold text-[#111718] dark:text-white">@Model.TourSnapshot?.Name</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-primary/5">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase tracking-wider">Tổng cộng</p>
+                        <span class="material-symbols-outlined text-primary">verified_user</span>
+                    </div>
+                    <p class="text-4xl font-black text-primary">@Model.TotalAmount.ToString("N0") <span class="text-lg font-medium">VND</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Footer -->
+    <div class="fixed bottom-0 left-0 lg:left-64 right-0 z-40 bg-white dark:bg-background-dark border-t border-slate-100 dark:border-white/10 p-5 md:px-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+        <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+            <div class="hidden sm:flex items-center gap-3">
+                <span class="size-2 bg-primary rounded-full animate-pulse"></span>
+                <span class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Đang chỉnh sửa</span>
+            </div>
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+                <a asp-action="Index" class="flex-1 sm:flex-none px-8 py-4 rounded-2xl text-[#111718] dark:text-white font-bold text-sm hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-all text-center">
+                    Hủy bỏ
+                </a>
+                <button type="submit" class="flex-1 sm:flex-none px-10 py-4 rounded-2xl bg-gradient-to-r from-primary to-[#25b9d7] hover:brightness-110 text-white font-extrabold text-sm transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 group">
+                    Lưu Thay Đổi
+                    <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">save</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

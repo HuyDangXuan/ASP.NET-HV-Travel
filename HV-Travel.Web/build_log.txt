@@ -1,0 +1,42 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  HV-Travel.Domain -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Domain\bin\Debug\net10.0\HV-Travel.Domain.dll
+  HV-Travel.Application -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Application\bin\Debug\net10.0\HV-Travel.Application.dll
+  HV-Travel.Infrastructure -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\bin\Debug\net10.0\HV-Travel.Infrastructure.dll
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(72,98): warning CS8625: Cannot convert null literal to non-nullable reference type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(22,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(32,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(6,6): error CS0103: The name 'layer' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(8,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(11,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(14,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(17,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(20,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(170,101): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(95,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(99,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(103,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(108,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(112,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+
+Build FAILED.
+
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(72,98): warning CS8625: Cannot convert null literal to non-nullable reference type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(22,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Controllers\AuthController.cs(32,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(170,101): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(95,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(99,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(103,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(108,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Shared\_Layout.cshtml(112,74): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'string' [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(6,6): error CS0103: The name 'layer' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(8,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(11,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(14,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(17,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Bookings\Details.cshtml(20,14): error CS0103: The name 'apply' does not exist in the current context [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+    9 Warning(s)
+    6 Error(s)
+
+Time Elapsed 00:00:01.66

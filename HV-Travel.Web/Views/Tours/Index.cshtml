@@ -1,0 +1,737 @@
+@model IEnumerable<HVTravel.Domain.Entities.Tour>
+@{
+    ViewData["Title"] = "Tours";
+}
+
+<!-- Page Header -->
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Tours</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Tour Du Lịch</h1>
+    </div>
+</div>
+
+<!-- Tabs & Filters -->
+<div class="flex flex-col gap-6 mb-6">
+    <!-- Tabs -->
+    <div class="flex items-center border-b border-slate-200/60 dark:border-slate-800">
+        <button onclick="switchTourTab('all')" id="tab-btn-all" class="relative px-6 py-3 text-sm font-bold text-primary transition-colors border-b-[3px] border-primary bg-primary/5 dark:bg-primary/10 rounded-t-lg">
+            Tất Cả Tour <span class="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">128</span>
+        </button>
+        <button onclick="switchTourTab('draft')" id="tab-btn-draft" class="relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg">
+            Bản Nháp <span class="ml-2 text-xs bg-transparent border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-slate-400">8</span>
+        </button>
+        <button onclick="switchTourTab('active')" id="tab-btn-active" class="relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg">
+            Đang Hoạt Động <span class="ml-2 text-xs bg-transparent border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-slate-400">85</span>
+        </button>
+        <button onclick="switchTourTab('archived')" id="tab-btn-archived" class="relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg">
+            Đã Lưu Trữ <span class="ml-2 text-xs bg-transparent border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-slate-400">35</span>
+        </button>
+        <button onclick="switchTourTab('deleted')" id="tab-btn-deleted" class="relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg">
+            Đã Xóa <span class="ml-2 text-xs bg-transparent border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-slate-400">3</span>
+        </button>
+    </div>
+    <!-- Filter Chips -->
+    <div class="flex flex-wrap items-center gap-3 py-1">
+        <!-- City Filter -->
+        <div class="relative">
+            <button onclick="toggleTourFilter('city-dropdown')" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-primary/50 hover:text-primary transition-all">
+                Thành Phố
+                <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+            </button>
+            <div id="city-dropdown" class="absolute top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 hidden">
+                <div class="p-2 flex flex-col gap-1">
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Hà Nội</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Đà Nẵng</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Hồ Chí Minh</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Sa Pa</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- Category Filter -->
+        <div class="relative">
+            <button onclick="toggleTourFilter('category-dropdown')" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-primary/50 hover:text-primary transition-all">
+                Danh Mục
+                <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+            </button>
+            <div id="category-dropdown" class="absolute top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 hidden">
+                <div class="p-2 flex flex-col gap-1">
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Khám Phá</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Ẩm Thực</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Văn Hóa</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Nghỉ Dưỡng</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- Price Filter -->
+        <div class="relative">
+            <button onclick="toggleTourFilter('price-dropdown')" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-primary/50 hover:text-primary transition-all">
+                Mức Giá
+                <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+            </button>
+            <div id="price-dropdown" class="absolute top-full mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 hidden">
+                <div class="p-2 flex flex-col gap-1">
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="radio" name="price" class="text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Dưới 1 triệu</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="radio" name="price" class="text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">1 - 3 triệu</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="radio" name="price" class="text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">3 - 5 triệu</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="radio" name="price" class="text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Trên 5 triệu</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- Duration Filter -->
+        <div class="relative">
+            <button onclick="toggleTourFilter('duration-dropdown')" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-primary/50 hover:text-primary transition-all">
+                Thời Lượng
+                <span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+            </button>
+            <div id="duration-dropdown" class="absolute top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 hidden">
+                <div class="p-2 flex flex-col gap-1">
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                         <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Dưới 1 ngày</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                         <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">1 - 3 ngày</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                         <input type="checkbox" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Trên 3 ngày</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
+        <button onclick="resetTourFilters()" class="flex items-center gap-2 px-3 py-2 text-slate-500 dark:text-slate-400 hover:text-red-500 text-sm font-semibold transition-colors">
+            <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+            Đặt Lại
+        </button>
+    </div>
+</div>
+
+<!-- Tours Table -->
+<!-- Tours Table Content -->
+<div id="tab-content-all" class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center">
+                         <div class="flex items-center justify-center">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                        </div>
+                    </th>
+                    <th class="p-4 pl-0">Thông Tin Tour</th>
+                    <th class="p-4 text-center">Thời Gian</th>
+                    <th class="p-4 text-center">Đánh Giá</th>
+                    <th class="p-4 text-center">Trạng Thái</th>
+                    <th class="p-4 text-right">Giá</th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                @foreach (var tour in Model)
+                {
+                    var statusClass = "bg-slate-100 text-slate-500 border-slate-200";
+                    var statusText = tour.Status;
+                    if (tour.Status == "Active")
+                    {
+                        statusClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-900";
+                        statusText = "Hoạt Động";
+                    }
+                    else if (tour.Status == "Draft")
+                    {
+                         statusClass = "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700";
+                         statusText = "Bản Nháp";
+                    }
+
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                            </div>
+                        </td>
+                        <td class="p-4 pl-0">
+                            <div class="flex gap-4">
+                                <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                                    <img alt="@tour.Name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="@(tour.Images != null && tour.Images.Count > 0 ? tour.Images[0] : "https://via.placeholder.com/150")" />
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">@tour.Name</h3>
+                                    <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                        <span class="material-symbols-outlined text-[14px]">location_on</span> @tour.Destination?.City
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">@tour.Duration?.Text</span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-amber-400 text-[16px] font-fill" style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">@(tour.Rating > 0 ? tour.Rating : "N/A")</span>
+                                <span class="text-xs text-slate-400">(@tour.ReviewCount)</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border @statusClass">
+                                @statusText
+                            </span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <p class="font-bold text-[#111718] dark:text-white text-sm">@tour.Price?.Adult.ToString("N0") ₫</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a asp-action="Details" asp-route-id="@tour.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors" title="Xem chi tiết">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@tour.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors" title="Sửa">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@tour.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tour này?');" style="display:inline;">
+                                    <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 5</span> trong số <span class="font-bold text-slate-900 dark:text-white">128</span> tour</p>
+        <div class="flex items-center gap-2">
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">2</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">3</button>
+            <span class="text-slate-400 text-xs">...</span>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">26</button>
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Draft Tours Table (Initially Hidden) -->
+<div id="tab-content-draft" class="hidden bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center">
+                        <div class="flex items-center justify-center">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                        </div>
+                    </th>
+                    <th class="p-4 pl-0">Thông Tin Tour</th>
+                    <th class="p-4 text-center">Thời Gian</th>
+                    <th class="p-4 text-center">Đánh Giá</th>
+                    <th class="p-4 text-center">Trạng Thái</th>
+                    <th class="p-4 text-right">Giá</th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr class="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                     <td class="p-4 text-center">
+                        <div class="flex items-center justify-center">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                        </div>
+                    </td>
+                    <td class="p-4 pl-0">
+                        <div class="flex gap-4">
+                            <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-slate-300">image</span>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">Mekong Delta Homestay (Draft)</h3>
+                                <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">location_on</span> Can Tho
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">2 Ngày</span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="text-xs text-slate-400 italic">Chưa có đánh giá</span>
+                    </td>
+                    <td class="p-4 text-center"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">Bản Nháp</span></td>
+                    <td class="p-4 text-right"><p class="font-bold text-[#111718] dark:text-white text-sm">1.200.000 ₫</p></td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                             <a align="center" asp-action="Details" asp-route-id="tour-1" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors" title="Xem chi tiết">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </a>
+                            <a align="center" asp-action="Edit" asp-route-id="tour-1" class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors" title="Sửa">
+                                <span class="material-symbols-outlined text-lg">edit</span>
+                            </a>
+                            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa mềm">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 8</span> trong số <span class="font-bold text-slate-900 dark:text-white">8</span> bản nháp</p>
+        <div class="flex items-center gap-2">
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Active Tours Table (Initially Hidden) -->
+<div id="tab-content-active" class="hidden bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+         <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center">
+                        <div class="flex items-center justify-center">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                        </div>
+                    </th>
+                    <th class="p-4 pl-0">Thông Tin Tour</th>
+                    <th class="p-4 text-center">Thời Gian</th>
+                    <th class="p-4 text-center">Đánh Giá</th>
+                    <th class="p-4 text-center">Trạng Thái</th>
+                    <th class="p-4 text-right">Giá</th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr class="group hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                     <td class="p-4 text-center">
+                        <div class="flex items-center justify-center">
+                            <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+                        </div>
+                    </td>
+                    <td class="p-4 pl-0">
+                        <div class="flex gap-4">
+                            <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                <img alt="Phong Nha Cave" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/p/AF1QipN3-vO4QxXQyKz8Z1uvE5mGg4oPq9kL7jXwY2tT=s1360-w1360-h1020" />
+                                <div class="absolute inset-0 bg-black/10"></div>
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">Phong Nha Cave Expedition</h3>
+                                <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                    <span class="material-symbols-outlined text-[14px]">location_on</span> Quang Binh
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">1 Ngày</span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-amber-400 text-[16px] font-fill" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-sm font-bold text-slate-700 dark:text-slate-200">5.0</span>
+                            <span class="text-xs text-slate-400">(21)</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">Hoạt Động</span></td>
+                    <td class="p-4 text-right"><p class="font-bold text-[#111718] dark:text-white text-sm">1.500.000 ₫</p></td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                             <a align="center" asp-action="Details" asp-route-id="tour-1" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors" title="Xem chi tiết">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </a>
+                            <a align="center" asp-action="Edit" asp-route-id="tour-1" class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors" title="Sửa">
+                                <span class="material-symbols-outlined text-lg">edit</span>
+                            </a>
+                            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa mềm">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 5</span> trong số <span class="font-bold text-slate-900 dark:text-white">85</span> tour hoạt động</p>
+        <div class="flex items-center gap-2">
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">2</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">3</button>
+            <span class="text-slate-400 text-xs">...</span>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">17</button>
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Archived Tours Table (Initially Hidden) -->
+<div id="tab-content-archived" class="hidden bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+         <table class="w-full text-left border-collapse">
+             <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center"><input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" /></th>
+                    <th class="p-4 pl-0">Thông Tin Tour</th>
+                    <th class="p-4 text-center">Trạng Thái</th>
+                    <th class="p-4 text-right">Giá</th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Mock Archived Item 1 -->
+                <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors opacity-60">
+                    <td class="p-4 text-center"><input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" /></td>
+                    <td class="p-4 pl-0">
+                        <div class="flex gap-4">
+                             <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                <img alt="Hue Citadel" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9JwAGiVnhOLv4dSmNwcFErqz4LUWCnMXXtAn7fTvibeVLfHt6uLqjH3vrvs-A_ztzmKTKGXHm7qGoKnrF62ENIJG7_lCemmm1Yu2DUxU-bmPkC76Uyoo8rxVM36xkOXhK8dLYNXCSUgbF3vqFHtg3ADnrWUdeakcfR2Z5CMLURI8lG2h_oQNs7kJ75zDrHX8sQRt4zOYwG5zNm-rDXUgquXczgVBB7dkCdEpXAu_j5T7puntY9dFr64jfNZ5THWOyBInMCJ6ing" />
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">Hue Royal Palace Walk (Old)</h3>
+                                <div class="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 3 Giờ</span>
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> Hue</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-orange-50 text-orange-400 border border-orange-100">Đã Lưu Trữ</span></td>
+                    <td class="p-4 text-right"><p class="font-bold text-[#111718] dark:text-white text-sm">300.000 ₫</p></td>
+                     <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                             <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"><span class="material-symbols-outlined text-lg">visibility</span></button>
+                             <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
+                             <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 5</span> trong số <span class="font-bold text-slate-900 dark:text-white">35</span> tour lưu trữ</p>
+        <div class="flex items-center gap-2">
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">2</button>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">3</button>
+            <span class="text-slate-400 text-xs">...</span>
+            <button class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">7</button>
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Deleted Tours Table (Initially Hidden) -->
+<div id="tab-content-deleted" class="hidden bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+         <table class="w-full text-left border-collapse">
+             <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center"><input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" /></th>
+                    <th class="p-4 pl-0">Thông Tin Tour</th>
+                    <th class="p-4 text-center">Trạng Thái</th>
+                    <th class="p-4 text-right">Giá</th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <!-- Mock Deleted Item 1 -->
+                <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors opacity-50 grayscale hover:grayscale-0">
+                    <td class="p-4 text-center"><input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" /></td>
+                    <td class="p-4 pl-0">
+                        <div class="flex gap-4">
+                             <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                <img alt="Ninh Binh boat tour" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/p/AF1QipN3-vO4QxXQyKz8Z1uvE5mGg4oPq9kL7jXwY2tT=s1360-w1360-h1020" />
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">Ninh Binh Day Trip (Deleted)</h3>
+                                <div class="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 1 Ngày</span>
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">location_on</span> Ninh Binh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-600 border border-red-200">Đã Xóa</span></td>
+                    <td class="p-4 text-right"><p class="font-bold text-[#111718] dark:text-white text-sm">800.000 ₫</p></td>
+                     <td class="p-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                             <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 transition-colors" title="Khôi phục">
+                                <span class="material-symbols-outlined text-lg">restore_from_trash</span>
+                            </button>
+                            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa vĩnh viễn">
+                                <span class="material-symbols-outlined text-lg">delete_forever</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">1 - 1</span> trong số <span class="font-bold text-slate-900 dark:text-white">3</span> tour đã xóa</p>
+        <div class="flex items-center gap-2">
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">1</button>
+            <button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section RightSidebar {
+    <aside id="right-sidebar" class="w-[360px] h-full glass-panel flex flex-col flex-shrink-0 border-l border-white overflow-y-auto fixed right-0 top-[80px] bottom-0 z-30 transition-all duration-300 ease-in-out translate-x-full opacity-0 pointer-events-none shadow-2xl">
+        <!-- Panel Header -->
+        <div class="px-6 py-6 border-b border-slate-200/50 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-[#111718] dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">analytics</span>
+                Hiệu Suất Tour
+            </h2>
+            <button onclick="toggleRightSidebar()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <!-- Selected Item Preview -->
+        <div class="p-6">
+            <div class="relative h-40 rounded-lg overflow-hidden mb-4 shadow-lg group">
+                <img alt="Ha Giang Loop wide shot" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-location="Ha Giang" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwh00A2VM3BBUYO0JI8Z_ZmaHd6RU22lrWXIfQvVSObFlr0gvyNX1ynnEe4amaU_hNm4cLbSLA2mpzoyfJvhmKvq_q3qZfDRRakGpxwa4VuyW28yV6jBbjYIUDQgT_CA6_zmSFI1KzD0KVh-ncsjE55XKx0x-_uq8dVzdWBS3n1AkMvHCJvy2eK4a4SaymAkK9T3ti4QD-y-mTJhjqsK-8YNgNWHcYZFuQVl956EGUCHbuhrjlxtKmNax0VycyGfmMVFSgr9MUFA" />
+                <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold tracking-wider uppercase text-slate-800">
+                    Đang Hoạt Động
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-[#111718] dark:text-white leading-tight mb-1">Ha Giang Loop Adventure</h3>
+            <p class="text-sm text-slate-500 font-medium mb-4">ID: #TR-8832 • Tạo 12 Th1 2023</p>
+            <div class="flex gap-2 mb-6">
+                <button class="flex-1 bg-[#111718] dark:bg-white dark:text-[#111718] text-white py-2 rounded-lg text-xs font-bold hover:bg-black dark:hover:bg-slate-200 transition-colors">Sửa Tour</button>
+                <button class="flex items-center justify-center px-3 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+                <button class="flex items-center justify-center px-3 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">share</span>
+                </button>
+            </div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-white/80 p-4 rounded-lg border border-white shadow-sm flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Tổng Doanh Thu</span>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg font-bold text-[#111718] dark:text-white">125.4M</span>
+                        <span class="text-xs font-bold text-emerald-500">₫</span>
+                    </div>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 w-fit px-1.5 py-0.5 rounded">
+                        <span class="material-symbols-outlined text-[10px]">trending_up</span> +12%
+                    </div>
+                </div>
+                <div class="bg-white/80 p-4 rounded-lg border border-white shadow-sm flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đơn Đặt</span>
+                    <span class="text-lg font-bold text-[#111718] dark:text-white">842</span>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 w-fit px-1.5 py-0.5 rounded">
+                        <span class="material-symbols-outlined text-[10px]">trending_up</span> +5%
+                    </div>
+                </div>
+                <div class="bg-white/80 p-4 rounded-lg border border-white shadow-sm flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Lượt Xem</span>
+                    <span class="text-lg font-bold text-[#111718] dark:text-white">12.5k</span>
+                    <div class="flex items-center gap-1 text-[10px] text-red-500 font-bold bg-red-50 w-fit px-1.5 py-0.5 rounded">
+                        <span class="material-symbols-outlined text-[10px]">trending_down</span> -2%
+                    </div>
+                </div>
+                <div class="bg-white/80 p-4 rounded-lg border border-white shadow-sm flex flex-col gap-1">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đánh Giá TB</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-lg font-bold text-[#111718] dark:text-white">4.8</span>
+                        <span class="material-symbols-outlined text-amber-400 text-[16px] font-fill" style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <div class="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                        (124 đánh giá)
+                    </div>
+                </div>
+            </div>
+            <!-- Mini Chart / Activity -->
+            <div class="bg-white/80 rounded-lg border border-white shadow-sm p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Hoạt Động Gần Đây</span>
+                    <button class="text-primary text-xs font-bold">Xem Tất Cả</button>
+                </div>
+                <div class="relative h-24 flex items-end justify-between gap-1 px-2">
+                    <!-- Simple CSS Bar Chart -->
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[40%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T2</div>
+                    </div>
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[65%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T3</div>
+                    </div>
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[50%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T4</div>
+                    </div>
+                    <div class="w-full bg-primary rounded-t-sm h-[85%] shadow-lg shadow-primary/30 relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T5</div>
+                    </div>
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[60%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T6</div>
+                    </div>
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[90%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">T7</div>
+                    </div>
+                    <div class="w-full bg-primary/20 rounded-t-sm h-[75%] hover:bg-primary transition-colors cursor-pointer relative group/bar">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity">CN</div>
+                    </div>
+                </div>
+                <p class="text-center text-[10px] text-slate-400 mt-2 font-medium">Đặt chỗ 7 ngày qua</p>
+            </div>
+        </div>
+    </aside>
+}
+
+@section Scripts {
+    <script>
+        function toggleTourFilter(dropdownId) {
+            const allDropdowns = ['city-dropdown', 'category-dropdown', 'price-dropdown', 'duration-dropdown'];
+            const el = document.getElementById(dropdownId);
+            
+            // Close others
+            allDropdowns.forEach(id => {
+                if (id !== dropdownId) {
+                    document.getElementById(id)?.classList.add('hidden');
+                }
+            });
+
+            // Toggle current
+            el?.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const isButton = e.target.closest('[onclick^="toggleTourFilter"]');
+            const isDropdown = e.target.closest('[id$="-dropdown"]');
+            
+            if (!isButton && !isDropdown) {
+                const allDropdowns = ['city-dropdown', 'category-dropdown', 'price-dropdown', 'duration-dropdown'];
+                allDropdowns.forEach(id => {
+                    document.getElementById(id)?.classList.add('hidden');
+                });
+            }
+        });
+
+        // Tour Tab Switching
+        function switchTourTab(tabName) {
+            // Update Tab Styles
+            const tabs = ['all', 'draft', 'active', 'archived', 'deleted'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabName) {
+                    // Active State
+                    btn.className = "relative px-6 py-3 text-sm font-bold text-primary transition-colors border-b-[3px] border-primary bg-primary/5 dark:bg-primary/10 rounded-t-lg";
+                    btn.querySelector('span').className = "ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full";
+                } else {
+                     // Inactive State
+                    btn.className = "relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg";
+                    btn.querySelector('span').className = "ml-2 text-xs bg-transparent border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full text-slate-400";
+                }
+            });
+
+            // Show/Hide Content
+            tabs.forEach(t => {
+                const content = document.getElementById(`tab-content-${t}`);
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        }
+        // Reset Filters
+        function resetTourFilters() {
+            const dropdownIds = ['city-dropdown', 'category-dropdown', 'price-dropdown', 'duration-dropdown'];
+            
+            dropdownIds.forEach(id => {
+                 const container = document.getElementById(id);
+                 if(container) {
+                     // Checkboxes
+                     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                     checkboxes.forEach(cb => cb.checked = false);
+                     
+                     // Radio buttons
+                     const radios = container.querySelectorAll('input[type="radio"]');
+                     radios.forEach(rd => rd.checked = false);
+                 }
+            });
+        }
+    </script>
+}

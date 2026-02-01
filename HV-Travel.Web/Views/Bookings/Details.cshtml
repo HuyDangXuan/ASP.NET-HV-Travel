@@ -1,0 +1,244 @@
+@model HVTravel.Domain.Entities.Booking
+@{
+    ViewData["Title"] = "Chi tiết Đơn đặt vé";
+}
+
+<style type="text/tailwindcss">
+    @@layer components {
+        .glass-card {
+            @@apply bg-white/70 backdrop-blur-md border border-slate-100 dark:border-slate-800 shadow-xl rounded-2xl;
+        }
+        .section-card {
+            @@apply bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm;
+        }
+        .label-text {
+            @@apply text-[#618389] dark:text-slate-400 text-[10px] font-bold uppercase tracking-[0.1em] mb-1 block;
+        }
+        .data-text {
+            @@apply text-[#111718] dark:text-white font-semibold text-sm;
+        }
+        .timeline-dot {
+            @@apply relative pl-8 before:content-[''] before:absolute before:left-0 before:top-1.5 before:w-2 before:h-2 before:bg-primary before:rounded-full before:z-10 after:content-[''] after:absolute after:left-[3.5px] after:top-4 after:w-[1px] after:h-full after:bg-[#f0f4f4] last:after:hidden;
+        }
+    }
+</style>
+
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+    <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <a class="hover:text-primary transition-colors" asp-action="Index">Đơn Đặt Vé</a>
+    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+    <span class="text-slate-900 dark:text-white font-medium">#@Model.BookingCode</span>
+</nav>
+
+<!-- Page Title & Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+        <div class="flex items-center gap-3 mb-2">
+            <h1 class="text-2xl leading-none font-bold text-slate-900 dark:text-white">
+                Chi tiết Đơn đặt vé
+            </h1>
+            <span class="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-black rounded-full uppercase">
+                @Model.Status
+            </span>
+        </div>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Mã đơn hàng: <span class="font-bold text-slate-900 dark:text-white">#@Model.BookingCode</span> • Đặt lúc @Model.BookingDate.ToLocalTime().ToString("HH:mm, dd/MM/yyyy")</p>
+    </div>
+    <div class="flex items-center gap-2">
+        <button class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">print</span> In hóa đơn
+        </button>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn này?');">
+             <button type="submit" class="px-4 py-2 rounded-lg border border-red-200 dark:border-red-900/30 text-sm font-bold text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">cancel</span> Hủy đơn
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Main Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
+    <!-- Left Column (Details) -->
+    <div class="lg:col-span-8 space-y-6">
+        <!-- Customer Info -->
+        <section class="section-card">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary">person</span>
+                <h2 class="text-[#111718] dark:text-white text-lg font-bold">Thông tin Khách hàng</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <span class="label-text">Họ và tên</span>
+                    <p class="data-text">@(Model.ContactInfo?.Name ?? "N/A")</p>
+                </div>
+                <div>
+                    <span class="label-text">Số điện thoại</span>
+                    <p class="data-text">@(Model.ContactInfo?.Phone ?? "N/A")</p>
+                </div>
+                <div>
+                    <span class="label-text">Email</span>
+                    <p class="data-text">@(Model.ContactInfo?.Email ?? "N/A")</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tour Info -->
+        <section class="section-card">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary">map</span>
+                <h2 class="text-[#111718] dark:text-white text-lg font-bold">Thông tin Tour</h2>
+            </div>
+            <div class="flex gap-6">
+                <img alt="Tour Placeholder" class="size-24 rounded-2xl object-cover" src="https://via.placeholder.com/150?text=Tour+Image" />
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-base font-bold text-[#111718] dark:text-white mb-1">@(Model.TourSnapshot?.Name ?? "Unknown Tour")</h3>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-1.5 text-xs text-[#618389] dark:text-slate-400">
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            Khởi hành: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "Updating...")</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-[#618389] dark:text-slate-400">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            Thời lượng: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.Duration ?? "N/A")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Passenger List -->
+        <section class="section-card">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">group</span>
+                    <h2 class="text-[#111718] dark:text-white text-lg font-bold">Danh sách hành khách</h2>
+                </div>
+                <span class="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full tracking-wider">@Model.ParticipantsCount KHÁCH</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-[#f0f4f4] dark:border-white/10">
+                            <th class="pb-4 text-[10px] font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Họ và tên</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Phân loại</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Hộ chiếu</th>
+                            <th class="pb-4 text-[10px] font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest text-right">Giới tính</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#f0f4f4] dark:divide-white/10">
+                        @if (Model.Passengers != null && Model.Passengers.Any())
+                        {
+                            foreach (var p in Model.Passengers)
+                            {
+                                <tr>
+                                    <td class="py-4 text-sm font-bold text-[#111718] dark:text-white">@p.FullName</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@p.Type</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@p.PassportNumber</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400 text-right">@p.Gender</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="py-4 text-sm text-center text-slate-500">Chưa có thông tin hành khách</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Right Column (Payment & Logs) -->
+    <div class="lg:col-span-4 space-y-6">
+        <!-- Payment Stat Card -->
+        <div class="section-card shadow-lg border-opacity-50 dark:border-opacity-100">
+            <h2 class="text-[#111718] dark:text-white text-lg font-bold mb-6">Thanh toán &amp; Trạng thái</h2>
+            <div class="space-y-4 mb-8">
+                <div class="border-t border-[#f0f4f4] dark:border-white/10 pt-4 flex justify-between items-center">
+                    <span class="text-base font-bold text-[#111718] dark:text-white">Tổng cộng</span>
+                    <span class="text-2xl font-black text-primary">@Model.TotalAmount.ToString("N0") ₫</span>
+                </div>
+                 <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#618389] dark:text-slate-400">Trạng thái thanh toán</span>
+                    <span class="font-bold text-[#111718] dark:text-white">@Model.PaymentStatus</span>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="bg-[#f6f8f8] dark:bg-white/5 rounded-xl p-4 mb-8 flex items-center justify-between">
+                <div>
+                    <span class="label-text">Phương thức</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="material-symbols-outlined text-slate-500">payments</span>
+                        <span class="text-sm font-bold text-[#111718] dark:text-white">Chuyển khoản (Mặc định)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs -->
+            <div class="space-y-4 mb-8">
+                <h3 class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Lịch sử sự kiện</h3>
+                <div class="space-y-4">
+                    @if (Model.HistoryLog != null && Model.HistoryLog.Any())
+                    {
+                        foreach (var log in Model.HistoryLog.OrderByDescending(x => x.Timestamp).Take(5))
+                        {
+                             <div class="timeline-dot">
+                                <p class="text-xs font-bold text-[#111718] dark:text-white">@log.Action</p>
+                                <p class="text-[10px] text-[#618389] dark:text-slate-400">@log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy - HH:mm")</p>
+                                <p class="text-[10px] italic text-slate-400">@log.Note</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="timeline-dot">
+                            <p class="text-xs font-bold text-[#111718] dark:text-white">Đã tạo đơn hàng</p>
+                            <p class="text-[10px] text-[#618389] dark:text-slate-400">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy - HH:mm")</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="w-full py-4 bg-primary text-white rounded-2xl font-bold text-sm shadow-lg shadow-primary/25 hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-xl">edit</span> Chỉnh sửa Đơn hàng
+                </a>
+                <button class="w-full py-4 bg-white border border-[#f0f4f4] dark:bg-transparent dark:border-white/10 text-[#111718] dark:text-white rounded-2xl font-bold text-sm hover:bg-[#f6f8f8] dark:hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-xl">send</span> Gửi vé (E-ticket)
+                </button>
+            </div>
+        </div>
+
+        <!-- Support Card -->
+        <div class="section-card bg-primary/5 border-primary/10">
+            <div class="flex items-start gap-4">
+                <span class="material-symbols-outlined text-primary p-2 bg-white dark:bg-background-dark rounded-xl shadow-sm">support_agent</span>
+                <div>
+                    <p class="text-sm font-bold mb-1 text-[#111718] dark:text-white">Cần hỗ trợ?</p>
+                    <p class="text-xs text-[#618389] dark:text-slate-400 leading-relaxed mb-3">Liên hệ với bộ phận điều hành tour để xác nhận tình trạng chỗ.</p>
+                    <a class="text-primary text-sm font-bold hover:underline" href="tel:19001234">1900 1234</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 lg:left-64 right-0 z-40 bg-white dark:bg-background-dark border-t border-[#f0f4f4] dark:border-white/10 p-5 md:px-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="size-2 bg-amber-500 rounded-full animate-pulse"></span>
+            <span class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase tracking-widest">Đang xem chế độ Admin</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <a asp-action="Index" class="px-8 py-3 rounded-2xl text-[#111718] dark:text-white font-bold text-sm hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-all">
+                Quay lại
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>@ViewData["Title"] - HV Travel Admin</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bcdee",
+                        "primary-dark": "#0ea5e9",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c30",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-panel {
+            background: rgba(26, 44, 48, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+    <script>
+        // Check local storage or system preference on load to prevent FOUC
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display h-screen overflow-hidden flex selection:bg-primary selection:text-white">
+    <!-- Left Sidebar (Navigation) -->
+    <aside class="w-64 h-full flex flex-col justify-between glass-panel z-20 shrink-0 border-r border-slate-200/50 dark:border-slate-700/50">
+        <div class="p-6">
+            <!-- Logo & Theme Toggle -->
+            <div class="flex items-center justify-between mb-10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-primary to-blue-500 text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30">
+                        <span class="material-symbols-outlined">flight_takeoff</span>
+                    </div>
+                    <div>
+                        <h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">HV Travel</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1">Trang Quản Trị</p>
+                    </div>
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-white/50 dark:hover:bg-white/5 transition-all" aria-label="Toggle Dark Mode">
+                    <span class="material-symbols-outlined dark:hidden text-[20px]">dark_mode</span>
+                    <span class="material-symbols-outlined hidden dark:block text-[20px]">light_mode</span>
+                </button>
+            </div>
+            <!-- Navigation Links -->
+            <nav class="flex flex-col gap-2">
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Dashboard" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all")" asp-controller="Dashboard" asp-action="Index">
+                    <span class="material-symbols-outlined" data-weight="fill">dashboard</span>
+                    <span class="text-sm">Tổng Quan</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Tours" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-controller="Tours" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">map</span>
+                    <span class="text-sm font-medium">Quản Lý Tour</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Bookings" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-controller="Bookings" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">confirmation_number</span>
+                    <span class="text-sm font-medium">Đơn Đặt Vé</span>
+                    <!-- <span class="ml-auto bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span> -->
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Payments" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-controller="Payments" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+                    <span class="text-sm font-medium">Thanh Toán</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Customers" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-controller="Customers" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
+                    <span class="text-sm font-medium">Khách Hàng</span>
+                </a>
+            </nav>
+        </div>
+        <!-- Bottom Actions -->
+        <div class="p-6">
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-4 text-white relative overflow-hidden group cursor-pointer">
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 bg-white/10 w-20 h-20 rounded-full blur-xl group-hover:bg-primary/20 transition-all duration-500"></div>
+                <div class="relative z-10 flex gap-3 items-center mb-2">
+                    <span class="material-symbols-outlined text-primary">support_agent</span>
+                    <p class="font-bold text-sm">Cần Hỗ Trợ?</p>
+                </div>
+                <p class="relative z-10 text-xs text-slate-300 mb-3">Xem tài liệu hoặc liên hệ hỗ trợ.</p>
+                <button class="relative z-10 w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold transition-colors">Mở Hỗ Trợ</button>
+            </div>
+            <a class="flex items-center gap-3 px-4 py-3 mt-4 rounded-xl text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" asp-controller="Auth" asp-action="Logout">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="text-sm font-medium">Đăng Xuất</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 h-full overflow-y-auto overflow-x-hidden relative scroll-smooth">
+        <!-- Top Header -->
+        <header class="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-5 flex justify-between items-center border-b border-transparent transition-all">
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-xl">
+                <label class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                    </div>
+                    <input class="block w-full pl-12 pr-4 py-3 bg-white dark:bg-slate-800 border-none rounded-xl text-sm shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary placeholder-slate-400 text-slate-800 dark:text-white transition-all" placeholder="Tìm kiếm tour, đơn hàng, điểm đến..." type="text" />
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <span class="text-xs text-slate-400 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">⌘K</span>
+                    </div>
+                </label>
+            </div>
+            <!-- Header Actions -->
+            <div class="flex items-center gap-4 ml-6">
+                <a asp-controller="Tours" asp-action="Create" class="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all active:scale-95">
+                    <span class="material-symbols-outlined text-[20px]">add</span>
+                    <span class="text-sm">Tạo Tour Mới</span>
+                </a>
+                <div class="relative" id="notification-container">
+                    <button onclick="toggleNotificationDropdown()" class="relative w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-200 group">
+                        <span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">notifications</span>
+                        <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notification-dropdown" class="absolute right-0 top-full mt-4 w-96 bg-white dark:bg-slate-800 rounded-[2rem] shadow-2xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 z-50 hidden origin-top-right transition-all transform opacity-100 scale-100">
+                        <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 rounded-t-[2rem]">
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Thông báo</h3>
+                                <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3 mới</span>
+                            </div>
+                            <button class="text-xs text-primary font-bold hover:underline">Đánh dấu đã đọc</button>
+                        </div>
+                        <div class="max-h-[400px] overflow-y-auto no-scrollbar py-2">
+                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
+                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex gap-4">
+                                    <div class="size-12 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">payments</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Đơn hàng <span class="font-bold">#BK-9420</span> đã thanh toán thành công</p>
+                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">2 phút trước</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
+                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex gap-4">
+                                    <div class="size-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">person_add</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Khách hàng mới <span class="font-bold">Nguyễn Văn A</span> vừa đăng ký</p>
+                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">1 giờ trước</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
+                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <div class="flex gap-4">
+                                    <div class="size-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">star</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Tour <span class="font-bold">Hà Giang Loop</span> nhận được đánh giá 5 sao</p>
+                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">3 giờ trước</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-slate-100 dark:border-slate-700 text-center bg-slate-50/50 dark:bg-slate-800 rounded-b-[2rem]">
+                            <a href="#" class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-500 hover:text-primary transition-colors py-1 uppercase tracking-wider">
+                                Xem tất cả thông báo
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @if (IsSectionDefined("RightSidebar"))
+                {
+                    <button onclick="toggleRightSidebar()" class="relative w-10 h-10 flex items-center justify-center bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[24px]">space_dashboard</span>
+                    </button>
+                }
+                <div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">@(User.Identity.Name ?? "Admin User")</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-700 shadow-md" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdg7QiB7JmSpAa3vcJImpfHeVlDIrG3SRvkZQhvz5wE_i3KRHBwrHBklwwPt0boWqfKEmxmBFHYfXoJIDCeIsw2rwfuQl91M3tfPuK32VjST-BWcxY1S5urfmzf_GWqRMpQf6L4r6kt_DqQIK6C1dwyRdd7hd08u1eFxMPTe7B2_WRHK_q6y29t8ZewLUqHByWt3NRtoP7CX8gMVMFNKcl7InW8IGyu2jX0exZ28ny4c6-CYOLRnG1ZivaUBgjDrcmsLjhgTCg7w');"></div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Dashboard Content or Page Body -->
+        <div class="p-8 max-w-[1600px] mx-auto pb-24">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Right Sidebar (Widgets) -->
+    @await RenderSectionAsync("RightSidebar", required: false)
+    
+    @await RenderSectionAsync("Scripts", required: false)
+    
+    <script>
+        function toggleRightSidebar() {
+            const sidebar = document.getElementById('right-sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('translate-x-full');
+                sidebar.classList.toggle('opacity-0');
+                sidebar.classList.toggle('pointer-events-none');
+            }
+        }
+
+        function toggleNotificationDropdown() {
+            const dropdown = document.getElementById('notification-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('hidden');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const container = document.getElementById('notification-container');
+            const dropdown = document.getElementById('notification-dropdown');
+            if (container && dropdown && !container.contains(event.target) && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Dark Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('dark')) {
+                    localStorage.theme = 'dark';
+                } else {
+                    localStorage.theme = 'light';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

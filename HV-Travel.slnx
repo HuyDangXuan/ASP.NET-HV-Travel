@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HV-Travel.Application/HV-Travel.Application.csproj" />
+  <Project Path="HV-Travel.Domain/HV-Travel.Domain.csproj" />
+  <Project Path="HV-Travel.Infrastructure/HV-Travel.Infrastructure.csproj" />
+  <Project Path="HV-Travel.Web/HV-Travel.Web.csproj" />
+</Solution>

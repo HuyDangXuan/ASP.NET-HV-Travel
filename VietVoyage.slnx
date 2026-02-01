@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="VietVoyage.Application/VietVoyage.Application.csproj" />
-  <Project Path="VietVoyage.Domain/VietVoyage.Domain.csproj" />
-  <Project Path="VietVoyage.Infrastructure/VietVoyage.Infrastructure.csproj" />
-  <Project Path="VietVoyage.Web/VietVoyage.Web.csproj" />
-</Solution>
