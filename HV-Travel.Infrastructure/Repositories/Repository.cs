@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Linq.Expressions;
 using HVTravel.Domain.Interfaces;
+using HVTravel.Domain.Models;
 using HVTravel.Infrastructure.Data;
 
 namespace HVTravel.Infrastructure.Repositories
@@ -61,6 +62,21 @@ namespace HVTravel.Infrastructure.Repositories
         {
             var filter = Builders<T>.Filter.Eq("Id", id);
             await _collection.DeleteOneAsync(filter);
+        }
+
+        public async Task<PaginatedResult<T>> GetPagedAsync(int pageIndex, int pageSize, Expression<Func<T, bool>> filter = null)
+        {
+            var filterDefinition = filter != null
+                ? Builders<T>.Filter.Where(filter)
+                : Builders<T>.Filter.Empty;
+
+            var count = await _collection.CountDocumentsAsync(filterDefinition);
+            var items = await _collection.Find(filterDefinition)
+                .Skip((pageIndex - 1) * pageSize)
+                .Limit(pageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<T>(items, (int)count, pageIndex, pageSize);
         }
     }
 }

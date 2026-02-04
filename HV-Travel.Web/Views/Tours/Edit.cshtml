@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
 }
+@model HVTravel.Domain.Entities.Tour
 
 <style type="text/tailwindcss">
     @@layer components {
@@ -8,7 +9,7 @@
             @@apply w-full bg-[#f6f8f8] dark:bg-slate-900 border-none rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50;
         }
         .section-card {
-            @@apply bg-white dark:bg-slate-800 rounded-2xl border border-[#f0f4f4] dark:border-white/10 p-6 shadow-sm space-y-6;
+            @@apply bg-white dark:bg-surface-dark rounded-2xl border border-[#f0f4f4] dark:border-slate-800 p-6 shadow-sm space-y-6;
         }
         .label-text {
             @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
@@ -16,27 +17,19 @@
     }
 </style>
 
+<form id="edit-tour-form" asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+<input type="hidden" asp-for="Id" />
 <div class="pb-24">
     <div class="flex flex-col gap-1 mb-10">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
             <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             <a class="hover:text-primary transition-colors" asp-action="Index">Tours</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             <span class="text-slate-900 dark:text-white font-medium">Chỉnh Sửa Tour</span>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">#TOUR-001</span>
         </nav>
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <div class="flex items-center gap-3 mb-2">
-                    <h1 class="text-2xl leading-none font-bold text-slate-900 dark:text-white">
-                        Chỉnh sửa Tour
-                    </h1>
-                </div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm">Cập nhật thông tin chi tiết, giá cả và lịch trình cho tour của bạn.</p>
-            </div>
-        </div>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Chỉnh Sửa Tour: @Model.Name</h1>
+        <p class="text-slate-500 dark:text-gray-400 mt-1">Cập nhật thông tin chi tiết, giá cả và lịch trình cho tour của bạn.</p>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div class="lg:col-span-7 space-y-8">
@@ -46,79 +39,126 @@
                     <h2 class="text-[#111718] dark:text-white text-xl font-bold">Thông tin cơ bản</h2>
                 </div>
                 <div class="space-y-6">
-                    <div>
-                        <label class="label-text">Tên Tour</label>
-                        <input class="input-field" placeholder="Ví dụ: Khám phá Vịnh Hạ Long 2 ngày 1 đêm" type="text" value="Ha Giang Loop Adventure" />
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="md:col-span-1">
+                            <label class="label-text">Mã Tour</label>
+                            <input asp-for="Code" class="input-field" placeholder="Ví dụ: TOUR-001" type="text" />
+                            <span asp-validation-for="Code" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="label-text">Tên Tour</label>
+                            <input asp-for="Name" class="input-field" placeholder="Ví dụ: Khám phá Vịnh Hạ Long 2 ngày 1 đêm" type="text" />
+                            <span asp-validation-for="Name" class="text-red-500 text-xs"></span>
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="label-text">Điểm đến</label>
-                            <input class="input-field" placeholder="Ví dụ: Hạ Long, Quảng Ninh" type="text" value="Hà Giang" />
+                            <label class="label-text">Trạng thái</label>
+                             <select asp-for="Status" class="input-field appearance-none">
+                                <option value="Draft">Bản nháp (Draft)</option>
+                                <option value="Active">Hoạt động (Active)</option>
+                                <option value="SoldOut">Hết chỗ (Sold Out)</option>
+                                <option value="ComingSoon">Sắp ra mắt (Coming Soon)</option>
+                                <option value="Hidden">Ẩn (Hidden)</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="label-text">Danh mục</label>
-                            <select class="input-field appearance-none">
-                                <option value="">Chọn danh mục</option>
-                                <option value="beach">Du lịch biển</option>
-                                <option value="mountain" selected>Du lịch núi</option>
-                                <option value="luxury">Nghỉ dưỡng sang trọng</option>
-                                <option value="culture">Văn hóa &amp; Lịch sử</option>
+                             <label class="label-text">Loại hình Tour</label>
+                            <select asp-for="Category" class="input-field appearance-none">
+                                <option value="">Chọn loại hình</option>
+                                <option value="Adventure">Khám phá & Mạo hiểm</option>
+                                <option value="Culture">Văn hóa & Lịch sử</option>
+                                <option value="Food">Ẩm thực</option>
+                                <option value="Nature">Thiên nhiên & Nghỉ dưỡng</option>
+                                <option value="City">City Tour</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                         <div>
+                            <label class="label-text">Thành phố / Tỉnh</label>
+                             <input asp-for="Destination.City" class="input-field" placeholder="Ví dụ: Hạ Long" type="text" />
+                        </div>
+                        <div>
+                             <label class="label-text">Quốc gia</label>
+                             <input asp-for="Destination.Country" class="input-field" placeholder="Ví dụ: Việt Nam" type="text" />
+                        </div>
+                         <div>
+                             <label class="label-text">Vùng / Miền</label>
+                             <input asp-for="Destination.Region" class="input-field" placeholder="Ví dụ: Miền Bắc" type="text" />
                         </div>
                     </div>
                     <div>
                         <label class="label-text">Mô tả ngắn</label>
-                        <textarea class="input-field h-32 py-4 resize-none" placeholder="Viết một đoạn giới thiệu ngắn gọn về tour này...">Khám phá vẻ đẹp hùng vĩ của vùng cao nguyên đá Đồng Văn qua hành trình Hà Giang Loop đầy thú vị.</textarea>
+                        <textarea asp-for="ShortDescription" class="input-field h-32 py-4 resize-none" placeholder="Viết một đoạn giới thiệu ngắn gọn về tour này..."></textarea>
                     </div>
                     <div>
-                        <label class="label-text">Hình ảnh đại diện</label>
-                        <div class="border-2 border-dashed border-[#dbe4e6] dark:border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 bg-[#f6f8f8]/50 dark:bg-white/5 hover:bg-primary/5 transition-colors cursor-pointer group">
-                            <span class="material-symbols-outlined text-4xl text-[#618389] group-hover:text-primary transition-colors">add_photo_alternate</span>
-                            <p class="text-sm font-semibold text-[#618389]">Kéo thả hoặc nhấn để tải ảnh lên</p>
-                            <p class="text-[10px] text-[#618389]/60 uppercase tracking-widest font-bold">JPG, PNG, WEBP (Tối đa 5MB)</p>
+                        <label class="label-text">Mô tả chi tiết</label>
+                        <textarea asp-for="Description" class="input-field h-48 py-4 resize-none" placeholder="Mô tả chi tiết về tour, các điểm nổi bật..."></textarea>
+                    </div>
+                    <div>
+                        <label class="label-text">Hình ảnh (URLs)</label>
+                         <div id="images-container" class="space-y-3">
+                            @if (Model.Images != null && Model.Images.Any())
+                            {
+                                for (int i = 0; i < Model.Images.Count; i++)
+                                {
+                                    <div class="flex gap-2 items-center image-item">
+                                        <input name="Images[@i]" value="@Model.Images[i]" type="text" class="input-field" placeholder="https://example.com/image.jpg" />
+                                        <button type="button" onclick="removeImage(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full flex-shrink-0"><span class="material-symbols-outlined">delete</span></button>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <!-- Default empty slot if needed, or just button -->
+                            }
                         </div>
+                        <button type="button" onclick="addImage()" class="mt-3 text-sm text-primary font-bold flex items-center gap-1 hover:underline">
+                            <span class="material-symbols-outlined text-lg">add_photo_alternate</span> Thêm ảnh từ URL
+                        </button>
                     </div>
                 </div>
             </section>
             <section class="section-card">
                 <div class="flex items-center gap-2 mb-2">
                     <span class="material-symbols-outlined text-primary">payments</span>
-                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Giá &amp; Ưu đãi</h2>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Giá & Ưu đãi</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="label-text">Giá vé người lớn (Chính)</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#618389] font-medium">₫</span>
-                            <input class="input-field pl-10" placeholder="0" type="text" value="4,500,000" />
+                            <input asp-for="Price.Adult" id="adult-price-input" class="input-field pl-10" placeholder="0" type="number" />
                         </div>
                     </div>
                     <div>
                         <label class="label-text">Giảm giá (%)</label>
                         <div class="relative">
                             <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[#618389] font-medium">%</span>
-                            <input class="input-field pr-10" max="100" min="0" placeholder="0" type="number" value="0" />
+                            <input id="discount-input" name="Price.Discount" value="@Model.Price?.Discount" class="input-field pr-10" max="100" min="0" placeholder="0" type="number" />
                         </div>
                     </div>
                     <div>
                         <label class="label-text">Giá vé trẻ em</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#618389] font-medium">₫</span>
-                            <input class="input-field pl-10" placeholder="0" type="text" value="3,500,000" />
+                            <input asp-for="Price.Child" class="input-field pl-10" placeholder="0" type="number" />
                         </div>
                     </div>
                     <div>
                         <label class="label-text">Giá vé em bé</label>
                         <div class="relative">
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#618389] font-medium">₫</span>
-                            <input class="input-field pl-10" placeholder="0" type="text" value="0" />
+                            <input asp-for="Price.Infant" class="input-field pl-10" placeholder="0" type="number" />
                         </div>
                     </div>
                 </div>
                 <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-[#618389] uppercase tracking-wider mb-1">Giá hiển thị thực tế (Người lớn)</p>
-                        <p class="text-2xl font-black text-primary">4,500,000 VND</p>
+                        <p id="calculated-price-display" class="text-2xl font-black text-primary">0 VND</p>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 text-4xl">calculate</span>
                 </div>
@@ -126,25 +166,78 @@
             <section class="section-card">
                 <div class="flex items-center gap-2 mb-2">
                     <span class="material-symbols-outlined text-primary">calendar_month</span>
-                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Lịch trình &amp; Số lượng</h2>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Thời gian & Lịch trình</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="label-text">Ngày khởi hành</label>
-                        <input class="input-field" type="date" value="2023-11-15" />
-                    </div>
-                    <div>
-                        <label class="label-text">Ngày kết thúc</label>
-                        <input class="input-field" type="date" value="2023-11-17" />
-                    </div>
-                    <div>
                         <label class="label-text">Số lượng khách tối đa</label>
-                        <input class="input-field" placeholder="20" type="number" value="15" />
+                        <input asp-for="MaxParticipants" class="input-field" placeholder="20" type="number" />
                     </div>
                     <div>
-                        <label class="label-text">Thời lượng</label>
-                        <input class="input-field" placeholder="Ví dụ: 3 ngày 2 đêm" type="text" value="3 ngày 2 đêm" />
+                        <label class="label-text">Thời lượng (Text)</label>
+                        <input asp-for="Duration.Text" class="input-field" placeholder="Ví dụ: 3 ngày 2 đêm" type="text" />
                     </div>
+                     <div>
+                        <label class="label-text">Số ngày</label>
+                        <input asp-for="Duration.Days" class="input-field" placeholder="3" type="number" />
+                    </div>
+                     <div>
+                        <label class="label-text">Số đêm</label>
+                        <input asp-for="Duration.Nights" class="input-field" placeholder="2" type="number" />
+                    </div>
+                </div>
+
+                <!-- Start Dates -->
+                <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
+                    <label class="label-text mb-2">Ngày khởi hành (Start Dates)</label>
+                    <div id="start-dates-container" class="space-y-2">
+                        @if (Model.StartDates != null && Model.StartDates.Any())
+                        {
+                            for (int i = 0; i < Model.StartDates.Count; i++)
+                            {
+                                <div class="flex gap-2 items-center date-item">
+                                    <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="date" class="input-field w-full md:w-1/3" />
+                                    <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button type="button" onclick="addStartDate()" class="mt-2 text-sm text-primary font-bold flex items-center gap-1 hover:underline">
+                        <span class="material-symbols-outlined text-lg">add</span> Thêm ngày khởi hành
+                    </button>
+                </div>
+
+                <!-- Schedule -->
+                <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
+                    <label class="label-text mb-4">Lịch trình chi tiết (Schedule)</label>
+                    <div id="schedule-container" class="space-y-6">
+                        @if (Model.Schedule != null && Model.Schedule.Any())
+                        {
+                            for (int i = 0; i < Model.Schedule.Count; i++)
+                            {
+                                <div class="schedule-item border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-800/50 relative">
+                                    <button type="button" onclick="removeSchedule(this)" class="absolute top-2 right-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+                                    <div class="grid grid-cols-12 gap-4">
+                                        <div class="col-span-12 md:col-span-2">
+                                            <label class="text-xs font-bold uppercase text-gray-500">Ngày</label>
+                                            <input name="Schedule[@i].Day" value="@Model.Schedule[i].Day" type="number" class="input-field h-10 text-sm" placeholder="1" />
+                                        </div>
+                                        <div class="col-span-12 md:col-span-10">
+                                            <label class="text-xs font-bold uppercase text-gray-500">Tiêu đề</label>
+                                            <input name="Schedule[@i].Title" value="@Model.Schedule[i].Title" type="text" class="input-field h-10 text-sm" placeholder="Đón sân bay - Check in" />
+                                        </div>
+                                        <div class="col-span-12">
+                                            <label class="text-xs font-bold uppercase text-gray-500">Mô tả hoạt động</label>
+                                            <textarea name="Schedule[@i].Description" class="input-field h-24 py-2 text-sm resize-none" placeholder="Chi tiết hoạt động trong ngày...">@Model.Schedule[i].Description</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <button type="button" onclick="addScheduleItem()" class="mt-4 w-full py-3 border-2 border-dashed border-primary/30 text-primary font-bold rounded-xl hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">add_circle</span> Thêm ngày lịch trình
+                    </button>
                 </div>
             </section>
         </div>
@@ -156,29 +249,33 @@
                 </div>
                 <span class="px-2.5 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full uppercase">Customer View</span>
             </div>
-            <div class="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow-2xl border border-[#f0f4f4] dark:border-white/10 group transition-all">
-                <div class="relative h-72 overflow-hidden bg-[#f0f4f4] dark:bg-slate-900 flex items-center justify-center">
-                    <img alt="Preview Image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKSNr77lAiKATSQd4H3kd8nJDOafwTqaexTnwHK7f5k3PcdVSyLM-k1DryO4_aEs8evQepIE_wIFkZocHU-s36kfN9kb5fofBhFxv4DcSSdP2L8KTAq2-lkEcc_rgra__M0sis1NNYWb1MSfSZU4rA111Iag0nbhbbgycoyeno8qC28wEd2JijeNRkHECX64F_Pl96kOgLMmu5Kwc_6kmVx7xiBNN9mHg-7WR4rkAjNvhyjxsyRuarydDd1n0pILUO0MhoKFtSSA" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            <div class="bg-white dark:bg-surface-dark rounded-[2rem] overflow-hidden shadow-2xl border border-[#f0f4f4] dark:border-slate-800 group transition-all">
+                <div class="relative h-72 overflow-hidden bg-[#f0f4f4] dark:bg-slate-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                    <div id="preview-image-placeholder" class="flex flex-col items-center gap-2 text-[#618389]">
+                        <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                        <p class="text-sm font-medium">Chưa có hình ảnh</p>
+                    </div>
+                    <img id="preview-image" src="" alt="Preview" class="absolute inset-0 w-full h-full object-cover hidden" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
                     <div class="absolute top-6 left-6 bg-white/90 dark:bg-black/80 backdrop-blur px-3 py-2 rounded-xl flex items-center gap-1.5 shadow-sm">
                         <span class="material-symbols-outlined text-primary text-base fill-1">star</span>
                         <span class="text-sm font-bold text-[#111718] dark:text-white">New</span>
-                        <span class="text-[10px] text-[#618389] uppercase font-bold">(0 đánh giá)</span>
                     </div>
                 </div>
-                <div class="p-8">
+                <div class="p-8 relative">
                     <div class="flex items-center gap-2 mb-3">
                         <span class="material-symbols-outlined text-primary text-sm">location_on</span>
-                        <span class="text-xs font-bold text-[#618389] uppercase tracking-widest">Hà Giang</span>
+                        <span id="preview-location" class="text-xs font-bold text-[#618389] uppercase tracking-widest">ĐỊA ĐIỂM</span>
                     </div>
-                    <h3 class="text-2xl font-extrabold text-[#111718] dark:text-white mb-3 leading-tight">Ha Giang Loop Adventure</h3>
-                    <p class="text-sm text-[#618389] dark:text-gray-400 line-clamp-3 mb-8 leading-relaxed">Khám phá vẻ đẹp hùng vĩ của vùng cao nguyên đá Đồng Văn qua hành trình Hà Giang Loop đầy thú vị...</p>
+                    <h3 id="preview-title" class="text-2xl font-extrabold text-[#111718] dark:text-white mb-3 leading-tight line-clamp-2">Tên Tour</h3>
+                    <p id="preview-description" class="text-sm text-[#618389] dark:text-gray-400 line-clamp-3 mb-8 leading-relaxed">Mô tả ngắn về tour sẽ hiển thị ở đây...</p>
                     <div class="flex items-end justify-between border-t border-[#f0f4f4] dark:border-white/10 pt-6">
                         <div>
                             <p class="text-xs text-[#618389] uppercase font-bold tracking-tighter mb-1">Bắt đầu từ</p>
-                            <p class="text-3xl font-black text-primary">4,500,000 <span class="text-sm font-medium">VND</span></p>
+                            <p id="preview-price" class="text-3xl font-black text-primary">0 <span class="text-sm font-medium">VND</span></p>
                         </div>
-                        <button class="bg-primary text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-primary/25">
+                        <button class="bg-primary text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-primary/25 cursor-not-allowed opacity-50">
                             Đặt chỗ ngay
                         </button>
                     </div>
@@ -195,20 +292,200 @@
     </div>
 </div>
 
-<footer class="fixed bottom-0 left-0 right-0 md:left-64 bg-white dark:bg-slate-900 border-t border-[#f0f4f4] dark:border-white/10 p-5 md:px-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] z-40 transition-all duration-300">
+<footer class="fixed bottom-0 left-0 right-0 md:left-64 bg-white dark:bg-surface-dark border-t border-[#f0f4f4] dark:border-slate-800 p-5 md:px-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] z-40 transition-all duration-300">
     <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
         <div class="hidden sm:flex items-center gap-3">
-            <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-xs font-bold text-[#618389] uppercase tracking-widest">Đang chỉnh sửa bản nháp</span>
+             <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+             <span class="text-xs font-bold text-[#618389] uppercase tracking-widest">Đang chỉnh sửa</span>
         </div>
         <div class="flex items-center gap-4 w-full sm:w-auto">
             <a asp-action="Index" class="flex-1 sm:flex-none px-8 py-4 rounded-2xl text-[#111718] dark:text-white font-bold text-sm hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-all text-center">
                 Hủy
             </a>
-            <button class="flex-1 sm:flex-none px-10 py-4 rounded-2xl bg-gradient-to-r from-primary to-[#25b9d7] hover:brightness-110 text-white font-extrabold text-sm transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 group">
+            <button type="submit" form="edit-tour-form" name="saveAction" value="Draft" class="flex-1 sm:flex-none px-8 py-4 rounded-2xl bg-[#f0f4f4] dark:bg-slate-800 hover:bg-[#e0e4e4] text-[#111718] dark:text-white font-bold text-sm transition-all text-center">
+                Lưu bản nháp
+            </button>
+            <button type="submit" form="edit-tour-form" class="flex-1 sm:flex-none px-10 py-4 rounded-2xl bg-gradient-to-r from-primary to-[#25b9d7] hover:brightness-110 text-white font-extrabold text-sm transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 group">
                 Lưu Thay Đổi
-                <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">save</span>
             </button>
         </div>
     </div>
 </footer>
+</form>
+
+<script>
+    // --- Start Dates ---
+    function addStartDate() {
+        const container = document.getElementById('start-dates-container');
+        const index = container.querySelectorAll('.date-item').length;
+        const html = `
+            <div class="flex gap-2 items-center date-item">
+                <input name="StartDates[${index}]" type="date" class="input-field w-full md:w-1/3" />
+                <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function removeDate(btn) {
+        btn.closest('.date-item').remove();
+        reindexItems('#start-dates-container .date-item input', 'StartDates');
+    }
+
+    // --- Images ---
+    function addImage() {
+        const container = document.getElementById('images-container');
+        const index = container.querySelectorAll('.image-item').length;
+        const html = `
+            <div class="flex gap-2 items-center image-item">
+                <input name="Images[${index}]" type="text" class="input-field" placeholder="https://example.com/image.jpg" />
+                <button type="button" onclick="removeImage(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full flex-shrink-0"><span class="material-symbols-outlined">delete</span></button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function removeImage(btn) {
+        btn.closest('.image-item').remove();
+        reindexItems('#images-container .image-item input', 'Images');
+    }
+
+    // --- Schedule ---
+    function addScheduleItem() {
+        const container = document.getElementById('schedule-container');
+        const index = container.querySelectorAll('.schedule-item').length;
+        const day = index + 1;
+        const html = `
+            <div class="schedule-item border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-gray-50 dark:bg-gray-800/50 relative">
+                <button type="button" onclick="removeSchedule(this)" class="absolute top-2 right-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-12 md:col-span-2">
+                        <label class="text-xs font-bold uppercase text-gray-500">Ngày</label>
+                        <input name="Schedule[${index}].Day" value="${day}" type="number" class="input-field h-10 text-sm" placeholder="1" />
+                    </div>
+                    <div class="col-span-12 md:col-span-10">
+                        <label class="text-xs font-bold uppercase text-gray-500">Tiêu đề</label>
+                        <input name="Schedule[${index}].Title" type="text" class="input-field h-10 text-sm" placeholder="Tiêu đề..." />
+                    </div>
+                    <div class="col-span-12">
+                        <label class="text-xs font-bold uppercase text-gray-500">Mô tả hoạt động</label>
+                        <textarea name="Schedule[${index}].Description" class="input-field h-24 py-2 text-sm resize-none" placeholder="Chi tiết hoạt động..."></textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function removeSchedule(btn) {
+        btn.closest('.schedule-item').remove();
+        reindexSchedule();
+    }
+
+    // --- Helpers ---
+    function reindexItems(selector, prefix) {
+         const items = document.querySelectorAll(selector);
+         items.forEach((input, idx) => {
+             input.name = `${prefix}[${idx}]`;
+         });
+    }
+
+    function reindexSchedule() {
+        const items = document.querySelectorAll('#schedule-container .schedule-item');
+        items.forEach((item, idx) => {
+            item.querySelector('input[name$=".Day"]').name = `Schedule[${idx}].Day`;
+            item.querySelector('input[name$=".Title"]').name = `Schedule[${idx}].Title`;
+            item.querySelector('textarea[name$=".Description"]').name = `Schedule[${idx}].Description`;
+        });
+    }
+
+    // --- Live Preview ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = {
+            name: document.querySelector('input[name="Name"]'),
+            desc: document.querySelector('textarea[name="Description"]'),
+            price: document.querySelector('input[name="Price.Adult"]'),
+            location: document.querySelector('input[name="Destination.City"]'),
+            imagesContainer: document.getElementById('images-container')
+        };
+
+        const preview = {
+            title: document.getElementById('preview-title'),
+            desc: document.getElementById('preview-description'),
+            price: document.getElementById('preview-price'),
+            location: document.getElementById('preview-location'),
+            image: document.getElementById('preview-image'),
+            imagePlaceholder: document.getElementById('preview-image-placeholder')
+        };
+
+        function updatePreview() {
+            // Name
+            if(inputs.name) preview.title.textContent = inputs.name.value || 'Tên Tour';
+            
+            // Description
+            if(inputs.desc) preview.desc.textContent = inputs.desc.value || 'Mô tả ngắn về tour sẽ hiển thị ở đây...';
+            
+            // Price
+            if(inputs.price) {
+                const price = new Intl.NumberFormat('vi-VN').format(inputs.price.value || 0);
+                preview.price.innerHTML = `${price} <span class="text-sm font-medium">VND</span>`;
+            }
+
+            // Location
+            if(inputs.location) preview.location.textContent = inputs.location.value || 'ĐỊA ĐIỂM';
+
+            // Image
+            // Find first image input value
+            const firstImgInput = inputs.imagesContainer.querySelector('input[name^="Images"]');
+            const imgUrl = firstImgInput ? firstImgInput.value : '';
+            
+            if(imgUrl) {
+                preview.image.src = imgUrl;
+                preview.image.classList.remove('hidden');
+                preview.imagePlaceholder.classList.add('hidden');
+            } else {
+                preview.image.classList.add('hidden');
+                preview.imagePlaceholder.classList.remove('hidden');
+            }
+        }
+
+        // Add listeners
+        if(inputs.name) inputs.name.addEventListener('input', updatePreview);
+        if(inputs.desc) inputs.desc.addEventListener('input', updatePreview);
+        if(inputs.price) inputs.price.addEventListener('input', updatePreview);
+        if(inputs.location) inputs.location.addEventListener('input', updatePreview);
+        
+        // Delegate for dynamic images
+        inputs.imagesContainer.addEventListener('input', function(e) {
+            if(e.target.tagName === 'INPUT') updatePreview();
+        });
+
+        // Initialize
+        updatePreview();
+        calculateActualPrice();
+    });
+
+    // --- Price Calculation ---
+    const adultPriceInput = document.getElementById('adult-price-input');
+    const discountInput = document.getElementById('discount-input');
+    const calculatedPriceDisplay = document.getElementById('calculated-price-display');
+
+    function calculateActualPrice() {
+        if (!adultPriceInput || !discountInput || !calculatedPriceDisplay) return;
+
+        const price = parseFloat(adultPriceInput.value) || 0;
+        const discount = parseFloat(discountInput.value) || 0;
+        
+        let actualPrice = price;
+        if (discount > 0 && discount <= 100) {
+            actualPrice = price * (100 - discount) / 100;
+        }
+
+        const formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(actualPrice);
+        calculatedPriceDisplay.textContent = formattedPrice;
+    }
+
+    if (adultPriceInput) adultPriceInput.addEventListener('input', calculateActualPrice);
+    if (discountInput) discountInput.addEventListener('input', calculateActualPrice);
+</script>

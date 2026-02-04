@@ -1,3 +1,5 @@
+@model HVTravel.Domain.Entities.Tour
+@using System.Linq
 @{
     ViewData["Title"] = "Chi Tiết Tour";
 }
@@ -5,12 +7,13 @@
     <!-- Breadcrumb & Back Actions -->
     <!-- Breadcrumb & Back Actions -->
 <!-- Breadcrumb -->
+    <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
         <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
         <span class="material-symbols-outlined text-[16px]">chevron_right</span>
         <a class="hover:text-primary transition-colors" asp-action="Index">Tours</a>
         <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-        <span class="text-slate-900 dark:text-white font-medium">#TOUR-001</span>
+        <span class="text-slate-900 dark:text-white font-medium">#@Model.Code</span>
     </nav>
 
     <!-- Page Title & Actions -->
@@ -20,14 +23,28 @@
                 <h1 class="text-2xl leading-none font-bold text-slate-900 dark:text-white">
                     Chi tiết Tour
                 </h1>
-                <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-black rounded-full uppercase">
-                    Đang hoạt động
+                @{
+                    string statusClass = "";
+                    string statusText = "";
+                    switch (Model.Status)
+                    {
+                        case "Active": statusClass = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"; statusText = "Hoạt động"; break;
+                        case "Draft": statusClass = "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"; statusText = "Bản nháp"; break;
+                        case "SoldOut": statusClass = "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"; statusText = "Hết chỗ"; break;
+                        case "ComingSoon": statusClass = "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"; statusText = "Sắp ra mắt"; break;
+                        case "Hidden": statusClass = "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"; statusText = "Ẩn"; break;
+                        case "Deleted": statusClass = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"; statusText = "Đã xóa"; break;
+                        default: statusClass = "bg-slate-100 text-slate-700"; statusText = Model.Status; break;
+                    }
+                }
+                <span class="px-3 py-1 @statusClass text-[10px] font-black rounded-full uppercase">
+                    @statusText
                 </span>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm">Mã Tour: <span class="font-bold text-slate-900 dark:text-white">#TOUR-001</span> • Cập nhật lúc 10:00, 20/10/2023</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Mã Tour: <span class="font-bold text-slate-900 dark:text-white">@Model.Code</span> • Cập nhật lúc @Model.UpdatedAt.ToString("HH:mm, dd/MM/yyyy")</p>
         </div>
         <div class="flex items-center gap-2">
-            <a asp-action="Edit" asp-route-id="1" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
                 <span class="material-symbols-outlined text-lg">edit</span> Chỉnh sửa
             </a>
             <a asp-action="Index" class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
@@ -38,18 +55,22 @@
 
     <!-- Main Content (Customer View Preview) -->
     <div class="relative h-[500px] mb-12 rounded-2xl overflow-hidden group shadow-md ml-0 mr-0">
+        @{
+            string heroImage = Model.Images != null && Model.Images.Count > 0 ? Model.Images[0] : "https://via.placeholder.com/800x600";
+            // Logic for other small images if available, else placeholder or repeating hero
+        }
         <div class="grid grid-cols-4 grid-rows-2 gap-3 h-full">
             <div class="col-span-2 row-span-2 overflow-hidden">
-                <img alt="Santorini Main View" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs-7qUXeJOs0bFV3lIT7cZToqsqvJtYHoRK7czXmDk5A6AwNt-PvEPApOtwy3k8jgyOwJGfQKqJdsso1KtbjF5V3G-kE4lKjd1arUtZNSZIZyh68twLeUawr4-RtljGaWYOud_wWMs_-AxR8dxYcwzNlo57ZOHQDduXCv5RhDJ3MILpgl1zTB9flQFs0GXPQpsOUTv1DUq8QWsotXiX11234h5mj9Tiljulz4J6aG4yu9BDvJXZ3cAjADm4j-NdlXY0q-H4a9kfA"/>
+                <img alt="@Model.Name Main" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="@heroImage"/>
             </div>
             <div class="col-span-1 row-span-1 overflow-hidden">
-                <img alt="Detail 1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu0P32sbjR27wqtXKc8bMqw4IfGSwSaPpsMegJ0JMLY87o_UyNNxOpxYqXR6BztMpQVl9SmDjb7oVrAPczMErY6fgJWScUW1mhncc7f_gv6GSBcjPHp5ugKr0SSma_fQe1NJB87n_XugRyWwT5mS9bLGIunv-_5og26tq5hfU3rA3ZQ4kfaLsnXIXoUIg-RbkZ-Mld5fFL4iYYrPB_bQeM2wnXCGsHrABvC4b8XXjZk4kaKQZJpplccDdIXTrj1aNEsf2EfRUIAA"/>
+                <img alt="Detail 1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="@(Model.Images?.Skip(1).FirstOrDefault() ?? heroImage)"/>
             </div>
             <div class="col-span-1 row-span-1 overflow-hidden">
-                <img alt="Detail 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs-7qUXeJOs0bFV3lIT7cZToqsqvJtYHoRK7czXmDk5A6AwNt-PvEPApOtwy3k8jgyOwJGfQKqJdsso1KtbjF5V3G-kE4lKjd1arUtZNSZIZyh68twLeUawr4-RtljGaWYOud_wWMs_-AxR8dxYcwzNlo57ZOHQDduXCv5RhDJ3MILpgl1zTB9flQFs0GXPQpsOUTv1DUq8QWsotXiX11234h5mj9Tiljulz4J6aG4yu9BDvJXZ3cAjADm4j-NdlXY0q-H4a9kfA"/>
+                <img alt="Detail 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="@(Model.Images?.Skip(2).FirstOrDefault() ?? heroImage)"/>
             </div>
             <div class="col-span-2 row-span-1 overflow-hidden">
-                <img alt="Wide Detail" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu0P32sbjR27wqtXKc8bMqw4IfGSwSaPpsMegJ0JMLY87o_UyNNxOpxYqXR6BztMpQVl9SmDjb7oVrAPczMErY6fgJWScUW1mhncc7f_gv6GSBcjPHp5ugKr0SSma_fQe1NJB87n_XugRyWwT5mS9bLGIunv-_5og26tq5hfU3rA3ZQ4kfaLsnXIXoUIg-RbkZ-Mld5fFL4iYYrPB_bQeM2wnXCGsHrABvC4b8XXjZk4kaKQZJpplccDdIXTrj1aNEsf2EfRUIAA"/>
+                <img alt="Wide Detail" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" src="@(Model.Images?.Skip(3).FirstOrDefault() ?? heroImage)"/>
             </div>
         </div>
         <div class="absolute bottom-6 left-6 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md p-6 rounded-2xl max-w-md shadow-2xl border border-white/30 dark:border-white/10">
@@ -57,14 +78,14 @@
                 <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Premium Tour</span>
                 <div class="flex items-center gap-1 text-yellow-500">
                     <span class="material-symbols-outlined text-sm fill-1">star</span>
-                    <span class="text-sm font-bold text-[#111718] dark:text-white">4.9</span>
-                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">(128 đánh giá)</span>
+                    <span class="text-sm font-bold text-[#111718] dark:text-white">@Model.Rating</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">(@Model.ReviewCount đánh giá)</span>
                 </div>
             </div>
-            <h2 class="text-2xl font-black text-[#111718] dark:text-white leading-tight mb-2">Khám phá Santorini: Hoàng hôn &amp; Du thuyền sang trọng</h2>
+            <h2 class="text-2xl font-black text-[#111718] dark:text-white leading-tight mb-2">@Model.Name</h2>
             <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
                 <span class="material-symbols-outlined text-primary text-xl">location_on</span>
-                <span class="font-medium">Thira, Santorini, Hy Lạp</span>
+                <span class="font-medium">@(Model.Destination?.City ?? "N/A"), @(Model.Destination?.Country ?? "Vietnam")</span>
             </div>
         </div>
         <button class="absolute bottom-6 right-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-6 py-3 rounded-xl font-bold text-sm shadow-xl hover:bg-white dark:hover:bg-slate-800 transition-colors flex items-center gap-2 text-slate-900 dark:text-white">
@@ -78,32 +99,41 @@
             <section class="mb-10 prose dark:prose-invert max-w-none">
                 <h3 class="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Mô tả Tour</h3>
                 <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Hành trình 6 ngày 5 đêm đưa bạn đến với hòn đảo Santorini huyền thoại - nơi những ngôi nhà mái vòm xanh biếc hòa quyện cùng sắc xanh của biển Địa Trung Hải. Trải nghiệm không chỉ là tham quan, mà là một cuộc dạo chơi đầy nghệ thuật với những dịch vụ cao cấp nhất được thiết kế riêng cho bạn.
+                    @Model.Description
                 </p>
+                @if(!string.IsNullOrEmpty(Model.ShortDescription))
+                {
+                     <p class="text-sm italic text-slate-500 mt-2">@Model.ShortDescription</p>
+                }
             </section>
 
             <section class="mb-10">
                 <h3 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Lịch trình chi tiết</h3>
                 <div class="space-y-6">
-                    <div class="relative pl-10 before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
-                        <div class="absolute left-0 top-0 size-6 rounded-full bg-primary border-4 border-white dark:border-slate-900 shadow-md"></div>
-                        <h4 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">Ngày 1: Chào mừng tới Santorini</h4>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Khởi hành từ sân bay, nhận phòng tại resort hang động ở Oia. Buổi tối tự do khám phá các con hẻm nhỏ lung linh ánh đèn.</p>
-                        <div class="flex gap-2">
-                            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Khách sạn 5*</span>
-                            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Ăn tối</span>
-                        </div>
-                    </div>
-                    <div class="relative pl-10 before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
-                        <div class="absolute left-0 top-0 size-6 rounded-full bg-primary border-4 border-white dark:border-slate-900 shadow-md"></div>
-                        <h4 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">Ngày 2: Du thuyền &amp; Lặn biển</h4>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">8:00 khởi hành đi du thuyền Catamaran quanh đảo. Ghé thăm bãi biển Đỏ, bãi biển Trắng và tắm suối khoáng nóng. Bữa trưa BBQ hải sản ngay trên tàu.</p>
-                    </div>
-                    <div class="relative pl-10">
-                        <div class="absolute left-0 top-0 size-6 rounded-full bg-primary border-4 border-white dark:border-slate-900 shadow-md"></div>
-                        <h4 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">Ngày 3: Khám phá văn hóa &amp; Rượu vang</h4>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Tham quan làng cổ Pyrgos và bảo tàng rượu vang lâu đời nhất Hy Lạp. Thưởng thức 5 loại vang thượng hạng dưới ánh hoàng hôn.</p>
-                    </div>
+                    @if (Model.Schedule != null && Model.Schedule.Count > 0)
+                    {
+                        @foreach (var item in Model.Schedule)
+                        {
+                            <div class="relative pl-10 before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
+                                <div class="absolute left-0 top-0 size-6 rounded-full bg-primary border-4 border-white dark:border-slate-900 shadow-md"></div>
+                                <h4 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">Ngày @item.Day: @item.Title</h4>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">@item.Description</p>
+                                @if (item.Activities != null && item.Activities.Count > 0)
+                                {
+                                    <div class="flex gap-2 flex-wrap">
+                                        @foreach (var activity in item.Activities)
+                                        {
+                                             <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">@activity</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-slate-500">Chưa có lịch trình chi tiết.</p>
+                    }
                 </div>
             </section>
 
@@ -114,22 +144,14 @@
                         Bao gồm
                     </h4>
                     <ul class="space-y-3">
-                        <li class="flex items-start gap-2 text-sm text-green-700 dark:text-green-300">
-                            <span class="material-symbols-outlined text-sm mt-1">check</span>
-                            Vé máy bay khứ hồi hạng thương gia
-                        </li>
-                        <li class="flex items-start gap-2 text-sm text-green-700 dark:text-green-300">
-                            <span class="material-symbols-outlined text-sm mt-1">check</span>
-                            Resort 5 sao (hạng phòng Luxury)
-                        </li>
-                        <li class="flex items-start gap-2 text-sm text-green-700 dark:text-green-300">
-                            <span class="material-symbols-outlined text-sm mt-1">check</span>
-                            Tất cả bữa ăn theo lịch trình
-                        </li>
-                        <li class="flex items-start gap-2 text-sm text-green-700 dark:text-green-300">
-                            <span class="material-symbols-outlined text-sm mt-1">check</span>
-                            Bảo hiểm du lịch quốc tế
-                        </li>
+                         @if(Model.GeneratedInclusions != null) {
+                             foreach(var inc in Model.GeneratedInclusions) {
+                                <li class="flex items-start gap-2 text-sm text-green-700 dark:text-green-300">
+                                    <span class="material-symbols-outlined text-sm mt-1">check</span>
+                                    @inc
+                                </li>
+                             }
+                         }
                     </ul>
                 </div>
                 <div class="p-6 rounded-2xl bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-800">
@@ -138,18 +160,14 @@
                         Không bao gồm
                     </h4>
                     <ul class="space-y-3">
-                        <li class="flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
-                            <span class="material-symbols-outlined text-sm mt-1">close</span>
-                            Chi phí cá nhân (mua sắm, điện thoại)
-                        </li>
-                        <li class="flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
-                            <span class="material-symbols-outlined text-sm mt-1">close</span>
-                            Tiền tips cho HDV và lái xe
-                        </li>
-                        <li class="flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
-                            <span class="material-symbols-outlined text-sm mt-1">close</span>
-                            Các hoạt động ngoài lịch trình
-                        </li>
+                        @if(Model.GeneratedExclusions != null) {
+                             foreach(var exc in Model.GeneratedExclusions) {
+                                <li class="flex items-start gap-2 text-sm text-red-700 dark:text-red-300">
+                                    <span class="material-symbols-outlined text-sm mt-1">close</span>
+                                    @exc
+                                </li>
+                             }
+                         }
                     </ul>
                 </div>
             </section>
@@ -160,10 +178,10 @@
             <div class="sticky top-28 bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-2xl shadow-slate-200/50 dark:shadow-slate-900/50 p-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest line-through mb-1">12,500,000 VND</p>
+                        <!-- <p class="text-xs font-bold text-slate-400 uppercase tracking-widest line-through mb-1">12,500,000 VND</p> -->
                         <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-[#111718] dark:text-white">10.625.000</span>
-                            <span class="text-sm font-bold text-slate-500">VND</span>
+                            <span class="text-3xl font-black text-[#111718] dark:text-white">@Model.Price?.Adult.ToString("N0")</span>
+                            <span class="text-sm font-bold text-slate-500">@Model.Price?.Currency</span>
                         </div>
                     </div>
                     <div class="bg-red-500 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-lg shadow-red-200 uppercase">

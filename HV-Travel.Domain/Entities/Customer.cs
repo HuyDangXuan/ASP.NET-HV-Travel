@@ -70,10 +70,10 @@ namespace HVTravel.Domain.Entities
 
     public class CustomerStats
     {
-        [BsonElement("total_spending")]
+        [BsonIgnore]
         public decimal TotalSpending { get; set; }
         
-        [BsonElement("total_orders")]
+        [BsonIgnore]
         public int TotalOrders { get; set; }
         
         [BsonElement("loyalty_points")]

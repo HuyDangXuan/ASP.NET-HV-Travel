@@ -101,6 +101,9 @@ namespace HVTravel.Domain.Entities
         
         [BsonElement("currency")]
         public string Currency { get; set; } = "VND";
+
+        [BsonElement("discount")]
+        public double Discount { get; set; }
     }
 
     public class TourDuration
