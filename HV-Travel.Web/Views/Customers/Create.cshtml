@@ -1,0 +1,225 @@
+@{
+    ViewData["Title"] = "Thêm Khách Hàng";
+}
+@model HVTravel.Domain.Entities.Customer
+
+<style type="text/tailwindcss">
+    @@layer components {
+        .input-field {
+            @@apply w-full bg-[#f6f8f8] dark:bg-slate-900 border-none rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50;
+        }
+        .section-card {
+            @@apply bg-white dark:bg-surface-dark rounded-2xl border border-[#f0f4f4] dark:border-slate-800 p-6 shadow-sm space-y-6;
+        }
+        .label-text {
+            @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
+        }
+    }
+</style>
+
+<form id="create-customer-form" asp-action="Create" method="post">
+<div class="pb-24">
+    <div class="flex flex-col gap-1 mb-10">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <a class="hover:text-primary transition-colors" asp-action="Index">Khách Hàng</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Thêm Mới</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Thêm Khách Hàng Mới</h1>
+        <p class="text-slate-500 dark:text-gray-400 mt-1">Nhập thông tin cá nhân và chi tiết liên hệ của khách hàng.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-8">
+            <!-- Basic Info -->
+            <section class="section-card">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">person</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Thông tin cá nhân</h2>
+                </div>
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="label-text">Họ và tên <span class="text-red-500">*</span></label>
+                            <input asp-for="FullName" class="input-field" placeholder="Ví dụ: Nguyen Van A" type="text" required />
+                            <span asp-validation-for="FullName" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div>
+                            <label class="label-text">Mã khách hàng</label>
+                            <input asp-for="CustomerCode" class="input-field" placeholder="Tự động tạo nếu để trống (KH-...)" type="text" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="label-text">Email <span class="text-red-500">*</span></label>
+                            <input asp-for="Email" class="input-field" placeholder="customer@example.com" type="email" required />
+                            <span asp-validation-for="Email" class="text-red-500 text-xs"></span>
+                        </div>
+                        <div>
+                            <label class="label-text">Số điện thoại <span class="text-red-500">*</span></label>
+                            <input asp-for="PhoneNumber" class="input-field" placeholder="09xxxxxxxx" type="tel" required />
+                            <span asp-validation-for="PhoneNumber" class="text-red-500 text-xs"></span>
+                        </div>
+                    </div>
+                     <div>
+                        <label class="label-text">Ảnh đại diện (URL)</label>
+                        <input asp-for="AvatarUrl" id="avatar-input" class="input-field" placeholder="https://..." type="text" />
+                    </div>
+                </div>
+            </section>
+
+             <!-- Address Info -->
+            <section class="section-card">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">location_on</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Địa chỉ liên hệ</h2>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label class="label-text">Địa chỉ (Số nhà, đường)</label>
+                        <input asp-for="Address.Street" class="input-field" placeholder="Ví dụ: 123 Đường ABC" type="text" />
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="label-text">Thành phố / Tỉnh</label>
+                            <input asp-for="Address.City" id="city-input" class="input-field" placeholder="Ví dụ: Hà Nội" type="text" />
+                        </div>
+                        <div>
+                            <label class="label-text">Quốc gia</label>
+                            <input asp-for="Address.Country" class="input-field" placeholder="Ví dụ: Việt Nam" type="text" value="Việt Nam" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Notes -->
+            <section class="section-card">
+                 <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Ghi chú</h2>
+                </div>
+                <div>
+                     <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" placeholder="Ghi chú thêm về khách hàng này..."></textarea>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar / Settings -->
+        <div class="lg:col-span-4 space-y-8">
+            <!-- Preview Card -->
+             <div class="bg-white dark:bg-surface-dark rounded-2xl border border-[#f0f4f4] dark:border-slate-800 p-6 shadow-sm">
+                <h3 class="text-[#111718] dark:text-white text-lg font-bold mb-4">Xem trước hồ sơ</h3>
+                <div class="flex flex-col items-center text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                    <div class="size-20 rounded-full bg-slate-200 overflow-hidden mb-3 shadow-sm border-2 border-white dark:border-slate-700">
+                         <img id="preview-avatar" src="https://ui-avatars.com/api/?name=New+User" alt="Preview" class="w-full h-full object-cover" />
+                    </div>
+                    <h4 id="preview-name" class="font-bold text-slate-900 dark:text-white text-lg">Tên Khách Hàng</h4>
+                    <p id="preview-email" class="text-sm text-slate-500">email@example.com</p>
+                    <p id="preview-location" class="text-xs font-semibold text-primary mt-2 uppercase tracking-wide">LOCATION</p>
+                    
+                    <div class="flex gap-2 mt-4 w-full">
+                        <div class="flex-1 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
+                            <span class="block text-[10px] text-slate-400 uppercase">Phân khúc</span>
+                            <span id="preview-segment" class="text-sm font-bold text-slate-700 dark:text-slate-300">Standard</span>
+                        </div>
+                         <div class="flex-1 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
+                            <span class="block text-[10px] text-slate-400 uppercase">Trạng thái</span>
+                             <span id="preview-status" class="text-sm font-bold text-green-600">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="section-card">
+                 <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary">settings</span>
+                    <h2 class="text-[#111718] dark:text-white text-xl font-bold">Cấu hình</h2>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="label-text">Phân khúc khách hàng</label>
+                         <select asp-for="Segment" id="segment-select" class="input-field appearance-none cursor-pointer">
+                            <option value="Standard">Standard (Tiêu chuẩn)</option>
+                            <option value="VIP">VIP</option>
+                            <option value="New">New (Mới)</option>
+                            <option value="ChurnRisk">Churn Risk (Nguy cơ)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-text">Trạng thái tài khoản</label>
+                        <select asp-for="Status" id="status-select" class="input-field appearance-none cursor-pointer">
+                            <option value="Active">Active (Hoạt động)</option>
+                            <option value="Banned">Banned (Bị khóa)</option>
+                             <option value="Inactive">Inactive (Ngưng hoạt động)</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<footer class="fixed bottom-0 left-0 right-0 md:left-64 bg-white dark:bg-surface-dark border-t border-[#f0f4f4] dark:border-slate-800 p-5 md:px-10 shadow-[0_-8px_30px_rgba(0,0,0,0.04)] z-40 transition-all duration-300">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-end gap-4">
+        <a asp-action="Index" class="px-8 py-4 rounded-2xl text-[#111718] dark:text-white font-bold text-sm hover:bg-[#f0f4f4] dark:hover:bg-white/5 transition-all text-center">
+            Hủy
+        </a>
+        <button type="submit" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-primary to-[#25b9d7] hover:brightness-110 text-white font-extrabold text-sm transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 group">
+            Lưu Khách Hàng
+            <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">save</span>
+        </button>
+    </div>
+</footer>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Live Preview Logic
+        const inputs = {
+            name: document.querySelector('input[name="FullName"]'),
+            email: document.querySelector('input[name="Email"]'),
+            city: document.getElementById('city-input'),
+            avatar: document.getElementById('avatar-input'),
+            segment: document.getElementById('segment-select'),
+            status: document.getElementById('status-select')
+        };
+
+        const preview = {
+            name: document.getElementById('preview-name'),
+            email: document.getElementById('preview-email'),
+            location: document.getElementById('preview-location'),
+            avatar: document.getElementById('preview-avatar'),
+            segment: document.getElementById('preview-segment'),
+            status: document.getElementById('preview-status')
+        };
+
+        function updatePreview() {
+            if(inputs.name) preview.name.textContent = inputs.name.value || 'Tên Khách Hàng';
+            if(inputs.email) preview.email.textContent = inputs.email.value || 'email@example.com';
+            if(inputs.city) preview.location.textContent = inputs.city.value || 'LOCATION';
+            
+            if(inputs.avatar && inputs.avatar.value) {
+                preview.avatar.src = inputs.avatar.value;
+            } else if (inputs.name && inputs.name.value) {
+                preview.avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(inputs.name.value)}`;
+            }
+
+            if(inputs.segment) preview.segment.textContent = inputs.segment.value;
+            if(inputs.status) {
+                preview.status.textContent = inputs.status.value;
+                if(inputs.status.value === 'Active') preview.status.className = "text-sm font-bold text-green-600";
+                else if(inputs.status.value === 'Banned') preview.status.className = "text-sm font-bold text-red-600";
+                else preview.status.className = "text-sm font-bold text-slate-500";
+            }
+        }
+
+        // Add listeners
+        Object.values(inputs).forEach(input => {
+            if(input) input.addEventListener('input', updatePreview);
+        });
+        
+    </script>
+}

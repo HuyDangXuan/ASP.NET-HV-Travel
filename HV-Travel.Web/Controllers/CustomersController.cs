@@ -56,69 +56,32 @@ namespace HVTravel.Web.Controllers
                 }
             }
 
-            // 2. Apply Filters
-            // Search Query
+            // Filter by Search Query
             if (!string.IsNullOrEmpty(searchQuery))
             {
-                searchQuery = searchQuery.ToLower().Trim();
-                customers = customers.Where(c =>
-                    (c.FullName != null && c.FullName.ToLower().Contains(searchQuery)) ||
-                    (c.Email != null && c.Email.ToLower().Contains(searchQuery)) ||
-                    (c.PhoneNumber != null && c.PhoneNumber.Contains(searchQuery)) ||
-                    (c.CustomerCode != null && c.CustomerCode.ToLower().Contains(searchQuery))
-                );
+                customers = customers.Where(c => 
+                    c.FullName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) || 
+                    c.Email.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) || 
+                    c.PhoneNumber.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
             }
 
-            // Segment Filter
-            if (segments != null && segments.Length > 0)
+            // Filter by Segments
+            if (segments != null && segments.Any())
             {
-                customers = customers.Where(c => segments.Contains(c.Segment ?? ""));
+                customers = customers.Where(c => segments.Contains(c.Segment));
             }
 
-            // Spending Filter
+            // Filter by Spending and Orders
             if (minSpending.HasValue)
             {
                 customers = customers.Where(c => c.Stats.TotalSpending >= minSpending.Value);
             }
 
-            // Orders Filter
             if (minOrders.HasValue)
             {
                 customers = customers.Where(c => c.Stats.TotalOrders >= minOrders.Value);
             }
 
-            // 3. Sorting
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    customers = customers.OrderByDescending(c => c.FullName);
-                    break;
-                case "spending":
-                    customers = customers.OrderBy(c => c.Stats.TotalSpending);
-                    break;
-                case "spending_desc":
-                    customers = customers.OrderByDescending(c => c.Stats.TotalSpending);
-                    break;
-                case "orders":
-                    customers = customers.OrderBy(c => c.Stats.TotalOrders);
-                    break;
-                case "orders_desc":
-                    customers = customers.OrderByDescending(c => c.Stats.TotalOrders);
-                    break;
-                default: // Name Ascending by default if empty, OR CreatedAt Descending?
-                    // Original code implied no specific order (natural DB order).
-                    // Let's default to Name Ascending if "name_desc" is the toggle.
-                    // Or usually Default is "Most Recent" -> CreatedAt Desc.
-                    // Let's set Default to CreatedAt Descending if sortOrder is null.
-                    // But wait, the toggle "NameSortParm" logic `String.IsNullOrEmpty(sortOrder) ? "name_desc" : ""` implies that "" is Name Ascending.
-                    // Let's stick to Name Ascending as default for "" to match the helper logic, OR change helper logic.
-                    // Let's use CreatedAt Desc as standard Default.
-                    if (string.IsNullOrEmpty(sortOrder))
-                        customers = customers.OrderByDescending(c => c.CreatedAt);
-                    else
-                        customers = customers.OrderBy(c => c.FullName); // Fallback for "name" or unknown
-                    break;
-            }
 
             // Persist Filter State
             ViewBag.CurrentFilter = searchQuery;
@@ -189,6 +152,38 @@ namespace HVTravel.Web.Controllers
             return result;
         }
 
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Customer customer)
+        {
+            if (ModelState.IsValid)
+            {
+                if (string.IsNullOrEmpty(customer.CustomerCode))
+                {
+                    customer.CustomerCode = $"KH-{DateTime.UtcNow.Ticks.ToString().Substring(12)}";
+                }
+                
+                customer.CreatedAt = DateTime.UtcNow;
+                customer.UpdatedAt = DateTime.UtcNow;
+                customer.Stats = new CustomerStats(); // Initialize empty stats
+                
+                if (customer.Address == null)
+                {
+                    customer.Address = new Address();
+                }
+
+                await _customerRepository.AddAsync(customer);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(customer);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetDetails(string id)
