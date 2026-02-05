@@ -5,6 +5,8 @@ WORKDIR /src
 # Copy csproj and restore as distinct layers
 COPY ["HV-Travel.Web/HV-Travel.Web.csproj", "HV-Travel.Web/"]
 COPY ["HV-Travel.Domain/HV-Travel.Domain.csproj", "HV-Travel.Domain/"]
+COPY ["HV-Travel.Application/HV-Travel.Application.csproj", "HV-Travel.Application/"]
+COPY ["HV-Travel.Infrastructure/HV-Travel.Infrastructure.csproj", "HV-Travel.Infrastructure/"]
 RUN dotnet restore "HV-Travel.Web/HV-Travel.Web.csproj"
 
 # Copy everything else and build
