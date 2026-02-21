@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Tài Khoản Đã Bị Vô Hiệu Hóa";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HV Travel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+</head>
+<body class="h-full bg-gradient-to-br from-slate-50 to-slate-100">
+    <div class="min-h-full flex flex-col items-center justify-center text-center p-6">
+        <div class="bg-white rounded-2xl shadow-xl p-10 max-w-md w-full">
+            <div class="mb-6 bg-red-50 p-6 rounded-full inline-block">
+                <span class="material-symbols-outlined text-6xl text-red-500">person_off</span>
+            </div>
+            
+            <h1 class="text-2xl font-bold text-slate-900 mb-3">Tài Khoản Đã Bị Vô Hiệu Hóa</h1>
+            <p class="text-slate-600 mb-8 leading-relaxed">
+                Tài khoản của bạn đã bị vô hiệu hóa bởi quản trị viên. 
+                Nếu bạn cho rằng đây là sự nhầm lẫn, vui lòng liên hệ với bộ phận hỗ trợ để được giúp đỡ.
+            </p>
+            
+            <div class="space-y-3">
+                <a href="@Url.Action("Login", "Auth")" 
+                   class="block w-full px-6 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all">
+                    Quay Lại Trang Đăng Nhập
+                </a>
+                <a href="mailto:support@hvtravel.com" 
+                   class="block w-full px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">
+                    <span class="material-symbols-outlined text-base align-middle mr-1">mail</span>
+                    Liên Hệ Hỗ Trợ
+                </a>
+            </div>
+            
+            <p class="mt-6 text-sm text-slate-400">
+                Mã lỗi: ACCOUNT_DEACTIVATED
+            </p>
+        </div>
+    </div>
+</body>
+</html>

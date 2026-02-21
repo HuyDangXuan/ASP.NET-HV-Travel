@@ -1,0 +1,34 @@
+services:
+  hv-travel-web:
+    image: hv-travel-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - HVTravelDatabase__ConnectionString=mongodb://mongodb:27017
+      - HVTravelDatabase__DatabaseName=HVTravelDb
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    restart: always
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN} # Token will be read from .env file
+    depends_on:
+      - hv-travel-web
+
+volumes:
+  mongo_data:

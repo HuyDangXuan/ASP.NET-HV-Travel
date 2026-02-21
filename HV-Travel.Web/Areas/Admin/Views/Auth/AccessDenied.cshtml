@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Không Có Quyền Truy Cập";
+    Layout = "_Layout";
+}
+
+<div class="min-h-[80vh] flex flex-col items-center justify-center text-center p-6">
+    <div class="mb-6 bg-red-50 dark:bg-red-900/20 p-6 rounded-full">
+        <span class="material-symbols-outlined text-6xl text-red-500 dark:text-red-400">gpp_maybe</span>
+    </div>
+    
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Không Có Quyền Truy Cập</h1>
+    <p class="text-slate-600 dark:text-slate-400 max-w-md mb-8">
+        Bạn không có quyền truy cập vào trang này. Vui lòng liên hệ với quản trị viên nếu bạn cho rằng đây là một sự nhầm lẫn.
+    </p>
+    
+    <div class="flex gap-4">
+        <a href="@Url.Action("Index", "Dashboard")" class="px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all">
+            Về Trang Chủ
+        </a>
+        <a href="javascript:history.back()" class="px-6 py-3 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+            Quay Lại
+        </a>
+    </div>
+</div>

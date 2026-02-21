@@ -1,0 +1,290 @@
+@model HVTravel.Web.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var bookingStatusMapping = new Dictionary<string, string>
+    {
+        { "Pending", "Chờ xử lý" },
+        { "Paid", "Đã thanh toán" },
+        { "Confirmed", "Đã xác nhận" },
+        { "Completed", "Hoàn thành" },
+        { "Cancelled", "Đã hủy" },
+        { "Refunded", "Đã hoàn tiền" }
+    };
+
+    var paymentStatusMapping = new Dictionary<string, string>
+    {
+        { "Unpaid", "Chưa thanh toán" },
+        { "Partial", "Thanh toán 1 phần" },
+        { "Full", "Đã thanh toán" },
+        { "Refunded", "Đã hoàn tiền" }
+    };
+    
+    // Helper function to safely get translated status
+    string GetStatusVietnamese(string status)
+    {
+        if (string.IsNullOrEmpty(status)) return "N/A";
+        
+        // Try exact match
+        if (bookingStatusMapping.ContainsKey(status)) return bookingStatusMapping[status];
+        if (paymentStatusMapping.ContainsKey(status)) return paymentStatusMapping[status];
+
+        // Try case-insensitive keys (Title Case approach or iteration)
+        foreach(var key in bookingStatusMapping.Keys)
+        {
+            if(key.Equals(status, StringComparison.OrdinalIgnoreCase)) return bookingStatusMapping[key];
+        }
+        foreach(var key in paymentStatusMapping.Keys)
+        {
+            if(key.Equals(status, StringComparison.OrdinalIgnoreCase)) return paymentStatusMapping[key];
+        }
+
+        return status;
+    }
+}
+
+<!-- Page Header- -->
+<div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <span class="text-slate-900 dark:text-white font-medium">Trang Chủ</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Tổng Quan</h1>
+    </div>
+</div>
+
+<!-- KPI Grid -->
+<div data-animate="fade-in-up" data-delay="0.1" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+    <!-- KPI 1 -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:bg-primary/10 transition-colors"></div>
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Tổng Doanh Thu</p>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalRevenue.ToString("N0") ₫</h3>
+            </div>
+            <div class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                <span>+@Model.RevenueGrowth%</span>
+            </div>
+        </div>
+        <!-- Mock Sparkline -->
+        <div class="h-10 w-full flex items-end gap-1 opacity-50">
+            <div class="w-1/6 bg-primary h-[40%] rounded-t-sm"></div>
+            <div class="w-1/6 bg-primary h-[60%] rounded-t-sm"></div>
+            <div class="w-1/6 bg-primary h-[30%] rounded-t-sm"></div>
+            <div class="w-1/6 bg-primary h-[80%] rounded-t-sm"></div>
+            <div class="w-1/6 bg-primary h-[50%] rounded-t-sm"></div>
+            <div class="w-1/6 bg-primary h-[90%] rounded-t-sm"></div>
+        </div>
+    </div>
+    <!-- KPI 2 -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/5 rounded-full group-hover:bg-purple-500/10 transition-colors"></div>
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Vé Đã Bán</p>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalTickets</h3>
+            </div>
+            <div class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                <span>+12%</span>
+            </div>
+        </div>
+        <!-- Mock Sparkline -->
+        <svg class="w-full h-10 text-purple-500 fill-transparent stroke-current stroke-2" viewbox="0 0 100 25">
+            <path d="M0 20 Q 15 25, 30 15 T 60 10 T 100 5"></path>
+        </svg>
+    </div>
+    <!-- KPI 3 -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full group-hover:bg-orange-500/10 transition-colors"></div>
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Tổng Số Đơn</p>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalBookings</h3>
+            </div>
+            <div class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                <span>+@Model.BookingsGrowth%</span>
+            </div>
+        </div>
+        <!-- Mock Sparkline -->
+        <div class="h-10 w-full flex items-end justify-between px-1">
+            <div class="w-2 bg-orange-400/50 h-[30%] rounded-full"></div>
+            <div class="w-2 bg-orange-400/50 h-[50%] rounded-full"></div>
+            <div class="w-2 bg-orange-400/50 h-[40%] rounded-full"></div>
+            <div class="w-2 bg-orange-400/50 h-[70%] rounded-full"></div>
+            <div class="w-2 bg-orange-400/50 h-[60%] rounded-full"></div>
+            <div class="w-2 bg-orange-400 h-[85%] rounded-full"></div>
+        </div>
+    </div>
+    <!-- KPI 4 -->
+    <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full group-hover:bg-red-500/10 transition-colors"></div>
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Khách Hàng</p>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalCustomers</h3>
+            </div>
+            <div class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                <span>+@Model.CustomersGrowth%</span>
+            </div>
+        </div>
+        <!-- Mock Sparkline -->
+        <svg class="w-full h-10 text-red-400 fill-transparent stroke-current stroke-2" viewbox="0 0 100 25">
+             <path d="M0 15 Q 25 20, 50 10 T 100 15" stroke="currentColor"></path>
+        </svg>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div data-animate="fade-in-up" data-delay="0.2" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Revenue Analytics Chart -->
+    <div class="lg:col-span-2 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Phân Tích Doanh Thu</h3>
+            <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                <button class="px-3 py-1 bg-white dark:bg-slate-700 text-xs font-bold rounded shadow-sm text-slate-900 dark:text-white">Tuần</button>
+                <button class="px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Tháng</button>
+                <button class="px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Năm</button>
+            </div>
+        </div>
+        <div class="relative h-64 w-full bg-gradient-to-t from-primary/5 to-transparent rounded-xl border-b border-l border-slate-200 dark:border-slate-700 p-4">
+            <!-- Simplified Mock for Static View - Enhancements would require Chart.js -->
+            <div class="flex items-end justify-between h-full w-full gap-2 px-4 pb-4">
+                 <div class="w-full bg-primary/20 h-[40%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mon</div></div>
+                 <div class="w-full bg-primary/30 h-[60%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Tue</div></div>
+                 <div class="w-full bg-primary/40 h-[30%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Wed</div></div>
+                 <div class="w-full bg-primary/50 h-[80%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Thu</div></div>
+                 <div class="w-full bg-primary/60 h-[50%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Fri</div></div>
+                 <div class="w-full bg-primary h-[90%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Sat</div></div>
+                 <div class="w-full bg-primary/80 h-[70%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Sun</div></div>
+            </div>
+        </div>
+    </div>
+    <!-- Category Breakdown Donut Chart -->
+    <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Thống Kê Tour</h3>
+        <div class="flex-1 flex items-center justify-center relative">
+            <!-- Donut Chart -->
+            <div class="w-48 h-48 rounded-full relative" style="background: conic-gradient(#2bcdee 0% 70%, #f97316 70% 100%);">
+                <div class="absolute inset-4 bg-white dark:bg-surface-dark rounded-full flex items-center justify-center flex-col z-10">
+                    <span class="text-3xl font-bold text-slate-900 dark:text-white">@Model.TotalTours</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wide">Tours</span>
+                </div>
+            </div>
+        </div>
+         <div class="grid grid-cols-2 gap-4 mt-6">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-primary"></span>
+                <span class="text-sm text-slate-600 dark:text-slate-300">Active</span>
+                <span class="text-xs font-bold ml-auto text-slate-900 dark:text-white">70%</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                <span class="text-sm text-slate-600 dark:text-slate-300">Inactive</span>
+                <span class="text-xs font-bold ml-auto text-slate-900 dark:text-white">30%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings Table -->
+<div data-animate="fade-in-up" data-delay="0.3" class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Đơn Đặt Mới Nhất</h3>
+        <a asp-controller="Bookings" asp-action="Index" class="text-sm text-primary font-bold hover:underline">Xem Tất Cả</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 pl-6">Mã Đơn</th>
+                    <th class="p-4">Khách hàng</th>
+                    <th class="p-4">Tour</th>
+                    <th class="p-4 text-center">Số lượng</th>
+                    <th class="p-4">Tổng tiền</th>
+                    <th class="p-4">Thanh toán</th>
+                    <th class="p-4">Trạng thái</th>
+                    <th class="p-4 pr-6 text-right">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                @foreach (var item in Model.RecentBookings)
+                {
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 pl-6 font-mono font-semibold text-primary">#@item.BookingCode</td>
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase border-2 border-white dark:border-slate-700 shadow-sm">
+                                    @if (!string.IsNullOrEmpty(item.ContactInfo?.Name) && item.ContactInfo.Name.Length >= 2)
+                                    {
+                                        @item.ContactInfo.Name.Substring(0, 2)
+                                    }
+                                    else
+                                    {
+                                        <span>KH</span>
+                                    }
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white">@item.ContactInfo?.Name</p>
+                                    <p class="text-xs text-slate-500">@item.ContactInfo?.Email</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <p class="font-medium text-slate-700 dark:text-slate-300">@item.TourSnapshot?.Name</p>
+                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "Updating...")</p>
+                        </td>
+                        <td class="p-4 text-center font-medium">@item.ParticipantsCount</td>
+                        <td class="p-4 font-bold text-slate-900 dark:text-white">@item.TotalAmount.ToString("N0") ₫</td>
+                        <td class="p-4">
+                           @* Mocking Payment Method based on status for now as it's not in base entity directly, or assume Transfer *@
+                           <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-xs">payments</span>
+                                </div>
+                                <span class="text-xs font-medium text-slate-600 dark:text-slate-400">@GetStatusVietnamese(item.PaymentStatus)</span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            @if (item.Status == "Paid" || item.Status == "Completed" || item.Status == "Confirmed")
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-900">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> @GetStatusVietnamese(item.Status)
+                                </span>
+                            }
+                            else if (item.Status == "Pending")
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> @GetStatusVietnamese(item.Status)
+                                </span>
+                            }
+                            else if (item.Status == "Cancelled")
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-900">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> @GetStatusVietnamese(item.Status)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> @GetStatusVietnamese(item.Status)
+                                </span>
+                            }
+                        </td>
+                        <td class="p-4 pr-6 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a asp-controller="Bookings" asp-action="Details" asp-route-id="@item.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors" title="Xem chi tiết">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

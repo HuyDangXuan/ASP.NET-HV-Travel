@@ -1,0 +1,603 @@
+@model HVTravel.Domain.Models.PaginatedResult<HVTravel.Domain.Entities.Tour>
+@{
+    ViewData["Title"] = "Tours";
+}
+
+<!-- Page Header -->
+<!-- Page Header -->
+<div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Tours</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Tour Du Lịch</h1>
+    </div>
+</div>
+
+
+    <!-- Filter Chips -->
+    <!-- Toolbar -->
+    <form data-animate="fade-in-up" data-delay="0.15" method="get" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
+        <!-- Search & Filters -->
+        <input type="hidden" name="status" value="@ViewData["CurrentStatus"]" />
+        <input type="hidden" name="pageSize" value="@ViewData["CurrentPageSize"]" />
+        
+        <div class="flex-1 min-w-[200px]">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                <input type="text" name="searchString" value="@ViewData["CurrentSearch"]" placeholder="Tìm kiếm tour (Alt+S)..." 
+                      class="w-full h-10 pl-10 pr-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-secondary focus:border-secondary outline-none transition-all" />
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <!-- Filter Panel -->
+            <div class="relative group">
+                <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined !text-[20px]">filter_list</span>
+                </button>
+
+                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                        <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
+                    </div>
+
+                    <div class="p-4 flex flex-col gap-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Trạng Thái Tour</label>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="all" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "all" || string.IsNullOrEmpty(ViewData["CurrentStatus"]?.ToString()) ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300">Tất Cả</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="active" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "active" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Đang Hoạt Động</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="draft" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "draft" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Bản Nháp</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="soldout" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "soldout" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>Hết Chỗ</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="comingsoon" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "comingsoon" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Sắp Ra Mắt</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="hidden" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "hidden" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Ẩn</span>
+                                </label>
+                                 <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="deleted" class="text-primary focus:ring-primary w-4 h-4" @(ViewData["CurrentStatus"]?.ToString() == "deleted" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-200"></span>Đã Xóa</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                        <button type="button" onclick="resetFilters()" class="flex-1 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">Đặt Lại</button>
+                        <button type="submit" class="flex-1 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg shadow-lg shadow-primary/30 transition-all">Áp Dụng</button>
+                    </div>
+                </div>
+            </div>
+        <div class="flex items-center gap-2">
+            <!-- Bulk Actions (Hidden by default) -->
+            <div id="bulk-actions" class="hidden flex items-center gap-2 animate-fade-in-up">
+                <span class="text-sm font-bold text-slate-700 dark:text-slate-300"><span id="selected-count">0</span> đã chọn</span>
+                <form id="bulk-delete-form" asp-action="BulkDelete" method="post" class="inline">
+                    <button type="submit" onclick="return confirm('Xóa các mục đã chọn?')" class="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">delete</span> Xóa
+                    </button>
+                </form>
+                <form id="bulk-clone-form" asp-action="BulkClone" method="post" class="inline">
+                    <button type="submit" class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">content_copy</span> Sao chép
+                    </button>
+                </form>
+                <form id="bulk-status-form" asp-action="BulkUpdateStatus" method="post" class="inline flex items-center gap-2">
+                    <div class="relative group">
+                        <select name="newStatus" class="appearance-none h-9 pl-3 pr-10 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-200 outline-none transition-all cursor-pointer shadow-sm hover:border-primary/50">
+                            <option value="">-- Đổi trạng thái --</option>
+                            <option value="Active">Hoạt Động</option>
+                            <option value="Draft">Bản Nháp</option>
+                            <option value="SoldOut">Hết Chỗ</option>
+                            <option value="ComingSoon">Sắp Ra Mắt</option>
+                            <option value="Hidden">Ẩn</option>
+                            <option value="Deleted">Đã Xóa</option>
+                        </select>
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-primary transition-colors flex items-center">
+                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                        </span>
+                    </div>
+                    <button type="submit" class="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">update</span> Cập nhật
+                    </button>
+                </form>
+                 <button type="button" onclick="exportSelected()" class="flex items-center gap-2 px-3 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">download</span> Export
+                </button>
+                <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
+            </div>
+
+            <!-- Standard Actions -->
+            <div class="flex items-center gap-2">
+                <!-- Import -->
+                <button onclick="document.getElementById('import-file').click()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors" title="Alt+I">
+                    <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                    <span class="hidden sm:inline">Import</span>
+                </button>
+                <form asp-action="Import" method="post" enctype="multipart/form-data" class="hidden">
+                     <input type="file" id="import-file" name="file" accept=".json,.csv" onchange="this.form.submit()" />
+                </form>
+
+                <!-- Export All -->
+                <div class="relative group">
+                    <button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        <span class="hidden sm:inline">Export</span>
+                    </button>
+                    <div class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden group-hover:block z-50 p-1">
+                        <a href="@Url.Action("Export", new { format = "json" })" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">JSON</a>
+                        <a href="@Url.Action("Export", new { format = "csv" })" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">CSV (Excel)</a>
+                    </div>
+                </div>
+
+                <!-- Columns -->
+                <div class="relative">
+                    <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
+                    </button>
+                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden z-50 p-2">
+                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleColumn('col-info')" class="text-primary focus:ring-primary rounded">
+                            <span class="text-sm text-slate-700 dark:text-slate-300">Thông Tin</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleColumn('col-duration')" class="text-primary focus:ring-primary rounded">
+                            <span class="text-sm text-slate-700 dark:text-slate-300">Thời Gian</span>
+                        </label>
+                        <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleColumn('col-rating')" class="text-primary focus:ring-primary rounded">
+                            <span class="text-sm text-slate-700 dark:text-slate-300">Đánh Giá</span>
+                        </label>
+                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleColumn('col-status')" class="text-primary focus:ring-primary rounded">
+                            <span class="text-sm text-slate-700 dark:text-slate-300">Trạng Thái</span>
+                        </label>
+                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleColumn('col-price')" class="text-primary focus:ring-primary rounded">
+                            <span class="text-sm text-slate-700 dark:text-slate-300">Giá</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Create New -->
+                 <a href="@Url.Action("Create")" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all transform hover:-translate-y-0.5" title="Alt+N">
+                    <span class="material-symbols-outlined text-[20px]">add</span>
+                    Thêm Mới
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Tours Table -->
+<!-- Tours Table Content -->
+<div data-animate="fade-in-up" data-delay="0.25" id="tab-content-all" class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse" id="tours-table">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 w-10 text-center">
+                         <div class="flex items-center justify-center">
+                            <input type="checkbox" id="select-all" onclick="toggleSelectAll(this)" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" />
+                        </div>
+                    </th>
+                    <th class="p-4 pl-0 col-info cursor-pointer hover:text-primary transition-colors select-none" onclick="applySort('@ViewBag.NameSortParm')">
+                        <div class="flex items-center gap-1">
+                            Thông Tin Tour
+                             @if(string.IsNullOrEmpty(ViewBag.CurrentSort) || ViewBag.CurrentSort == "name") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "name_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center col-duration">Thời Gian</th>
+                    <th class="p-4 text-center col-rating">Đánh Giá</th>
+                    <th class="p-4 text-center col-status cursor-pointer hover:text-primary transition-colors select-none" onclick="applySort('@ViewBag.StatusSortParm')">
+                         <div class="flex items-center justify-center gap-1">
+                            Trạng Thái
+                            @if (ViewBag.CurrentSort == "status") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "status_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-right col-price cursor-pointer hover:text-primary transition-colors select-none" onclick="applySort('@ViewBag.PriceSortParm')">
+                         <div class="flex items-center justify-end gap-1">
+                            Giá
+                            @if (ViewBag.CurrentSort == "price") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "price_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                @foreach (var tour in Model.Items)
+                {
+                    var statusClass = "";
+                    var statusText = "";
+                    switch (tour.Status)
+                    {
+                        case "Active": statusClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-900"; statusText = "Hoạt Động"; break;
+                        case "Draft": statusClass = "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"; statusText = "Bản Nháp"; break;
+                        case "SoldOut": statusClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-900"; statusText = "Hết Chỗ"; break;
+                        case "ComingSoon": statusClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-900"; statusText = "Sắp Ra Mắt"; break;
+                        case "Hidden": statusClass = "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"; statusText = "Ẩn"; break;
+                        case "Deleted": statusClass = "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900"; statusText = "Đã Xóa"; break;
+                        default: statusClass = "bg-slate-100 text-slate-500 border-slate-200"; statusText = tour.Status; break;
+                    }
+
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" name="selectedIds" value="@tour.Id" onchange="updateBulkState()" class="row-checkbox w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" />
+                            </div>
+                        </td>
+                        <td class="p-4 pl-0 col-info">
+                            <div class="flex gap-4">
+                                <div class="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-slate-200">
+                                    <img alt="@tour.Name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="@(tour.Images != null && tour.Images.Count > 0 ? tour.Images[0] : "https://via.placeholder.com/150")" />
+                                </div>
+                                <div class="flex flex-col justify-center">
+                                    <h3 class="text-[#111718] dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">@tour.Name</h3>
+                                    <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                        <span class="material-symbols-outlined text-[14px]">location_on</span> @tour.Destination?.City
+                                    </div>
+                                    <div class="text-[10px] text-slate-400">ID: @tour.Id</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center col-duration">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">@tour.Duration?.Text</span>
+                        </td>
+                        <td class="p-4 text-center col-rating">
+                            <div class="flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-amber-400 text-[16px] font-fill" style="font-variation-settings: 'FILL' 1;">star</span>
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">@(tour.Rating > 0 ? tour.Rating : "N/A")</span>
+                                <span class="text-xs text-slate-400">(@tour.ReviewCount)</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-center col-status">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border @statusClass">
+                                @statusText
+                            </span>
+                        </td>
+                        <td class="p-4 text-right col-price">
+                            <p class="font-bold text-[#111718] dark:text-white text-sm">@tour.Price?.Adult.ToString("N0") ₫</p>
+                        </td>
+                        <td class="p-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <a asp-action="Details" asp-route-id="@tour.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors" title="Xem chi tiết">
+                                    <span class="material-symbols-outlined text-lg">visibility</span>
+                                </a>
+                                @if (tour.Status != "Deleted")
+                                {
+                                    <a asp-action="Edit" asp-route-id="@tour.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors" title="Sửa">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </a>
+                                    <a asp-action="Create" asp-route-sourceId="@tour.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 text-purple-600 dark:text-purple-400 transition-colors" title="Sao chép">
+                                        <span class="material-symbols-outlined text-lg">content_copy</span>
+                                    </a>
+                                    <form asp-action="SoftDelete" asp-route-id="@tour.Id" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tour này?');" style="display:inline;">
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa tạm thời">
+                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                     <form asp-action="Restore" asp-route-id="@tour.Id" method="post" onsubmit="return confirm('Bạn có muốn khôi phục tour này?');" style="display:inline;">
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 transition-colors" title="Khôi phục">
+                                            <span class="material-symbols-outlined text-lg">restore_from_trash</span>
+                                        </button>
+                                    </form>
+                                    <form asp-action="DeleteForever" asp-route-id="@tour.Id" method="post" onsubmit="return confirm('Hành động này không thể hoàn tác! Bạn chắc chắn muốn xóa vĩnh viễn?');" style="display:inline;">
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Xóa vĩnh viễn">
+                                            <span class="material-symbols-outlined text-lg">delete_forever</span>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20">
+        @{
+            var startItem = (Model.PageIndex - 1) * Model.PageSize + 1;
+            var endItem = Math.Min(Model.PageIndex * Model.PageSize, Model.TotalCount);
+            int[] pageSizes = { 10, 15, 20, 50, 100 };
+            int currentPageSize = (int?)ViewData["CurrentPageSize"] ?? 10;
+        }
+        <div class="flex items-center gap-4">
+             <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span> trong số <span class="font-bold text-slate-900 dark:text-white">@Model.TotalCount</span> tour</p>
+             <div class="flex items-center gap-2">
+                 <label for="pageSize" class="text-xs font-medium text-slate-500 dark:text-slate-400">Hiển thị:</label>
+                 <div class="relative group">
+                     <select id="pageSize" onchange="changePageSize(this.value)" 
+                             class="appearance-none h-9 pl-3 pr-10 py-1 text-xs font-bold bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer shadow-sm hover:border-primary/50">
+                         @foreach(var size in pageSizes)
+                         {
+                             if(size == currentPageSize)
+                             {
+                                 <option value="@size" selected>@size</option>
+                             }
+                             else
+                             {
+                                 <option value="@size">@size</option>
+                             }
+                         }
+                     </select>
+                     <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-primary transition-colors flex items-center">
+                        <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                    </span>
+                 </div>
+             </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex - 1, status = ViewData["CurrentStatus"], pageSize = currentPageSize, searchString = ViewData["CurrentSearch"] })'" @(Model.HasPreviousPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+            
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (Math.Abs(i - Model.PageIndex) <= 2 || i == 1 || i == Model.TotalPages)
+                {
+                    if (i == Model.PageIndex)
+                    {
+                         <button class="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">@i</button>
+                    }
+                    else
+                    {
+                        <button onclick="location.href='@Url.Action("Index", new { page = i, status = ViewData["CurrentStatus"], pageSize = currentPageSize, searchString = ViewData["CurrentSearch"] })'" class="w-8 h-8 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">@i</button>
+                    }
+                }
+                else if (Math.Abs(i - Model.PageIndex) == 3)
+                {
+                    <span class="text-slate-400 text-xs">...</span>
+                }
+            }
+
+            <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex + 1, status = ViewData["CurrentStatus"], pageSize = currentPageSize, searchString = ViewData["CurrentSearch"] })'" @(Model.HasNextPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        function toggleColumn(colClass) {
+            const cols = document.querySelectorAll('.' + colClass);
+            cols.forEach(col => col.classList.toggle('col-collapsed'));
+        }
+        function toggleFilterMenu() {
+            const menu = document.getElementById('filter-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function resetFilters() {
+            const form = document.getElementById('filter-form');
+            const searchInput = form.querySelector('input[name="searchString"]');
+            if (searchInput) searchInput.value = '';
+            
+            const statusRadios = form.querySelectorAll('input[name="status"]');
+            if (statusRadios.length > 0) statusRadios[0].checked = true;
+            
+            form.submit();
+        }
+
+        function toggleColumnMenu() {
+            const menu = document.getElementById('column-menu');
+            if (!menu) return;
+            if (menu.classList.contains('menu-visible')) {
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-hidden');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            } else {
+                menu.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    menu.classList.remove('menu-hidden');
+                    menu.classList.add('menu-visible');
+                });
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const filterMenu = document.getElementById('filter-menu');
+            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
+            const insideFilter = event.target.closest('#filter-menu');
+            
+            if (filterMenu && !filterBtn && !insideFilter && !filterMenu.classList.contains('hidden')) {
+                filterMenu.classList.add('hidden');
+            }
+
+            const colMenu = document.getElementById('column-menu');
+            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
+            const insideCol = event.target.closest('#column-menu');
+            
+            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
+                colMenu.classList.remove('menu-visible');
+                colMenu.classList.add('menu-hidden');
+                setTimeout(() => colMenu.classList.add('hidden'), 200);
+            }
+        });
+
+        // --- Bulk Actions ---
+        function toggleSelectAll(source) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            updateBulkState();
+        }
+
+        function updateBulkState() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const count = checkboxes.length;
+            document.getElementById('selected-count').innerText = count;
+            
+            const bulkActions = document.getElementById('bulk-actions');
+            if (count > 0) {
+                bulkActions.classList.remove('hidden');
+                bulkActions.classList.add('flex');
+            } else {
+                bulkActions.classList.add('hidden');
+                bulkActions.classList.remove('flex');
+            }
+        }
+
+        function exportSelected() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => cb.value).join(',');
+            if (!ids) return alert("Vui lòng chọn ít nhất 1 tour.");
+            location.href = '@Url.Action("Export")?format=json&ids=' + ids; // Default json for bulk
+        }
+
+        // Hook up bulk forms to add selected IDs
+        document.getElementById('bulk-delete-form').addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) {
+                e.preventDefault();
+                return;
+            }
+            // Add hidden inputs for ids
+            this.querySelectorAll('input[name="ids"]').forEach(el => el.remove());
+            checkboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids';
+                input.value = cb.value;
+                this.appendChild(input);
+            });
+        });
+
+        document.getElementById('bulk-clone-form').addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            if (checkboxes.length === 0) {
+                e.preventDefault();
+                return;
+            }
+            this.querySelectorAll('input[name="ids"]').forEach(el => el.remove());
+            checkboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids';
+                input.value = cb.value;
+                this.appendChild(input);
+            });
+        });
+
+        document.getElementById('bulk-status-form').addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const statusSelect = this.querySelector('select[name="newStatus"]');
+            
+            if (checkboxes.length === 0) {
+                alert("Vui lòng chọn ít nhất 1 tour.");
+                e.preventDefault();
+                return;
+            }
+            if (!statusSelect.value) {
+                alert("Vui lòng chọn trạng thái mới.");
+                e.preventDefault();
+                return;
+            }
+
+            this.querySelectorAll('input[name="ids"]').forEach(el => el.remove());
+            checkboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids';
+                input.value = cb.value;
+                this.appendChild(input);
+            });
+        });
+
+        // --- Pagination ---
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('pageSize', size);
+            url.searchParams.set('page', 1); // Reset to page 1
+            window.location.href = url.toString();
+        }
+
+        // --- Shortcuts ---
+        document.addEventListener('keydown', function(e) {
+            // Alt + Key
+            if (e.altKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'n': // New
+                        e.preventDefault();
+                        location.href = '@Url.Action("Create")';
+                        break;
+                    case 'h': // Home
+                        e.preventDefault();
+                        location.href = '@Url.Action("Index", "Dashboard")';
+                        break;
+                    case 's': // Search
+                        e.preventDefault();
+                        document.querySelector('input[name="searchString"]')?.focus();
+                        break;
+                    case 'i': // Import
+                        e.preventDefault();
+                        document.getElementById('import-file')?.click();
+                        break;
+                     // Add more as needed
+                }
+            }
+        });
+        function applySort(sortOrder) {
+            const form = document.getElementById('filter-form');
+            // Create or update hidden input for sortOrder
+            let input = document.getElementById('sortOrder-input');
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'sortOrder';
+                input.id = 'sortOrder-input';
+                form.appendChild(input);
+            }
+            input.value = sortOrder;
+            form.submit();
+        }
+    </script>
+}

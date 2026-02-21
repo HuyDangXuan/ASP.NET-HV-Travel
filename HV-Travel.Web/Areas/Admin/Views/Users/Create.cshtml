@@ -1,0 +1,94 @@
+@using HVTravel.Domain.Entities
+@model User
+@{
+    ViewData["Title"] = "Users";
+}
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Users")">Quản Lý Tài Khoản</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Thêm Mới</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Thêm Tài Khoản Mới</h1>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden max-w-2xl">
+    <form asp-action="Create" method="post" class="p-6 space-y-6">
+        @Html.AntiForgeryToken()
+
+        <!-- Validation Summary -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm">
+                <div asp-validation-summary="All" class="space-y-1"></div>
+            </div>
+        }
+
+        <!-- Full Name -->
+        <div>
+            <label for="FullName" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
+            <input asp-for="FullName" type="text" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập họ và tên" required />
+            <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label for="Email" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
+            <input asp-for="Email" type="email" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" required />
+            <span asp-validation-for="Email" class="text-xs text-red-500 mt-1"></span>
+        </div>
+
+        <!-- Password -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="password" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Mật Khẩu <span class="text-red-500">*</span></label>
+                <input type="password" name="password" id="password" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập mật khẩu" required />
+            </div>
+            <div>
+                <label for="confirmPassword" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Xác Nhận Mật Khẩu <span class="text-red-500">*</span></label>
+                <input type="password" name="confirmPassword" id="confirmPassword" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập lại mật khẩu" required />
+            </div>
+        </div>
+
+        <!-- Role -->
+        <div>
+            <label for="Role" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Vai Trò <span class="text-red-500">*</span></label>
+            <div class="relative">
+                <select asp-for="Role" class="appearance-none w-full h-11 px-4 pr-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer">
+                    <option value="Staff">Staff - Nhân viên</option>
+                    <option value="Manager">Manager - Quản lý</option>
+                    <option value="Guide">Guide - Hướng dẫn viên</option>
+                    <option value="Admin">Admin - Quản trị viên</option>
+                </select>
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Avatar URL (Optional) -->
+        <div>
+            <label for="AvatarUrl" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Avatar URL <span class="text-slate-400 font-normal">(Tùy chọn)</span></label>
+            <input asp-for="AvatarUrl" type="url" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="https://example.com/avatar.jpg" />
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <button type="submit" class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all">
+                <span class="material-symbols-outlined text-[20px]">save</span>
+                Tạo Tài Khoản
+            </button>
+            <a href="@Url.Action("Index")" class="flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+                Hủy
+            </a>
+        </div>
+    </form>
+</div>

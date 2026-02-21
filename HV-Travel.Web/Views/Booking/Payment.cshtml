@@ -1,0 +1,167 @@
+@model HVTravel.Web.Models.BookingResultViewModel
+@{
+    var booking = Model.Booking;
+    var tour = Model.Tour;
+}
+
+<!-- Breadcrumb -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-slate-500 dark:text-slate-400">Đặt Tour</span>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Thanh Toán</span>
+        </nav>
+    </div>
+</div>
+
+<!-- Stepper -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center gap-0" data-animate="fade-in">
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
+                    <span class="material-symbols-outlined text-[16px]">check</span>
+                </div>
+                <span class="text-sm font-medium text-primary hidden sm:inline">Thông Tin</span>
+            </div>
+            <div class="w-12 sm:w-20 h-0.5 bg-primary mx-2"></div>
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30">2</div>
+                <span class="text-sm font-bold text-primary hidden sm:inline">Thanh Toán</span>
+            </div>
+            <div class="w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">3</div>
+                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Hoàn Tất</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main -->
+<section class="py-10 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Left: Payment Methods -->
+            <div class="lg:col-span-2 space-y-6" data-animate="fade-up">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">payments</span> Chọn Phương Thức Thanh Toán
+                    </h3>
+
+                    <form asp-action="ProcessPayment" method="post" id="payment-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookingId" value="@booking.Id" />
+
+                        <div class="space-y-4">
+                            <!-- Bank Transfer -->
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="BankTransfer" class="peer hidden" checked />
+                                <div class="p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
+                                    <div class="flex items-start gap-4">
+                                        <div class="size-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined">account_balance</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Chuyển Khoản Ngân Hàng</h4>
+                                                <div class="size-5 rounded-full border-2 border-slate-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center payment-radio">
+                                                    <div class="size-2 rounded-full bg-white hidden payment-dot"></div>
+                                                </div>
+                                            </div>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Chuyển khoản trực tiếp qua tài khoản ngân hàng</p>
+                                            <div class="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 space-y-2 bank-info">
+                                                <div class="flex justify-between text-xs"><span class="text-slate-500">Ngân hàng</span><span class="font-bold text-slate-900 dark:text-white">Vietcombank</span></div>
+                                                <div class="flex justify-between text-xs"><span class="text-slate-500">Số TK</span><span class="font-bold text-slate-900 dark:text-white font-mono">1234 5678 9012</span></div>
+                                                <div class="flex justify-between text-xs"><span class="text-slate-500">Chủ TK</span><span class="font-bold text-slate-900 dark:text-white">CONG TY HV TRAVEL</span></div>
+                                                <div class="flex justify-between text-xs"><span class="text-slate-500">Nội dung CK</span><span class="font-bold text-primary">@booking.BookingCode</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Credit Card -->
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="CreditCard" class="peer hidden" />
+                                <div class="p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
+                                    <div class="flex items-start gap-4">
+                                        <div class="size-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined">credit_card</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Thẻ Tín Dụng / Ghi Nợ</h4>
+                                            </div>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">Visa, Mastercard, JCB — Xác nhận tức thì</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <!-- Cash -->
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="paymentMethod" value="Cash" class="peer hidden" />
+                                <div class="p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
+                                    <div class="flex items-start gap-4">
+                                        <div class="size-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined">local_atm</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <h4 class="text-sm font-bold text-slate-900 dark:text-white">Thanh Toán Tiền Mặt</h4>
+                                            </div>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">Thanh toán tại văn phòng hoặc khi khởi hành</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
+                            <span class="material-symbols-outlined text-[18px]">lock</span>
+                            Xác Nhận Thanh Toán
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Booking Summary -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm" data-animate="slide-right">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Tóm Tắt Đơn</h3>
+                    @if (tour != null)
+                    {
+                        <div class="flex gap-3 mb-5 pb-5 border-b border-slate-100 dark:border-slate-700">
+                            @if (tour.Images != null && tour.Images.Any())
+                            {
+                                <img src="@tour.Images.First()" alt="" class="w-20 h-14 rounded-xl object-cover shrink-0" />
+                            }
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white truncate">@tour.Name</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">@(tour.Duration?.Text)</p>
+                            </div>
+                        </div>
+                    }
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span class="text-slate-500">Mã đơn</span><span class="font-bold font-mono text-primary">@booking.BookingCode</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Khách hàng</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Name</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Số hành khách</span><span class="font-bold text-slate-900 dark:text-white">@booking.ParticipantsCount</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Khởi hành</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "—")</span></div>
+                    </div>
+                    <div class="border-t border-slate-100 dark:border-slate-700 mt-4 pt-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
+                            <span class="text-xl font-extrabold text-primary">@booking.TotalAmount.ToString("N0")₫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

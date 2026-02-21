@@ -1,0 +1,378 @@
+@model HVTravel.Web.Models.BookingViewModel
+@{
+    var tour = Model.Tour;
+    var adultPrice = tour.Price?.Adult ?? 0;
+    var childPrice = tour.Price?.Child ?? 0;
+    var infantPrice = tour.Price?.Infant ?? 0;
+    var discount = tour.Price?.Discount ?? 0;
+}
+
+<!-- Breadcrumb -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Đặt Tour</span>
+        </nav>
+    </div>
+</div>
+
+<!-- Stepper -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center gap-0" data-animate="fade-in">
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30">1</div>
+                <span class="text-sm font-bold text-primary hidden sm:inline">Thông Tin</span>
+            </div>
+            <div class="w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">2</div>
+                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Thanh Toán</span>
+            </div>
+            <div class="w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="flex items-center gap-2">
+                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">3</div>
+                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Hoàn Tất</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main -->
+<section class="py-10 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <form asp-action="Create" method="post" id="booking-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="TourId" />
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="All" id="validation-summary-errors" class="hidden mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium"></div>
+            }
+
+            <div class="flex flex-col gap-8">
+                <!-- Main Form -->
+                <div class="w-full space-y-6" data-animate="fade-up" data-stagger>
+                    <!-- Tour Summary Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 flex gap-4">
+                        @if (tour.Images != null && tour.Images.Any())
+                        {
+                            <img src="@tour.Images.First()" alt="@tour.Name" class="w-28 h-20 rounded-xl object-cover shrink-0" />
+                        }
+                        <div class="min-w-0">
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate">@tour.Name</h2>
+                            <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")</span>
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">location_on</span>@(tour.Destination?.City ?? "Việt Nam")</span>
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-amber-400 text-[14px]">star</span>@tour.Rating.ToString("0.0")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tour Details (Readonly) -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">info</span> Thông Tin Tour
+                        </h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mã Tour</label>
+                                <input value="@tour.Code" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Danh Mục</label>
+                                <input value="@(tour.Category ?? "N/A")" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tên Tour</label>
+                                <input value="@tour.Name" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Điểm Đến</label>
+                                <input value="@(tour.Destination?.City ?? "N/A")" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời Lượng</label>
+                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngày {tour.Duration?.Nights} đêm")" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô Tả Ngắn</label>
+                                <div class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[50px]">
+                                    @Html.Raw(tour.ShortDescription)
+                                </div>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô Tả Chi Tiết</label>
+                                <div class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[80px] prose prose-sm max-w-none dark:prose-invert">
+                                    @Html.Raw(tour.Description)
+                                </div>
+                            </div>
+                            <!-- Hidden Id field just in case user meant visible but not bound -->
+                             <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour ID</label>
+                                <input value="@tour.Id" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed" />
+                            </div>
+
+                    <!-- Contact Info -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">person</span> Thông Tin Liên Hệ
+                        </h3>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ và Tên <span class="text-red-500">*</span></label>
+                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
+                                <span asp-validation-for="ContactName" class="text-xs text-red-500 mt-1"></span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email <span class="text-red-500">*</span></label>
+                                <input asp-for="ContactEmail" type="email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
+                                <span asp-validation-for="ContactEmail" class="text-xs text-red-500 mt-1"></span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
+                                <input asp-for="ContactPhone" type="tel" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
+                                <span asp-validation-for="ContactPhone" class="text-xs text-red-500 mt-1"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Departure Date -->
+                    @if (tour.StartDates != null && tour.StartDates.Any())
+                    {
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">event</span> Ngày Khởi Hành
+                            </h3>
+                            <div class="flex flex-wrap gap-3">
+                                @foreach (var date in tour.StartDates.Where(d => d > DateTime.UtcNow).OrderBy(d => d))
+                                {
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="SelectedStartDate" value="@date.ToString("yyyy-MM-dd")" class="peer hidden" />
+                                        <div class="px-5 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center hover:border-primary/50">
+                                            <p class="text-lg font-bold text-slate-900 dark:text-white">@date.ToString("dd")</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">@date.ToString("MMM yyyy")</p>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Passengers -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">group</span> Số Lượng Hành Khách
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Adult -->
+                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Người lớn</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Từ 12 tuổi · @adultPrice.ToString("N0")₫/người</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">remove</span>
+                                    </button>
+                                    <input asp-for="AdultCount" id="AdultCount" type="number" min="1" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <button type="button" onclick="adjustCount('AdultCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Child -->
+                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Trẻ em</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">2 – 11 tuổi · @childPrice.ToString("N0")₫/người</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">remove</span>
+                                    </button>
+                                    <input asp-for="ChildCount" id="ChildCount" type="number" min="0" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <button type="button" onclick="adjustCount('ChildCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Infant -->
+                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Em bé</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Dưới 2 tuổi · @infantPrice.ToString("N0")₫/người</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">remove</span>
+                                    </button>
+                                    <input asp-for="InfantCount" id="InfantCount" type="number" min="0" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <button type="button" onclick="adjustCount('InfantCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Requests -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">edit_note</span> Yêu Cầu Đặc Biệt
+                        </h3>
+                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: Phòng view biển, ăn chay, xe đón sân bay..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <div class="w-full">
+                    <div class="sticky top-24" data-animate="slide-right">
+                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5">Chi Tiết Giá</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600 dark:text-slate-400">Người lớn × <span id="adult-display">1</span></span>
+                                    <span id="adult-total" class="font-bold text-slate-900 dark:text-white">@adultPrice.ToString("N0")₫</span>
+                                </div>
+                                <div class="flex justify-between items-center" id="child-row" style="display:none">
+                                    <span class="text-slate-600 dark:text-slate-400">Trẻ em × <span id="child-display">0</span></span>
+                                    <span id="child-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
+                                </div>
+                                <div class="flex justify-between items-center" id="infant-row" style="display:none">
+                                    <span class="text-slate-600 dark:text-slate-400">Em bé × <span id="infant-display">0</span></span>
+                                    <span id="infant-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
+                                </div>
+                                @if (discount > 0)
+                                {
+                                    <div class="flex justify-between items-center text-green-600">
+                                        <span>Giảm giá (@discount%)</span>
+                                        <span id="discount-amount" class="font-bold">-0₫</span>
+                                    </div>
+                                }
+                                <div class="border-t border-slate-100 dark:border-slate-700 pt-3 mt-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
+                                        <span id="grand-total" class="text-xl font-extrabold text-primary">@adultPrice.ToString("N0")₫</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                Tiếp Tục Thanh Toán
+                            </button>
+                            <p class="text-[11px] text-slate-400 text-center mt-3">Bạn chưa bị tính phí ở bước này</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check for validation errors and show SweetAlert2 popup
+            var validationSummary = document.getElementById("validation-summary-errors");
+            if (validationSummary) {
+                var errors = [];
+                var listItems = validationSummary.querySelectorAll("li");
+                listItems.forEach(function (li) {
+                    if (li.innerText && li.innerText.trim() !== "") {
+                        errors.push(li.innerText.trim());
+                    }
+                });
+
+                if (errors.length > 0) {
+                    Swal.fire({
+                        title: 'Thông tin chưa hợp lệ!',
+                        html: '<div class="text-center"><p class="mb-3 text-slate-500 dark:text-slate-400">Vui lòng kiểm tra lại các mục sau:</p><ul class="list-none space-y-2 text-sm text-slate-700 dark:text-slate-200 inline-block text-left">' +
+                              errors.map(e => `<li class="flex items-start gap-2"><span class="material-symbols-outlined text-red-500 text-[18px] shrink-0 mt-0.5">error</span><span>${e}</span></li>`).join('') +
+                              '</ul></div>',
+                        icon: 'warning',
+                        iconColor: '#f59e0b', // Amber-500
+                        confirmButtonText: 'Đã hiểu, để tôi sửa',
+                        confirmButtonColor: '#2bcdee',
+                        background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0f172a',
+                        allowOutsideClick: false,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInUp animate__faster'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutDown animate__faster'
+                        },
+                        customClass: {
+                            popup: 'rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700',
+                            confirmButton: 'rounded-xl px-8 py-3 font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all',
+                            title: 'font-display font-bold text-2xl mb-2',
+                            htmlContainer: 'text-center px-2'
+                        }
+                    });
+                }
+            }
+        });
+
+    const adultPrice = @((int)adultPrice);
+    const childPrice = @((int)childPrice);
+    const infantPrice = @((int)infantPrice);
+    const discountPercent = @discount;
+
+    function adjustCount(id, delta) {
+        const input = document.getElementById(id);
+        const min = parseInt(input.getAttribute('min')) || 0;
+        const max = parseInt(input.getAttribute('max')) || 50;
+        let val = parseInt(input.value) + delta;
+        
+        if (val < min) val = min;
+        if (val > max) val = max;
+        
+        input.value = val;
+        updatePrice();
+    }
+
+    function updatePrice() {
+        const adults = parseInt(document.getElementById('AdultCount').value) || 1;
+        const children = parseInt(document.getElementById('ChildCount').value) || 0;
+        const infants = parseInt(document.getElementById('InfantCount').value) || 0;
+
+        const adultTotal = adults * adultPrice;
+        const childTotal = children * childPrice;
+        const infantTotal = infants * infantPrice;
+        const subtotal = adultTotal + childTotal + infantTotal;
+        const discountAmt = discountPercent > 0 ? Math.round(subtotal * discountPercent / 100) : 0;
+        const grandTotal = subtotal - discountAmt;
+
+        document.getElementById('adult-display').textContent = adults;
+        document.getElementById('adult-total').textContent = adultTotal.toLocaleString('vi-VN') + '₫';
+
+        const childRow = document.getElementById('child-row');
+        if (children > 0) {
+            childRow.style.display = 'flex';
+            document.getElementById('child-display').textContent = children;
+            document.getElementById('child-total').textContent = childTotal.toLocaleString('vi-VN') + '₫';
+        } else { childRow.style.display = 'none'; }
+
+        const infantRow = document.getElementById('infant-row');
+        if (infants > 0) {
+            infantRow.style.display = 'flex';
+            document.getElementById('infant-display').textContent = infants;
+            document.getElementById('infant-total').textContent = infantTotal.toLocaleString('vi-VN') + '₫';
+        } else { infantRow.style.display = 'none'; }
+
+        const discEl = document.getElementById('discount-amount');
+        if (discEl) discEl.textContent = '-' + discountAmt.toLocaleString('vi-VN') + '₫';
+
+        document.getElementById('grand-total').textContent = grandTotal.toLocaleString('vi-VN') + '₫';
+    }
+
+    updatePrice();
+</script>
+}

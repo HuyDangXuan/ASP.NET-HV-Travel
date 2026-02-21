@@ -1,8 +1,219 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model List<Tour>
+@{
+    ViewData["Title"] = "Trang Chủ";
+    ViewData["Description"] = "HV Travel - Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng cho bạn";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- ========== HERO SECTION ========== -->
+<section class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-10 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 relative z-10">
+        <div class="text-center max-w-4xl mx-auto" data-animate="fade-up">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10">
+                <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
+                Khám phá hơn @(Model?.Count ?? 0)+ điểm đến tuyệt vời
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                Khám Phá <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-300">Việt Nam</span>
+                <br/>Theo Cách Của Bạn
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
+                    <span class="material-symbols-outlined">explore</span>
+                    Khám Phá Ngay
+                </a>
+                <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
+                    <span class="material-symbols-outlined">call</span>
+                    Liên Hệ Tư Vấn
+                </a>
+            </div>
+        </div>
+        <!-- Stats -->
+        <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto" data-animate="fade-up" data-stagger data-delay="300">
+            <div class="text-center">
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">500<span class="text-primary">+</span></p>
+                <p class="text-sm text-slate-400 mt-1 font-medium">Tour Đã Tổ Chức</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">10K<span class="text-primary">+</span></p>
+                <p class="text-sm text-slate-400 mt-1 font-medium">Khách Hài Lòng</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">50<span class="text-primary">+</span></p>
+                <p class="text-sm text-slate-400 mt-1 font-medium">Điểm Đến</p>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">4.9<span class="text-primary">★</span></p>
+                <p class="text-sm text-slate-400 mt-1 font-medium">Đánh Giá TB</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FEATURED TOURS ========== -->
+<section class="py-20 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14" data-animate="fade-up">
+            <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[16px]">star</span> Tour Nổi Bật
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Hành Trình Được Yêu Thích Nhất</h2>
+            <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách</p>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+                @foreach (var tour in Model)
+                {
+                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
+                       class="tour-card group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-slate-100 dark:border-slate-700 hover:-translate-y-1">
+                        <!-- Image -->
+                        <div class="relative h-56 overflow-hidden">
+                            @if (tour.Images != null && tour.Images.Any())
+                            {
+                                <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
+                            }
+                            else
+                            {
+                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-6xl text-primary/40">landscape</span>
+                                </div>
+                            }
+                            <!-- Badge -->
+                            @if (tour.Price?.Discount > 0)
+                            {
+                                <div class="absolute top-4 left-4 bg-red-500 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-lg">
+                                    -@tour.Price.Discount%
+                                </div>
+                            }
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-700 dark:text-slate-300 text-[11px] font-bold px-3 py-1 rounded-lg shadow-sm">
+                                @(tour.Category ?? "Du lịch")
+                            </div>
+                            <!-- Gradient overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                        <!-- Info -->
+                        <div class="p-5">
+                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
+                                <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
+                                @(tour.Destination?.City ?? "Việt Nam")@(tour.Destination?.Region != null ? $", {tour.Destination.Region}" : "")
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                    <span class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        @(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">group</span>
+                                        @tour.MaxParticipants người
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-amber-400 text-[16px]">star</span>
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">@tour.Rating.ToString("0.0")</span>
+                                </div>
+                            </div>
+                            <div class="flex items-end justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <div>
+                                    <p class="text-xs text-slate-400">Từ</p>
+                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
+                                </div>
+                                <span class="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
+                                    Xem chi tiết
+                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+
+            <div class="text-center mt-12">
+                <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-primary px-8 py-3.5 rounded-xl text-sm font-bold shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:ring-primary/30 hover:shadow-lg transition-all">
+                    Xem Tất Cả Tour
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-16">
+                <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">travel_explore</span>
+                <p class="text-slate-500 dark:text-slate-400">Chưa có tour nào. Vui lòng quay lại sau!</p>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- ========== WHY CHOOSE US ========== -->
+<section class="py-20 bg-white dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14" data-animate="fade-up">
+            <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+                <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Cam Kết Chất Lượng</h2>
+            <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">Chúng tôi luôn đặt trải nghiệm của bạn lên hàng đầu</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
+            <div class="text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-primary/5 dark:hover:bg-primary/5 transition-all group">
+                <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
+                    <span class="material-symbols-outlined text-[28px]">shield</span>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">An Toàn Tuyệt Đối</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Bảo hiểm du lịch toàn diện và đội ngũ hướng dẫn chuyên nghiệp</p>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-primary/5 dark:hover:bg-primary/5 transition-all group">
+                <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
+                    <span class="material-symbols-outlined text-[28px]">diamond</span>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">Trải Nghiệm Premium</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Dịch vụ cao cấp, lưu trú chất lượng và ẩm thực địa phương đích thực</p>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-primary/5 dark:hover:bg-primary/5 transition-all group">
+                <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
+                    <span class="material-symbols-outlined text-[28px]">support_agent</span>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">Hỗ Trợ 24/7</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi</p>
+            </div>
+            <div class="text-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 hover:bg-primary/5 dark:hover:bg-primary/5 transition-all group">
+                <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
+                    <span class="material-symbols-outlined text-[28px]">payments</span>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">Giá Tốt Nhất</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Cam kết giá hợp lý, nhiều ưu đãi hấp dẫn quanh năm</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="py-20 hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-15">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-animate="scale-in">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">Sẵn Sàng Cho Hành Trình Tiếp Theo?</h2>
+        <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">Hãy để chúng tôi giúp bạn lên kế hoạch cho chuyến đi hoàn hảo. Liên hệ ngay để được tư vấn miễn phí!</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl hover:shadow-3xl transition-all active:scale-95 hover:-translate-y-0.5">
+                <span class="material-symbols-outlined">mail</span>
+                Liên Hệ Ngay
+            </a>
+            <a href="tel:+842838229999" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
+                <span class="material-symbols-outlined">call</span>
+                +84 (28) 3822 9999
+            </a>
+        </div>
+    </div>
+</section>

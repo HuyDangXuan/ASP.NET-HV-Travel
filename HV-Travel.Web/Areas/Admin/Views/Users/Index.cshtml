@@ -1,0 +1,451 @@
+@using HVTravel.Web.Models
+@model UserIndexViewModel
+@{
+    ViewData["Title"] = "Users";
+    string currentStatus = ViewData["CurrentStatus"] as string ?? "all";
+    string currentRole = ViewData["CurrentRole"] as string;
+    string GetTabClass(string status) => currentStatus == status 
+        ? "relative px-6 py-3 text-sm font-bold text-primary transition-colors border-b-[3px] border-primary bg-primary/5 dark:bg-primary/10 rounded-t-lg whitespace-nowrap"
+        : "relative px-6 py-3 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors border-b-[3px] border-transparent hover:bg-slate-50 dark:hover:bg-white/5 rounded-t-lg whitespace-nowrap";
+}
+
+<!-- Page Header -->
+<div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Quản Lý Tài Khoản</span>
+        </nav>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Tài Khoản</h1>
+    </div>
+</div>
+
+<!-- Status Tabs -->
+<div class="flex flex-col gap-6 mb-6">
+    <div class="flex items-center border-b border-slate-200/60 dark:border-slate-800 overflow-x-auto">
+        <a href="@Url.Action("Index", new { status = "all" })" class="@GetTabClass("all")">
+            Tất Cả
+            <span class="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">@Model.Stats.TotalUsers</span>
+        </a>
+        <a href="@Url.Action("Index", new { status = "active" })" class="@GetTabClass("active")">
+            Đang Hoạt Động
+            <span class="ml-2 text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full">@Model.Stats.ActiveCount</span>
+        </a>
+        <a href="@Url.Action("Index", new { status = "inactive" })" class="@GetTabClass("inactive")">
+            Đã Vô Hiệu
+            <span class="ml-2 text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">@Model.Stats.InactiveCount</span>
+        </a>
+    </div>
+</div>
+
+    <!-- Toolbar -->
+    <form data-animate="fade-in-up" data-delay="0.15" id="filter-form" method="get" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
+        <!-- Hidden State -->
+        <input type="hidden" name="pageSize" value="@ViewData["CurrentPageSize"]" />
+        <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+        
+        <div class="flex-1 min-w-[200px]">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                <input type="text" name="searchQuery" value="@ViewData["CurrentSearch"]" placeholder="Tìm kiếm theo tên, email..." 
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-primary focus:border-primary outline-none transition-all" />
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Filter Panel -->
+            <div class="relative group">
+                <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined !text-[20px]">filter_list</span>
+                </button>
+
+                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                        <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
+                    </div>
+
+                    <div class="p-4 flex flex-col gap-5 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <!-- Role Filter -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Vai Trò</label>
+                            <div class="flex flex-col gap-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="roleFilter" value="" class="text-primary focus:ring-primary" @(string.IsNullOrEmpty(currentRole) ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300">Tất cả Role</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="roleFilter" value="Admin" class="text-primary focus:ring-primary" @(currentRole == "Admin" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>Admin</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="roleFilter" value="Manager" class="text-primary focus:ring-primary" @(currentRole == "Manager" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Manager</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="roleFilter" value="Staff" class="text-primary focus:ring-primary" @(currentRole == "Staff" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Staff</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="roleFilter" value="Guide" class="text-primary focus:ring-primary" @(currentRole == "Guide" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Guide</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Trạng Thái</label>
+                            <div class="flex flex-col gap-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="all" class="text-primary focus:ring-primary" @(currentStatus == "all" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300">Tất Cả</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="active" class="text-primary focus:ring-primary" @(currentStatus == "active" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Đang Hoạt Động</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="status" value="inactive" class="text-primary focus:ring-primary" @(currentStatus == "inactive" ? "checked" : "")>
+                                    <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>Đã Vô Hiệu</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                        <button type="button" onclick="resetFilters()" class="flex-1 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">Đặt Lại</button>
+                        <button type="submit" class="flex-1 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg shadow-lg shadow-primary/30 transition-all">Áp Dụng</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
+                </button>
+                <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden z-50 p-2">
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleColumn('col-account')" class="text-primary focus:ring-primary rounded">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Tài Khoản</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleColumn('col-email')" class="text-primary focus:ring-primary rounded">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Email</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleColumn('col-role')" class="text-primary focus:ring-primary rounded">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Role</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleColumn('col-status')" class="text-primary focus:ring-primary rounded">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Trạng Thái</span>
+                    </label>
+                    <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleColumn('col-last-login')" class="text-primary focus:ring-primary rounded">
+                        <span class="text-sm text-slate-700 dark:text-slate-300">Đăng Nhập Cuối</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Add Button -->
+            <a href="@Url.Action("Create")" class="flex items-center gap-2 px-4 h-10 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all transform hover:-translate-y-0.5 ml-auto">
+                <span class="material-symbols-outlined text-[20px]">add</span>
+                Thêm Mới
+            </a>
+        </div>
+    </form>
+
+<!-- Success Message -->
+@if (TempData["Success"] != null)
+{
+    <div class="mb-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-700 dark:text-emerald-400 text-sm font-medium flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+        @TempData["Success"]
+    </div>
+}
+
+<!-- Users Table -->
+<div data-animate="fade-in-up" data-delay="0.25" class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 pl-6 text-left cursor-pointer hover:text-primary transition-colors select-none col-account" onclick="applySort('@ViewBag.AccountSortParm')">
+                        <div class="flex items-center gap-1">
+                            Tài Khoản
+                            @if(string.IsNullOrEmpty(ViewBag.CurrentSort)) {
+                                <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                            } else if (ViewBag.CurrentSort == "account_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else if (ViewBag.CurrentSort == "account") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-left cursor-pointer hover:text-primary transition-colors select-none col-email" onclick="applySort('@ViewBag.EmailSortParm')">
+                        <div class="flex items-center gap-1">
+                            Email
+                            @if (ViewBag.CurrentSort == "email") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "email_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center cursor-pointer hover:text-primary transition-colors select-none col-role" onclick="applySort('@ViewBag.RoleSortParm')">
+                        <div class="flex items-center justify-center gap-1">
+                            Role
+                            @if (ViewBag.CurrentSort == "role") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "role_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center cursor-pointer hover:text-primary transition-colors select-none col-status" onclick="applySort('@ViewBag.StatusSortParm')">
+                        <div class="flex items-center justify-center gap-1">
+                            Trạng Thái
+                            @if (ViewBag.CurrentSort == "status") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "status_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center cursor-pointer hover:text-primary transition-colors select-none col-last-login" onclick="applySort('@ViewBag.DateSortParm')">
+                        <div class="flex items-center justify-center gap-1">
+                            Đăng Nhập Cuối
+                            @if (ViewBag.CurrentSort == "date") {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            } else if (ViewBag.CurrentSort == "date_desc") {
+                                 <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            } else {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 pr-6 text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                @foreach (var user in Model.Users)
+                {
+                    var roleClass = user.Role switch
+                    {
+                        "Admin" => "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-900",
+                        "Manager" => "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-900",
+                        "Staff" => "bg-cyan-100 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-900",
+                        "Guide" => "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-900",
+                        _ => "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                    };
+
+                    var statusClass = user.Status == "Active"
+                        ? "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-900"
+                        : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900";
+
+                    <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="p-4 pl-6 col-account">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                                    <img alt="@user.FullName" class="size-full object-cover" src="@(string.IsNullOrEmpty(user.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(user.FullName ?? "U")}&background=random" : user.AvatarUrl)" />
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@user.FullName</p>
+                                    <p class="text-xs text-slate-500">ID: @user.Id[^12..]</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4 col-email">
+                            <p class="text-sm text-slate-600 dark:text-slate-300">@user.Email</p>
+                        </td>
+                        <td class="p-4 text-center col-role">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border @roleClass">
+                                @user.Role
+                            </span>
+                        </td>
+                        <td class="p-4 text-center col-status">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border @statusClass">
+                                @(user.Status == "Active" ? "Hoạt động" : "Vô hiệu")
+                            </span>
+                        </td>
+                        <td class="p-4 text-center col-last-login">
+                            <p class="text-xs text-slate-500">
+                                @if (user.LastLogin.HasValue)
+                                {
+                                    @user.LastLogin.Value.ToString("dd/MM/yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span class="text-slate-400">Chưa đăng nhập</span>
+                                }
+                            </p>
+                        </td>
+                        <td class="p-4 pr-6">
+                            <div class="flex items-center justify-center gap-2">
+                                <a asp-action="Edit" asp-route-id="@user.Id" class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors" title="Sửa">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </a>
+                                @if (user.Status == "Active")
+                                {
+                                    <form asp-action="Delete" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn vô hiệu hóa tài khoản này?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 transition-colors" title="Vô hiệu hóa">
+                                            <span class="material-symbols-outlined text-lg">person_off</span>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Restore" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Khôi phục tài khoản này?');" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 transition-colors" title="Khôi phục">
+                                            <span class="material-symbols-outlined text-lg">restore</span>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20">
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+            Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
+            trong số <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> tài khoản
+        </p>
+
+        <div class="flex items-center gap-2">
+            <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, status = currentStatus })"
+               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasPrevious ? "" : "pointer-events-none opacity-50")">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </a>
+
+            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+            {
+                if (i == Model.Pagination.CurrentPage)
+                {
+                    <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">@i</span>
+                }
+                else if (i <= 3 || i == Model.Pagination.TotalPages || Math.Abs(i - Model.Pagination.CurrentPage) <= 1)
+                {
+                    <a href="@Url.Action("Index", new { page = i, status = currentStatus })"
+                       class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">@i</a>
+                }
+                else if (i == 4 && Model.Pagination.TotalPages > 6)
+                {
+                    <span class="text-slate-400 text-xs">...</span>
+                }
+            }
+
+            <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, status = currentStatus })"
+               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasNext ? "" : "pointer-events-none opacity-50")">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleColumn(colClass) {
+            const cols = document.querySelectorAll('.' + colClass);
+            cols.forEach(col => col.classList.toggle('col-collapsed'));
+        }
+
+        function toggleColumnMenu() {
+            const menu = document.getElementById('column-menu');
+            if (!menu) return;
+            if (menu.classList.contains('menu-visible')) {
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-hidden');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            } else {
+                menu.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    menu.classList.remove('menu-hidden');
+                    menu.classList.add('menu-visible');
+                });
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const colMenu = document.getElementById('column-menu');
+            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
+            const insideCol = event.target.closest('#column-menu');
+            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
+                colMenu.classList.remove('menu-visible');
+                colMenu.classList.add('menu-hidden');
+                setTimeout(() => colMenu.classList.add('hidden'), 200);
+            }
+        });
+
+        // ===== Filter Menu =====
+        function toggleFilterMenu() {
+            const menu = document.getElementById('filter-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function resetFilters() {
+            const form = document.getElementById('filter-form');
+            form.querySelector('input[name="searchQuery"]').value = '';
+            
+            // Reset Role (check the first 'All roles' option)
+            const roleRadios = form.querySelectorAll('input[name="roleFilter"]');
+            if(roleRadios.length > 0) roleRadios[0].checked = true;
+            
+            // Reset Status (check the first 'All status' option)
+            const statusRadios = form.querySelectorAll('input[name="status"]');
+            if(statusRadios.length > 0) statusRadios[0].checked = true;
+            
+            form.submit();
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(event) {
+            // Filter Menu Logic
+            const filterMenu = document.getElementById('filter-menu');
+            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
+            const insideFilter = event.target.closest('#filter-menu');
+
+            if (!filterBtn && !insideFilter && !filterMenu.classList.contains('hidden')) {
+                filterMenu.classList.add('hidden');
+            }
+
+            // Column Menu Logic
+            const colMenu = document.getElementById('column-menu');
+            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
+            const insideCol = event.target.closest('#column-menu');
+
+            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
+                colMenu.classList.remove('menu-visible');
+                colMenu.classList.add('menu-hidden');
+                setTimeout(() => colMenu.classList.add('hidden'), 200);
+            }
+        });
+
+        function applySort(sortOrder) {
+            const form = document.getElementById('filter-form');
+            if (form) {
+                form.querySelector('input[name="sortOrder"]').value = sortOrder;
+                form.submit();
+            } else {
+                window.location.href = '@Url.Action("Index")' + '?sortOrder=' + sortOrder;
+            }
+        }
+    </script>
+}

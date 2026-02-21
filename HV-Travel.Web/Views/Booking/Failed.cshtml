@@ -1,0 +1,74 @@
+@model HVTravel.Web.Models.BookingResultViewModel
+@{
+    var booking = Model.Booking;
+    var tour = Model.Tour;
+}
+
+<!-- Breadcrumb -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            @if (tour != null)
+            {
+                <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                <span class="text-slate-500 dark:text-slate-400">Đặt Tour</span>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                <span class="text-slate-500 dark:text-slate-400">Thanh Toán</span>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            }
+            <span class="text-slate-900 dark:text-white font-medium">Thất Bại</span>
+        </nav>
+    </div>
+</div>
+
+<section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
+    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Error Icon -->
+        <div class="mb-8" data-animate="scale-in">
+            <div class="mx-auto size-24 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-5xl text-red-500">error</span>
+            </div>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">Thanh Toán Thất Bại</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? "Đã xảy ra lỗi trong quá trình thanh toán.")</p>
+
+        @if (!string.IsNullOrEmpty(booking?.BookingCode))
+        {
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Mã đơn: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
+        }
+
+        <!-- Info Box -->
+        <div class="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
+            <div class="flex gap-3">
+                <span class="material-symbols-outlined text-amber-500 shrink-0">info</span>
+                <div class="text-sm text-amber-800 dark:text-amber-300">
+                    <p class="font-bold mb-1">Đơn đặt tour của bạn vẫn được giữ</p>
+                    <p class="text-xs">Bạn có thể thử lại thanh toán hoặc chọn phương thức khác. Nếu cần hỗ trợ, hãy liên hệ hotline <strong>028 3822 9999</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
+            @if (!string.IsNullOrEmpty(booking?.Id))
+            {
+                <a asp-controller="Booking" asp-action="Payment" asp-route-bookingId="@booking.Id"
+                   class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thử Lại
+                </a>
+            }
+            <a asp-controller="Home" asp-action="Index"
+               class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">home</span> Về Trang Chủ
+            </a>
+            <a href="tel:+842838229999"
+               class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">call</span> Gọi Hỗ Trợ
+            </a>
+        </div>
+    </div>
+</section>

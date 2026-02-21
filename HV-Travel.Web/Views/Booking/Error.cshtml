@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Lỗi Hệ Thống";
+}
+
+<!-- Breadcrumb -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium">Lỗi Hệ Thống</span>
+        </nav>
+    </div>
+</div>
+
+<section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
+    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Error Illustration -->
+        <div class="mb-8" data-animate="scale-in">
+            <div class="mx-auto size-28 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
+                <span class="material-symbols-outlined text-6xl text-slate-400">cloud_off</span>
+                <div class="absolute -bottom-1 -right-1 size-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-xl text-red-500">priority_high</span>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">Đã Xảy Ra Lỗi</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-2">Hệ thống đang gặp sự cố. Vui lòng thử lại sau ít phút.</p>
+        <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+
+        <!-- Help Box -->
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 mb-8 text-left" data-animate="fade-up" data-delay="200">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Bạn có thể thử:</h4>
+            <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tải lại trang</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay lại trang trước</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> Liên hệ hỗ trợ: <strong>028 3822 9999</strong></li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">mail</span> Email: <strong>support@hvtravel.vn</strong></li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
+            <button onclick="location.reload()" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
+                <span class="material-symbols-outlined text-[18px]">refresh</span> Tải Lại
+            </button>
+            <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chủ
+            </a>
+            <button onclick="history.back()" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Lại
+            </button>
+        </div>
+    </div>
+</section>

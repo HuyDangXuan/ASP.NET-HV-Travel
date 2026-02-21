@@ -1,0 +1,289 @@
+@model Tour
+@{
+    ViewData["Description"] = Model.ShortDescription ?? Model.Description;
+    var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
+}
+
+<!-- Breadcrumb -->
+<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="text-slate-900 dark:text-white font-medium truncate max-w-[200px]">@Model.Name</span>
+        </nav>
+    </div>
+</div>
+
+<!-- Main Content -->
+<section class="py-10 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-10">
+
+            <!-- Left: Tour Info -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Image Gallery -->
+                <div class="rounded-2xl overflow-hidden" data-animate="fade-in">
+                    @if (Model.Images != null && Model.Images.Any())
+                    {
+                        <div class="relative">
+                            <img id="main-image" src="@Model.Images.First()" alt="@Model.Name" class="w-full h-[400px] sm:h-[500px] object-cover" />
+                            @if (Model.Price?.Discount > 0)
+                            {
+                                <div class="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg">Giảm @Model.Price.Discount%</div>
+                            }
+                            <div class="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-sm font-bold px-4 py-2 rounded-xl shadow-sm text-slate-700 dark:text-slate-300">@(Model.Category ?? "Du lịch")</div>
+                        </div>
+                        @if (Model.Images.Count > 1)
+                        {
+                            <div class="flex gap-2 mt-3 overflow-x-auto pb-2">
+                                @foreach (var img in Model.Images)
+                                {
+                                    <button onclick="document.getElementById('main-image').src='@img'" class="shrink-0 w-24 h-16 rounded-xl overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all focus:ring-primary">
+                                        <img src="@img" alt="" class="w-full h-full object-cover" />
+                                    </button>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="w-full h-[400px] bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center rounded-2xl">
+                            <span class="material-symbols-outlined text-[100px] text-primary/30">landscape</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Tour Title & Quick Info -->
+                <div data-animate="fade-up">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@Model.Name</h1>
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">location_on</span>@(Model.Destination?.City ?? "Việt Nam")@(Model.Destination?.Country != null ? $", {Model.Destination.Country}" : "")</span>
+                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">schedule</span>@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ngày {Model.Duration?.Nights} đêm")</span>
+                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">group</span>Tối đa @Model.MaxParticipants người</span>
+                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-amber-400 text-[18px]">star</span><strong class="text-slate-700 dark:text-slate-300">@Model.Rating.ToString("0.0")</strong> (@Model.ReviewCount đánh giá)</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700" data-animate="fade-up">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">description</span> Mô Tả
+                    </h2>
+                    <div class="prose dark:prose-invert prose-sm max-w-none text-slate-600 dark:text-slate-400 leading-relaxed">
+                        @Html.Raw(Model.Description?.Replace("\n", "<br/>") ?? "")
+                    </div>
+                </div>
+
+                <!-- Schedule -->
+                @if (Model.Schedule != null && Model.Schedule.Any())
+                {
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700" data-animate="fade-up">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">event_note</span> Lịch Trình
+                        </h2>
+                        <div class="space-y-6">
+                            @foreach (var item in Model.Schedule)
+                            {
+                                <div class="flex gap-4">
+                                    <div class="shrink-0">
+                                        <div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-sm font-extrabold">
+                                            N@item.Day
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 pb-6 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0">
+                                        <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2">@item.Title</h4>
+                                        @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-3">@item.Description</p>
+                                        }
+                                        @if (item.Activities != null && item.Activities.Any())
+                                        {
+                                            <div class="flex flex-wrap gap-2">
+                                                @foreach (var activity in item.Activities)
+                                                {
+                                                    <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                                        <span class="material-symbols-outlined text-[12px] text-primary">check_circle</span>@activity
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Inclusions / Exclusions -->
+                @if ((Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any()) || (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any()))
+                {
+                    <div class="grid sm:grid-cols-2 gap-6" data-animate="fade-up" data-stagger>
+                        @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
+                        {
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-emerald-500">check_circle</span> Bao Gồm
+                                </h3>
+                                <ul class="space-y-2.5">
+                                    @foreach (var inc in Model.GeneratedInclusions)
+                                    {
+                                        <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                            <span class="material-symbols-outlined text-emerald-500 text-[16px] mt-0.5 shrink-0">done</span>@inc
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
+                        {
+                            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-red-500">cancel</span> Không Bao Gồm
+                                </h3>
+                                <ul class="space-y-2.5">
+                                    @foreach (var exc in Model.GeneratedExclusions)
+                                    {
+                                        <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                            <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5 shrink-0">close</span>@exc
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Right: Price & Booking Card -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 space-y-6" data-animate="slide-right">
+                    <!-- Price Card -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <div class="text-center mb-6">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Giá từ</p>
+                            <p class="text-4xl font-extrabold text-primary">@(Model.Price?.Adult.ToString("N0"))₫</p>
+                            <p class="text-xs text-slate-400 mt-1">/ người lớn</p>
+                        </div>
+                        <div class="space-y-3 mb-6">
+                            @if (Model.Price != null)
+                            {
+                                <div class="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                                    <span class="text-sm text-slate-600 dark:text-slate-400">Người lớn</span>
+                                    <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Adult.ToString("N0")₫</span>
+                                </div>
+                                @if (Model.Price.Child > 0)
+                                {
+                                    <div class="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                                        <span class="text-sm text-slate-600 dark:text-slate-400">Trẻ em</span>
+                                        <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Child.ToString("N0")₫</span>
+                                    </div>
+                                }
+                                @if (Model.Price.Infant > 0)
+                                {
+                                    <div class="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+                                        <span class="text-sm text-slate-600 dark:text-slate-400">Em bé</span>
+                                        <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Infant.ToString("N0")₫</span>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                            Đặt Tour Ngay
+                        </a>
+                        <a href="tel:+842838229999" class="w-full flex items-center justify-center gap-2 mt-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 py-3.5 rounded-xl text-sm font-bold transition-all">
+                            <span class="material-symbols-outlined text-[18px]">call</span>
+                            Gọi Tư Vấn
+                        </a>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Thông Tin Nhanh</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">code</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400">Mã Tour</p>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.Code ?? "N/A")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">schedule</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400">Thời gian</p>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ngày {Model.Duration?.Nights} đêm")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-[20px]">group</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400">Còn chỗ</p>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.MaxParticipants - Model.CurrentParticipants) / @Model.MaxParticipants</p>
+                                </div>
+                            </div>
+                            @if (Model.StartDates != null && Model.StartDates.Any())
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-[20px]">event</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-400">Khởi hành</p>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white">@Model.StartDates.First().ToString("dd/MM/yyyy")</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Tours -->
+@if (relatedTours.Any())
+{
+    <section class="py-16 bg-white dark:bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-8" data-animate="fade-up">Tour Tương Tự</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+                @foreach (var tour in relatedTours)
+                {
+                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
+                       class="tour-card group bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 border border-slate-100 dark:border-slate-700 hover:-translate-y-1">
+                        <div class="relative h-48 overflow-hidden">
+                            @if (tour.Images != null && tour.Images.Any())
+                            {
+                                <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
+                            }
+                            else
+                            {
+                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-5xl text-primary/40">landscape</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="p-5">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-primary transition-colors">@tour.Name</h3>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</span>
+                                <span class="flex items-center gap-1 text-xs font-bold text-primary">
+                                    Xem <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}

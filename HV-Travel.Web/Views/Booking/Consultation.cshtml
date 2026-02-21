@@ -1,0 +1,175 @@
+@model HVTravel.Web.Models.ConsultationViewModel
+@{
+    var success = TempData["ConsultationSuccess"] != null;
+}
+
+<!-- Hero -->
+<section class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-15">
+        <div class="absolute top-20 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+            Tư Vấn <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-300">Du Lịch</span>
+        </h1>
+        <p class="text-lg text-slate-300 max-w-xl mx-auto">Đội ngũ chuyên gia sẵn sàng giúp bạn lên kế hoạch cho chuyến đi hoàn hảo</p>
+    </div>
+</section>
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-5 gap-10">
+
+            <!-- Left: Contact Cards -->
+            <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
+                <!-- Quick Contact -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 space-y-5">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">support_agent</span> Liên Hệ Nhanh
+                    </h3>
+                    <a href="tel:+842838229999" class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-primary/5 transition-colors group">
+                        <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined">call</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Hotline</p>
+                            <p class="text-base font-bold text-slate-900 dark:text-white">028 3822 9999</p>
+                        </div>
+                    </a>
+                    <a href="https://zalo.me/0901234567" class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-primary/5 transition-colors group">
+                        <div class="size-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined">chat</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Zalo / Chat</p>
+                            <p class="text-base font-bold text-slate-900 dark:text-white">0901 234 567</p>
+                        </div>
+                    </a>
+                    <a href="mailto:info@hvtravel.vn" class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-primary/5 transition-colors group">
+                        <div class="size-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                            <span class="material-symbols-outlined">mail</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Email</p>
+                            <p class="text-base font-bold text-slate-900 dark:text-white">info@hvtravel.vn</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Working Hours -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">schedule</span> Giờ Làm Việc
+                    </h3>
+                    <div class="space-y-2.5 text-sm">
+                        <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Thứ 2 – Thứ 6</span><span class="font-bold text-slate-900 dark:text-white">8:00 – 18:00</span></div>
+                        <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Thứ 7</span><span class="font-bold text-slate-900 dark:text-white">8:00 – 12:00</span></div>
+                        <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Chủ nhật</span><span class="font-bold text-red-500">Nghỉ</span></div>
+                    </div>
+                </div>
+
+                <!-- Why Choose Us -->
+                <div class="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-primary/10 dark:to-blue-500/10 rounded-2xl p-6 border border-primary/10">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Tại Sao Chọn HV Travel?</h3>
+                    <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+                        <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>10+ năm kinh nghiệm tổ chức tour</div>
+                        <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Đội ngũ hướng dẫn viên chuyên nghiệp</div>
+                        <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Tư vấn miễn phí, không ràng buộc</div>
+                        <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Cam kết giá tốt nhất thị trường</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Consultation Form -->
+            <div class="lg:col-span-3" data-animate="slide-right">
+                @if (success)
+                {
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-10 border border-slate-100 dark:border-slate-700 text-center">
+                        <div class="mx-auto size-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">Gửi Yêu Cầu Thành Công!</h2>
+                        <p class="text-slate-500 dark:text-slate-400 mb-6">Đội ngũ tư vấn sẽ liên hệ bạn trong vòng 24 giờ.</p>
+                        <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">explore</span> Khám Phá Tour
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">edit_note</span> Gửi Yêu Cầu Tư Vấn
+                        </h2>
+
+                        <form asp-action="Consultation" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="space-y-5">
+                                <div class="grid sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ Và Tên <span class="text-red-500">*</span></label>
+                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
+                                        <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
+                                        <input asp-for="Phone" type="tel" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
+                                        <span asp-validation-for="Phone" class="text-xs text-red-500 mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
+                                    <input asp-for="Email" type="email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
+                                    <span asp-validation-for="Email" class="text-xs text-red-500 mt-1"></span>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour Quan Tâm</label>
+                                    <input asp-for="TourInterest" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc..." />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời Gian Liên Hệ Mong Muốn</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="PreferredContactTime" value="Sáng (8-12h)" class="peer hidden" />
+                                            <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
+                                                Sáng (8-12h)
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="PreferredContactTime" value="Chiều (13-17h)" class="peer hidden" />
+                                            <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
+                                                Chiều (13-17h)
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="PreferredContactTime" value="Tối (18-21h)" class="peer hidden" />
+                                            <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
+                                                Tối (18-21h)
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nội Dung Yêu Cầu <span class="text-red-500">*</span></label>
+                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn..."></textarea>
+                                    <span asp-validation-for="Message" class="text-xs text-red-500 mt-1"></span>
+                                </div>
+
+                                <button type="submit" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
+                                    <span class="material-symbols-outlined text-[18px]">send</span>
+                                    Gửi Yêu Cầu Tư Vấn
+                                </button>
+                                <p class="text-[11px] text-slate-400 text-center">Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc</p>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
