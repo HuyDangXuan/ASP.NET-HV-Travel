@@ -1,6 +1,54 @@
 @model HVTravel.Domain.Entities.Booking
 @{
     ViewData["Title"] = "Chi tiết Đơn đặt vé";
+
+    string GetStatusText(string status) => status switch
+    {
+        "Pending" => "Chờ xử lý",
+        "Confirmed" => "Đã xác nhận",
+        "Paid" => "Đã thanh toán",
+        "Completed" => "Hoàn thành",
+        "Cancelled" => "Đã hủy",
+        "Refunded" => "Đã hoàn quỹ",
+        _ => status
+    };
+
+    string GetStatusClass(string status) => status switch
+    {
+        "Pending" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        "Confirmed" => "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+        "Paid" => "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+        "Completed" => "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
+        "Cancelled" => "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+        "Refunded" => "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+        _ => "bg-slate-100 text-slate-700"
+    };
+
+    string GetPaymentStatusText(string status) => status switch
+    {
+        "Unpaid" => "Chưa thanh toán",
+        "Pending" => "Chờ xác nhận",
+        "Partial" => "Thanh toán một phần",
+        "Paid" or "Full" => "Đã thanh toán",
+        "Refunded" => "Đã hoàn tiền",
+        _ => status
+    };
+
+    string GetPassengerTypeText(string type) => type switch
+    {
+        "Adult" => "Người lớn",
+        "Child" => "Trẻ em",
+        "Infant" => "Em bé",
+        _ => type
+    };
+
+    string GetGenderText(string gender) => gender switch
+    {
+        "Male" => "Nam",
+        "Female" => "Nữ",
+        "Other" => "Khác",
+        _ => gender
+    };
 }
 
 <style type="text/tailwindcss">
@@ -39,8 +87,8 @@
             <h1 class="text-2xl leading-none font-bold text-slate-900 dark:text-white">
                 Chi tiết Đơn đặt vé
             </h1>
-            <span class="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-black rounded-full uppercase">
-                @Model.Status
+            <span class="px-3 py-1 @GetStatusClass(Model.Status) text-[10px] font-black rounded-full uppercase">
+                @GetStatusText(Model.Status)
             </span>
         </div>
         <p class="text-slate-500 dark:text-slate-400 text-sm">Mã đơn hàng: <span class="font-bold text-slate-900 dark:text-white">#@Model.BookingCode</span> • Đặt lúc @Model.BookingDate.ToLocalTime().ToString("HH:mm, dd/MM/yyyy")</p>
@@ -133,9 +181,9 @@
                             {
                                 <tr>
                                     <td class="py-4 text-sm font-bold text-[#111718] dark:text-white">@p.FullName</td>
-                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@p.Type</td>
-                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@p.PassportNumber</td>
-                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400 text-right">@p.Gender</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@GetPassengerTypeText(p.Type)</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400">@(string.IsNullOrEmpty(p.PassportNumber) ? "---" : p.PassportNumber)</td>
+                                    <td class="py-4 text-sm text-[#618389] dark:text-slate-400 text-right">@GetGenderText(p.Gender)</td>
                                 </tr>
                             }
                         }
@@ -163,7 +211,7 @@
                 </div>
                  <div class="flex justify-between items-center text-sm">
                     <span class="text-[#618389] dark:text-slate-400">Trạng thái thanh toán</span>
-                    <span class="font-bold text-[#111718] dark:text-white">@Model.PaymentStatus</span>
+                    <span class="font-bold text-[#111718] dark:text-white">@GetPaymentStatusText(Model.PaymentStatus)</span>
                 </div>
             </div>
 

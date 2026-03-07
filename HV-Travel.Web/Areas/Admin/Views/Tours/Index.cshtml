@@ -21,7 +21,6 @@
     <!-- Toolbar -->
     <form data-animate="fade-in-up" data-delay="0.15" method="get" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
         <!-- Search & Filters -->
-        <input type="hidden" name="status" value="@ViewData["CurrentStatus"]" />
         <input type="hidden" name="pageSize" value="@ViewData["CurrentPageSize"]" />
         
         <div class="flex-1 min-w-[200px]">
@@ -39,7 +38,7 @@
                     <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                 </button>
 
-                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all">
+                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                     <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                     </div>
@@ -155,7 +154,7 @@
                     <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
                     </button>
-                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden z-50 p-2">
+                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-info')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Thông Tin</span>
@@ -413,7 +412,18 @@
         }
         function toggleFilterMenu() {
             const menu = document.getElementById('filter-menu');
-            menu.classList.toggle('hidden');
+            if (!menu) return;
+            if (menu.classList.contains('menu-visible')) {
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-hidden');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            } else {
+                menu.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    menu.classList.remove('menu-hidden');
+                    menu.classList.add('menu-visible');
+                });
+            }
         }
 
         function resetFilters() {
@@ -449,8 +459,10 @@
             const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
             const insideFilter = event.target.closest('#filter-menu');
             
-            if (filterMenu && !filterBtn && !insideFilter && !filterMenu.classList.contains('hidden')) {
-                filterMenu.classList.add('hidden');
+            if (filterMenu && !filterBtn && !insideFilter && filterMenu.classList.contains('menu-visible')) {
+                filterMenu.classList.remove('menu-visible');
+                filterMenu.classList.add('menu-hidden');
+                setTimeout(() => filterMenu.classList.add('hidden'), 200);
             }
 
             const colMenu = document.getElementById('column-menu');

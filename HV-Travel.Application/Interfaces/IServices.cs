@@ -8,6 +8,8 @@ namespace HVTravel.Application.Interfaces
     {
         Task<User> ValidateUserAsync(string email, string password);
         Task<User> RegisterAsync(User user);
+        Task<bool> CheckEmailExistsAsync(string email);
+        Task<bool> UpdatePasswordAsync(string email, string newPassword);
     }
 
     public interface ITourService

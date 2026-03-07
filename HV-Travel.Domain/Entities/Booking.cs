@@ -68,6 +68,15 @@ namespace HVTravel.Domain.Entities
 
         [BsonElement("updated_at")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("is_deleted")]
+        public bool IsDeleted { get; set; } = false;
+
+        [BsonElement("deleted_by")]
+        public string? DeletedBy { get; set; }
+
+        [BsonElement("deleted_at")]
+        public DateTime? DeletedAt { get; set; }
     }
 
     public class TourSnapshot

@@ -10,13 +10,15 @@ namespace HVTravel.Web.Areas.Admin.Controllers
     public class PaymentsController : Controller
     {
         private readonly IRepository<Payment> _paymentRepository;
+        private readonly IRepository<Booking> _bookingRepository;
 
-        public PaymentsController(IRepository<Payment> paymentRepository)
+        public PaymentsController(IRepository<Payment> paymentRepository, IRepository<Booking> bookingRepository)
         {
             _paymentRepository = paymentRepository;
+            _bookingRepository = bookingRepository;
         }
 
-        public async Task<IActionResult> Index(string sortOrder = "")
+        public async Task<IActionResult> Index(string sortOrder = "", string bookingStatusFilter = "", string paymentStatusFilter = "", string searchString = "")
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.IdSortParm = string.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
@@ -24,27 +26,49 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             ViewBag.BookingIdSortParm = sortOrder == "booking" ? "booking_desc" : "booking";
             ViewBag.MethodSortParm = sortOrder == "method" ? "method_desc" : "method";
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+            ViewBag.BookingStatusSortParm = sortOrder == "booking_status" ? "booking_status_desc" : "booking_status";
             ViewBag.AmountSortParm = sortOrder == "amount" ? "amount_desc" : "amount";
+            ViewBag.CurrentBookingStatusFilter = bookingStatusFilter;
+            ViewBag.CurrentPaymentStatusFilter = paymentStatusFilter;
 
-            var payments = await _paymentRepository.GetAllAsync();
+            var bookings = await _bookingRepository.GetAllAsync();
+            var totalRevenue = bookings
+                .Where(b => b.Status == "Completed" && b.PaymentStatus == "Full")
+                .Sum(b => b.TotalAmount);
+            ViewBag.TotalRevenue = totalRevenue;
 
-            payments = sortOrder switch
+            var totalRefunded = bookings
+                .Where(b => b.Status == "Refunded" && b.PaymentStatus == "Refunded")
+                .Sum(b => b.TotalAmount);
+            ViewBag.TotalRefunded = totalRefunded;
+
+            if (!string.IsNullOrEmpty(paymentStatusFilter))
             {
-                "id_desc" => payments.OrderByDescending(p => p.TransactionId),
-                "date" => payments.OrderBy(p => p.PaymentDate),
-                "date_desc" => payments.OrderByDescending(p => p.PaymentDate),
-                "booking" => payments.OrderBy(p => p.BookingId),
-                "booking_desc" => payments.OrderByDescending(p => p.BookingId),
-                "method" => payments.OrderBy(p => p.PaymentMethod),
-                "method_desc" => payments.OrderByDescending(p => p.PaymentMethod),
-                "status" => payments.OrderBy(p => p.Status),
-                "status_desc" => payments.OrderByDescending(p => p.Status),
-                "amount" => payments.OrderBy(p => p.Amount),
-                "amount_desc" => payments.OrderByDescending(p => p.Amount),
-                _ => payments.OrderBy(p => p.TransactionId)
+                bookings = bookings.Where(b => b.PaymentStatus == paymentStatusFilter);
+            }
+
+            if (!string.IsNullOrEmpty(bookingStatusFilter))
+            {
+                bookings = bookings.Where(b => b.Status == bookingStatusFilter);
+            }
+
+            bookings = sortOrder switch
+            {
+                "id_desc" => bookings.OrderByDescending(p => p.Id),
+                "date" => bookings.OrderBy(p => p.BookingDate),
+                "date_desc" => bookings.OrderByDescending(p => p.BookingDate),
+                "booking" => bookings.OrderBy(p => p.BookingCode),
+                "booking_desc" => bookings.OrderByDescending(p => p.BookingCode),
+                "status" => bookings.OrderBy(p => p.PaymentStatus),
+                "status_desc" => bookings.OrderByDescending(p => p.PaymentStatus),
+                "booking_status" => bookings.OrderBy(p => p.Status),
+                "booking_status_desc" => bookings.OrderByDescending(p => p.Status),
+                "amount" => bookings.OrderBy(p => p.TotalAmount),
+                "amount_desc" => bookings.OrderByDescending(p => p.TotalAmount),
+                _ => bookings.OrderByDescending(p => p.BookingDate) // default to newest first
             };
 
-            return View(payments);
+            return View(bookings);
         }
     }
 }

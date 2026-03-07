@@ -41,5 +41,28 @@ namespace HVTravel.Application.Services
             await _userRepository.AddAsync(user);
             return user;
         }
+
+        public async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            var existingUsers = await _userRepository.FindAsync(u => u.Email == email);
+            return existingUsers.Any();
+        }
+
+        public async Task<bool> UpdatePasswordAsync(string email, string newPassword)
+        {
+            var users = await _userRepository.FindAsync(u => u.Email == email);
+            var user = users.FirstOrDefault();
+            
+            if (user == null)
+            {
+                return false;
+            }
+
+            // Hash new password
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            
+            await _userRepository.UpdateAsync(user.Id, user);
+            return true;
+        }
     }
 }

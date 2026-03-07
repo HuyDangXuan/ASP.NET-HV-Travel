@@ -148,15 +148,29 @@
                 </nav>
 
                 <!-- Actions -->
-                <div class="flex items-center gap-3">
-                    <button id="theme-toggle-public" class="p-2.5 rounded-xl text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-all" aria-label="Toggle Dark Mode">
-                        <span class="material-symbols-outlined dark:hidden text-[20px]">dark_mode</span>
-                        <span class="material-symbols-outlined hidden dark:block text-[20px]">light_mode</span>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle-public"
+                      class="group inline-flex items-center justify-center w-10 h-10 rounded-full
+                            text-slate-500 dark:text-slate-400
+                            hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800
+                            transition-all font-medium"
+                      aria-label="Toggle Dark Mode">
+                      <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
+                      <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
-                    <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">login</span>
-                        Đăng Nhập
-                    </a>
+
+                    <!-- Auth Actions -->
+                    <div class="hidden sm:flex items-center gap-2">
+                        <a asp-area="Admin" asp-controller="Auth" asp-action="Register" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">
+                            Tham Gia
+                        </a>
+                        <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95 hover:-translate-y-0.5">
+                            <span class="material-symbols-outlined text-[18px]">login</span>
+                            Đăng Nhập
+                        </a>
+                    </div>
+
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-btn" class="md:hidden p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                         <span class="material-symbols-outlined text-[24px]">menu</span>
@@ -179,9 +193,14 @@
                     <a asp-controller="Home" asp-action="Contact" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
                         <span class="material-symbols-outlined text-[20px]">call</span> Liên Hệ
                     </a>
-                    <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-primary hover:bg-primary/10 transition-all sm:hidden">
-                        <span class="material-symbols-outlined text-[20px]">login</span> Đăng Nhập
-                    </a>
+                    <div class="grid grid-cols-2 gap-2 px-4 py-3 sm:hidden border-t border-slate-100 dark:border-slate-800 mt-2">
+                        <a asp-area="Admin" asp-controller="Auth" asp-action="Register" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 transition-all">
+                            Đăng Ký
+                        </a>
+                        <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                            Đăng Nhập
+                        </a>
+                    </div>
                 </nav>
             </div>
         </div>

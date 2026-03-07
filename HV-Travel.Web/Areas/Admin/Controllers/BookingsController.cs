@@ -46,6 +46,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             else if (statusLower == "confirmed") targetStatus = "Confirmed";
             else if (statusLower == "completed") targetStatus = "Completed";
             else if (statusLower == "refunded") targetStatus = "Refunded";
+            else if (statusLower == "deleted") targetStatus = "Deleted";
 
             var search = !string.IsNullOrEmpty(searchString) ? searchString.Trim().ToLower() : null;
             DateTime? start = null; 
@@ -58,7 +59,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             if (end.HasValue) end = end.Value.Date.AddDays(1).AddTicks(-1);
 
             System.Linq.Expressions.Expression<Func<Booking, bool>> filter = b =>
-                (targetStatus == null || b.Status == targetStatus || b.PaymentStatus == targetStatus) &&
+                (targetStatus == "Deleted" ? b.IsDeleted : !b.IsDeleted) &&
+                (targetStatus == null || targetStatus == "Deleted" || b.Status == targetStatus || b.PaymentStatus == targetStatus) &&
                 (search == null || 
                     (b.BookingCode != null && b.BookingCode.ToLower().Contains(search)) || 
                     (b.ContactInfo != null && (
@@ -135,7 +137,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
         // Details - Tất cả roles đều xem được
         [Authorize(Roles = "Admin,Manager,Staff,Guide")]
-        [HttpGet("Details/{id}")]
+        [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
             var booking = await _bookingRepository.GetByIdAsync(id);
@@ -145,7 +147,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
         // Edit GET - Admin, Manager, Staff (Guide không có quyền)
         [Authorize(Roles = "Admin,Manager,Staff")]
-        [HttpGet("Edit/{id}")]
+        [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             var booking = await _bookingRepository.GetByIdAsync(id);
@@ -153,27 +155,48 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             return View(booking);
         }
 
-        // Edit POST - Admin, Manager, Staff (Guide không có quyền)
         [Authorize(Roles = "Admin,Manager,Staff")]
-        [HttpPost("Edit/{id}")]
+        [HttpPost]
         public async Task<IActionResult> Edit(string id, Booking booking)
         {
             if (id != booking.Id) return BadRequest();
 
-            // if (ModelState.IsValid)
+            var existingBooking = await _bookingRepository.GetByIdAsync(id);
+            if (existingBooking == null) return NotFound();
+
+            // Only update fields editable from the UI to prevent data loss 
+            // of fields like TourSnapshot, HistoryLog, etc.
+            existingBooking.Status = booking.Status;
+            existingBooking.PaymentStatus = booking.PaymentStatus;
+            existingBooking.ParticipantsCount = booking.ParticipantsCount;
+            existingBooking.TotalAmount = booking.TotalAmount;
+            existingBooking.Notes = booking.Notes;
+
+            if (booking.ContactInfo != null)
             {
-                await _bookingRepository.UpdateAsync(id, booking);
-                return RedirectToAction(nameof(Index));
+                existingBooking.ContactInfo = booking.ContactInfo;
             }
-            // return View(booking);
+
+            existingBooking.UpdatedAt = DateTime.UtcNow;
+
+            await _bookingRepository.UpdateAsync(id, existingBooking);
+            return RedirectToAction(nameof(Index));
         }
 
         // Delete - Admin, Manager, Staff (Guide không có quyền)
         [Authorize(Roles = "Admin,Manager,Staff")]
-        [HttpPost("Delete/{id}")]
+        [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            await _bookingRepository.DeleteAsync(id);
+            var booking = await _bookingRepository.GetByIdAsync(id);
+            if (booking != null)
+            {
+                booking.IsDeleted = true;
+                booking.DeletedBy = User.Identity?.Name ?? "Admin System";
+                booking.DeletedAt = DateTime.UtcNow;
+                booking.UpdatedAt = DateTime.UtcNow;
+                await _bookingRepository.UpdateAsync(id, booking);
+            }
             return RedirectToAction(nameof(Index));
         }
     }

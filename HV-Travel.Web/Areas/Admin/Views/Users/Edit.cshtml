@@ -4,6 +4,17 @@
     ViewData["Title"] = "Users";
 }
 
+<style type="text/tailwindcss">
+    @@layer components {
+        .input-field {
+            @@apply w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 dark:placeholder:text-slate-500 shadow-sm;
+        }
+        .label-text {
+            @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
+        }
+    }
+</style>
+
 <!-- Page Header -->
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div class="flex flex-col gap-1">
@@ -45,15 +56,15 @@
 
         <!-- Full Name -->
         <div>
-            <label for="FullName" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
-            <input asp-for="FullName" type="text" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập họ và tên" required />
+            <label for="FullName" class="label-text">Họ và Tên <span class="text-red-500">*</span></label>
+            <input asp-for="FullName" type="text" class="input-field" placeholder="Nhập họ và tên" required />
             <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
         </div>
 
         <!-- Email (Read-only) -->
         <div>
-            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Email</label>
-            <input type="email" value="@Model.Email" readonly class="w-full h-11 px-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 cursor-not-allowed" />
+            <label class="label-text">Email</label>
+            <input type="email" value="@Model.Email" readonly class="input-field bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 cursor-not-allowed" />
             <p class="text-xs text-slate-400 mt-1">Email không thể thay đổi</p>
         </div>
 
@@ -62,21 +73,21 @@
             <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Đổi Mật Khẩu <span class="text-slate-400 font-normal">(để trống nếu không muốn đổi)</span></p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label for="password" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Mật Khẩu Mới</label>
-                    <input type="password" name="password" id="password" class="w-full h-10 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập mật khẩu mới" />
+                    <label for="password" class="label-text text-xs">Mật Khẩu Mới</label>
+                    <input type="password" name="password" id="password" class="input-field h-11" placeholder="Nhập mật khẩu mới" />
                 </div>
                 <div>
-                    <label for="confirmPassword" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Xác Nhận</label>
-                    <input type="password" name="confirmPassword" id="confirmPassword" class="w-full h-10 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nhập lại mật khẩu" />
+                    <label for="confirmPassword" class="label-text text-xs">Xác Nhận</label>
+                    <input type="password" name="confirmPassword" id="confirmPassword" class="input-field h-11" placeholder="Nhập lại mật khẩu" />
                 </div>
             </div>
         </div>
 
         <!-- Role -->
         <div>
-            <label for="Role" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Vai Trò <span class="text-red-500">*</span></label>
+            <label for="Role" class="label-text">Vai Trò <span class="text-red-500">*</span></label>
             <div class="relative">
-                <select asp-for="Role" class="appearance-none w-full h-11 px-4 pr-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer">
+                <select asp-for="Role" class="input-field appearance-none cursor-pointer">
                     <option value="Staff">Staff - Nhân viên</option>
                     <option value="Manager">Manager - Quản lý</option>
                     <option value="Guide">Guide - Hướng dẫn viên</option>
@@ -90,9 +101,9 @@
 
         <!-- Status -->
         <div>
-            <label for="Status" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Trạng Thái</label>
+            <label for="Status" class="label-text">Trạng Thái</label>
             <div class="relative">
-                <select asp-for="Status" class="appearance-none w-full h-11 px-4 pr-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer">
+                <select asp-for="Status" class="input-field appearance-none cursor-pointer">
                     <option value="Active">Hoạt động</option>
                     <option value="Inactive">Vô hiệu</option>
                 </select>
@@ -104,8 +115,8 @@
 
         <!-- Avatar URL (Optional) -->
         <div>
-            <label for="AvatarUrl" class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Avatar URL <span class="text-slate-400 font-normal">(Tùy chọn)</span></label>
-            <input asp-for="AvatarUrl" type="url" class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="https://example.com/avatar.jpg" />
+            <label for="AvatarUrl" class="label-text">Avatar URL <span class="text-gray-400 font-normal normal-case">(Tùy chọn)</span></label>
+            <input asp-for="AvatarUrl" type="url" class="input-field" placeholder="https://example.com/avatar.jpg" />
         </div>
 
         <!-- Actions -->

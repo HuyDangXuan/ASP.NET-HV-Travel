@@ -63,6 +63,31 @@ public class BookingController : Controller
         var subtotal = (adultPrice * vm.AdultCount) + (childPrice * vm.ChildCount) + (infantPrice * vm.InfantCount);
         var total = discount > 0 ? subtotal * (1 - (decimal)(discount / 100.0)) : subtotal;
 
+        // Initialize Passengers list
+        var passengers = new List<Passenger>();
+        
+        // Add Adults
+        for (int i = 0; i < vm.AdultCount; i++)
+        {
+            passengers.Add(new Passenger 
+            { 
+                Type = "Adult", 
+                FullName = (i == 0) ? vm.ContactName : $"Người lớn {i + 1}" 
+            });
+        }
+
+        // Add Children
+        for (int i = 0; i < vm.ChildCount; i++)
+        {
+            passengers.Add(new Passenger { Type = "Child", FullName = $"Trẻ em {i + 1}" });
+        }
+
+        // Add Infants
+        for (int i = 0; i < vm.InfantCount; i++)
+        {
+            passengers.Add(new Passenger { Type = "Infant", FullName = $"Em bé {i + 1}" });
+        }
+
         // Create booking
         var booking = new Booking
         {
@@ -82,6 +107,7 @@ public class BookingController : Controller
                 Phone = vm.ContactPhone
             },
             ParticipantsCount = vm.TotalParticipants,
+            Passengers = passengers, // Assign the generated list
             TotalAmount = total,
             Status = "Pending",
             PaymentStatus = "Unpaid",
@@ -131,15 +157,23 @@ public class BookingController : Controller
 
         try
         {
+            var paymentMethodText = paymentMethod switch
+            {
+                "Cash" => "Tiền mặt",
+                "BankTransfer" => "Chuyển khoản ngân hàng",
+                "CreditCard" => "Thẻ tín dụng",
+                _ => paymentMethod
+            };
+
             booking.PaymentStatus = paymentMethod == "Cash" ? "Unpaid" : "Pending";
             booking.Status = paymentMethod == "Cash" ? "Confirmed" : "Paid";
             booking.HistoryLog ??= new List<BookingHistoryLog>();
             booking.HistoryLog.Add(new BookingHistoryLog
             {
-                Action = $"Chọn thanh toán: {paymentMethod}",
+                Action = $"Chọn thanh toán: {paymentMethodText}",
                 Timestamp = DateTime.UtcNow,
                 User = booking.ContactInfo?.Name ?? "Khách",
-                Note = $"Phương thức: {paymentMethod}"
+                Note = $"Phương thức: {paymentMethodText}"
             });
             booking.UpdatedAt = DateTime.UtcNow;
 

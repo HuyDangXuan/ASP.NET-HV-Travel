@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Quên mật khẩu - HV Travel Admin</title>
+    <title>Xác minh số điện thoại/Email - HV Travel Admin</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
@@ -81,48 +81,56 @@
             </div>
         </div>
 
-        <!-- Right Side: Forgot Password Form -->
+        <!-- Right Side: OTP Verification Form -->
         <div class="w-full lg:w-1/2 mesh-gradient flex items-center justify-center p-6 sm:p-12 lg:p-20 relative">
             <div class="w-full max-w-[440px] flex flex-col gap-8">
                 <!-- Page Heading -->
                 <div class="flex flex-col gap-2">
-                    <h3 class="text-primary font-bold tracking-wider uppercase text-xs">Khôi Phục Tài Khoản</h3>
-                    <h2 class="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight">Quên Mật Khẩu?</h2>
-                    <p class="text-slate-500 dark:text-slate-400 text-base">Đừng lo lắng, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu cho bạn.</p>
+                    <h3 class="text-primary font-bold tracking-wider uppercase text-xs">Xác Minh Bảo Mật</h3>
+                    <h2 class="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight">Nhập Mã OTP</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-base">Chúng tôi đã gửi mã xác minh gồm 6 chữ số đến email của bạn. Vui lòng kiểm tra và nhập mã vào bên dưới.</p>
                 </div>
+                
                 @if (ViewBag.Error != null)
                 {
                     <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
                         <span class="font-medium">Lỗi!</span> @ViewBag.Error
                     </div>
                 }
-                @if (ViewBag.Success != null)
-                {
-                    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800" role="alert">
-                        <span class="font-medium">Thành công!</span> @ViewBag.Success
-                    </div>
-                }
-                
-                <form class="flex flex-col gap-6" method="post" asp-action="ForgotPassword" asp-controller="Auth">
-                    <!-- Email Field -->
+
+                <form class="flex flex-col gap-8" method="post" asp-action="VerifyOTP" asp-controller="Auth" id="otp-form">
+                    <!-- OTP Inputs -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Địa Chỉ Email</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                <span class="material-symbols-outlined text-[20px]">mail</span>
-                            </div>
-                            <input name="email" class="w-full pl-11 pr-4 py-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400" placeholder="Nhập email của bạn" type="email" required />
+                        <label class="text-slate-900 dark:text-white text-sm font-semibold">Mã Xác Minh</label>
+                        <div class="flex justify-between gap-2 max-w-[360px]" id="otp-container">
+                            <input name="otp1" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
+                            <input name="otp2" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
+                            <input name="otp3" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
+                            <input name="otp4" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
+                            <input name="otp5" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
+                            <input name="otp6" type="text" maxlength="1" class="w-12 h-14 text-center text-xl font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all otp-input" />
                         </div>
                     </div>
                     
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full h-14 bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg hover:shadow-primary/30 text-white font-bold rounded-xl transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
-                        <span>Gửi Hướng Dẫn</span>
-                        <span class="material-symbols-outlined">send</span>
-                    </button>
+                    <div class="flex flex-col gap-4">
+                        <!-- Verify Button -->
+                        <button type="submit" class="w-full h-14 bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg hover:shadow-primary/30 text-white font-bold rounded-xl transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                            <span>Xác Nhận</span>
+                            <span class="material-symbols-outlined">check_circle</span>
+                        </button>
+                        
+                        <!-- Resend Option -->
+                        <div class="text-center">
+                            <span class="text-sm text-slate-500 dark:text-slate-400">Bạn chưa nhận được mã? </span>
+                            <!-- Currently a button doing nothing, but could map to a re-send OTP method -->
+                            <button type="button" class="text-primary font-bold hover:underline text-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:no-underline" id="resend-btn">
+                                Gửi lại mã <span id="timer">(02:00)</span>
+                            </button>
+                        </div>
+                    </div>
                     
                     <!-- Back to Login -->
-                    <div class="flex justify-center">
+                    <div class="flex justify-center mt-4">
                         <a class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-bold transition-all" asp-action="Login">
                             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                             Quay lại đăng nhập
@@ -142,7 +150,7 @@
             </div>
         </div>
     </div>
-    <!-- Script that forces dark mode based on system or local storage -->
+    
     <script>
         // Check local storage or system preference on load
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -161,6 +169,78 @@
                 localStorage.theme = 'dark';
             }
         }
+
+        // OTP Input Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.otp-input');
+            const form = document.getElementById('otp-form');
+
+            // Auto-focus first input
+            inputs[0].focus();
+
+            inputs.forEach((input, index) => {
+                // Focus next/prev on input
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length > 0) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        } else {
+                            // If last input is filled, optionally auto-submit
+                            // form.submit();
+                        }
+                    }
+                });
+
+                // Handle backspace
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (e.target.value === '' && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    }
+                });
+
+                // Handle paste
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').slice(0, inputs.length).replace(/[^0-9]/g, '');
+                    
+                    if (pastedData) {
+                        for (let i = 0; i < pastedData.length; i++) {
+                            if (index + i < inputs.length) {
+                                inputs[index + i].value = pastedData[i];
+                            }
+                        }
+                        
+                        // Focus the next empty input or the last one
+                        const nextIndex = Math.min(index + pastedData.length, inputs.length - 1);
+                        inputs[nextIndex].focus();
+                    }
+                });
+            });
+
+            // Resend Timer Logic
+            const resendBtn = document.getElementById('resend-btn');
+            const timerSpan = document.getElementById('timer');
+            let timeLeft = 120; // 2 minutes
+
+            resendBtn.disabled = true;
+
+            const countdown = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                timerSpan.textContent = `(${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+                
+                timeLeft--;
+
+                if (timeLeft < 0) {
+                    clearInterval(countdown);
+                    resendBtn.disabled = false;
+                    timerSpan.textContent = '';
+                }
+            }, 1000);
+        });
     </script>
 </body>
 </html>

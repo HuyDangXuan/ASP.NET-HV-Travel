@@ -152,7 +152,7 @@
                         <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                     </button>
 
-                    <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all">
+                    <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                         </div>
@@ -223,7 +223,7 @@
                     <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">view_column</span>
                     </button>
-                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden z-50 p-2">
+                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-customer')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Khách Hàng</span>
@@ -456,8 +456,11 @@
         </div>
     </div>
 
+    <!-- Sidebar Backdrop Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-[1px] z-50 hidden opacity-0 transition-opacity duration-300" onclick="toggleCustomerSidebar(null)"></div>
+
     <!-- Side Drawer (Detail View) -->
-    <aside id="customer-detail-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[400px] z-40 bg-white dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-100 dark:border-slate-800 flex flex-col">
+    <aside id="customer-detail-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[500px] z-50 bg-white dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-100 dark:border-slate-800 flex flex-col">
         <!-- Drawer Header -->
         <div class="relative h-20 bg-gradient-to-r from-cyan-500 to-blue-600 shrink-0" data-alt="Gradient background header in cyan and blue">
             <button onclick="toggleCustomerSidebar()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
@@ -504,21 +507,6 @@
                 <!-- History items will be populated by JS -->
             </div>
 
-            <!-- Quick Note Input -->
-            <div class="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-                <label class="sr-only" for="note">Thêm ghi chú</label>
-                <div class="relative">
-                    <textarea class="block w-full rounded-xl border-0 py-2 pl-3 pr-10 text-slate-900 bg-slate-50 dark:bg-slate-800 dark:text-white shadow-sm ring-1 ring-inset ring-slate-200 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 resize-none"
-                              id="note"
-                              placeholder="Thêm ghi chú nội bộ..."
-                              rows="2"></textarea>
-                    <div class="absolute bottom-2 right-2 flex items-center">
-                        <button class="p-1 rounded-md text-slate-400 hover:text-primary transition-colors" type="button">
-                            <span class="material-symbols-outlined !text-[20px]">send</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </aside>
 </div>
@@ -533,9 +521,16 @@
 
     async function toggleCustomerSidebar(row) {
         const sidebar = document.getElementById('customer-detail-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
 
-        // Nếu click vào row
+        // Nếu click vào row -> Mở sidebar
         if (row) {
+            // Hiển thị Overlay
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => overlay.classList.add('opacity-100'));
+            }
+
             // 1) Remove selection from ALL rows first
             document.querySelectorAll('.customer-row').forEach(r => {
                 r.classList.remove('is-selected');
@@ -595,25 +590,44 @@
                     historyList.innerHTML = '<p class="text-center text-sm text-slate-400 py-4">Chưa có lịch sử đặt vé</p>';
                 } else {
                     history.forEach(item => {
+                        let badgeColorClass = "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+                        let statusText = item.status || "";
+                        const st = statusText.trim().toLowerCase();
+                        
+                        // Map status colors and text
+                        if (st === "completed" || st === "đã hoàn thành" || st === "paid" || st === "đã thanh toán") {
+                            badgeColorClass = "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20";
+                            if (st === "paid") statusText = "Đã thanh toán";
+                            if (st === "completed") statusText = "Đã hoàn thành";
+                        } else if (st === "pending" || st === "chờ xử lý" || st === "unpaid" || st === "chưa thanh toán") {
+                            badgeColorClass = "text-amber-600 bg-amber-50 dark:bg-amber-900/20";
+                            if (st === "unpaid") statusText = "Chưa thanh toán";
+                            if (st === "pending") statusText = "Chờ xử lý";
+                        } else if (st === "cancelled" || st === "đã hủy") {
+                            badgeColorClass = "text-red-600 bg-red-50 dark:bg-red-900/20";
+                            if (st === "cancelled") statusText = "Đã hủy";
+                        } else if (st === "processing" || st === "đang xử lý") {
+                            badgeColorClass = "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
+                            if (st === "processing") statusText = "Đang xử lý";
+                        } else if (st === "confirmed" || st === "đã xác nhận") {
+                            badgeColorClass = "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
+                            if (st === "confirmed") statusText = "Đã xác nhận";
+                        }
+
                         const html = `
-                        <div class="group relative flex gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                            <div class="flex flex-col items-center gap-1 mt-1">
-                                <div class="w-10 flex flex-col items-center">
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase">Th${item.month}</span>
-                                    <span class="text-lg font-bold text-slate-900 dark:text-white leading-none">${item.day}</span>
-                                </div>
+                        <div class="group relative flex gap-4 p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 shadow-sm">
+                            <div class="flex flex-col items-center justify-center w-14 h-14 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0 shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Th${item.month}</span>
+                                <span class="text-xl font-bold text-slate-900 dark:text-white leading-none">${item.day}</span>
                             </div>
-                            <div class="w-px bg-slate-200 dark:bg-slate-700 my-1"></div>
-                            <div class="flex-1">
-                                <div class="flex justify-between">
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">${item.title}</p>
-                                    <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded">${item.status}</span>
+                            <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                <div class="flex items-start justify-between gap-2 mb-1">
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate">${item.title}</p>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide shrink-0 ${badgeColorClass}">${statusText}</span>
                                 </div>
-                                <p class="text-xs text-slate-500 mt-1">
-                                    ${item.detail}
-                                </p>
-                                <div class="flex items-center gap-2 mt-2">
-                                     <span class="text-xs font-medium text-slate-500">${item.sub}</span>
+                                <div class="flex items-center justify-between text-xs text-slate-500">
+                                    <p class="truncate opacity-80">${item.detail}</p>
+                                    <span class="font-bold text-slate-700 dark:text-slate-300 ml-2 shrink-0">${item.sub}</span>
                                 </div>
                             </div>
                         </div>`;
@@ -630,9 +644,16 @@
             return;
         }
 
-        // Nếu gọi không truyền row -> dùng để đóng sidebar (nút close)
+        // Nếu gọi không truyền row -> dùng để đóng sidebar (nút close hoặc click overlay)
         if (sidebar) {
             sidebar.classList.add('translate-x-full');
+            
+            // Ẩn Overlay
+            if (overlay) {
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+
             // Clear selection when closing
             document.querySelectorAll('.customer-row').forEach(r => {
                 r.classList.remove('is-selected');
@@ -642,7 +663,18 @@
 
     function toggleFilterMenu() {
         const menu = document.getElementById('filter-menu');
-        menu.classList.toggle('hidden');
+        if (!menu) return;
+        if (menu.classList.contains('menu-visible')) {
+            menu.classList.remove('menu-visible');
+            menu.classList.add('menu-hidden');
+            setTimeout(() => menu.classList.add('hidden'), 200);
+        } else {
+            menu.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                menu.classList.remove('menu-hidden');
+                menu.classList.add('menu-visible');
+            });
+        }
     }
     
     function toggleColumnMenu() {
@@ -668,8 +700,10 @@
         const button = event.target.closest('button[onclick="toggleFilterMenu()"]');
         const insideMenu = event.target.closest('#filter-menu');
 
-        if (!button && !insideMenu && !menu.classList.contains('hidden')) {
-            menu.classList.add('hidden');
+        if (menu && !button && !insideMenu && menu.classList.contains('menu-visible')) {
+            menu.classList.remove('menu-visible');
+            menu.classList.add('menu-hidden');
+            setTimeout(() => menu.classList.add('hidden'), 200);
         }
         
         // Column Menu Logic
@@ -683,15 +717,10 @@
             setTimeout(() => colMenu.classList.add('hidden'), 200);
         }
 
-        // Sidebar Logic
+        // Sidebar Logic (Closed when handled by Overlay, but keep this for extra safety or programmatic closing if needed)
         const sidebar = document.getElementById('customer-detail-sidebar');
-        const clickedRow = event.target.closest('.customer-row');
-        const insideSidebar = event.target.closest('#customer-detail-sidebar');
-
-        // Only close if NOT clicking a row and NOT inside sidebar and sidebar is currently open
-        if (!clickedRow && !insideSidebar && sidebar && !sidebar.classList.contains('translate-x-full')) {
-            toggleCustomerSidebar(null);
-        }
+        // If clicking a row while sidebar IS ALREADY OPEN, the overlay will technically catch it if we want to force closure first.
+        // The current implementation uses onclick on Overlay to close.
     });
 
     function updateSpendingLabel(input) {

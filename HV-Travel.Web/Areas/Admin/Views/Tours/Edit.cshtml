@@ -1,18 +1,62 @@
+@model HVTravel.Domain.Entities.Tour
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
+    
+    string GetStatusText(string status) => status switch
+    {
+        "Draft" => "Bản nháp",
+        "Active" => "Hoạt động",
+        "SoldOut" => "Hết chỗ",
+        "ComingSoon" => "Sắp ra mắt",
+        "Hidden" => "Ẩn",
+        _ => status
+    };
+
+    string GetCategoryText(string category) => category switch
+    {
+        "Adventure" => "Khám phá & Mạo hiểm",
+        "Culture" => "Văn hóa & Lịch sử",
+        "Food" => "Ẩm thực",
+        "Nature" => "Thiên nhiên & Nghỉ dưỡng",
+        "City" => "City Tour",
+        _ => category
+    };
 }
-@model HVTravel.Domain.Entities.Tour
 
 <style type="text/tailwindcss">
     @@layer components {
         .input-field {
-            @@apply w-full bg-[#f6f8f8] dark:bg-slate-900 border-none rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50;
+            @@apply w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 shadow-sm;
+        }
+        .select-field {
+            @@apply flex items-center justify-between cursor-pointer;
         }
         .section-card {
             @@apply bg-white dark:bg-surface-dark rounded-2xl border border-[#f0f4f4] dark:border-slate-800 p-6 shadow-sm space-y-6;
         }
         .label-text {
             @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
+        }
+        .custom-option {
+            @@apply p-4 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors first:rounded-t-2xl last:rounded-b-2xl flex items-center justify-between;
+        }
+        .custom-option.selected {
+            @@apply bg-primary/10 text-primary dark:text-primary;
+        }
+        .options-menu {
+            @@apply absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-[1000] hidden origin-top scale-95 opacity-0 transition-all duration-200;
+        }
+        .options-menu.visible {
+            @@apply block scale-100 opacity-100;
+        }
+        .custom-select-container.active {
+            @@apply z-[1000];
+        }
+        .section-card.active-section {
+            @@apply relative z-[500];
+        }
+        .date-field-custom {
+            @@apply flex items-center w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:border-primary transition-all focus:ring-2 focus:ring-primary/20 outline-none;
         }
     }
 </style>
@@ -52,9 +96,23 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="label-text">Trạng thái</label>
-                             <select asp-for="Status" class="input-field appearance-none">
+                        <!-- Custom Select: Status -->
+                        <div class="relative custom-select-container" data-id="Status">
+                             <label class="label-text">Trạng thái</label>
+                             <div class="input-field select-field" onclick="toggleCustomSelect('Status')">
+                                 <span class="selected-label">@GetStatusText(Model.Status)</span>
+                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                             </div>
+                             <div class="options-menu">
+                                 @foreach (var status in new[] { "Draft", "Active", "SoldOut", "ComingSoon", "Hidden" })
+                                 {
+                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" onclick="selectCustomOption('Status', '@status', '@GetStatusText(status)')">
+                                         @GetStatusText(status)
+                                         @if (Model.Status == status) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
+                                     </div>
+                                 }
+                             </div>
+                             <select asp-for="Status" class="hidden">
                                 <option value="Draft">Bản nháp (Draft)</option>
                                 <option value="Active">Hoạt động (Active)</option>
                                 <option value="SoldOut">Hết chỗ (Sold Out)</option>
@@ -62,15 +120,34 @@
                                 <option value="Hidden">Ẩn (Hidden)</option>
                             </select>
                         </div>
-                        <div>
+
+                        <!-- Custom Select: Category -->
+                        <div class="relative custom-select-container" data-id="Category">
                              <label class="label-text">Loại hình Tour</label>
-                            <select asp-for="Category" class="input-field appearance-none">
+                             <div class="input-field select-field" onclick="toggleCustomSelect('Category')">
+                                 <span class="selected-label">@(string.IsNullOrEmpty(Model.Category) ? "Chọn loại hình" : GetCategoryText(Model.Category))</span>
+                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                             </div>
+                             <div class="options-menu">
+                                 <div class="custom-option @(string.IsNullOrEmpty(Model.Category) ? "selected" : "")" onclick="selectCustomOption('Category', '', 'Chọn loại hình')">
+                                     Chọn loại hình
+                                     @if (string.IsNullOrEmpty(Model.Category)) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
+                                 </div>
+                                 @foreach (var cat in new[] { "Adventure", "Culture", "Food", "Nature", "City" })
+                                 {
+                                     <div class="custom-option @(Model.Category == cat ? "selected" : "")" onclick="selectCustomOption('Category', '@cat', '@GetCategoryText(cat)')">
+                                         @GetCategoryText(cat)
+                                         @if (Model.Category == cat) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
+                                     </div>
+                                 }
+                             </div>
+                             <select asp-for="Category" class="hidden">
                                 <option value="">Chọn loại hình</option>
-                                <option value="Adventure">Khám phá & Mạo hiểm</option>
-                                <option value="Culture">Văn hóa & Lịch sử</option>
-                                <option value="Food">Ẩm thực</option>
-                                <option value="Nature">Thiên nhiên & Nghỉ dưỡng</option>
-                                <option value="City">City Tour</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Culture">Culture</option>
+                                <option value="Food">Food</option>
+                                <option value="Nature">Nature</option>
+                                <option value="City">City</option>
                             </select>
                         </div>
                     </div>
@@ -97,7 +174,7 @@
                         <textarea asp-for="Description" class="input-field h-48 py-4 resize-none" placeholder="Mô tả chi tiết về tour, các điểm nổi bật..."></textarea>
                     </div>
                     <div>
-                        <label class="label-text">Hình ảnh (URLs)</label>
+                        <label class="label-text">Hình ảnh</label>
                          <div id="images-container" class="space-y-3">
                             @if (Model.Images != null && Model.Images.Any())
                             {
@@ -189,27 +266,32 @@
 
                 <!-- Start Dates -->
                 <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
-                    <label class="label-text mb-2">Ngày khởi hành (Start Dates)</label>
-                    <div id="start-dates-container" class="space-y-2">
+                    <label class="label-text mb-4">Ngày khởi hành</label>
+                    <div id="start-dates-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @if (Model.StartDates != null && Model.StartDates.Any())
                         {
                             for (int i = 0; i < Model.StartDates.Count; i++)
                             {
-                                <div class="flex gap-2 items-center date-item">
-                                    <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="date" class="input-field w-full md:w-1/3" />
-                                    <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+                                <div class="relative group date-item">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] group-hover:text-primary transition-colors z-20">calendar_today</span>
+                                    <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="text" readonly 
+                                           onclick="openTourCalendar(this)" placeholder="Chọn ngày..."
+                                           class="date-field-custom pl-10 pr-10 cursor-pointer" />
+                                    <button type="button" onclick="removeDate(this)" class="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all z-20">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
                                 </div>
                             }
                         }
                     </div>
-                    <button type="button" onclick="addStartDate()" class="mt-2 text-sm text-primary font-bold flex items-center gap-1 hover:underline">
-                        <span class="material-symbols-outlined text-lg">add</span> Thêm ngày khởi hành
+                    <button type="button" onclick="addStartDate()" class="mt-4 px-6 py-3 border-2 border-dashed border-primary/30 text-primary font-bold rounded-xl hover:bg-primary/5 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined">add_circle</span> Thêm ngày khởi hành
                     </button>
                 </div>
 
                 <!-- Schedule -->
                 <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
-                    <label class="label-text mb-4">Lịch trình chi tiết (Schedule)</label>
+                    <label class="label-text mb-4">Lịch trình chi tiết</label>
                     <div id="schedule-container" class="space-y-6">
                         @if (Model.Schedule != null && Model.Schedule.Any())
                         {
@@ -247,7 +329,7 @@
                     <span class="material-symbols-outlined text-primary text-sm">visibility</span>
                     <p class="text-sm font-bold text-[#111718] dark:text-white uppercase tracking-[0.2em]">XEM TRƯỚC TRỰC TIẾP</p>
                 </div>
-                <span class="px-2.5 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full uppercase">Customer View</span>
+                <span class="px-2.5 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full uppercase">Giao diện người dùng</span>
             </div>
             <div class="bg-white dark:bg-surface-dark rounded-[2rem] overflow-hidden shadow-2xl border border-[#f0f4f4] dark:border-slate-800 group transition-all">
                 <div class="relative h-72 overflow-hidden bg-[#f0f4f4] dark:bg-slate-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
@@ -312,17 +394,250 @@
         </div>
     </div>
 </footer>
+
+<!-- Shared Calendar Dropdown for Start Dates -->
+<div id="tour-calendar-dropdown" class="fixed w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 z-[2000] hidden origin-top scale-95 opacity-0 transition-all duration-200">
+    <div class="p-5">
+        <div class="flex justify-between items-center mb-5">
+            <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">Chọn Ngày</span>
+            <div class="flex gap-1 bg-slate-50 dark:bg-slate-800/50 p-1 rounded-lg">
+                <button type="button" onclick="changeTourMonth(-1)" class="p-1 rounded-md hover:bg-white dark:hover:bg-slate-700 text-slate-500 hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+                <span id="tour-calendar-month-year" class="text-[11px] font-bold text-slate-700 dark:text-slate-300 min-w-[100px] text-center flex items-center justify-center tracking-tight">Tháng ..., 20...</span>
+                <button type="button" onclick="changeTourMonth(1)" class="p-1 rounded-md hover:bg-white dark:hover:bg-slate-700 text-slate-500 hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+            </div>
+        </div>
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-7 gap-1 text-center mb-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T2</span>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T3</span>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T4</span>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T5</span>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T6</span>
+            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T7</span>
+            <span class="text-[10px] text-red-500 font-extrabold uppercase">CN</span>
+        </div>
+        <div id="tour-calendar-days" class="grid grid-cols-7 gap-1 text-center">
+            <!-- Dynamic Days -->
+        </div>
+    </div>
+</div>
 </form>
 
 <script>
+    // --- Custom Selects ---
+    function toggleCustomSelect(id) {
+        const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
+        const menu = container.querySelector('.options-menu');
+        const arrow = container.querySelector('.arrow-icon');
+        const section = container.closest('.section-card');
+        
+        // Close other menus
+        document.querySelectorAll('.options-menu.visible').forEach(m => {
+            if (m !== menu) {
+                m.classList.remove('visible');
+                const otherContainer = m.closest('.custom-select-container');
+                otherContainer.querySelector('.arrow-icon').style.transform = '';
+                otherContainer.classList.remove('active');
+                const otherSection = otherContainer.closest('.section-card');
+                if (otherSection) otherSection.classList.remove('active-section');
+            }
+        });
+
+        menu.classList.toggle('visible');
+        container.classList.toggle('active');
+        if (section) section.classList.toggle('active-section');
+        arrow.style.transform = menu.classList.contains('visible') ? 'rotate(180deg)' : '';
+    }
+
+    function selectCustomOption(id, value, text) {
+        const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
+        const label = container.querySelector('.selected-label');
+        const nativeSelect = container.querySelector('select');
+        const menu = container.querySelector('.options-menu');
+        const arrow = container.querySelector('.arrow-icon');
+
+        // Update label and native select
+        label.innerText = text;
+        nativeSelect.value = value;
+        
+        // Trigger change event for potentially other listeners
+        nativeSelect.dispatchEvent(new Event('change'));
+
+        // Close menu
+        menu.classList.remove('visible');
+        container.classList.remove('active');
+        const section = container.closest('.section-card');
+        if (section) section.classList.remove('active-section');
+        arrow.style.transform = '';
+
+        // Update selected class in UI
+        container.querySelectorAll('.custom-option').forEach(opt => {
+            opt.classList.remove('selected');
+            const existingCheck = opt.querySelector('.check-icon');
+            if (existingCheck) existingCheck.remove();
+        });
+
+        const selectedItem = Array.from(container.querySelectorAll('.custom-option')).find(el => el.textContent.trim() === text);
+        if (selectedItem) {
+            selectedItem.classList.add('selected');
+            selectedItem.insertAdjacentHTML('beforeend', '<span class="material-symbols-outlined text-lg check-icon">check</span>');
+        }
+    }
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        // Custom selects
+        if (!e.target.closest('.custom-select-container')) {
+            document.querySelectorAll('.options-menu.visible').forEach(m => {
+                m.classList.remove('visible');
+                const container = m.closest('.custom-select-container');
+                const arrow = container.querySelector('.arrow-icon');
+                if (arrow) arrow.style.transform = '';
+                container.classList.remove('active');
+                const section = container.closest('.section-card');
+                if (section) section.classList.remove('active-section');
+            });
+        }
+
+        // Tour Calendar
+        const tourCalendar = document.getElementById('tour-calendar-dropdown');
+        if (tourCalendar && !tourCalendar.classList.contains('hidden')) {
+            if (!e.target.closest('#tour-calendar-dropdown') && !e.target.closest('.date-field-custom')) {
+                closeTourCalendar();
+            }
+        }
+    });
+
     // --- Start Dates ---
+    let activeTourInput = null;
+    let tourCurrentDate = new Date();
+
+    function openTourCalendar(input) {
+        activeTourInput = input;
+        const dropdown = document.getElementById('tour-calendar-dropdown');
+        
+        // Positioning
+        const rect = input.getBoundingClientRect();
+        dropdown.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+        dropdown.style.left = (rect.left + window.scrollX) + 'px';
+        
+        // If it's too far right, align to right edge
+        if (rect.left + 320 > window.innerWidth) {
+            dropdown.style.left = (rect.right + window.scrollX - 320) + 'px';
+        }
+
+        // Initialize display date from input value if valid
+        if (input.value) {
+            const valDate = new Date(input.value);
+            if (!isNaN(valDate)) tourCurrentDate = valDate;
+        } else {
+            tourCurrentDate = new Date();
+        }
+
+        renderTourCalendar();
+        
+        dropdown.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            dropdown.classList.add('scale-100', 'opacity-100');
+        });
+    }
+
+    function renderTourCalendar() {
+        const monthYearEl = document.getElementById('tour-calendar-month-year');
+        const daysEl = document.getElementById('tour-calendar-days');
+        if (!daysEl || !monthYearEl) return;
+
+        const year = tourCurrentDate.getFullYear();
+        const month = tourCurrentDate.getMonth();
+        const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
+        monthYearEl.innerText = `${monthNames[month]}, ${year}`;
+
+        daysEl.innerHTML = "";
+        const firstDay = new Date(year, month, 1).getDay();
+        const startOffset = (firstDay + 6) % 7; 
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevMonthDays = new Date(year, month, 0).getDate();
+
+        // Previous Month Padding
+        for (let i = 0; i < startOffset; i++) {
+            const dayNum = prevMonthDays - startOffset + 1 + i;
+            const span = document.createElement('span');
+            span.className = "h-8 w-8 flex items-center justify-center text-[11px] text-slate-300 dark:text-slate-600";
+            span.innerText = dayNum;
+            daysEl.appendChild(span);
+        }
+
+        // Selected date for highlighting
+        const selectedVal = activeTourInput ? activeTourInput.value : null;
+        const selectedDate = selectedVal ? new Date(selectedVal) : null;
+
+        // Current Month Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const btn = document.createElement('button');
+            btn.type = "button";
+            const d = new Date(year, month, i);
+            
+            let className = "h-8 w-8 rounded-lg text-[11px] flex items-center justify-center transition-all ";
+            
+            const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
+            const today = new Date();
+            const isToday = d.toDateString() === today.toDateString();
+
+            if (isSelected) {
+                className += "bg-primary text-white font-bold shadow-sm shadow-primary/30";
+            } else {
+                className += "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 ";
+                if (isToday) className += "ring-1 ring-primary/50 text-primary font-bold";
+            }
+
+            btn.className = className;
+            btn.innerText = i;
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                selectTourDate(d);
+            };
+
+            daysEl.appendChild(btn);
+        }
+    }
+
+    function changeTourMonth(offset) {
+        tourCurrentDate.setMonth(tourCurrentDate.getMonth() + offset);
+        renderTourCalendar();
+    }
+
+    function selectTourDate(date) {
+        if (activeTourInput) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            activeTourInput.value = `${year}-${month}-${day}`;
+            
+            // Special trigger for preview updates if it was the first image or something
+            activeTourInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        closeTourCalendar();
+    }
+
+    function closeTourCalendar() {
+        const dropdown = document.getElementById('tour-calendar-dropdown');
+        dropdown.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => dropdown.classList.add('hidden'), 200);
+        activeTourInput = null;
+    }
+
     function addStartDate() {
         const container = document.getElementById('start-dates-container');
         const index = container.querySelectorAll('.date-item').length;
         const html = `
-            <div class="flex gap-2 items-center date-item">
-                <input name="StartDates[${index}]" type="date" class="input-field w-full md:w-1/3" />
-                <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
+            <div class="relative group date-item">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] group-hover:text-primary transition-colors z-20">calendar_today</span>
+                <input name="StartDates[${index}]" type="text" readonly 
+                       onclick="openTourCalendar(this)" placeholder="Chọn ngày..."
+                       class="date-field-custom pl-10 pr-10 cursor-pointer" />
+                <button type="button" onclick="removeDate(this)" class="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all z-20">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', html);

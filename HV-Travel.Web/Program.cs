@@ -5,7 +5,8 @@ using HVTravel.Infrastructure.Data;
 
 using DotNetEnv;
 
-Env.Load();
+// Load .env from the current directory or upwards (solution root)
+Env.TraversePath().Load();
 var builder = WebApplication.CreateBuilder(args);
 
 

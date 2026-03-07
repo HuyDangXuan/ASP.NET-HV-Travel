@@ -6,13 +6,34 @@
 <style type="text/tailwindcss">
     @@layer components {
         .input-field {
-            @@apply w-full bg-[#f6f8f8] dark:bg-slate-800 border-none rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 dark:placeholder:text-slate-500;
+            @@apply w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 dark:placeholder:text-slate-500 shadow-sm;
+        }
+        .select-field {
+            @@apply flex items-center justify-between cursor-pointer;
         }
         .section-card {
             @@apply bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6;
         }
         .label-text {
             @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
+        }
+        .custom-option {
+            @@apply p-4 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors first:rounded-t-2xl last:rounded-b-2xl flex items-center justify-between;
+        }
+        .custom-option.selected {
+            @@apply bg-primary/10 text-primary dark:text-primary;
+        }
+        .options-menu {
+            @@apply absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-[1000] hidden origin-top scale-95 opacity-0 transition-all duration-200;
+        }
+        .options-menu.visible {
+            @@apply block scale-100 opacity-100;
+        }
+        .custom-select-container.active {
+            @@apply z-[1000];
+        }
+        .section-card.active-section {
+            @@apply relative z-[500];
         }
     }
 </style>
@@ -28,6 +49,40 @@
     <span class="text-slate-900 dark:text-white font-medium">#@Model.BookingCode</span>
 </nav>
 
+@{
+    string GetStatusText(string status) => status switch
+    {
+        "Pending" => "Chờ xử lý",
+        "Confirmed" => "Đã xác nhận",
+        "Paid" => "Đã thanh toán",
+        "Completed" => "Hoàn thành",
+        "Cancelled" => "Đã hủy",
+        "Refunded" => "Đã hoàn quỹ",
+        _ => status
+    };
+
+    string GetStatusClass(string status) => status switch
+    {
+        "Pending" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        "Confirmed" => "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+        "Paid" => "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+        "Completed" => "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
+        "Cancelled" => "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+        "Refunded" => "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+        _ => "bg-slate-100 text-slate-700"
+    };
+
+    string GetPaymentStatusText(string status) => status switch
+    {
+        "Unpaid" => "Chưa thanh toán",
+        "Pending" => "Chờ xác nhận",
+        "Partial" => "Thanh toán một phần",
+        "Full" => "Đã thanh toán",
+        "Refunded" => "Đã hoàn tiền",
+        _ => status
+    };
+}
+
 <!-- Page Header -->
 <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
     <div>
@@ -35,11 +90,11 @@
         <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Đang chỉnh sửa đơn hàng mã <span class="font-bold text-primary">#@Model.BookingCode</span> cho tour @(Model.TourSnapshot?.Name).</p>
     </div>
     <div class="flex items-center gap-3">
-        <span class="px-4 py-2 bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 text-xs font-bold rounded-full uppercase tracking-wider">@Model.Status</span>
+        <span id="header-status-badge" class="px-4 py-2 @GetStatusClass(Model.Status) text-xs font-bold rounded-full uppercase tracking-wider">@GetStatusText(Model.Status)</span>
     </div>
 </div>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" id="edit-booking-form">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="BookingCode" />
     <input type="hidden" asp-for="TourId" />
@@ -55,24 +110,54 @@
                 </div>
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
+                        <!-- Custom Select: Status -->
+                        <div class="relative custom-select-container" data-id="Status">
                              <label class="label-text">Trạng thái Đơn hàng</label>
-                             <select asp-for="Status" class="input-field">
-                                 <option value="Pending">Pending</option>
-                                 <option value="Paid">Paid</option>
-                                 <option value="Confirmed">Confirmed</option>
-                                 <option value="Completed">Completed</option>
-                                 <option value="Cancelled">Cancelled</option>
-                                 <option value="Refunded">Refunded</option>
+                             <div class="input-field select-field" onclick="toggleCustomSelect('Status')">
+                                 <span class="selected-label">@GetStatusText(Model.Status)</span>
+                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                             </div>
+                             <div class="options-menu">
+                                 @foreach (var status in new[] { "Pending", "Paid", "Confirmed", "Completed", "Cancelled", "Refunded" })
+                                 {
+                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" onclick="selectCustomOption('Status', '@status', '@GetStatusText(status)')">
+                                         @GetStatusText(status)
+                                         @if (Model.Status == status) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
+                                     </div>
+                                 }
+                             </div>
+                             <select asp-for="Status" class="hidden">
+                                 <option value="Pending">Chờ xử lý</option>
+                                 <option value="Paid">Đã thanh toán</option>
+                                 <option value="Confirmed">Đã xác nhận</option>
+                                 <option value="Completed">Hoàn thành</option>
+                                 <option value="Cancelled">Đã hủy</option>
+                                 <option value="Refunded">Đã hoàn quỹ</option>
                              </select>
                         </div>
-                        <div>
+
+                        <!-- Custom Select: PaymentStatus -->
+                        <div class="relative custom-select-container" data-id="PaymentStatus">
                              <label class="label-text">Trạng thái Thanh toán</label>
-                             <select asp-for="PaymentStatus" class="input-field">
-                                 <option value="Unpaid">Unpaid</option>
-                                 <option value="Partial">Partial</option>
-                                 <option value="Full">Full</option>
-                                 <option value="Refunded">Refunded</option>
+                             <div class="input-field select-field" onclick="toggleCustomSelect('PaymentStatus')">
+                                 <span class="selected-label">@GetPaymentStatusText(Model.PaymentStatus)</span>
+                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                             </div>
+                             <div class="options-menu">
+                                 @foreach (var pStat in new[] { "Unpaid", "Pending", "Partial", "Full", "Refunded" })
+                                 {
+                                     <div class="custom-option @(Model.PaymentStatus == pStat ? "selected" : "")" onclick="selectCustomOption('PaymentStatus', '@pStat', '@GetPaymentStatusText(pStat)')">
+                                         @GetPaymentStatusText(pStat)
+                                         @if (Model.PaymentStatus == pStat) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
+                                     </div>
+                                 }
+                             </div>
+                             <select asp-for="PaymentStatus" class="hidden">
+                                 <option value="Unpaid">Chưa thanh toán</option>
+                                 <option value="Pending">Chờ xác nhận</option>
+                                 <option value="Partial">Thanh toán một phần</option>
+                                 <option value="Full">Đã thanh toán</option>
+                                 <option value="Refunded">Đã hoàn tiền</option>
                              </select>
                         </div>
                     </div>
@@ -84,7 +169,7 @@
                         </div>
                         <div>
                             <label class="label-text">Tổng tiền (VND)</label>
-                            <input asp-for="TotalAmount" class="input-field" type="number" step="1000" />
+                            <input asp-for="TotalAmount" id="TotalAmountInput" class="input-field" type="number" step="1000" />
                         </div>
                     </div>
                 </div>
@@ -132,7 +217,7 @@
                     <span class="material-symbols-outlined text-primary text-sm">receipt_long</span>
                     <p class="text-sm font-bold text-[#111718] dark:text-white uppercase tracking-[0.2em]">THÔNG TIN HÓA ĐƠN</p>
                 </div>
-                <span class="px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black rounded-full uppercase tracking-tighter">Current Value</span>
+                <span class="px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black rounded-full uppercase tracking-tighter">ĐANG CHỈNH SỬA</span>
             </div>
             <div class="bg-white dark:bg-surface-dark rounded-[2rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800">
                 <div class="p-8 border-b border-dashed border-slate-100 dark:border-slate-800">
@@ -143,7 +228,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase">Ngày tạo</p>
-                            <p class="text-sm font-bold text-[#111718] dark:text-white">@Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+                            <p class="text-sm font-bold text-[#111718] dark:text-white">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</p>
                         </div>
                     </div>
                     <div class="space-y-4">
@@ -153,7 +238,7 @@
                         </div>
                          <div class="flex justify-between items-center text-sm">
                             <span class="text-[#618389] dark:text-slate-400">Tour</span>
-                            <span class="font-bold text-[#111718] dark:text-white">@Model.TourSnapshot?.Name</span>
+                            <span class="font-bold text-[#111718] dark:text-white truncate max-w-[200px]" title="@Model.TourSnapshot?.Name">@Model.TourSnapshot?.Name</span>
                         </div>
                     </div>
                 </div>
@@ -162,7 +247,7 @@
                         <p class="text-xs font-bold text-[#618389] dark:text-slate-400 uppercase tracking-wider">Tổng cộng</p>
                         <span class="material-symbols-outlined text-primary">verified_user</span>
                     </div>
-                    <p class="text-4xl font-black text-primary">@Model.TotalAmount.ToString("N0") <span class="text-lg font-medium">VND</span></p>
+                    <p class="text-4xl font-black text-primary"><span id="preview-total-amount">@Model.TotalAmount.ToString("N0")</span> <span class="text-lg font-medium">VND</span></p>
                 </div>
             </div>
         </div>
@@ -187,3 +272,116 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        function toggleCustomSelect(id) {
+            const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
+            const menu = container.querySelector('.options-menu');
+            const arrow = container.querySelector('.arrow-icon');
+            const section = container.closest('.section-card');
+            
+            // Close other menus
+            document.querySelectorAll('.options-menu.visible').forEach(m => {
+                if (m !== menu) {
+                    m.classList.remove('visible');
+                    const otherContainer = m.closest('.custom-select-container');
+                    otherContainer.querySelector('.arrow-icon').style.transform = '';
+                    otherContainer.classList.remove('active');
+                    const otherSection = otherContainer.closest('.section-card');
+                    if (otherSection) otherSection.classList.remove('active-section');
+                }
+            });
+
+            menu.classList.toggle('visible');
+            container.classList.toggle('active');
+            if (section) section.classList.toggle('active-section');
+            arrow.style.transform = menu.classList.contains('visible') ? 'rotate(180deg)' : '';
+        }
+
+        function selectCustomOption(id, value, text) {
+            const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
+            const label = container.querySelector('.selected-label');
+            const nativeSelect = container.querySelector('select');
+            const menu = container.querySelector('.options-menu');
+            const arrow = container.querySelector('.arrow-icon');
+
+            // Update label and native select
+            label.innerText = text;
+            nativeSelect.value = value;
+            
+            // Trigger change event for potentially other listeners
+            nativeSelect.dispatchEvent(new Event('change'));
+
+            // Close menu
+            menu.classList.remove('visible');
+            container.classList.remove('active');
+            const section = container.closest('.section-card');
+            if (section) section.classList.remove('active-section');
+            arrow.style.transform = '';
+
+            // Update selected class in UI
+            container.querySelectorAll('.custom-option').forEach(opt => {
+                opt.classList.remove('selected');
+                const existingCheck = opt.querySelector('.check-icon');
+                if (existingCheck) existingCheck.remove();
+            });
+
+            const selectedItem = Array.from(container.querySelectorAll('.custom-option')).find(el => el.textContent.trim() === text);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+                selectedItem.insertAdjacentHTML('beforeend', '<span class="material-symbols-outlined text-lg check-icon">check</span>');
+            }
+
+            // If Status changed, update header badge
+            if (id === 'Status') {
+                updateHeaderStatusBadge(value, text);
+            }
+        }
+
+        function updateHeaderStatusBadge(status, text) {
+            const badge = document.getElementById('header-status-badge');
+            if (badge) {
+                badge.innerText = text;
+                badge.className = `px-4 py-2 text-xs font-bold rounded-full uppercase tracking-wider ${getStatusBadgeClass(status)}`;
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case "Pending": return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+                case "Confirmed": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+                case "Paid": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+                case "Completed": return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
+                case "Cancelled": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+                case "Refunded": return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
+                default: return "bg-slate-100 text-slate-700";
+            }
+        }
+
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-select-container')) {
+                document.querySelectorAll('.options-menu.visible').forEach(m => {
+                    m.classList.remove('visible');
+                    const container = m.closest('.custom-select-container');
+                    const arrow = container.querySelector('.arrow-icon');
+                    if (arrow) arrow.style.transform = '';
+                    container.classList.remove('active');
+                    const section = container.closest('.section-card');
+                    if (section) section.classList.remove('active-section');
+                });
+            }
+        });
+
+        // Sync Amount Preview
+        const amountInput = document.getElementById('TotalAmountInput');
+        const amountPreview = document.getElementById('preview-total-amount');
+        if (amountInput && amountPreview) {
+            amountInput.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value) || 0;
+                amountPreview.innerText = val.toLocaleString('vi-VN');
+            });
+        }
+    </script>
+}
