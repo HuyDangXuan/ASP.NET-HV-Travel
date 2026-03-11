@@ -12,6 +12,7 @@ namespace HVTravel.Infrastructure
         {
             services.AddSingleton<MongoContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<ITourRepository, TourRepository>();
             services.AddScoped<HVTravel.Application.Interfaces.IEmailService, HVTravel.Infrastructure.Services.EmailService>();
             
             // Register specific repositories here if needed

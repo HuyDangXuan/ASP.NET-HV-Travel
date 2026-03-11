@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HVTravel.Domain.Entities
 {
+    [BsonIgnoreExtraElements]
     public class Tour
     {
         [BsonId]
@@ -60,6 +61,8 @@ namespace HVTravel.Domain.Entities
         [BsonElement("current_participants")]
         public int CurrentParticipants { get; set; }
 
+        public int RemainingSpots => MaxParticipants - CurrentParticipants;
+
         [BsonElement("rating")]
         public double Rating { get; set; }
 
@@ -72,10 +75,14 @@ namespace HVTravel.Domain.Entities
         [BsonElement("updated_at")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        [BsonElement("version")]
+        public uint Version { get; set; } = 0;
+
         [BsonElement("status")]
         public string Status { get; set; } = "Active"; // Active, Inactive, SoldOut, ComingSoon
     }
 
+    [BsonIgnoreExtraElements]
     public class Destination
     {
         [BsonElement("city")]
@@ -88,6 +95,7 @@ namespace HVTravel.Domain.Entities
         public string Region { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class TourPrice
     {
         [BsonElement("adult")]
@@ -106,6 +114,7 @@ namespace HVTravel.Domain.Entities
         public double Discount { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class TourDuration
     {
         [BsonElement("days")]
@@ -118,6 +127,7 @@ namespace HVTravel.Domain.Entities
         public string Text { get; set; } // e.g., "3 Days 2 Nights"
     }
 
+    [BsonIgnoreExtraElements]
     public class ScheduleItem
     {
         [BsonElement("day")]

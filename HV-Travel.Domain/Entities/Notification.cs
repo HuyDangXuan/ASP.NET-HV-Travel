@@ -4,6 +4,7 @@ using System;
 
 namespace HVTravel.Domain.Entities
 {
+    [BsonIgnoreExtraElements]
     public class Notification
     {
         [BsonId]

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace HVTravel.Domain.Entities
 {
 
+    [BsonIgnoreExtraElements]
     public class Customer
     {
         [BsonId]
@@ -56,6 +57,7 @@ namespace HVTravel.Domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
+    [BsonIgnoreExtraElements]
     public class Address
     {
         [BsonElement("street")]
@@ -68,6 +70,7 @@ namespace HVTravel.Domain.Entities
         public string Country { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class CustomerStats
     {
         [BsonIgnore]

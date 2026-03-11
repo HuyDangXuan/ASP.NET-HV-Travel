@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HVTravel.Domain.Entities
 {
+    [BsonIgnoreExtraElements]
     public class Review
     {
         [BsonId]

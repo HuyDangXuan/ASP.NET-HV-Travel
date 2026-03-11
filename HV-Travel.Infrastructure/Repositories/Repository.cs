@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Models;
 using HVTravel.Infrastructure.Data;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace HVTravel.Infrastructure.Repositories
 {
@@ -55,7 +55,26 @@ namespace HVTravel.Infrastructure.Repositories
         public async Task UpdateAsync(string id, T entity)
         {
             var filter = Builders<T>.Filter.Eq("Id", id);
-            await _collection.ReplaceOneAsync(filter, entity);
+            
+            // Optimistic Concurrency Control (OCC)
+            // If the entity has a Version property, we use it for the filter and increment it
+            var versionProp = typeof(T).GetProperty("Version");
+            if (versionProp != null && versionProp.PropertyType == typeof(uint))
+            {
+                var currentVersion = (uint)versionProp.GetValue(entity);
+                var versionFilter = Builders<T>.Filter.Eq("Version", currentVersion);
+                filter = Builders<T>.Filter.And(filter, versionFilter);
+                
+                // Increment version for the next save
+                versionProp.SetValue(entity, currentVersion + 1);
+            }
+
+            var result = await _collection.ReplaceOneAsync(filter, entity);
+            
+            if (result.MatchedCount == 0 && versionProp != null)
+            {
+                throw new DbUpdateConcurrencyException("Dữ liệu đã bị thay đổi bởi một người dùng khác. Vui lòng tải lại trang.");
+            }
         }
 
         public async Task DeleteAsync(string id)
@@ -64,7 +83,7 @@ namespace HVTravel.Infrastructure.Repositories
             await _collection.DeleteOneAsync(filter);
         }
 
-        public async Task<PaginatedResult<T>> GetPagedAsync(int pageIndex, int pageSize, Expression<Func<T, bool>> filter = null)
+        public async Task<PaginatedResult<T>> GetPagedAsync(int pageIndex, int pageSize, Expression<Func<T, bool>>? filter = null)
         {
             var filterDefinition = filter != null
                 ? Builders<T>.Filter.Where(filter)

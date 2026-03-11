@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using MongoDB.Driver;
 
 namespace HVTravel.Infrastructure.Data
 {
@@ -19,6 +21,20 @@ namespace HVTravel.Infrastructure.Data
             var notificationRepository = serviceProvider.GetRequiredService<IRepository<Notification>>();
             var promotionRepository = serviceProvider.GetRequiredService<IRepository<Promotion>>();
             var reviewRepository = serviceProvider.GetRequiredService<IRepository<Review>>();
+
+            // 0. Cleanup legacy indexes that might cause duplicate key errors after standardization
+            try
+            {
+                var context = serviceProvider.GetRequiredService<MongoContext>();
+                var configuration = serviceProvider.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                var reviewCollectionName = configuration.GetValue<string>("HVTravelDatabase:ReviewsCollectionName") ?? "Reviews";
+                var reviewCollection = context.GetCollection<Review>(reviewCollectionName);
+                await reviewCollection.Indexes.DropAllAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Could not drop indexes: {ex.Message}");
+            }
 
             // 1. Seed Users
             if (!(await userRepository.GetAllAsync()).Any())

@@ -166,6 +166,9 @@
                     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">group</span> Số Lượng Hành Khách
+                            <span id="spots-left-badge" class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all">
+                                Còn @tour.RemainingSpots chỗ
+                            </span>
                         </h3>
                         <div class="space-y-4">
                             <!-- Adult -->
@@ -178,7 +181,7 @@
                                     <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
-                                    <input asp-for="AdultCount" id="AdultCount" type="number" min="1" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <input asp-for="AdultCount" id="AdultCount" type="number" min="1" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                     <button type="button" onclick="adjustCount('AdultCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
@@ -194,7 +197,7 @@
                                     <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
-                                    <input asp-for="ChildCount" id="ChildCount" type="number" min="0" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <input asp-for="ChildCount" id="ChildCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                     <button type="button" onclick="adjustCount('ChildCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
@@ -210,7 +213,7 @@
                                     <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
-                                    <input asp-for="InfantCount" id="InfantCount" type="number" min="0" max="50" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                    <input asp-for="InfantCount" id="InfantCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                     <button type="button" onclick="adjustCount('InfantCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
@@ -324,15 +327,31 @@
     const childPrice = @((int)childPrice);
     const infantPrice = @((int)infantPrice);
     const discountPercent = @discount;
+    const maxParticipants = @tour.MaxParticipants;
+    const currentParticipants = @tour.CurrentParticipants;
+    const remainingSpots = @tour.RemainingSpots;
 
     function adjustCount(id, delta) {
         const input = document.getElementById(id);
-        const min = parseInt(input.getAttribute('min')) || 0;
-        const max = parseInt(input.getAttribute('max')) || 50;
-        let val = parseInt(input.value) + delta;
+        const adults = parseInt(document.getElementById('AdultCount').value) || 0;
+        const children = parseInt(document.getElementById('ChildCount').value) || 0;
+        const infants = parseInt(document.getElementById('InfantCount').value) || 0;
         
+        const currentTotal = adults + children + infants;
+        const min = parseInt(input.getAttribute('min')) || 0;
+        
+        if (delta > 0 && currentTotal >= remainingSpots) {
+            Swal.fire({
+                title: 'Hết chỗ!',
+                text: `Tour này hiện chỉ còn ${remainingSpots} chỗ trống.`,
+                icon: 'warning',
+                confirmButtonColor: '#2bcdee'
+            });
+            return;
+        }
+
+        let val = parseInt(input.value) + delta;
         if (val < min) val = min;
-        if (val > max) val = max;
         
         input.value = val;
         updatePrice();
@@ -342,6 +361,19 @@
         const adults = parseInt(document.getElementById('AdultCount').value) || 1;
         const children = parseInt(document.getElementById('ChildCount').value) || 0;
         const infants = parseInt(document.getElementById('InfantCount').value) || 0;
+
+        const currentTotal = adults + children + infants;
+        const spotsLeft = remainingSpots - currentTotal;
+
+        const badge = document.getElementById('spots-left-badge');
+        if (badge) {
+            badge.textContent = spotsLeft > 0 ? `Còn ${spotsLeft} chỗ` : 'Đã hết chỗ';
+            if (spotsLeft <= 5) {
+                badge.className = "ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-500 border border-red-100 transition-all animate-pulse";
+            } else {
+                badge.className = "ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all";
+            }
+        }
 
         const adultTotal = adults * adultPrice;
         const childTotal = children * childPrice;

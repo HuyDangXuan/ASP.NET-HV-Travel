@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace HVTravel.Domain.Entities
 {
 
+    [BsonIgnoreExtraElements]
     public class Booking
     {
         [BsonId]
@@ -79,6 +80,7 @@ namespace HVTravel.Domain.Entities
         public DateTime? DeletedAt { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class TourSnapshot
     {
         [BsonElement("code")]
@@ -94,6 +96,7 @@ namespace HVTravel.Domain.Entities
         public string Duration { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class Passenger
     {
         [BsonElement("full_name")]
@@ -112,6 +115,7 @@ namespace HVTravel.Domain.Entities
         public string PassportNumber { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class ContactInfo
     {
         [BsonElement("name")]
@@ -124,6 +128,7 @@ namespace HVTravel.Domain.Entities
         public string Phone { get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class BookingHistoryLog
     {
         [BsonElement("action")]

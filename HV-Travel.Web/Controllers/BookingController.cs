@@ -7,10 +7,10 @@ namespace HVTravel.Web.Controllers;
 
 public class BookingController : Controller
 {
-    private readonly IRepository<Tour> _tourRepository;
+    private readonly ITourRepository _tourRepository;
     private readonly IRepository<Booking> _bookingRepository;
 
-    public BookingController(IRepository<Tour> tourRepository, IRepository<Booking> bookingRepository)
+    public BookingController(ITourRepository tourRepository, IRepository<Booking> bookingRepository)
     {
         _tourRepository = tourRepository;
         _bookingRepository = bookingRepository;
@@ -50,6 +50,14 @@ public class BookingController : Controller
 
         if (!ModelState.IsValid)
         {
+            ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+            return View(vm);
+        }
+
+        // Validate max participants
+        if (vm.TotalParticipants > tour.RemainingSpots)
+        {
+            ModelState.AddModelError("", $"Tour này hiện chỉ còn {tour.RemainingSpots} chỗ trống. Vui lòng giảm số lượng hành khách.");
             ViewData["Title"] = $"Đặt Tour - {tour.Name}";
             return View(vm);
         }
@@ -124,6 +132,15 @@ public class BookingController : Controller
                 }
             }
         };
+
+        // ATOMIC UPDATE: Try to increment participants first
+        var success = await _tourRepository.IncrementParticipantsAsync(vm.TourId, vm.TotalParticipants);
+        if (!success)
+        {
+            ModelState.AddModelError("", "Rất tiếc, tour đã vừa hết chỗ trống khi bạn đang thực hiện đặt. Vui lòng thử lại với số lượng ít hơn hoặc chọn tour khác.");
+            ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+            return View(vm);
+        }
 
         await _bookingRepository.AddAsync(booking);
 
