@@ -12,24 +12,27 @@ namespace HVTravel.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonElement("customer_code")]
+        [BsonElement("customerCode")]
         public string CustomerCode { get; set; }
 
         [Required]
-        [BsonElement("full_name")]
-        public string FullName { get; set; }
+        [BsonElement("fullName")]
+        public string FullName { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress]
         [BsonElement("email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
+
+        [BsonElement("password")]
+        public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
         [Phone]
-        [BsonElement("phone_number")]
-        public string PhoneNumber { get; set; }
+        [BsonElement("phoneNumber")]
+        public string PhoneNumber { get; set; } = string.Empty;
         
-        [BsonElement("avatar_url")]
+        [BsonElement("avatarUrl")]
         public string AvatarUrl { get; set; }
 
         [BsonElement("address")]
@@ -44,16 +47,22 @@ namespace HVTravel.Domain.Entities
         [BsonElement("status")]
         public string Status { get; set; } = "Active"; // Active, Banned
 
+        [BsonElement("emailVerified")]
+        public bool EmailVerified { get; set; }
+
+        [BsonElement("tokenVersion")]
+        public int TokenVersion { get; set; }
+
         [BsonElement("stats")]
         public CustomerStats Stats { get; set; } = new CustomerStats();
         
         [BsonElement("tags")]
         public List<string> Tags { get; set; } = new List<string>();
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
-        [BsonElement("updated_at")]
+        [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
@@ -79,10 +88,10 @@ namespace HVTravel.Domain.Entities
         [BsonIgnore]
         public int TotalOrders { get; set; }
         
-        [BsonElement("loyalty_points")]
+        [BsonElement("loyaltyPoints")]
         public int LoyaltyPoints { get; set; }
         
-        [BsonElement("last_activity")]
+        [BsonElement("lastActivity")]
         public DateTime LastActivity { get; set; } = DateTime.UtcNow;
     }
 }

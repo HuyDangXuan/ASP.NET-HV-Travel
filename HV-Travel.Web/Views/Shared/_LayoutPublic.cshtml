@@ -6,13 +6,11 @@
     <title>@ViewData["Title"] - HV Travel</title>
     <meta name="description" content="@(ViewData["Description"] ?? "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất")" />
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -76,34 +74,32 @@
             width: 100%;
         }
 
-        /* ===== Scroll Animations ===== */
         [data-animate] {
             opacity: 0;
             transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);
             will-change: opacity, transform;
         }
-        [data-animate="fade-up"]   { transform: translateY(40px); }
+        [data-animate="fade-up"] { transform: translateY(40px); }
         [data-animate="fade-down"] { transform: translateY(-40px); }
-        [data-animate="fade-in"]   { transform: none; }
-        [data-animate="slide-left"]  { transform: translateX(-60px); }
+        [data-animate="fade-in"] { transform: none; }
+        [data-animate="slide-left"] { transform: translateX(-60px); }
         [data-animate="slide-right"] { transform: translateX(60px); }
-        [data-animate="scale-in"]    { transform: scale(0.9); }
-        [data-animate="zoom-in"]     { transform: scale(0.85); }
+        [data-animate="scale-in"] { transform: scale(0.9); }
+        [data-animate="zoom-in"] { transform: scale(0.85); }
 
         [data-animate].is-visible {
             opacity: 1;
             transform: none;
         }
 
-        /* Stagger children */
         [data-stagger] > * { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
-        [data-stagger].is-visible > *:nth-child(1)  { transition-delay: 0.05s; }
-        [data-stagger].is-visible > *:nth-child(2)  { transition-delay: 0.12s; }
-        [data-stagger].is-visible > *:nth-child(3)  { transition-delay: 0.19s; }
-        [data-stagger].is-visible > *:nth-child(4)  { transition-delay: 0.26s; }
-        [data-stagger].is-visible > *:nth-child(5)  { transition-delay: 0.33s; }
-        [data-stagger].is-visible > *:nth-child(6)  { transition-delay: 0.40s; }
-        [data-stagger].is-visible > *:nth-child(n+7){ transition-delay: 0.47s; }
+        [data-stagger].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
+        [data-stagger].is-visible > *:nth-child(2) { transition-delay: 0.12s; }
+        [data-stagger].is-visible > *:nth-child(3) { transition-delay: 0.19s; }
+        [data-stagger].is-visible > *:nth-child(4) { transition-delay: 0.26s; }
+        [data-stagger].is-visible > *:nth-child(5) { transition-delay: 0.33s; }
+        [data-stagger].is-visible > *:nth-child(6) { transition-delay: 0.40s; }
+        [data-stagger].is-visible > *:nth-child(n+7) { transition-delay: 0.47s; }
         [data-stagger].is-visible > * { opacity: 1; transform: none; }
     </style>
     <script>
@@ -115,12 +111,9 @@
     </script>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
-
-    <!-- ========== HEADER ========== -->
     <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 transition-all duration-300" id="site-header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
-                <!-- Logo -->
                 <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 group">
                     <div class="bg-gradient-to-br from-primary to-blue-500 text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all group-hover:scale-105">
                         <span class="material-symbols-outlined">flight_takeoff</span>
@@ -131,7 +124,6 @@
                     </div>
                 </a>
 
-                <!-- Desktop Nav -->
                 <nav class="hidden md:flex items-center gap-8">
                     <a asp-controller="Home" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Home" ? "active text-primary dark:text-primary" : "")">
                         Trang Chủ
@@ -147,38 +139,55 @@
                     </a>
                 </nav>
 
-                <!-- Actions -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Theme Toggle -->
                     <button id="theme-toggle-public"
-                      class="group inline-flex items-center justify-center w-10 h-10 rounded-full
-                            text-slate-500 dark:text-slate-400
-                            hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800
-                            transition-all font-medium"
-                      aria-label="Toggle Dark Mode">
-                      <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
-                      <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
+                        class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium"
+                        aria-label="Toggle Dark Mode">
+                        <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
+                        <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
 
-                    <!-- Auth Actions -->
                     <div class="hidden sm:flex items-center gap-2">
-                        <a asp-area="Admin" asp-controller="Auth" asp-action="Register" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">
-                            Tham Gia
-                        </a>
-                        <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95 hover:-translate-y-0.5">
-                            <span class="material-symbols-outlined text-[18px]">login</span>
-                            Đăng Nhập
-                        </a>
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+                        {
+                            var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+                            customerName = string.IsNullOrWhiteSpace(customerName) ? "Khách hàng" : customerName.Trim();
+                            var customerInitial = customerName[0].ToString().ToUpperInvariant();
+                            <div class="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+                                <div class="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-blue-500 text-sm font-extrabold text-white">
+                                    @customerInitial
+                                </div>
+                                <div class="max-w-[180px]">
+                                    <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
+                                    <p class="truncate text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
+                                </div>
+                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">
+                                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Home" asp-action="Contact" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">
+                                Tư Vấn Tour
+                            </a>
+                            <a asp-controller="CustomerAuth" asp-action="Login" class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95 hover:-translate-y-0.5">
+                                <span class="material-symbols-outlined text-[18px]">login</span>
+                                Đăng Nhập
+                            </a>
+                        }
                     </div>
 
-                    <!-- Mobile menu button -->
                     <button id="mobile-menu-btn" class="md:hidden p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                         <span class="material-symbols-outlined text-[24px]">menu</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Mobile Nav -->
             <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <nav class="flex flex-col gap-1 pt-3">
                     <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
@@ -193,30 +202,48 @@
                     <a asp-controller="Home" asp-action="Contact" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
                         <span class="material-symbols-outlined text-[20px]">call</span> Liên Hệ
                     </a>
-                    <div class="grid grid-cols-2 gap-2 px-4 py-3 sm:hidden border-t border-slate-100 dark:border-slate-800 mt-2">
-                        <a asp-area="Admin" asp-controller="Auth" asp-action="Register" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 transition-all">
-                            Đăng Ký
-                        </a>
-                        <a asp-area="Admin" asp-controller="Auth" asp-action="Login" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 transition-all">
-                            Đăng Nhập
-                        </a>
-                    </div>
+
+                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+                    {
+                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "Khách hàng" : mobileCustomerName.Trim();
+                        <div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800 mt-2">
+                            <div class="rounded-2xl bg-slate-50 dark:bg-slate-800 px-4 py-4">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
+                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-4">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white dark:bg-slate-700">
+                                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="grid grid-cols-2 gap-2 px-4 py-3 sm:hidden border-t border-slate-100 dark:border-slate-800 mt-2">
+                            <a asp-controller="Home" asp-action="Contact" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 transition-all">
+                                Tư Vấn
+                            </a>
+                            <a asp-controller="CustomerAuth" asp-action="Login" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                                Đăng Nhập
+                            </a>
+                        </div>
+                    }
                 </nav>
             </div>
         </div>
     </header>
 
-    <!-- ========== MAIN CONTENT ========== -->
     <main class="flex-1">
         @RenderBody()
     </main>
 
-    <!-- ========== FOOTER ========== -->
     <footer class="bg-slate-900 dark:bg-slate-950 text-white">
-        <!-- Main Footer -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" data-animate="fade-up" data-stagger>
-                <!-- Brand -->
                 <div class="lg:col-span-1">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="bg-gradient-to-br from-primary to-blue-500 text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30">
@@ -243,7 +270,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Links -->
                 <div>
                     <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">Khám Phá</h4>
                     <ul class="space-y-3">
@@ -254,7 +280,6 @@
                     </ul>
                 </div>
 
-                <!-- Company -->
                 <div>
                     <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">Công Ty</h4>
                     <ul class="space-y-3">
@@ -265,7 +290,6 @@
                     </ul>
                 </div>
 
-                <!-- Contact Info -->
                 <div>
                     <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">Liên Hệ</h4>
                     <ul class="space-y-4">
@@ -290,7 +314,6 @@
             </div>
         </div>
 
-        <!-- Bottom Bar -->
         <div class="border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year HV Travel. All rights reserved.</p>
@@ -306,7 +329,6 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
-        // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle-public');
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {
@@ -315,7 +337,6 @@
             });
         }
 
-        // Mobile Menu Toggle
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenuBtn && mobileMenu) {
@@ -324,7 +345,6 @@
             });
         }
 
-        // Header scroll effect
         const header = document.getElementById('site-header');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 10) {
@@ -334,7 +354,6 @@
             }
         });
 
-        // Scroll-triggered animations
         (function() {
             const els = document.querySelectorAll('[data-animate], [data-stagger]');
             if (!els.length) return;
