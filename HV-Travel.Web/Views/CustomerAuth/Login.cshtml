@@ -49,6 +49,13 @@
                         </p>
                     </div>
 
+                    @if (TempData["AuthSuccessMessage"] != null)
+                    {
+                        <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+                            @TempData["AuthSuccessMessage"]
+                        </div>
+                    }
+
                     <form asp-action="Login" method="post" class="space-y-5">
                         @Html.AntiForgeryToken()
                         <input asp-for="ReturnUrl" type="hidden" />
@@ -84,8 +91,9 @@
                         </button>
                     </form>
 
-                    <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300">
-                        Chưa có luồng đăng ký khách hàng riêng trên giao diện public. Nếu cần tạo mới tài khoản, đội vận hành có thể thêm khách hàng từ hệ thống quản trị trước.
+                    <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between">
+                        <span>Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ.</span>
+                        <a asp-controller="CustomerAuth" asp-action="Register" class="font-bold text-primary hover:text-primary-dark">Đăng ký ngay</a>
                     </div>
                 </div>
             </div>
