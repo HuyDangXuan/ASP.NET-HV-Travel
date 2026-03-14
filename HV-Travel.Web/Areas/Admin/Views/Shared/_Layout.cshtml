@@ -353,6 +353,10 @@
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
                     <span class="text-sm font-medium">Khách Hàng</span>
                 </a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Nội Dung Website" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-area="Admin" asp-controller="Content" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">web_stories</span>
+                    <span class="text-sm font-medium">Nội Dung Website</span>
+                </a>
                 @if (User.IsInRole("Admin"))
                 {
                     <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Users" ? "bg-primary/10 text-primary-dark dark:text-primary font-bold shadow-sm ring-1 ring-primary/20" : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all group")" asp-area="Admin" asp-controller="Users" asp-action="Index">
@@ -479,10 +483,13 @@
         </div>
     </main>
 
-    <!-- Right Sidebar (Widgets) -->
+    <aside class="hidden xl:flex xl:w-[380px] h-full shrink-0 border-l border-slate-200/50 dark:border-slate-700/50 glass-panel">
+        @await Html.PartialAsync("_AdminMessageCenter")
+    </aside>
 
     
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
     
     <script>
 

@@ -1,0 +1,61 @@
+namespace HVTravel.Web.Models;
+
+public class ChatBootstrapRequest
+{
+    public string VisitorSessionId { get; set; } = string.Empty;
+
+    public string DisplayName { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    public string SourcePage { get; set; } = "/";
+}
+
+public class ChatMessageDto
+{
+    public string Id { get; set; } = string.Empty;
+
+    public string ConversationId { get; set; } = string.Empty;
+
+    public string SenderType { get; set; } = string.Empty;
+
+    public string SenderDisplayName { get; set; } = string.Empty;
+
+    public string Content { get; set; } = string.Empty;
+
+    public bool IsRead { get; set; }
+
+    public DateTime SentAt { get; set; }
+}
+
+public class ChatConversationDto
+{
+    public string Id { get; set; } = string.Empty;
+
+    public string ConversationCode { get; set; } = string.Empty;
+
+    public string Status { get; set; } = string.Empty;
+
+    public string ParticipantType { get; set; } = string.Empty;
+
+    public string DisplayName { get; set; } = string.Empty;
+
+    public string SourcePage { get; set; } = string.Empty;
+
+    public string LastMessagePreview { get; set; } = string.Empty;
+
+    public DateTime LastMessageAt { get; set; }
+
+    public int UnreadForAdminCount { get; set; }
+
+    public int UnreadForCustomerCount { get; set; }
+}
+
+public class ChatMarkReadRequest
+{
+    public string ConversationId { get; set; } = string.Empty;
+
+    public string VisitorSessionId { get; set; } = string.Empty;
+}

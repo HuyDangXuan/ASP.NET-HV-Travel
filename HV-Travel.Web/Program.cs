@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using HVTravel.Application;
 using HVTravel.Infrastructure;
 using HVTravel.Infrastructure.Data;
+using HVTravel.Web.Hubs;
+using HVTravel.Web.Services;
 
 using DotNetEnv;
 
@@ -13,10 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
+builder.Services.AddSignalR();
 
 // Add Layered Services
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddScoped<IPublicContentService, PublicContentService>();
+builder.Services.AddScoped<ISupportChatService, SupportChatService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -53,11 +59,29 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapHub<SupportChatHub>("/supportChatHub");
+
 // Seed Data
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await DbInitializer.SeedAsync(services);
+    try
+    {
+        await DbInitializer.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var lines = new System.Collections.Generic.List<string> { "=== SEED ERROR ===" };
+        var current = ex;
+        while (current != null)
+        {
+            lines.Add($"[{current.GetType().FullName}] {current.Message}");
+            current = current.InnerException;
+        }
+        lines.Add("=== END SEED ERROR ===");
+        System.IO.File.WriteAllLines("seed_error_log.txt", lines);
+        Console.WriteLine("SEED ERROR - see seed_error_log.txt for details");
+    }
 }
 
 app.Run();

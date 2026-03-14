@@ -1,0 +1,297 @@
+@{
+    var isCustomer = User.Identity?.IsAuthenticated == true && User.IsInRole("Customer");
+    var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khach hang";
+}
+
+<div id="support-chat-widget" class="fixed bottom-5 right-5 z-[70]">
+    <form id="public-chat-antiforgery-form" class="hidden">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <div id="support-chat-panel" class="hidden w-[calc(100vw-2rem)] max-w-[380px] overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-2xl shadow-slate-900/20 dark:border-slate-700 dark:bg-slate-900">
+        <div class="hero-gradient px-5 py-5 text-white">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.28em] text-primary-light">HV Travel</p>
+                    <h3 class="mt-2 text-xl font-bold">Ho tro truc tuyen</h3>
+                    <p class="mt-2 text-sm text-slate-200">Nhan vien se phan hoi qua sidebar admin theo thoi gian thuc.</p>
+                </div>
+                <button id="support-chat-close" type="button" class="inline-flex size-10 items-center justify-center rounded-2xl bg-white/10 text-white transition-all hover:bg-white/20">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="border-b border-slate-200 px-5 py-4 dark:border-slate-700">
+            <p class="text-sm font-bold text-slate-900 dark:text-white">Thong tin nguoi chat</p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <label class="sm:col-span-2">
+                    <span class="mb-1.5 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Ten hien thi</span>
+                    <input id="support-chat-display-name" value="@(isCustomer ? customerName : "")" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800" placeholder="Ban ten gi?" @(isCustomer ? "readonly" : "") />
+                </label>
+                <label>
+                    <span class="mb-1.5 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Email</span>
+                    <input id="support-chat-email" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800" placeholder="email@example.com" />
+                </label>
+                <label>
+                    <span class="mb-1.5 block text-xs font-bold uppercase tracking-[0.18em] text-slate-400">So dien thoai</span>
+                    <input id="support-chat-phone" class="w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800" placeholder="09xx xxx xxx" />
+                </label>
+            </div>
+            <p id="support-chat-status" class="mt-3 text-xs text-slate-400 dark:text-slate-500">He thong chat dang san sang.</p>
+        </div>
+
+        <div id="support-chat-messages" class="h-[320px] space-y-3 overflow-y-auto px-5 py-5">
+            <div class="rounded-3xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
+                Mo khung chat va gui tin nhan dau tien de bat dau hoi thoai.
+            </div>
+        </div>
+
+        <form id="support-chat-form" class="border-t border-slate-200 px-5 py-4 dark:border-slate-700">
+            <div class="rounded-[1.75rem] border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <textarea id="support-chat-input" rows="3" class="w-full resize-none border-0 bg-transparent p-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500" placeholder="Nhap noi dung can ho tro..."></textarea>
+                <div class="mt-3 flex items-center justify-between gap-3">
+                    <p class="text-[11px] text-slate-400">Khach va customer deu dung duoc widget nay.</p>
+                    <button id="support-chat-send" type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:bg-primary-dark">
+                        <span class="material-symbols-outlined text-[18px]">send</span>
+                        Gui
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <button id="support-chat-toggle" type="button" class="ml-auto inline-flex items-center gap-3 rounded-full bg-slate-900 px-5 py-4 text-sm font-bold text-white shadow-2xl shadow-slate-900/30 transition-all hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">
+        <span class="flex size-11 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30">
+            <span class="material-symbols-outlined text-[20px]">chat</span>
+        </span>
+        <span class="hidden sm:inline">Tin nhan</span>
+    </button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+    (() => {
+        const root = document.getElementById('support-chat-widget');
+        if (!root || typeof signalR === 'undefined') {
+            return;
+        }
+
+        const panelEl = document.getElementById('support-chat-panel');
+        const toggleEl = document.getElementById('support-chat-toggle');
+        const closeEl = document.getElementById('support-chat-close');
+        const statusEl = document.getElementById('support-chat-status');
+        const messagesEl = document.getElementById('support-chat-messages');
+        const inputEl = document.getElementById('support-chat-input');
+        const formEl = document.getElementById('support-chat-form');
+        const displayNameEl = document.getElementById('support-chat-display-name');
+        const emailEl = document.getElementById('support-chat-email');
+        const phoneEl = document.getElementById('support-chat-phone');
+
+        const createSessionId = () => {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+                return window.crypto.randomUUID();
+            }
+
+            return `visitor-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+        };
+
+        const state = {
+            bootstrapped: false,
+            conversation: null,
+            messages: [],
+            connection: null,
+            joinedConversationId: '',
+            visitorSessionId: localStorage.getItem('hvtravel.supportChat.visitorSessionId') || createSessionId()
+        };
+
+        localStorage.setItem('hvtravel.supportChat.visitorSessionId', state.visitorSessionId);
+
+        const escapeHtml = (value) => (value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const formatTime = (value) => {
+            if (!value) {
+                return '';
+            }
+
+            return new Intl.DateTimeFormat('vi-VN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit'
+            }).format(new Date(value));
+        };
+
+        const setStatus = (message) => {
+            statusEl.textContent = message;
+        };
+
+        const renderMessages = () => {
+            if (!state.messages.length) {
+                messagesEl.innerHTML = `
+                    <div class="rounded-3xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
+                        Mo khung chat va gui tin nhan dau tien de bat dau hoi thoai.
+                    </div>`;
+                return;
+            }
+
+            messagesEl.innerHTML = state.messages.map((message) => {
+                const isStaff = message.senderType === 'staff';
+                const alignment = isStaff ? 'items-start' : 'items-end';
+                const bubble = isStaff
+                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+                    : message.senderType === 'system'
+                        ? 'bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-300'
+                        : 'bg-primary text-white';
+
+                return `
+                    <div class="flex flex-col ${alignment}">
+                        <div class="max-w-[88%] rounded-3xl px-4 py-3 text-sm shadow-sm ${bubble}">
+                            <p class="text-[11px] font-bold uppercase tracking-[0.16em] ${message.senderType === 'guest' || message.senderType === 'customer' ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'}">${escapeHtml(message.senderDisplayName || 'HV Travel')}</p>
+                            <p class="mt-2 whitespace-pre-wrap leading-relaxed">${escapeHtml(message.content || '')}</p>
+                        </div>
+                        <p class="mt-1 px-1 text-[11px] text-slate-400">${escapeHtml(formatTime(message.sentAt))}</p>
+                    </div>`;
+            }).join('');
+
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        };
+
+        const ensureConnection = async () => {
+            if (state.connection) {
+                return;
+            }
+
+            state.connection = new signalR.HubConnectionBuilder()
+                .withUrl('/supportChatHub')
+                .withAutomaticReconnect()
+                .build();
+
+            state.connection.on('ReceiveMessage', (message) => {
+                if (!state.conversation || message.conversationId !== state.conversation.id) {
+                    return;
+                }
+
+                state.messages.push(message);
+                renderMessages();
+                if (message.senderType === 'staff') {
+                    markRead().catch(() => { });
+                }
+            });
+
+            await state.connection.start();
+        };
+
+        const joinConversation = async () => {
+            if (!state.connection || !state.conversation || state.joinedConversationId === state.conversation.id) {
+                return;
+            }
+
+            await state.connection.invoke('JoinConversation', state.conversation.id, state.visitorSessionId);
+            state.joinedConversationId = state.conversation.id;
+        };
+
+        const bootstrap = async () => {
+            if (state.bootstrapped) {
+                return;
+            }
+
+            setStatus('Dang ket noi den nhan vien...');
+
+            const response = await fetch('/SupportChat/bootstrap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    visitorSessionId: state.visitorSessionId,
+                    displayName: displayNameEl.value.trim(),
+                    email: emailEl.value.trim(),
+                    phoneNumber: phoneEl.value.trim(),
+                    sourcePage: `${window.location.pathname}${window.location.search}`
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Khong the khoi tao hoi thoai.');
+            }
+
+            const payload = await response.json();
+            state.conversation = payload.conversation;
+            state.messages = payload.messages || [];
+            state.bootstrapped = true;
+            renderMessages();
+            await ensureConnection();
+            await joinConversation();
+            await markRead();
+            setStatus('Hoi thoai da san sang.');
+        };
+
+        const markRead = async () => {
+            if (!state.conversation) {
+                return;
+            }
+
+            await fetch('/SupportChat/mark-read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    conversationId: state.conversation.id,
+                    visitorSessionId: state.visitorSessionId
+                })
+            });
+        };
+
+        const openPanel = async () => {
+            panelEl.classList.remove('hidden');
+            toggleEl.classList.add('hidden');
+
+            try {
+                await bootstrap();
+            } catch (error) {
+                setStatus(error.message || 'Khong khoi tao duoc chat.');
+            }
+        };
+
+        const closePanel = () => {
+            panelEl.classList.add('hidden');
+            toggleEl.classList.remove('hidden');
+        };
+
+        toggleEl.addEventListener('click', () => {
+            openPanel().catch((error) => setStatus(error.message));
+        });
+
+        closeEl.addEventListener('click', closePanel);
+
+        formEl.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const content = inputEl.value.trim();
+            if (!content) {
+                return;
+            }
+
+            try {
+                if (!state.bootstrapped) {
+                    await bootstrap();
+                }
+
+                await ensureConnection();
+                await joinConversation();
+                await state.connection.invoke('SendPublicMessage', state.conversation.id, state.visitorSessionId, content);
+                inputEl.value = '';
+                setStatus('Tin nhan da duoc gui.');
+            } catch (error) {
+                setStatus(error.message || 'Khong gui duoc tin nhan.');
+            }
+        });
+    })();
+</script>
