@@ -61,7 +61,7 @@ namespace HVTravel.Infrastructure.Services
             catch (Exception ex)
             {
                 // In a production app, log this exception
-                Console.WriteLine($"Error sending email: {ex.Message}");
+                Console.WriteLine($"Lỗi khi gửi email: {ex.Message}");
                 throw;
             }
         }

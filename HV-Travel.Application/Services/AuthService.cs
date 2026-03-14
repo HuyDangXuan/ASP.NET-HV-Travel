@@ -32,7 +32,7 @@ namespace HVTravel.Application.Services
             var existingUsers = await _userRepository.FindAsync(u => u.Email == user.Email);
             if (existingUsers.Any())
             {
-                throw new Exception("Email already exists");
+                throw new Exception("Email đã tồn tại.");
             }
 
             // Hash password
