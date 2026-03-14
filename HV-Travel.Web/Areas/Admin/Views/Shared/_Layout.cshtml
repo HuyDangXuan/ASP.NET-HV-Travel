@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -325,7 +325,7 @@
                         <p class="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1">Trang Quản Trị</p>
                     </div>
                 </div>
-                <button id="theme-toggle" class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-white/50 dark:hover:bg-white/5 transition-all" aria-label="Toggle Dark Mode">
+                <button id="theme-toggle" class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-white/50 dark:hover:bg-white/5 transition-all" aria-label="Chuyển chế độ tối">
                     <span class="material-symbols-outlined dark:hidden text-[20px]">dark_mode</span>
                     <span class="material-symbols-outlined hidden dark:block text-[20px]">light_mode</span>
                 </button>
@@ -469,7 +469,7 @@
 
                 <div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700">
                     <div class="text-right hidden md:block">
-                        <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">@(User.Identity.Name ?? "Admin User")</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">@(User.Identity.Name ?? "Quản trị viên")</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value</p>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white dark:border-slate-700 shadow-md" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdg7QiB7JmSpAa3vcJImpfHeVlDIrG3SRvkZQhvz5wE_i3KRHBwrHBklwwPt0boWqfKEmxmBFHYfXoJIDCeIsw2rwfuQl91M3tfPuK32VjST-BWcxY1S5urfmzf_GWqRMpQf6L4r6kt_DqQIK6C1dwyRdd7hd08u1eFxMPTe7B2_WRHK_q6y29t8ZewLUqHByWt3NRtoP7CX8gMVMFNKcl7InW8IGyu2jX0exZ28ny4c6-CYOLRnG1ZivaUBgjDrcmsLjhgTCg7w');"></div>
@@ -483,13 +483,14 @@
         </div>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
     <aside class="hidden xl:flex xl:w-[380px] h-full shrink-0 border-l border-slate-200/50 dark:border-slate-700/50 glass-panel">
         @await Html.PartialAsync("_AdminMessageCenter")
     </aside>
 
     
     @await RenderSectionAsync("Scripts", required: false)
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
     
     <script>
 

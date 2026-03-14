@@ -1,7 +1,7 @@
-@model ContentManagementViewModel
+﻿@model ContentManagementViewModel
 @{
     var activeTab = Model.Tabs.FirstOrDefault(tab => tab.Key == Model.ActiveTab) ?? Model.Tabs.First();
-    ViewData["Title"] = "Nội Dung Website";
+    ViewData["Title"] = "Nội dung website";
 }
 
 <div class="space-y-8">
@@ -15,11 +15,11 @@
         </div>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Tabs</p>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Danh mục</p>
                 <p class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">@Model.Tabs.Count</p>
             </div>
             <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Active</p>
+                <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Đang chọn</p>
                 <p class="mt-3 text-lg font-extrabold text-slate-900 dark:text-white">@activeTab.Label</p>
             </div>
             <div class="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700 sm:col-span-1 col-span-2">
@@ -53,7 +53,7 @@
             </div>
 
             <div class="rounded-[2rem] bg-white p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-                <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Inventory</p>
+                <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Tổng quan</p>
                 <ul class="mt-4 space-y-3">
                     @foreach (var item in Model.Inventory)
                     {
@@ -79,19 +79,19 @@
                         var group = Model.SiteSettings.Groups[i];
                         <div class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
                             <input asp-for="SiteSettings.Groups[i].GroupKey" type="hidden" />
-                            <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 dark:border-slate-700 lg:flex-row lg:items-start lg:justify-between">
-                                <div>
-                                    <input asp-for="SiteSettings.Groups[i].Title" class="w-full border-0 bg-transparent px-0 text-xl font-bold text-slate-900 focus:ring-0 dark:text-white" />
-                                    <textarea asp-for="SiteSettings.Groups[i].Description" rows="2" class="mt-2 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 text-sm text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"></textarea>
+                            <div class="grid gap-4 border-b border-slate-100 pb-5 dark:border-slate-700 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+                                <div class="space-y-3">
+                                    <input asp-for="SiteSettings.Groups[i].Title" class="w-full border-0 bg-transparent px-0 text-xl font-bold leading-tight text-slate-900 focus:ring-0 dark:text-white" />
+                                    <textarea asp-for="SiteSettings.Groups[i].Description" rows="2" class="w-full min-h-[92px] resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"></textarea>
                                 </div>
-                                <div class="grid gap-3 sm:grid-cols-2">
-                                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                <div class="grid auto-rows-fr gap-3 sm:grid-cols-2">
+                                    <label class="flex min-h-[92px] items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
                                         <input asp-for="SiteSettings.Groups[i].IsEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
                                         Hiển thị group
                                     </label>
-                                    <label class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                    <label class="flex min-h-[92px] flex-col justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
                                         Thứ tự
-                                        <input asp-for="SiteSettings.Groups[i].DisplayOrder" class="mt-2 w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
+                                        <input asp-for="SiteSettings.Groups[i].DisplayOrder" class="mt-3 h-11 w-full rounded-xl border-slate-200 bg-slate-50 px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
                                     </label>
                                 </div>
                             </div>
@@ -110,11 +110,11 @@
 
                                         @if (field.FieldType == "textarea")
                                         {
-                                            <textarea asp-for="SiteSettings.Groups[i].Fields[j].Value" rows="4" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900"></textarea>
+                                            <textarea asp-for="SiteSettings.Groups[i].Fields[j].Value" rows="4" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900"></textarea>
                                         }
                                         else
                                         {
-                                            <input asp-for="SiteSettings.Groups[i].Fields[j].Value" type="text" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
+                                            <input asp-for="SiteSettings.Groups[i].Fields[j].Value" type="text" class="mt-3 h-11 w-full rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
                                         }
                                         <p class="mt-2 text-xs text-slate-400">Key: <span class="font-mono">@field.Key</span></p>
                                     </div>
@@ -126,7 +126,7 @@
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary-dark">
                             <span class="material-symbols-outlined text-[18px]">save</span>
-                            Lưu cấu hình site-wide
+                            Lưu cấu hình toàn site
                         </button>
                     </div>
                 </form>
@@ -145,27 +145,27 @@
                             <input asp-for="Sections[i].PageKey" type="hidden" />
                             <input asp-for="Sections[i].SectionKey" type="hidden" />
 
-                            <div class="grid gap-5 border-b border-slate-100 pb-5 dark:border-slate-700 lg:grid-cols-[minmax(0,1fr)_260px]">
-                                <div>
-                                    <input asp-for="Sections[i].Title" class="w-full border-0 bg-transparent px-0 text-xl font-bold text-slate-900 focus:ring-0 dark:text-white" />
-                                    <textarea asp-for="Sections[i].Description" rows="2" class="mt-2 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 text-sm text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"></textarea>
+                            <div class="grid gap-4 border-b border-slate-100 pb-5 dark:border-slate-700 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+                                <div class="space-y-3">
+                                    <input asp-for="Sections[i].Title" class="w-full border-0 bg-transparent px-0 text-xl font-bold leading-tight text-slate-900 focus:ring-0 dark:text-white" />
+                                    <textarea asp-for="Sections[i].Description" rows="2" class="w-full min-h-[92px] resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"></textarea>
                                     <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-400">
-                                        <span class="rounded-full bg-slate-100 px-3 py-1 font-mono dark:bg-slate-700">@section.PageKey</span>
-                                        <span class="rounded-full bg-slate-100 px-3 py-1 font-mono dark:bg-slate-700">@section.SectionKey</span>
+                                        <span class="rounded-full bg-slate-100 px-3 py-1 font-mono dark:bg-slate-700">@(section.PageKey)</span>
+                                        <span class="rounded-full bg-slate-100 px-3 py-1 font-mono dark:bg-slate-700">@(section.SectionKey)</span>
                                     </div>
                                 </div>
-                                <div class="grid gap-3">
-                                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                <div class="grid auto-rows-fr gap-3 sm:grid-cols-2">
+                                    <label class="flex min-h-[92px] items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
                                         <input asp-for="Sections[i].IsEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
                                         Hiển thị section
                                     </label>
-                                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                    <label class="flex min-h-[92px] items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
                                         <input asp-for="Sections[i].IsPublished" class="rounded border-slate-300 text-primary focus:ring-primary" />
                                         Public đang dùng
                                     </label>
-                                    <label class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                    <label class="flex min-h-[92px] flex-col justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 dark:border-slate-700 dark:text-slate-300 sm:col-span-2">
                                         Thứ tự hiển thị
-                                        <input asp-for="Sections[i].DisplayOrder" class="mt-2 w-full rounded-xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
+                                        <input asp-for="Sections[i].DisplayOrder" class="mt-3 h-11 w-full rounded-xl border-slate-200 bg-slate-50 px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
                                     </label>
                                 </div>
                             </div>
@@ -183,11 +183,11 @@
                                         <label class="text-sm font-bold text-slate-900 dark:text-white">@field.Label</label>
                                         @if (field.FieldType == "textarea")
                                         {
-                                            <textarea asp-for="Sections[i].Fields[j].Value" rows="4" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900"></textarea>
+                                            <textarea asp-for="Sections[i].Fields[j].Value" rows="4" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900"></textarea>
                                         }
                                         else
                                         {
-                                            <input asp-for="Sections[i].Fields[j].Value" type="text" class="mt-3 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
+                                            <input asp-for="Sections[i].Fields[j].Value" type="text" class="mt-3 h-11 w-full rounded-2xl border-slate-200 bg-slate-50 px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
                                         }
                                         <p class="mt-2 text-xs text-slate-400">Key: <span class="font-mono">@field.Key</span></p>
                                     </div>
@@ -207,3 +207,4 @@
         </section>
     </div>
 </div>
+

@@ -7,12 +7,12 @@ public static class PublicContentDefaults
 {
     public static IReadOnlyList<ContentTabOption> Tabs => new List<ContentTabOption>
     {
-        new() { Key = "site", Label = "Site-wide", Description = "Header, footer, brand, social, contact info" },
-        new() { Key = "home", Label = "Home", Description = "Hero, stats, featured tours intro, commitments, CTA" },
-        new() { Key = "about", Label = "About", Description = "Hero, story, mission/vision, team" },
-        new() { Key = "contact", Label = "Contact", Description = "Hero, contact cards, form intro" },
-        new() { Key = "publicTours", Label = "Tours", Description = "Hero, search placeholder, empty state" },
-        new() { Key = "booking", Label = "Booking", Description = "Consultation hero, benefits, status copy" }
+        new() { Key = "site", Label = "Toàn site", Description = "Header, footer, thương hiệu, mạng xã hội, liên hệ" },
+        new() { Key = "home", Label = "Trang chủ", Description = "Hero, chỉ số, tour nổi bật, cam kết, CTA" },
+        new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh/tầm nhìn, đội ngũ" },
+        new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, giới thiệu biểu mẫu" },
+        new() { Key = "publicTours", Label = "Tour", Description = "Hero, ô tìm kiếm, trạng thái rỗng" },
+        new() { Key = "booking", Label = "Đặt tour", Description = "Hero tư vấn, lợi ích, nội dung trạng thái" }
     };
 
     public static Dictionary<string, List<string>> Inventory => new()
@@ -34,54 +34,54 @@ public static class PublicContentDefaults
             {
                 Group("header", "Header", 1, new List<ContentField>
                 {
-                    Text("brandName", "Ten thuong hieu", "HV Travel"),
-                    Text("brandTagline", "Tagline", "Explore Vietnam"),
-                    Text("navHomeLabel", "Nhan Trang chu", "Trang Chu"),
-                    Text("navToursLabel", "Nhan Tour", "Tour Du Lich"),
-                    Text("navAboutLabel", "Nhan Gioi thieu", "Gioi Thieu"),
-                    Text("navContactLabel", "Nhan Lien he", "Lien He"),
-                    Text("registerLabel", "Nut dang ky", "Dang Ky"),
-                    Text("loginLabel", "Nut dang nhap", "Dang Nhap")
+                    Text("brandName", "Tên thương hiệu", "HV Travel"),
+                    Text("brandTagline", "Khẩu hiệu", "Khám phá Việt Nam"),
+                    Text("navHomeLabel", "Nhãn trang chủ", "Trang chủ"),
+                    Text("navToursLabel", "Nhãn tour", "Tour du lịch"),
+                    Text("navAboutLabel", "Nhãn giới thiệu", "Giới thiệu"),
+                    Text("navContactLabel", "Nhãn liên hệ", "Liên hệ"),
+                    Text("registerLabel", "Nút đăng ký", "Đăng ký"),
+                    Text("loginLabel", "Nút đăng nhập", "Đăng nhập")
                 }),
-                Group("footerBrand", "Footer brand", 2, new List<ContentField>
+                Group("footerBrand", "Thương hiệu footer", 2, new List<ContentField>
                 {
-                    Text("title", "Tieu de", "HV Travel"),
-                    Text("tagline", "Tagline", "Explore Vietnam"),
-                    TextArea("description", "Mo ta footer", "Kham pha ve dep Viet Nam voi nhung tour du lich duoc thiet ke rieng. Trai nghiem van hoa, am thuc va thien nhien tuyet voi.")
+                    Text("title", "Tiêu đề", "HV Travel"),
+                    Text("tagline", "Khẩu hiệu", "Khám phá Việt Nam"),
+                    TextArea("description", "Mô tả footer", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.")
                 }),
-                Group("footerExplore", "Footer kham pha", 3, new List<ContentField>
+                Group("footerExplore", "Footer khám phá", 3, new List<ContentField>
                 {
-                    Text("title", "Tieu de khoi", "Kham Pha"),
-                    Text("allToursLabel", "Link tat ca tour", "Tat Ca Tour"),
-                    Text("popularToursLabel", "Link tour pho bien", "Tour Pho Bien"),
-                    Text("hotDestinationsLabel", "Link diem den hot", "Diem Den Hot"),
-                    Text("specialOffersLabel", "Link uu dai", "Uu Dai Dac Biet")
+                    Text("title", "Tiêu đề khối", "Khám phá"),
+                    Text("allToursLabel", "Link tất cả tour", "Tất cả tour"),
+                    Text("popularToursLabel", "Link tour phổ biến", "Tour phổ biến"),
+                    Text("hotDestinationsLabel", "Link điểm đến hot", "Điểm đến hot"),
+                    Text("specialOffersLabel", "Link ưu đãi", "Ưu đãi đặc biệt")
                 }),
-                Group("footerCompany", "Footer cong ty", 4, new List<ContentField>
+                Group("footerCompany", "Footer công ty", 4, new List<ContentField>
                 {
-                    Text("title", "Tieu de khoi", "Cong Ty"),
-                    Text("aboutLabel", "Link gioi thieu", "Gioi Thieu"),
-                    Text("contactLabel", "Link lien he", "Lien He"),
-                    Text("privacyLabel", "Link chinh sach", "Chinh Sach Bao Mat"),
-                    Text("termsLabel", "Link dieu khoan", "Dieu Khoan Su Dung")
+                    Text("title", "Tiêu đề khối", "Công ty"),
+                    Text("aboutLabel", "Link giới thiệu", "Giới thiệu"),
+                    Text("contactLabel", "Link liên hệ", "Liên hệ"),
+                    Text("privacyLabel", "Link chính sách", "Chính sách bảo mật"),
+                    Text("termsLabel", "Link điều khoản", "Điều khoản sử dụng")
                 }),
-                Group("contactInfo", "Thong tin lien he", 5, new List<ContentField>
+                Group("contactInfo", "Thông tin liên hệ", 5, new List<ContentField>
                 {
-                    Text("title", "Tieu de", "Lien He"),
-                    Text("address", "Dia chi", "123 Duong Nguyen Hue, Quan 1, TP.HCM"),
-                    Text("phoneNumber", "So dien thoai", "+84 (28) 3822 9999"),
+                    Text("title", "Tiêu đề", "Liên hệ"),
+                    Text("address", "Địa chỉ", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM"),
+                    Text("phoneNumber", "Số điện thoại", "+84 (28) 3822 9999"),
                     Url("email", "Email", "info@hvtravel.vn"),
-                    Text("businessHours", "Gio lam viec", "T2 - T7: 8:00 - 18:00")
+                    Text("businessHours", "Giờ làm việc", "T2 - T7: 8:00 - 18:00")
                 }),
-                Group("socialLinks", "Mang xa hoi", 6, new List<ContentField>
+                Group("socialLinks", "Mạng xã hội", 6, new List<ContentField>
                 {
                     Url("facebookUrl", "Facebook URL", "#"),
                     Url("instagramUrl", "Instagram URL", "#"),
                     Url("youtubeUrl", "YouTube URL", "#")
                 }),
-                Group("seo", "SEO mac dinh", 7, new List<ContentField>
+                Group("seo", "SEO mặc định", 7, new List<ContentField>
                 {
-                    TextArea("defaultMetaDescription", "Meta description mac dinh", "HV Travel - Kham pha Viet Nam cung nhung tour du lich tuyet voi nhat")
+                    TextArea("defaultMetaDescription", "Meta description mặc định", "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất")
                 })
             }
         };
@@ -91,145 +91,145 @@ public static class PublicContentDefaults
     {
         return new List<ContentSection>
         {
-            Section("home", "hero", "Home hero", 1, new List<ContentField>
+            Section("home", "hero", "Hero trang chủ", 1, new List<ContentField>
             {
-                Text("badgeText", "Badge", "Kham pha hon 0+ diem den tuyet voi"),
-                Text("titleLine1", "Tieu de dong 1", "Kham Pha"),
-                Text("titleHighlight", "Tieu de highlight", "Viet Nam"),
-                Text("titleLine2", "Tieu de dong 2", "Theo Cach Cua Ban"),
-                TextArea("description", "Mo ta", "Nhung hanh trinh duoc thiet ke rieng, trai nghiem van hoa doc dao va phong canh thien nhien tuyet dep dang cho don ban."),
-                Text("primaryCtaText", "CTA chinh", "Kham Pha Ngay"),
-                Text("secondaryCtaText", "CTA phu", "Lien He Tu Van")
+                Text("badgeText", "Badge", "Khám phá hơn 0+ điểm đến tuyệt vời"),
+                Text("titleLine1", "Tiêu đề dòng 1", "Khám phá"),
+                Text("titleHighlight", "Tiêu đề nhấn", "Việt Nam"),
+                Text("titleLine2", "Tiêu đề dòng 2", "Theo cách của bạn"),
+                TextArea("description", "Mô tả", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn."),
+                Text("primaryCtaText", "CTA chính", "Khám phá ngay"),
+                Text("secondaryCtaText", "CTA phụ", "Liên hệ tư vấn")
             }),
-            Section("home", "stats", "Home marketing stats", 2, new List<ContentField>
+            Section("home", "stats", "Chỉ số marketing trang chủ", 2, new List<ContentField>
             {
-                Text("stat1Number", "So lieu 1", "500+"),
-                Text("stat1Label", "Nhan 1", "Tour Da To Chuc"),
-                Text("stat2Number", "So lieu 2", "10K+"),
-                Text("stat2Label", "Nhan 2", "Khach Hai Long"),
-                Text("stat3Number", "So lieu 3", "50+"),
-                Text("stat3Label", "Nhan 3", "Diem Den"),
-                Text("stat4Number", "So lieu 4", "4.9*"),
-                Text("stat4Label", "Nhan 4", "Danh Gia TB")
+                Text("stat1Number", "Số liệu 1", "500+"),
+                Text("stat1Label", "Nhãn 1", "Tour đã tổ chức"),
+                Text("stat2Number", "Số liệu 2", "10K+"),
+                Text("stat2Label", "Nhãn 2", "Khách hài lòng"),
+                Text("stat3Number", "Số liệu 3", "50+"),
+                Text("stat3Label", "Nhãn 3", "Điểm đến"),
+                Text("stat4Number", "Số liệu 4", "4.9*"),
+                Text("stat4Label", "Nhãn 4", "Đánh giá TB")
             }),
-            Section("home", "featuredToursIntro", "Home featured tours intro", 3, new List<ContentField>
+            Section("home", "featuredToursIntro", "Giới thiệu tour nổi bật trang chủ", 3, new List<ContentField>
             {
-                Text("badgeText", "Badge", "Tour Noi Bat"),
-                Text("title", "Tieu de", "Hanh Trinh Duoc Yeu Thich Nhat"),
-                TextArea("description", "Mo ta", "Nhung tour du lich hang dau duoc danh gia cao boi hang ngan du khach"),
-                Text("viewAllText", "Nut xem tat ca", "Xem Tat Ca Tour")
+                Text("badgeText", "Badge", "Tour nổi bật"),
+                Text("title", "Tiêu đề", "Hành trình được yêu thích nhất"),
+                TextArea("description", "Mô tả", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"),
+                Text("viewAllText", "Nút xem tất cả", "Xem tất cả tour")
             }),
-            Section("home", "commitments", "Home commitments", 4, new List<ContentField>
+            Section("home", "commitments", "Cam kết trang chủ", 4, new List<ContentField>
             {
-                Text("title", "Tieu de", "Cam Ket Chat Luong"),
-                TextArea("description", "Mo ta", "Dich vu chuyen nghiep, lich trinh chin chu va trai nghiem dang nho trong tung hanh trinh"),
-                Text("item1Title", "Cam ket 1", "An Toan Tuyet Doi"),
-                TextArea("item1Description", "Mo ta 1", "Lich trinh duoc to chuc ky luong voi doi ngu ho tro giau kinh nghiem."),
-                Text("item2Title", "Cam ket 2", "Trai Nghiem Premium"),
-                TextArea("item2Description", "Mo ta 2", "Tour duoc thiet ke tinh gon nhung van giu chat luong dich vu cao."),
-                Text("item3Title", "Cam ket 3", "Ho Tro 24/7"),
-                TextArea("item3Description", "Mo ta 3", "Doi ngu cua chung toi luon san sang ho tro trong suot hanh trinh."),
-                Text("item4Title", "Cam ket 4", "Gia Tot Nhat"),
-                TextArea("item4Description", "Mo ta 4", "Muc gia minh bach, toi uu ngan sach va phu hop nhieu nhom khach.")
+                Text("title", "Tiêu đề", "Cam kết chất lượng"),
+                TextArea("description", "Mô tả", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"),
+                Text("item1Title", "Cam kết 1", "An toàn tuyệt đối"),
+                TextArea("item1Description", "Mô tả 1", "Lịch trình được tổ chức kỹ lưỡng với đội ngũ hỗ trợ giàu kinh nghiệm."),
+                Text("item2Title", "Cam kết 2", "Trải nghiệm cao cấp"),
+                TextArea("item2Description", "Mô tả 2", "Tour được thiết kế tinh gọn nhưng vẫn giữ chất lượng dịch vụ cao."),
+                Text("item3Title", "Cam kết 3", "Hỗ trợ 24/7"),
+                TextArea("item3Description", "Mô tả 3", "Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ trong suốt hành trình."),
+                Text("item4Title", "Cam kết 4", "Giá tốt nhất"),
+                TextArea("item4Description", "Mô tả 4", "Mức giá minh bạch, tối ưu ngân sách và phù hợp nhiều nhóm khách.")
             }),
-            Section("home", "finalCta", "Home final CTA", 5, new List<ContentField>
+            Section("home", "finalCta", "CTA cuối trang chủ", 5, new List<ContentField>
             {
-                Text("title", "Tieu de", "San Sang Cho Hanh Trinh Tiep Theo?"),
-                TextArea("description", "Mo ta", "Hay de HV Travel dong hanh cung ban trong chuyen di tiep theo voi lich trinh duoc thiet ke rieng."),
-                Text("primaryCtaText", "CTA chinh", "Lien He Ngay"),
-                Text("secondaryCtaText", "CTA phu", "Kham Pha Tour")
+                Text("title", "Tiêu đề", "Sẵn sàng cho hành trình tiếp theo?"),
+                TextArea("description", "Mô tả", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."),
+                Text("primaryCtaText", "CTA chính", "Liên hệ ngay"),
+                Text("secondaryCtaText", "CTA phụ", "Khám phá tour")
             }),
-            Section("about", "hero", "About hero", 1, new List<ContentField>
+            Section("about", "hero", "Hero giới thiệu", 1, new List<ContentField>
             {
-                Text("badgeText", "Badge", "Ve Chung Toi"),
-                Text("titleLine1", "Tieu de dong 1", "Cau Chuyen"),
-                Text("titleHighlight", "Tieu de highlight", "HV Travel"),
-                TextArea("description", "Mo ta", "Tim hieu hanh trinh phat trien va triet ly tao nen nhung chuyen di mang dau an rieng cua HV Travel.")
+                Text("badgeText", "Badge", "Về chúng tôi"),
+                Text("titleLine1", "Tiêu đề dòng 1", "Câu chuyện"),
+                Text("titleHighlight", "Tiêu đề nhấn", "HV Travel"),
+                TextArea("description", "Mô tả", "Tìm hiểu hành trình phát triển và triết lý tạo nên những chuyến đi mang dấu ấn riêng của HV Travel.")
             }),
-            Section("about", "story", "About story", 2, new List<ContentField>
+            Section("about", "story", "Câu chuyện giới thiệu", 2, new List<ContentField>
             {
-                Text("title", "Tieu de", "Hon 10 Nam Kinh Nghiem Trong Nganh Du Lich"),
-                TextArea("description1", "Doan 1", "HV Travel duoc thanh lap voi niem dam me mang den nhung trai nghiem du lich tuyet voi nhat cho du khach."),
-                TextArea("description2", "Doan 2", "Chung toi tin rang moi chuyen di khong chi la mot hanh trinh den noi moi, ma con la co hoi de kham pha ban than, ket noi voi van hoa va con nguoi.")
+                Text("title", "Tiêu đề", "Hơn 10 năm kinh nghiệm trong ngành du lịch"),
+                TextArea("description1", "Đoạn 1", "HV Travel được thành lập với niềm đam mê mang đến những trải nghiệm du lịch tuyệt vời nhất cho du khách."),
+                TextArea("description2", "Đoạn 2", "Chúng tôi tin rằng mỗi chuyến đi không chỉ là một hành trình đến nơi mới, mà còn là cơ hội để khám phá bản thân, kết nối với văn hóa và con người.")
             }),
-            Section("about", "missionVision", "Mission and vision", 3, new List<ContentField>
+            Section("about", "missionVision", "Sứ mệnh và tầm nhìn", 3, new List<ContentField>
             {
-                Text("title", "Tieu de section", "Su Menh & Tam Nhin"),
-                Text("missionTitle", "Tieu de su menh", "Su Menh"),
-                TextArea("missionText", "Noi dung su menh", "Mang den nhung hanh trinh duoc ca nhan hoa, an toan va giau cam xuc cho moi du khach."),
-                Text("visionTitle", "Tieu de tam nhin", "Tam Nhin"),
-                TextArea("visionText", "Noi dung tam nhin", "Tro thanh thuong hieu du lich duoc tin yeu hang dau cho nhung chuyen di kham pha Viet Nam."),
-                Text("valuesTitle", "Tieu de gia tri", "Gia Tri Cot Loi"),
-                TextArea("valuesText", "Noi dung gia tri", "Tan tam, minh bach, sang tao va luon lay trai nghiem khach hang lam trung tam.")
+                Text("title", "Tiêu đề section", "Sứ mệnh & Tầm nhìn"),
+                Text("missionTitle", "Tiêu đề sứ mệnh", "Sứ mệnh"),
+                TextArea("missionText", "Nội dung sứ mệnh", "Mang đến những hành trình được cá nhân hóa, an toàn và giàu cảm xúc cho mỗi du khách."),
+                Text("visionTitle", "Tiêu đề tầm nhìn", "Tầm nhìn"),
+                TextArea("visionText", "Nội dung tầm nhìn", "Trở thành thương hiệu du lịch được tin yêu hàng đầu cho những chuyến đi khám phá Việt Nam."),
+                Text("valuesTitle", "Tiêu đề giá trị", "Giá trị cốt lõi"),
+                TextArea("valuesText", "Nội dung giá trị", "Tận tâm, minh bạch, sáng tạo và luôn lấy trải nghiệm khách hàng làm trung tâm.")
             }),
-            Section("about", "team", "About team", 4, new List<ContentField>
+            Section("about", "team", "Đội ngũ giới thiệu", 4, new List<ContentField>
             {
-                Text("title", "Tieu de", "Nhung Con Nguoi Dang Sau HV Travel"),
-                TextArea("description", "Mo ta", "Doi ngu tao nen cac hanh trinh chin chu va giau cam hung cho tung chuyen di."),
-                Text("member1Name", "Ten thanh vien 1", "Nguyen Hoang Vu"),
-                Text("member1Role", "Vai tro 1", "Nha Sang Lap"),
-                Text("member2Name", "Ten thanh vien 2", "Le Minh Duc"),
-                Text("member2Role", "Vai tro 2", "Truong Phong Tour"),
-                Text("member3Name", "Ten thanh vien 3", "Tran Khanh Linh"),
-                Text("member3Role", "Vai tro 3", "Cham Soc Khach Hang"),
-                Text("member4Name", "Ten thanh vien 4", "Pham Gia Hung"),
-                Text("member4Role", "Vai tro 4", "Dieu Hanh Tour")
+                Text("title", "Tiêu đề", "Những con người đứng sau HV Travel"),
+                TextArea("description", "Mô tả", "Đội ngũ tạo nên các hành trình chỉn chu và giàu cảm hứng cho từng chuyến đi."),
+                Text("member1Name", "Tên thành viên 1", "Nguyễn Hoàng Vũ"),
+                Text("member1Role", "Vai trò 1", "Nhà sáng lập"),
+                Text("member2Name", "Tên thành viên 2", "Lê Minh Đức"),
+                Text("member2Role", "Vai trò 2", "Trưởng phòng tour"),
+                Text("member3Name", "Tên thành viên 3", "Trần Khánh Linh"),
+                Text("member3Role", "Vai trò 3", "Chăm sóc khách hàng"),
+                Text("member4Name", "Tên thành viên 4", "Phạm Gia Hưng"),
+                Text("member4Role", "Vai trò 4", "Điều hành tour")
             }),
-            Section("contact", "hero", "Contact hero", 1, new List<ContentField>
+            Section("contact", "hero", "Hero liên hệ", 1, new List<ContentField>
             {
-                Text("badgeText", "Badge", "Lien He"),
-                Text("title", "Tieu de", "Chung Toi Luon San Sang Lang Nghe"),
-                TextArea("description", "Mo ta", "Lien he voi HV Travel de duoc tu van hanh trinh phu hop va nhan ho tro nhanh chong.")
+                Text("badgeText", "Badge", "Liên hệ"),
+                Text("title", "Tiêu đề", "Chúng tôi luôn sẵn sàng lắng nghe"),
+                TextArea("description", "Mô tả", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng.")
             }),
-            Section("contact", "cards", "Contact cards", 2, new List<ContentField>
+            Section("contact", "cards", "Thẻ liên hệ", 2, new List<ContentField>
             {
-                Text("addressTitle", "Tieu de dia chi", "Dia Chi"),
-                Text("phoneTitle", "Tieu de dien thoai", "Dien Thoai"),
-                Text("emailTitle", "Tieu de email", "Email"),
-                Text("hoursTitle", "Tieu de gio lam viec", "Gio Lam Viec")
+                Text("addressTitle", "Tiêu đề địa chỉ", "Địa chỉ"),
+                Text("phoneTitle", "Tiêu đề điện thoại", "Điện thoại"),
+                Text("emailTitle", "Tiêu đề email", "Email"),
+                Text("hoursTitle", "Tiêu đề giờ làm việc", "Giờ làm việc")
             }),
-            Section("contact", "formIntro", "Contact form intro", 3, new List<ContentField>
+            Section("contact", "formIntro", "Giới thiệu biểu mẫu liên hệ", 3, new List<ContentField>
             {
-                Text("title", "Tieu de form", "Gui Tin Nhan Cho Chung Toi"),
-                TextArea("description", "Mo ta form", "Dien thong tin cua ban va doi ngu HV Travel se phan hoi trong thoi gian som nhat."),
-                Text("submitText", "Nut gui", "Gui Tin Nhan")
+                Text("title", "Tiêu đề form", "Gửi tin nhắn cho chúng tôi"),
+                TextArea("description", "Mô tả form", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."),
+                Text("submitText", "Nút gửi", "Gửi tin nhắn")
             }),
-            Section("publicTours", "indexHero", "Tours hero", 1, new List<ContentField>
+            Section("publicTours", "indexHero", "Hero danh sách tour", 1, new List<ContentField>
             {
-                Text("titleLine1", "Tieu de dong 1", "Tour"),
-                Text("titleHighlight", "Tieu de highlight", "Du Lich"),
-                TextArea("description", "Mo ta", "Kham pha nhung hanh trinh noi bat khap Viet Nam voi lich trinh duoc tuyen chon ky luong."),
-                Text("searchPlaceholder", "Placeholder tim kiem", "Tim diem den, tu khoa, thanh pho...")
+                Text("titleLine1", "Tiêu đề dòng 1", "Tour"),
+                Text("titleHighlight", "Tiêu đề nhấn", "du lịch"),
+                TextArea("description", "Mô tả", "Khám phá những hành trình nổi bật khắp Việt Nam với lịch trình được tuyển chọn kỹ lưỡng."),
+                Text("searchPlaceholder", "Placeholder tìm kiếm", "Tìm điểm đến, từ khóa, thành phố...")
             }),
-            Section("publicTours", "emptyState", "Tours empty state", 2, new List<ContentField>
+            Section("publicTours", "emptyState", "Trạng thái rỗng danh sách tour", 2, new List<ContentField>
             {
-                Text("title", "Tieu de", "Khong tim thay tour nao"),
-                TextArea("description", "Mo ta", "Hay thu doi tu khoa hoac quay lai toan bo danh sach tour dang mo ban."),
-                Text("ctaText", "Nut CTA", "Xem tat ca tour")
+                Text("title", "Tiêu đề", "Không tìm thấy tour nào"),
+                TextArea("description", "Mô tả", "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán."),
+                Text("ctaText", "Nút CTA", "Xem tất cả tour")
             }),
-            Section("booking", "consultationHero", "Consultation hero", 1, new List<ContentField>
+            Section("booking", "consultationHero", "Hero tư vấn", 1, new List<ContentField>
             {
-                Text("title", "Tieu de", "Tu Van Chuyen Di Theo Cach Cua Ban"),
-                TextArea("description", "Mo ta", "Chia se nhu cau de doi ngu HV Travel tu van tour phu hop voi lich trinh va ngan sach cua ban.")
+                Text("title", "Tiêu đề", "Tư vấn chuyến đi theo cách của bạn"),
+                TextArea("description", "Mô tả", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn.")
             }),
-            Section("booking", "consultationBenefits", "Consultation benefits", 2, new List<ContentField>
+            Section("booking", "consultationBenefits", "Lợi ích tư vấn", 2, new List<ContentField>
             {
-                Text("quickContactTitle", "Tieu de lien he nhanh", "Lien He Nhanh"),
-                Text("reasonsTitle", "Tieu de ly do chon", "Tai Sao Chon HV Travel?"),
-                Text("formTitle", "Tieu de form", "Gui Yeu Cau Tu Van"),
-                Text("submitText", "Nut gui", "Gui Yeu Cau"),
-                Text("successTitle", "Tieu de thanh cong", "Gui Yeu Cau Thanh Cong!"),
-                TextArea("successDescription", "Mo ta thanh cong", "Chung toi da nhan duoc thong tin va se lien he voi ban trong thoi gian som nhat."),
-                Text("exploreToursText", "Nut kham pha tour", "Kham Pha Tour")
+                Text("quickContactTitle", "Tiêu đề liên hệ nhanh", "Liên hệ nhanh"),
+                Text("reasonsTitle", "Tiêu đề lý do chọn", "Tại sao chọn HV Travel?"),
+                Text("formTitle", "Tiêu đề form", "Gửi yêu cầu tư vấn"),
+                Text("submitText", "Nút gửi", "Gửi yêu cầu"),
+                Text("successTitle", "Tiêu đề thành công", "Gửi yêu cầu thành công!"),
+                TextArea("successDescription", "Mô tả thành công", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất."),
+                Text("exploreToursText", "Nút khám phá tour", "Khám phá tour")
             }),
-            Section("booking", "statusCopy", "Booking status copy", 3, new List<ContentField>
+            Section("booking", "statusCopy", "Nội dung trạng thái đặt tour", 3, new List<ContentField>
             {
-                Text("successTitle", "Tieu de thanh cong", "Dat Tour Thanh Cong!"),
-                TextArea("successDescription", "Mo ta thanh cong", "Cam on ban da dat tour tai HV Travel. Chung toi se lien he xac nhan trong thoi gian som nhat."),
-                Text("failedTitle", "Tieu de that bai", "Thanh Toan That Bai"),
-                TextArea("failedDescription", "Mo ta that bai", "Thanh toan khong thanh cong. Vui long thu lai hoac chon phuong thuc khac."),
-                Text("errorTitle", "Tieu de loi", "Da Xay Ra Loi"),
-                TextArea("errorDescription", "Mo ta loi", "Da xay ra loi he thong trong qua trinh xu ly. Vui long thu lai sau.")
+                Text("successTitle", "Tiêu đề thành công", "Đặt tour thành công!"),
+                TextArea("successDescription", "Mô tả thành công", "Cảm ơn bạn đã đặt tour tại HV Travel. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất."),
+                Text("failedTitle", "Tiêu đề thất bại", "Thanh toán thất bại"),
+                TextArea("failedDescription", "Mô tả thất bại", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."),
+                Text("errorTitle", "Tiêu đề lỗi", "Đã xảy ra lỗi"),
+                TextArea("errorDescription", "Mô tả lỗi", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")
             })
         };
     }

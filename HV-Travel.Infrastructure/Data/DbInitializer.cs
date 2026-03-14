@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using MongoDB.Bson;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using HVTravel.Domain.Entities;
@@ -22,19 +23,6 @@ namespace HVTravel.Infrastructure.Data
             var promotionRepository = serviceProvider.GetRequiredService<IRepository<Promotion>>();
             var reviewRepository = serviceProvider.GetRequiredService<IRepository<Review>>();
 
-            // 0. Cleanup legacy indexes that might cause duplicate key errors after standardization
-            try
-            {
-                var context = serviceProvider.GetRequiredService<MongoContext>();
-                var configuration = serviceProvider.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
-                var reviewCollectionName = configuration.GetValue<string>("HVTravelDatabase:ReviewsCollectionName") ?? "Reviews";
-                var reviewCollection = context.GetCollection<Review>(reviewCollectionName);
-                await reviewCollection.Indexes.DropAllAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Warning: Could not drop indexes: {ex.Message}");
-            }
 
             // 1. Seed Users
             if (!(await userRepository.GetAllAsync()).Any())
@@ -76,7 +64,6 @@ namespace HVTravel.Infrastructure.Data
                         Code = "TOUR-001",
                         Description = "<p>Explore the majestic landscapes of Ha Giang with our 3-day loop tour. Experience the Ma Pi Leng Pass, Nho Que River, and authentic Hmong culture.</p>",
                         ShortDescription = "3 Days of breathtaking mountain views and cultural immersion.",
-                        Category = "Adventure",
                         Destination = new Destination { City = "Ha Giang", Country = "Vietnam", Region = "North" },
                         Images = new List<string> 
                         { 
@@ -86,8 +73,8 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 3500000, Child = 2500000, Infant = 0, Currency = "VND" },
                         Duration = new TourDuration { Days = 3, Nights = 2, Text = "3 Days 2 Nights" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(12), DateTime.UtcNow.AddDays(20) },
-                        GeneratedInclusions = new List<string> { "Motorbike rental", "Homestay accumulation", "Meals", "Guide" },
-                        GeneratedExclusions = new List<string> { "Personal expenses", "Drinks" },
+                        GeneratedInclusions = new List<string> { "Thuê xe máy", "Homestay", "Bữa ăn", "Hướng dẫn viên" },
+                        GeneratedExclusions = new List<string> { "Chi tiêu cá nhân", "Đồ uống" },
                         Schedule = new List<ScheduleItem> 
                         {
                             new ScheduleItem { Day = 1, Title = "Ha Giang - Quan Ba - Yen Minh", Description = "Start your journey...", Activities = new List<string> { "Ride to Quan Ba", "Visit Twin Mountains" } },
@@ -107,7 +94,6 @@ namespace HVTravel.Infrastructure.Data
                         Code = "TOUR-002",
                         Description = "<p>Discover the charm of Hoi An Ancient Town and the modern vibes of Da Nang. Visit Ba Na Hills, Golden Bridge, and My Khe Beach.</p>",
                         ShortDescription = "Relaxing 4-day trip to Central Vietnam's gems.",
-                        Category = "Culture",
                         Destination = new Destination { City = "Da Nang", Country = "Vietnam", Region = "Central" },
                         Images = new List<string> 
                         { 
@@ -117,7 +103,7 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 4200000, Child = 3000000, Infant = 500000, Currency = "VND" },
                         Duration = new TourDuration { Days = 4, Nights = 3, Text = "4 Days 3 Nights" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(2), DateTime.UtcNow.AddDays(15) },
-                        GeneratedInclusions = new List<string> { "Hotel 4*", "Ba Na Hills Tickets", "Meals", "Transfers" },
+                        GeneratedInclusions = new List<string> { "Khách sạn 4*", "Vé Bà Nà Hills", "Bữa ăn", "Xe đưa đón" },
                         Status = "Active",
                         MaxParticipants = 20,
                         CurrentParticipants = 15,
@@ -131,7 +117,6 @@ namespace HVTravel.Infrastructure.Data
                         Code = "TOUR-003",
                         Description = "<p>Experience the UNESCO World Heritage site on a 5-star cruise. Kayaking, cooking classes, and tai chi on the deck.</p>",
                         ShortDescription = "2 Days 1 Night on a luxury cruise.",
-                        Category = "Luxury",
                         Destination = new Destination { City = "Quang Ninh", Country = "Vietnam", Region = "North" },
                         Images = new List<string> 
                         { 
@@ -141,7 +126,7 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 3800000, Child = 2800000, Infant = 1000000, Currency = "VND" },
                         Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 Days 1 Night" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(10), DateTime.UtcNow.AddDays(25) },
-                        GeneratedInclusions = new List<string> { "Luxury Cabin", "All Meals", "Kayaking", "Entrance Fees" },
+                        GeneratedInclusions = new List<string> { "Cabin cao cấp", "Toàn bộ bữa ăn", "Chèo kayak", "Vé tham quan" },
                         Status = "Active",
                         MaxParticipants = 30,
                         CurrentParticipants = 10,
@@ -250,7 +235,7 @@ namespace HVTravel.Infrastructure.Data
                         Passengers = new List<Passenger> 
                         { 
                             new Passenger { FullName = customer2.FullName, Type = "Adult" },
-                            new Passenger { FullName = "Husband", Type = "Adult" }
+                            new Passenger { FullName = "Chồng", Type = "Adult" }
                         },
                         ContactInfo = new ContactInfo { Name = customer2.FullName, Email = customer2.Email, Phone = customer2.PhoneNumber },
                         CreatedAt = DateTime.UtcNow.AddHours(-1)
@@ -265,9 +250,9 @@ namespace HVTravel.Infrastructure.Data
             {
                 var notifications = new List<Notification>
                 {
-                    new Notification { Title = "New Booking Payment", Message = "Booking #BK-9420-2024 has been fully paid.", Type = "Order", IsRead = false, CreatedAt = DateTime.UtcNow.AddMinutes(-10) },
-                    new Notification { Title = "New Customer Registered", Message = "Customer Tran Thi Huong just signed up.", Type = "System", IsRead = true, CreatedAt = DateTime.UtcNow.AddHours(-2) },
-                    new Notification { Title = "Tour Review", Message = "Ha Giang Loop Adventure received a 5-star review.", Type = "Review", IsRead = false, CreatedAt = DateTime.UtcNow.AddHours(-5) }
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Thanh toán đơn đặt mới", Message = "Đơn #BK-9420-2024 đã được thanh toán đầy đủ.", Type = "Order", IsRead = false, CreatedAt = DateTime.UtcNow.AddMinutes(-10) },
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Khách hàng mới đăng ký", Message = "Khách hàng Trần Thị Hương vừa đăng ký tài khoản.", Type = "System", IsRead = true, CreatedAt = DateTime.UtcNow.AddHours(-2) },
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Đánh giá tour", Message = "Hà Giang Loop Adventure vừa nhận được đánh giá 5 sao.", Type = "Review", IsRead = false, CreatedAt = DateTime.UtcNow.AddHours(-5) }
                 };
                 foreach (var n in notifications) await notificationRepository.AddAsync(n);
             }
@@ -277,8 +262,8 @@ namespace HVTravel.Infrastructure.Data
             {
                 var promotions = new List<Promotion>
                 {
-                    new Promotion { Code = "WELCOME2024", DiscountPercentage = 10, Description = "Welcome discount for new members", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(1), IsActive = true },
-                    new Promotion { Code = "SUMMER_SALE", DiscountPercentage = 15, Description = "Summer vacation special offer", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(3), IsActive = true }
+                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "WELCOME2024", DiscountPercentage = 10, Description = "Ưu đãi chào mừng dành cho thành viên mới", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(1), IsActive = true },
+                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "SUMMER_SALE", DiscountPercentage = 15, Description = "Ưu đãi đặc biệt cho mùa du lịch hè", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(3), IsActive = true }
                 };
                 foreach (var p in promotions) await promotionRepository.AddAsync(p);
             }
@@ -286,6 +271,20 @@ namespace HVTravel.Infrastructure.Data
             // 7. Seed Reviews
             if (!(await reviewRepository.GetAllAsync()).Any())
             {
+                // Cleanup legacy indexes only on first seed
+                try
+                {
+                    var context = serviceProvider.GetRequiredService<MongoContext>();
+                    var configuration = serviceProvider.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                    var reviewCollectionName = configuration.GetValue<string>("HVTravelDatabase:ReviewsCollectionName") ?? "Reviews";
+                    var reviewCollection = context.GetCollection<Review>(reviewCollectionName);
+                    await reviewCollection.Indexes.DropAllAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Could not drop indexes: {ex.Message}");
+                }
+
                 var customers = await customerRepository.GetAllAsync();
                 var tours = await tourRepository.GetAllAsync();
                 
@@ -293,8 +292,8 @@ namespace HVTravel.Infrastructure.Data
                 {
                     var reviews = new List<Review>
                     {
-                        new Review { TourId = tours.FirstOrDefault().Id, CustomerId = customers.FirstOrDefault().Id, Rating = 5, Comment = "Amazing experience! The landscapes were breathtaking.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true },
-                        new Review { TourId = tours.LastOrDefault().Id, CustomerId = customers.LastOrDefault().Id, Rating = 4, Comment = "Great tour but the food could be better.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true }
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault().Id, CustomerId = customers.FirstOrDefault().Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true },
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault().Id, CustomerId = customers.LastOrDefault().Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true }
                     };
                     foreach (var r in reviews) await reviewRepository.AddAsync(r);
                 }

@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var siteSettings = await ContentService.GetSiteSettingsAsync();
     var headerGroup = siteSettings.GetGroup("header");
@@ -10,35 +10,35 @@
     var seoGroup = siteSettings.GetGroup("seo");
 
     var brandName = headerGroup?.Fields.GetFieldValue("brandName", "HV Travel") ?? "HV Travel";
-    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "Explore Vietnam") ?? "Explore Vietnam";
-    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang Chu") ?? "Trang Chu";
-    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour Du Lich") ?? "Tour Du Lich";
-    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Gioi Thieu") ?? "Gioi Thieu";
-    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "Lien He") ?? "Lien He";
-    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "Dang Ky") ?? "Dang Ky";
-    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "Dang Nhap") ?? "Dang Nhap";
-    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - Kham pha Viet Nam cung nhung tour du lich tuyet voi nhat")
-        ?? "HV Travel - Kham pha Viet Nam cung nhung tour du lich tuyet voi nhat";
+    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "Khám phá Việt Nam") ?? "Khám phá Việt Nam";
+    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang chủ") ?? "Trang chủ";
+    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour du lịch") ?? "Tour du lịch";
+    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Giới thiệu") ?? "Giới thiệu";
+    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "Liên hệ") ?? "Liên hệ";
+    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "Đăng ký") ?? "Đăng ký";
+    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "Đăng nhập") ?? "Đăng nhập";
+    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất")
+        ?? "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất";
 
     var footerBrandTitle = footerBrandGroup?.Fields.GetFieldValue("title", "HV Travel") ?? "HV Travel";
-    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Explore Vietnam") ?? "Explore Vietnam";
-    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Kham pha ve dep Viet Nam voi nhung tour du lich duoc thiet ke rieng. Trai nghiem van hoa, am thuc va thien nhien tuyet voi.")
-        ?? "Kham pha ve dep Viet Nam voi nhung tour du lich duoc thiet ke rieng. Trai nghiem van hoa, am thuc va thien nhien tuyet voi.";
+    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Khám phá Việt Nam") ?? "Khám phá Việt Nam";
+    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.")
+        ?? "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.";
 
-    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "Kham Pha") ?? "Kham Pha";
-    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "Tat Ca Tour") ?? "Tat Ca Tour";
-    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour Pho Bien") ?? "Tour Pho Bien";
-    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "Diem Den Hot") ?? "Diem Den Hot";
-    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "Uu Dai Dac Biet") ?? "Uu Dai Dac Biet";
+    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "Khám phá") ?? "Khám phá";
+    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "Tất cả tour") ?? "Tất cả tour";
+    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour phổ biến") ?? "Tour phổ biến";
+    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "Điểm đến hot") ?? "Điểm đến hot";
+    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "Ưu đãi đặc biệt") ?? "Ưu đãi đặc biệt";
 
-    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "Cong Ty") ?? "Cong Ty";
-    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Gioi Thieu") ?? "Gioi Thieu";
-    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "Lien He") ?? "Lien He";
-    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "Chinh Sach Bao Mat") ?? "Chinh Sach Bao Mat";
-    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Dieu Khoan Su Dung") ?? "Dieu Khoan Su Dung";
+    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "Công ty") ?? "Công ty";
+    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Giới thiệu") ?? "Giới thiệu";
+    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "Liên hệ") ?? "Liên hệ";
+    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "Chính sách bảo mật") ?? "Chính sách bảo mật";
+    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Điều khoản sử dụng") ?? "Điều khoản sử dụng";
 
-    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "Lien He") ?? "Lien He";
-    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Duong Nguyen Hue, Quan 1, TP.HCM") ?? "123 Duong Nguyen Hue, Quan 1, TP.HCM";
+    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "Liên hệ") ?? "Liên hệ";
+    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM") ?? "123 Đường Nguyễn Huệ, Quận 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
@@ -189,7 +189,7 @@
                 <div class="flex items-center gap-2 sm:gap-3">
                     <button id="theme-toggle-public"
                             class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-medium"
-                            aria-label="Toggle Dark Mode">
+                            aria-label="Chuyá»ƒn cháº¿ Ä‘á»™ tá»‘i">
                         <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
                         <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
@@ -197,8 +197,8 @@
                     <div class="hidden sm:flex items-center gap-2">
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                         {
-                            var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khach hang";
-                            customerName = string.IsNullOrWhiteSpace(customerName) ? "Khach hang" : customerName.Trim();
+                            var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+                            customerName = string.IsNullOrWhiteSpace(customerName) ? "Khách hàng" : customerName.Trim();
                             var customerInitial = customerName[0].ToString().ToUpperInvariant();
                             <div class="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
                                 <div class="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-blue-500 text-sm font-extrabold text-white">
@@ -206,13 +206,13 @@
                                 </div>
                                 <div class="max-w-[180px]">
                                     <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
-                                    <p class="truncate text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? "Khach hang HV Travel")</p>
+                                    <p class="truncate text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
                                 </div>
                                 <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">
                                         <span class="material-symbols-outlined text-[18px]">logout</span>
-                                        Dang xuat
+                                        Đăng xuất
                                     </button>
                                 </form>
                             </div>
@@ -252,12 +252,12 @@
 
                     @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                     {
-                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khach hang";
-                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "Khach hang" : mobileCustomerName.Trim();
+                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
+                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "Khách hàng" : mobileCustomerName.Trim();
                         <div class="px-4 py-3 border-t border-slate-100 dark:border-slate-800 mt-2">
                             <div class="rounded-2xl bg-slate-50 dark:bg-slate-800 px-4 py-4">
                                 <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">@(User.FindFirst("CustomerCode")?.Value ?? "Khach hang HV Travel")</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
                                 <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-4">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white dark:bg-slate-700">
@@ -363,11 +363,11 @@
 
         <div class="border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. All rights reserved.</p>
+                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. Bảo lưu mọi quyền.</p>
                 <div class="flex items-center gap-6">
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">Sitemap</a>
+                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">Sơ đồ trang</a>
                 </div>
             </div>
         </div>
@@ -420,3 +420,6 @@
     </script>
 </body>
 </html>
+
+
+

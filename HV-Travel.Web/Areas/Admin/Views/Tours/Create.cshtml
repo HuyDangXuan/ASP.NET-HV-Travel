@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "Tạo Tour Mới";
 }
 @model HVTravel.Domain.Entities.Tour
@@ -66,16 +66,6 @@
                                     <input asp-for="Destination.Region" class="input-field" placeholder="Ví dụ: Miền Bắc" type="text" />
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="label-text">Danh mục</label>
-                            <select asp-for="Category" class="input-field appearance-none">
-                                <option value="">Chọn danh mục</option>
-                                <option value="beach">Du lịch biển</option>
-                                <option value="mountain">Du lịch núi</option>
-                                <option value="luxury">Nghỉ dưỡng sang trọng</option>
-                                <option value="culture">Văn hóa & Lịch sử</option>
-                            </select>
                         </div>
                     </div>
                     <div>
@@ -239,7 +229,7 @@
                     <span class="material-symbols-outlined text-primary text-sm">visibility</span>
                     <p class="text-sm font-bold text-[#111718] dark:text-white uppercase tracking-[0.2em]">XEM TRƯỚC TRỰC TIẾP</p>
                 </div>
-                <span class="px-2.5 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full uppercase">Customer View</span>
+                <span class="px-2.5 py-1 bg-primary/20 text-primary text-[10px] font-black rounded-full uppercase">Xem phía khách hàng</span>
             </div>
             <div class="bg-white dark:bg-surface-dark rounded-[2rem] overflow-hidden shadow-2xl border border-[#f0f4f4] dark:border-slate-800 group transition-all">
                 <div class="relative h-72 overflow-hidden bg-[#f0f4f4] dark:bg-slate-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
