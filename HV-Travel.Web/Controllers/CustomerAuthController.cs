@@ -2,8 +2,8 @@ using System.Security.Claims;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
+using HVTravel.Web.Security;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Controllers;
@@ -84,7 +84,7 @@ public class CustomerAuthController : Controller
             new("EmailVerified", customer.EmailVerified.ToString())
         };
 
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.CustomerScheme);
         var authProperties = new AuthenticationProperties
         {
             IsPersistent = model.RememberMe
@@ -96,7 +96,7 @@ public class CustomerAuthController : Controller
         }
 
         await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
+            AuthSchemes.CustomerScheme,
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
 
@@ -161,7 +161,7 @@ public class CustomerAuthController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync(AuthSchemes.CustomerScheme);
         return RedirectToAction("Index", "Home");
     }
 

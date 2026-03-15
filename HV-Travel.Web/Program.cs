@@ -3,6 +3,7 @@ using HVTravel.Application;
 using HVTravel.Infrastructure;
 using HVTravel.Infrastructure.Data;
 using HVTravel.Web.Hubs;
+using HVTravel.Web.Security;
 using HVTravel.Web.Services;
 
 using DotNetEnv;
@@ -25,12 +26,57 @@ builder.Services.AddScoped<IPublicContentService, PublicContentService>();
 builder.Services.AddScoped<ISupportChatService, SupportChatService>();
 
 // Add Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services
+    .AddAuthentication(options =>
     {
+        options.DefaultAuthenticateScheme = AuthSchemes.AppScheme;
+        options.DefaultChallengeScheme = AuthSchemes.AppScheme;
+        options.DefaultScheme = AuthSchemes.AppScheme;
+    })
+    .AddPolicyScheme(AuthSchemes.AppScheme, AuthSchemes.AppScheme, options =>
+    {
+        options.ForwardDefaultSelector = context =>
+        {
+            var path = context.Request.Path;
+            var hasAdminCookie = context.Request.Cookies.ContainsKey(AuthSchemes.AdminCookieName);
+            var hasCustomerCookie = context.Request.Cookies.ContainsKey(AuthSchemes.CustomerCookieName);
+
+            if (path.StartsWithSegments("/Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return AuthSchemes.AdminScheme;
+            }
+
+            if (path.StartsWithSegments("/supportChatHub", StringComparison.OrdinalIgnoreCase))
+            {
+                if (hasAdminCookie)
+                {
+                    return AuthSchemes.AdminScheme;
+                }
+
+                return AuthSchemes.CustomerScheme;
+            }
+
+            if (hasCustomerCookie)
+            {
+                return AuthSchemes.CustomerScheme;
+            }
+
+            return AuthSchemes.CustomerScheme;
+        };
+    })
+    .AddCookie(AuthSchemes.AdminScheme, options =>
+    {
+        options.Cookie.Name = AuthSchemes.AdminCookieName;
         options.LoginPath = "/Admin/Auth/Login";
         options.AccessDeniedPath = "/Admin/Auth/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    })
+    .AddCookie(AuthSchemes.CustomerScheme, options =>
+    {
+        options.Cookie.Name = AuthSchemes.CustomerCookieName;
+        options.LoginPath = "/CustomerAuth/Login";
+        options.AccessDeniedPath = "/CustomerAuth/Login";
+        options.ExpireTimeSpan = TimeSpan.FromDays(14);
     });
 
 var app = builder.Build();

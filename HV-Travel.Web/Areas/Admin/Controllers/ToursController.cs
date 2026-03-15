@@ -4,11 +4,12 @@ using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
 using System.Threading.Tasks;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme)]
     [Route("Admin/[controller]")]
     public class ToursController : Controller
     {

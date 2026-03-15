@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using HVTravel.Web.Models;
+using HVTravel.Web.Security;
 using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -27,7 +28,7 @@ public class SupportChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
     }
 
-    [Authorize(Roles = "Admin,Manager,Staff")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Manager,Staff")]
     public async Task JoinAdminInbox()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, AdminInboxGroup);
@@ -52,7 +53,7 @@ public class SupportChatHub : Hub
         await Clients.Group(AdminInboxGroup).SendAsync("ConversationUpdated", ToConversationDto(updatedConversation));
     }
 
-    [Authorize(Roles = "Admin,Manager,Staff")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Manager,Staff")]
     public async Task SendAdminMessage(string conversationId, string content)
     {
         var message = await _supportChatService.AddAdminMessageAsync(conversationId, content, Context.User ?? new ClaimsPrincipal());

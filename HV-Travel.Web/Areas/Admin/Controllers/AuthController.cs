@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using HVTravel.Application.Interfaces;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    // [Route("Admin/[controller]")] // Area routing handles this now, or keep for explicit
+    [Route("Admin/[controller]")]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -244,7 +244,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     new Claim("FullName", user.FullName ?? "")
                 };
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.AdminScheme);
                 var authProperties = new AuthenticationProperties
                 {
                     IsPersistent = rememberMe
@@ -255,7 +255,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30);
                 }
 
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                await HttpContext.SignInAsync(AuthSchemes.AdminScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
@@ -271,7 +271,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         [HttpGet("Logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(AuthSchemes.AdminScheme);
             return RedirectToAction("Login");
         }
         

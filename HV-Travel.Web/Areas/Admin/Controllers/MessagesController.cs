@@ -1,5 +1,6 @@
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
+using HVTravel.Web.Security;
 using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HVTravel.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = "Admin,Manager,Staff")]
+[Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Manager,Staff")]
 [Route("Admin/[controller]")]
 public class MessagesController : Controller
 {

@@ -4,11 +4,12 @@ using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 using System.Threading.Tasks;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin,Staff")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Staff")]
     public class CustomersController : Controller
     {
         private readonly IRepository<Customer> _customerRepository;
