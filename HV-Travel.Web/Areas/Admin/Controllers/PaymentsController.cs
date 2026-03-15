@@ -2,11 +2,12 @@ using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin,Accountant")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Accountant")]
     public class PaymentsController : Controller
     {
         private readonly IRepository<Payment> _paymentRepository;
