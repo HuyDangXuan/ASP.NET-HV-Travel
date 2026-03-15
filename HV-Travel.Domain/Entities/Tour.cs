@@ -22,12 +22,8 @@ namespace HVTravel.Domain.Entities
         [BsonElement("description")]
         public string Description { get; set; }
         
-        [BsonElement("short_description")]
+        [BsonElement("shortDescription")]
         public string ShortDescription { get; set; }
-
-        [Required]
-        [BsonElement("category")]
-        public string Category { get; set; } // e.g., Adventure, Culture, Food, Nature
 
         [BsonElement("destination")]
         public Destination Destination { get; set; }
@@ -43,22 +39,22 @@ namespace HVTravel.Domain.Entities
         [BsonElement("duration")]
         public TourDuration Duration { get; set; }
 
-        [BsonElement("start_dates")]
+        [BsonElement("startDates")]
         public List<DateTime> StartDates { get; set; } = new List<DateTime>();
 
         [BsonElement("schedule")]
         public List<ScheduleItem> Schedule { get; set; } = new List<ScheduleItem>();
 
-        [BsonElement("generated_inclusions")]
+        [BsonElement("generatedInclusions")]
         public List<string> GeneratedInclusions { get; set; } = new List<string>();
 
-        [BsonElement("generated_exclusions")]
+        [BsonElement("generatedExclusions")]
         public List<string> GeneratedExclusions { get; set; } = new List<string>();
 
-        [BsonElement("max_participants")]
+        [BsonElement("maxParticipants")]
         public int MaxParticipants { get; set; }
 
-        [BsonElement("current_participants")]
+        [BsonElement("currentParticipants")]
         public int CurrentParticipants { get; set; }
 
         public int RemainingSpots => MaxParticipants - CurrentParticipants;
@@ -66,13 +62,13 @@ namespace HVTravel.Domain.Entities
         [BsonElement("rating")]
         public double Rating { get; set; }
 
-        [BsonElement("review_count")]
+        [BsonElement("reviewCount")]
         public int ReviewCount { get; set; }
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
-        [BsonElement("updated_at")]
+        [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonElement("version")]

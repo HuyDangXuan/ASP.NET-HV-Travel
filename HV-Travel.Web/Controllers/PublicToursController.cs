@@ -13,20 +13,13 @@ public class PublicToursController : Controller
         _tourRepository = tourRepository;
     }
 
-    public async Task<IActionResult> Index(string? category, string? search, string? sort, int page = 1)
+    public async Task<IActionResult> Index(string? search, string? sort, int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
         ViewData["Title"] = "Tour Du Lịch";
 
         var allTours = await _tourRepository.GetAllAsync();
         var tours = allTours.Where(t => t.Status == "Active").AsEnumerable();
-
-        // Filter by category
-        if (!string.IsNullOrEmpty(category))
-        {
-            tours = tours.Where(t => t.Category != null && t.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
-            ViewData["CurrentCategory"] = category;
-        }
 
         // Search
         if (!string.IsNullOrEmpty(search))
@@ -49,15 +42,6 @@ public class PublicToursController : Controller
             _ => tours.OrderByDescending(t => t.Rating)
         };
         ViewData["CurrentSort"] = sort;
-
-        // Gather categories for filter
-        var categories = allTours
-            .Where(t => t.Status == "Active" && !string.IsNullOrEmpty(t.Category))
-            .Select(t => t.Category)
-            .Distinct()
-            .OrderBy(c => c)
-            .ToList();
-        ViewData["Categories"] = categories;
 
         // Pagination
         int pageSize = 9;
@@ -91,8 +75,10 @@ public class PublicToursController : Controller
         // Get related tours
         var allTours = await _tourRepository.GetAllAsync();
         var relatedTours = allTours
-            .Where(t => t.Status == "Active" && t.Id != id && t.Category == tour.Category)
-            .OrderByDescending(t => t.Rating)
+            .Where(t => t.Status == "Active" && t.Id != id)
+            .OrderByDescending(t => string.Equals(t.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(t => string.Equals(t.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(t => t.Rating)
             .Take(3)
             .ToList();
         ViewData["RelatedTours"] = relatedTours;

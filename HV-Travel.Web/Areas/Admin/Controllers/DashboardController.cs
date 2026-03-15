@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HVTravel.Application.Interfaces;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin,Manager,Staff")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Manager,Staff")]
     // [Route("Admin/[controller]")]
     public class DashboardController : Controller
     {
@@ -31,22 +32,34 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var bookings = await _bookingRepository.GetAllAsync();
-            var tours = await _tourRepository.GetAllAsync();
-            var customers = await _customerRepository.GetAllAsync();
-
-            var viewModel = new DashboardViewModel
+            try
             {
-                TotalRevenue = bookings.Sum(b => b.TotalAmount),
-                TotalBookings = bookings.Count(),
-                TotalTickets = bookings.Sum(b => b.ParticipantsCount),
-                TotalCustomers = customers.Count(),
-                TotalTours = tours.Count(),
-                RecentBookings = bookings.OrderByDescending(b => b.BookingDate).Take(10).ToList(), // Increased to 10
-                PopularTours = tours.Take(5).ToList() // Just take 5 for now
-            };
+                var bookings = await _bookingRepository.GetAllAsync();
+                var tours = await _tourRepository.GetAllAsync();
+                var customers = await _customerRepository.GetAllAsync();
 
-            return View(viewModel);
+                var viewModel = new DashboardViewModel
+                {
+                    TotalRevenue = bookings.Sum(b => b.TotalAmount),
+                    TotalBookings = bookings.Count(),
+                    TotalTickets = bookings.Sum(b => b.ParticipantsCount),
+                    TotalCustomers = customers.Count(),
+                    TotalTours = tours.Count(),
+                    RecentBookings = bookings.OrderByDescending(b => b.BookingDate).Take(10).ToList(),
+                    PopularTours = tours.Take(5).ToList()
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Dashboard error: {ex.Message}");
+                return View(new DashboardViewModel
+                {
+                    RecentBookings = new List<Booking>(),
+                    PopularTours = new List<Tour>()
+                });
+            }
         }
 
         [HttpGet("api/dashboard/revenue")]

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Infrastructure.Data;
+using HVTravel.Infrastructure.Data.Serialization;
 using HVTravel.Infrastructure.Repositories;
 
 namespace HVTravel.Infrastructure
@@ -10,6 +11,7 @@ namespace HVTravel.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            MongoSerializationBootstrapper.Register();
             services.AddSingleton<MongoContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ITourRepository, TourRepository>();

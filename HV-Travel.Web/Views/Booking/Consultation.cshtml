@@ -8,6 +8,7 @@
     var contactGroup = siteSettings.GetGroup("contactInfo");
     var success = TempData["ConsultationSuccess"] != null;
 
+    var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
@@ -22,9 +23,9 @@
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
-                @hero.Fields.GetFieldValue("title", "Tu Van Chuyen Di Theo Cach Cua Ban")
+                @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
             </h1>
-            <p class="text-lg text-slate-300 max-w-xl mx-auto">@hero.Fields.GetFieldValue("description", "Chia se nhu cau de doi ngu HV Travel tu van tour phu hop voi lich trinh va ngan sach cua ban.")</p>
+            <p class="text-lg text-slate-300 max-w-xl mx-auto">@hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn.")</p>
         </div>
     </section>
 }
@@ -37,7 +38,7 @@
                 <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
                     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 space-y-5">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">support_agent</span> @benefits.Fields.GetFieldValue("quickContactTitle", "Lien He Nhanh")
+                            <span class="material-symbols-outlined text-primary">support_agent</span> @benefits.Fields.GetFieldValue("quickContactTitle", "Liên Hệ Nhanh")
                         </h3>
                         <a href="tel:@contactPhone" class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl hover:bg-primary/5 transition-colors group">
                             <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
@@ -61,20 +62,20 @@
 
                     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">schedule</span> Gio Lam Viec
+                            <span class="material-symbols-outlined text-primary">schedule</span> Giờ Làm Việc
                         </h3>
                         <div class="space-y-2.5 text-sm">
-                            <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Lich ho tro</span><span class="font-bold text-slate-900 dark:text-white">@businessHours</span></div>
+                            <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Lịch hỗ trợ</span><span class="font-bold text-slate-900 dark:text-white">@businessHours</span></div>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-primary/10 dark:to-blue-500/10 rounded-2xl p-6 border border-primary/10">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">@benefits.Fields.GetFieldValue("reasonsTitle", "Tai Sao Chon HV Travel?")</h3>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">@benefits.Fields.GetFieldValue("reasonsTitle", "Tại Sao Chọn HV Travel?")</h3>
                         <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>10+ nam kinh nghiem to chuc tour</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Doi ngu huong dan vien chuyen nghiep</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Tu van mien phi, khong rang buoc</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Cam ket gia tot nhat thi truong</div>
+                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>10+ năm kinh nghiệm tổ chức tour</div>
+                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Đội ngũ hướng dẫn viên chuyên nghiệp</div>
+                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Tư vấn miễn phí, không ràng buộc</div>
+                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Cam kết giá tốt nhất thị trường</div>
                         </div>
                     </div>
                 </div>
@@ -87,10 +88,10 @@
                         <div class="mx-auto size-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
                         </div>
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@benefits?.Fields.GetFieldValue("successTitle", "Gui Yeu Cau Thanh Cong!")</h2>
-                        <p class="text-slate-500 dark:text-slate-400 mb-6">@benefits?.Fields.GetFieldValue("successDescription", "Chung toi da nhan duoc thong tin va se lien he voi ban trong thoi gian som nhat.")</p>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@benefits?.Fields.GetFieldValue("successTitle", "Gửi Yêu Cầu Thành Công!")</h2>
+                        <p class="text-slate-500 dark:text-slate-400 mb-6">@benefits?.Fields.GetFieldValue("successDescription", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất.")</p>
                         <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                            <span class="material-symbols-outlined text-[18px]">explore</span> @benefits?.Fields.GetFieldValue("exploreToursText", "Kham Pha Tour")
+                            <span class="material-symbols-outlined text-[18px]">explore</span> @benefits?.Fields.GetFieldValue("exploreToursText", "Khám Phá Tour")
                         </a>
                     </div>
                 }
@@ -98,7 +99,7 @@
                 {
                     <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700">
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">edit_note</span> @benefits?.Fields.GetFieldValue("formTitle", "Gui Yeu Cau Tu Van")
+                            <span class="material-symbols-outlined text-primary">edit_note</span> @benefits?.Fields.GetFieldValue("formTitle", "Gửi Yêu Cầu Tư Vấn")
                         </h2>
 
                         <form asp-action="Consultation" method="post">
@@ -106,12 +107,12 @@
                             <div class="space-y-5">
                                 <div class="grid sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ho Va Ten <span class="text-red-500">*</span></label>
-                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyen Van A" />
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ Và Tên <span class="text-red-500">*</span></label>
+                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
                                         <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">So Dien Thoai <span class="text-red-500">*</span></label>
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
                                         <input asp-for="Phone" type="tel" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
                                         <span asp-validation-for="Phone" class="text-xs text-red-500 mt-1"></span>
                                     </div>
@@ -124,45 +125,45 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour Quan Tam</label>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour Quan Tâm</label>
                                     <input asp-for="TourInterest" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="VD: Tour Da Nang 3N2D, Tour Phu Quoc..." />
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thoi Gian Lien He Mong Muon</label>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời Gian Liên Hệ Mong Muốn</label>
                                     <div class="flex flex-wrap gap-2">
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Sang (8-12h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="Sáng (8-12h)" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Sang (8-12h)
+                                                Sáng (8-12h)
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Chieu (13-17h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="Chiều (13-17h)" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Chieu (13-17h)
+                                                Chiều (13-17h)
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Toi (18-21h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="Tối (18-21h)" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Toi (18-21h)
+                                                Tối (18-21h)
                                             </div>
                                         </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Noi Dung Yeu Cau <span class="text-red-500">*</span></label>
-                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="Mo ta yeu cau cua ban: so nguoi, ngan sach du kien, ngay di mong muon..."></textarea>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nội Dung Yêu Cầu <span class="text-red-500">*</span></label>
+                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn..."></textarea>
                                     <span asp-validation-for="Message" class="text-xs text-red-500 mt-1"></span>
                                 </div>
 
                                 <button type="submit" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
                                     <span class="material-symbols-outlined text-[18px]">send</span>
-                                    @benefits?.Fields.GetFieldValue("submitText", "Gui Yeu Cau")
+                                    @benefits?.Fields.GetFieldValue("submitText", "Gửi Yêu Cầu")
                                 </button>
-                                <p class="text-[11px] text-slate-400 text-center">Chung toi se phan hoi trong vong 24 gio lam viec</p>
+                                <p class="text-[11px] text-slate-400 text-center">Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc</p>
                             </div>
                         </form>
                     </div>

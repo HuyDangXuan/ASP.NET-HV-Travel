@@ -11,8 +11,7 @@ namespace HVTravel.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("recipient_id")]
+        [BsonElement("recipientId")]
         public string RecipientId { get; set; } // Can be userId or "ALL"
 
         [BsonElement("type")]
@@ -27,10 +26,10 @@ namespace HVTravel.Domain.Entities
         [BsonElement("link")]
         public string Link { get; set; }
 
-        [BsonElement("is_read")]
+        [BsonElement("isRead")]
         public bool IsRead { get; set; } = false;
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

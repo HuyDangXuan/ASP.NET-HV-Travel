@@ -17,29 +17,29 @@ namespace HVTravel.Domain.Entities
         public string Email { get; set; }
 
         [Required]
-        [BsonElement("password_hash")]
+        [BsonElement("passwordHash")]
         public string PasswordHash { get; set; }
 
         [Required]
         [BsonElement("role")]
         public string Role { get; set; } = "Client"; // Admin, Manager, Staff, Guide, Client
 
-        [BsonElement("full_name")]
+        [BsonElement("fullName")]
         public string FullName { get; set; }
         
-        [BsonElement("avatar_url")]
+        [BsonElement("avatarUrl")]
         public string AvatarUrl { get; set; }
         
         [BsonElement("status")]
         public string Status { get; set; } = "Active"; // Active, Inactive
 
-        [BsonElement("last_login")]
+        [BsonElement("lastLogin")]
         public DateTime? LastLogin { get; set; }
         
         [BsonElement("permissions")]
         public List<string> Permissions { get; set; } = new List<string>();
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

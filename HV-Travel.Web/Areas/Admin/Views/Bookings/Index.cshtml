@@ -334,7 +334,7 @@
                         </td>
                         <td class="p-4 col-tour">
                             <p class="font-medium text-slate-700 dark:text-slate-300">@item.TourSnapshot?.Name</p>
-                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "Updating...")</p>
+                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "Updating...")</p>
                         </td>
                         <td class="p-4 text-center font-medium col-quantity">@item.ParticipantsCount</td>
                         <td class="p-4 font-bold text-slate-900 dark:text-white col-total">@item.TotalAmount.ToString("N0") ₫</td>

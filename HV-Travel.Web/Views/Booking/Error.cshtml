@@ -7,15 +7,15 @@
     var phone = contactGroup?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
     var email = contactGroup?.Fields.GetFieldValue("email", "support@hvtravel.vn") ?? "support@hvtravel.vn";
 
-    ViewData["Title"] = "Loi He Thong";
+    ViewData["Title"] = "Lỗi Hệ Thống";
 }
 
 <div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chu</a>
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Loi He Thong</span>
+            <span class="text-slate-900 dark:text-white font-medium">Lỗi Hệ Thống</span>
         </nav>
     </div>
 </div>
@@ -31,29 +31,29 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Da Xay Ra Loi")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-2">@statusCopy?.Fields.GetFieldValue("errorDescription", "Da xay ra loi he thong trong qua trinh xu ly. Vui long thu lai sau.")</p>
-        <p class="text-xs text-slate-400 mb-8">Ma loi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-2">@statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")</p>
+        <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
 
         <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 mb-8 text-left" data-animate="fade-up" data-delay="200">
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Ban co the thu:</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Bạn có thể thử:</h4>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tai lai trang</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay lai trang truoc</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> Lien he ho tro: <strong>@phone</strong></li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tải lại trang</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay lại trang trước</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> Liên hệ hỗ trợ: <strong>@phone</strong></li>
                 <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">mail</span> Email: <strong>@email</strong></li>
             </ul>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
             <button onclick="location.reload()" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                <span class="material-symbols-outlined text-[18px]">refresh</span> Tai Lai
+                <span class="material-symbols-outlined text-[18px]">refresh</span> Tải Lại
             </button>
             <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chu
+                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chủ
             </a>
             <button onclick="history.back()" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Lai
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Lại
             </button>
         </div>
     </div>

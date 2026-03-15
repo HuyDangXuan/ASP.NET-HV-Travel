@@ -12,18 +12,18 @@
 <div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chu</a>
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             @if (tour != null)
             {
                 <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Dat Tour</span>
+                <span>Đặt Tour</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Thanh Toan</span>
+                <span>Thanh Toán</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             }
-            <span class="text-slate-900 dark:text-white font-medium">That Bai</span>
+            <span class="text-slate-900 dark:text-white font-medium">Thất Bại</span>
         </nav>
     </div>
 </div>
@@ -36,20 +36,20 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toan That Bai")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toan khong thanh cong. Vui long thu lai hoac chon phuong thuc khac."))</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))</p>
 
         @if (!string.IsNullOrEmpty(booking?.BookingCode))
         {
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Ma don: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Mã đơn: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
         }
 
         <div class="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
             <div class="flex gap-3">
                 <span class="material-symbols-outlined text-amber-500 shrink-0">info</span>
                 <div class="text-sm text-amber-800 dark:text-amber-300">
-                    <p class="font-bold mb-1">Don dat tour cua ban van duoc giu</p>
-                    <p class="text-xs">Ban co the thu lai thanh toan hoac chon phuong thuc khac. Neu can ho tro, hay lien he hotline <strong>@phone</strong>.</p>
+                    <p class="font-bold mb-1">Đơn đặt tour của bạn vẫn được giữ</p>
+                    <p class="text-xs">Bạn có thể thử lại thanh toán hoặc chọn phương thức khác. Nếu cần hỗ trợ, hãy liên hệ hotline <strong>@phone</strong>.</p>
                 </div>
             </div>
         </div>
@@ -58,14 +58,14 @@
             @if (!string.IsNullOrEmpty(booking?.Id))
             {
                 <a asp-controller="Booking" asp-action="Payment" asp-route-bookingId="@booking.Id" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thu Lai
+                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thử Lại
                 </a>
             }
             <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Ve Trang Chu
+                <span class="material-symbols-outlined text-[18px]">home</span> Về Trang Chủ
             </a>
             <a href="tel:@phone" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">call</span> Goi Ho Tro
+                <span class="material-symbols-outlined text-[18px]">call</span> Gọi Hỗ Trợ
             </a>
         </div>
     </div>

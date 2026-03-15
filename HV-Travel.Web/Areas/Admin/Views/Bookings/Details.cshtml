@@ -144,7 +144,7 @@
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-1.5 text-xs text-[#618389] dark:text-slate-400">
                             <span class="material-symbols-outlined text-sm">calendar_month</span>
-                            Khởi hành: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "Updating...")</span>
+                            Khởi hành: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "Updating...")</span>
                         </div>
                         <div class="flex items-center gap-1.5 text-xs text-[#618389] dark:text-slate-400">
                             <span class="material-symbols-outlined text-sm">schedule</span>

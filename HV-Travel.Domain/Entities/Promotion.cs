@@ -16,19 +16,19 @@ namespace HVTravel.Domain.Entities
         public string Code { get; set; }
 
         [Required]
-        [BsonElement("discount_percentage")]
+        [BsonElement("discountPercentage")]
         public double DiscountPercentage { get; set; }
 
         [BsonElement("description")]
         public string Description { get; set; }
 
-        [BsonElement("valid_from")]
+        [BsonElement("validFrom")]
         public DateTime ValidFrom { get; set; }
 
-        [BsonElement("valid_to")]
+        [BsonElement("validTo")]
         public DateTime ValidTo { get; set; }
 
-        [BsonElement("is_active")]
+        [BsonElement("isActive")]
         public bool IsActive { get; set; } = true;
     }
 }
