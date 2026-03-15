@@ -10,7 +10,7 @@
         <nav class="flex items-center gap-2 text-sm text-slate-500">
             <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Tours</span>
+            <span class="text-slate-900 dark:text-white font-medium">Danh Sách Tour</span>
         </nav>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Tour Du Lịch</h1>
     </div>
@@ -121,7 +121,7 @@
                     </button>
                 </form>
                  <button type="button" onclick="exportSelected()" class="flex items-center gap-2 px-3 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">download</span> Export
+                    <span class="material-symbols-outlined text-[18px]">download</span> Xuất dữ liệu
                 </button>
                 <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
             </div>
@@ -131,7 +131,7 @@
                 <!-- Import -->
                 <button onclick="document.getElementById('import-file').click()" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors" title="Alt+I">
                     <span class="material-symbols-outlined text-[18px]">upload_file</span>
-                    <span class="hidden sm:inline">Import</span>
+                    <span class="hidden sm:inline">Nhập dữ liệu</span>
                 </button>
                 <form asp-action="Import" method="post" enctype="multipart/form-data" class="hidden">
                      <input type="file" id="import-file" name="file" accept=".json,.csv" onchange="this.form.submit()" />
@@ -141,7 +141,7 @@
                 <div class="relative group">
                     <button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors">
                         <span class="material-symbols-outlined text-[18px]">download</span>
-                        <span class="hidden sm:inline">Export</span>
+                        <span class="hidden sm:inline">Xuất dữ liệu</span>
                     </button>
                     <div class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden group-hover:block z-50 p-1">
                         <a href="@Url.Action("Export", new { format = "json" })" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">JSON</a>

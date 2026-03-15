@@ -1,7 +1,7 @@
 @using HVTravel.Web.Models
 @model CustomerIndexViewModel
 @{
-    ViewData["Title"] = "Customers";
+    ViewData["Title"] = "Khách Hàng";
 }
 
 <style>
@@ -462,7 +462,7 @@
     <!-- Side Drawer (Detail View) -->
     <aside id="customer-detail-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[500px] z-50 bg-white dark:bg-surface-dark shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-100 dark:border-slate-800 flex flex-col">
         <!-- Drawer Header -->
-        <div class="relative h-20 bg-gradient-to-r from-cyan-500 to-blue-600 shrink-0" data-alt="Gradient background header in cyan and blue">
+        <div class="relative h-20 bg-gradient-to-r from-cyan-500 to-blue-600 shrink-0" data-alt="Nền gradient đầu trang màu xanh cyan và xanh dương">
             <button onclick="toggleCustomerSidebar()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
                 <span class="material-symbols-outlined !text-[20px]">close</span>
             </button>
@@ -637,7 +637,7 @@
 
             } catch (error) {
                 console.error("Error fetching customer details:", error);
-                 document.getElementById('sidebar-name').innerText = "Error loading data";
+                 document.getElementById('sidebar-name').innerText = "Lỗi khi tải dữ liệu";
                  document.getElementById('sidebar-history-list').innerHTML = '<p class="text-center text-red-500 text-sm py-4">Có lỗi xảy ra khi tải dữ liệu.</p>';
             }
             

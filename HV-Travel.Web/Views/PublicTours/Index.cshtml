@@ -1,11 +1,11 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @model List<Tour>
 @{
     var sections = await ContentService.GetPageSectionsAsync("publicTours");
     var hero = sections.GetSection("indexHero");
     var emptyState = sections.GetSection("emptyState");
 
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "KhÃ¡m phÃ¡ táº¥t cáº£ tour du lá»‹ch Viá»‡t Nam táº¡i HV Travel");
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Khám phá tất cả tour du lịch Việt Nam tại HV Travel");
 
     var currentSearch = ViewData["CurrentSearch"]?.ToString();
     var currentSort = ViewData["CurrentSort"]?.ToString();
@@ -23,16 +23,16 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
                 @hero.Fields.GetFieldValue("titleLine1", "Tour")
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "du lá»‹ch")</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "du lịch")</span>
             </h1>
-            <p class="text-lg text-slate-300 max-w-xl mx-auto mb-8">@hero.Fields.GetFieldValue("description", "KhÃ¡m phÃ¡ nhá»¯ng hÃ nh trÃ¬nh ná»•i báº­t kháº¯p Viá»‡t Nam vá»›i lá»‹ch trÃ¬nh Ä‘Æ°á»£c tuyá»ƒn chá»n ká»¹ lÆ°á»¡ng.")</p>
+            <p class="text-lg text-slate-300 max-w-xl mx-auto mb-8">@hero.Fields.GetFieldValue("description", "Khám phá những hành trình nổi bật khắp Việt Nam với lịch trình được tuyển chọn kỹ lưỡng.")</p>
             <form asp-controller="PublicTours" asp-action="Index" method="get" class="max-w-2xl mx-auto">
                 <input type="hidden" name="sort" value="@currentSort" />
                 <div class="flex bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden">
-                    <input type="text" name="search" value="@currentSearch" placeholder="@hero.Fields.GetFieldValue("searchPlaceholder", "TÃ¬m Ä‘iá»ƒm Ä‘áº¿n, tá»« khÃ³a, thÃ nh phá»‘...")" class="flex-1 bg-transparent text-white placeholder-white/60 px-6 py-4 text-sm outline-none" />
+                    <input type="text" name="search" value="@currentSearch" placeholder="@hero.Fields.GetFieldValue("searchPlaceholder", "Tìm điểm đến, từ khóa, thành phố...")" class="flex-1 bg-transparent text-white placeholder-white/60 px-6 py-4 text-sm outline-none" />
                     <button type="submit" class="bg-primary hover:bg-primary-dark text-white px-8 py-4 font-bold text-sm transition-colors flex items-center gap-2">
                         <span class="material-symbols-outlined text-[20px]">search</span>
-                        <span class="hidden sm:inline">TÃ¬m kiáº¿m</span>
+                        <span class="hidden sm:inline">Tìm kiếm</span>
                     </button>
                 </div>
             </form>
@@ -46,10 +46,10 @@
             <div class="flex items-center gap-3">
                 <span class="text-sm text-slate-500 dark:text-slate-400">@totalItems tour</span>
                 <select id="sort-select" class="bg-surface-light dark:bg-surface-dark text-sm text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl ring-1 ring-border-light dark:ring-border-dark outline-none focus:ring-primary/30">
-                    <!option value="" @(string.IsNullOrEmpty(currentSort) || currentSort == "rating" ? "selected" : "")>ÄÃ¡nh giÃ¡ cao</!option>
-                    <!option value="price_asc" @(currentSort == "price_asc" ? "selected" : "")>GiÃ¡ tháº¥p Ä‘áº¿n cao</!option>
-                    <!option value="price_desc" @(currentSort == "price_desc" ? "selected" : "")>GiÃ¡ cao Ä‘áº¿n tháº¥p</!option>
-                    <!option value="newest" @(currentSort == "newest" ? "selected" : "")>Má»›i nháº¥t</!option>
+                    <!option value="" @(string.IsNullOrEmpty(currentSort) || currentSort == "rating" ? "selected" : "")>Đánh giá cao</!option>
+                    <!option value="price_asc" @(currentSort == "price_asc" ? "selected" : "")>Giá thấp đến cao</!option>
+                    <!option value="price_desc" @(currentSort == "price_desc" ? "selected" : "")>Giá cao đến thấp</!option>
+                    <!option value="newest" @(currentSort == "newest" ? "selected" : "")>Mới nhất</!option>
                 </select>
             </div>
         </div>
@@ -80,12 +80,12 @@
                         <div class="p-5">
                             <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
                                 <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
-                                @(tour.Destination?.City ?? "Viá»‡t Nam")
+                                @(tour.Destination?.City ?? "Việt Nam")
                             </div>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Ä")</span>
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")</span>
                                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>@tour.MaxParticipants</span>
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -95,11 +95,11 @@
                             </div>
                             <div class="flex items-end justify-between pt-4 border-t border-border-light dark:border-border-dark">
                                 <div>
-                                    <p class="text-xs text-slate-400">Tá»«</p>
-                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))â‚«</p>
+                                    <p class="text-xs text-slate-400">Từ</p>
+                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
                                 </div>
                                 <span class="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
-                                    Chi tiáº¿t <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                    Chi tiết <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                                 </span>
                             </div>
                         </div>
@@ -146,10 +146,10 @@
         {
             <div class="text-center py-20">
                 <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">search_off</span>
-                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">@((emptyState?.Fields.GetFieldValue("title", "KhÃ´ng tÃ¬m tháº¥y tour nÃ o")) ?? "KhÃ´ng tÃ¬m tháº¥y tour nÃ o")</h3>
-                <p class="text-slate-500 dark:text-slate-400 mb-6">@((emptyState?.Fields.GetFieldValue("description", "HÃ£y thá»­ Ä‘á»•i tá»« khÃ³a hoáº·c quay láº¡i toÃ n bá»™ danh sÃ¡ch tour Ä‘ang má»Ÿ bÃ¡n.")) ?? "HÃ£y thá»­ Ä‘á»•i tá»« khÃ³a hoáº·c quay láº¡i toÃ n bá»™ danh sÃ¡ch tour Ä‘ang má»Ÿ bÃ¡n.")</p>
+                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">@((emptyState?.Fields.GetFieldValue("title", "Không tìm thấy tour nào")) ?? "Không tìm thấy tour nào")</h3>
+                <p class="text-slate-500 dark:text-slate-400 mb-6">@((emptyState?.Fields.GetFieldValue("description", "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán.")) ?? "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán.")</p>
                 <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
-                    <span class="material-symbols-outlined text-[18px]">refresh</span> @((emptyState?.Fields.GetFieldValue("ctaText", "Xem táº¥t cáº£ tour")) ?? "Xem táº¥t cáº£ tour")
+                    <span class="material-symbols-outlined text-[18px]">refresh</span> @((emptyState?.Fields.GetFieldValue("ctaText", "Xem tất cả tour")) ?? "Xem tất cả tour")
                 </a>
             </div>
         }

@@ -24,6 +24,7 @@ public class MessagesController : Controller
     public IActionResult Index()
     {
         ViewData["Title"] = "Tin nhắn";
+        ViewData["AdminSection"] = "messages";
         return View();
     }
 
@@ -69,7 +70,9 @@ public class MessagesController : Controller
             ConversationCode = conversation.ConversationCode,
             Status = conversation.Status,
             ParticipantType = conversation.ParticipantType,
-            DisplayName = string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName) ? "Khách truy cập" : conversation.GuestProfile.DisplayName,
+            DisplayName = string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName)
+                ? "Khách truy cập"
+                : conversation.GuestProfile.DisplayName,
             SourcePage = conversation.SourcePage,
             LastMessagePreview = conversation.LastMessagePreview,
             LastMessageAt = conversation.LastMessageAt,

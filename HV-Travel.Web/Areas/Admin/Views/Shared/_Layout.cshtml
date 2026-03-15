@@ -1,4 +1,37 @@
-﻿<!DOCTYPE html>
+@{
+    var requestedSection = (ViewData["AdminSection"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
+    var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
+
+    var adminSection = !string.IsNullOrWhiteSpace(requestedSection)
+        ? requestedSection
+        : currentController switch
+        {
+            "dashboard" => "dashboard",
+            "home" => "dashboard",
+            "tours" => "tours",
+            "bookings" => "bookings",
+            "payments" => "payments",
+            "customers" => "customers",
+            "messages" => "messages",
+            "content" => "content",
+            "users" => "users",
+            _ => string.Empty
+        };
+
+    string NavClass(string section, bool withGroup = false)
+    {
+        var baseClass = "flex items-center gap-3 px-4 py-3 rounded-xl transition-all";
+        if (withGroup)
+        {
+            baseClass += " group";
+        }
+
+        return adminSection == section
+            ? $"{baseClass} bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30"
+            : $"{baseClass} text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark";
+    }
+}
+<!DOCTYPE html>
 <html class="light" lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -276,7 +309,7 @@
                     </div>
                     <div>
                         <h1 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">HV Travel</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1">Trang Quản Trị</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium mt-1">Trang quản trị</p>
                     </div>
                 </div>
                 <button id="theme-toggle" class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-white/60 dark:hover:bg-surface-elevated-dark transition-all" aria-label="Chuyển chế độ tối">
@@ -286,40 +319,39 @@
             </div>
             <!-- Navigation Links -->
             <nav class="flex flex-col gap-2">
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Dashboard" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <a class='@NavClass("dashboard")' asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                     <span class="material-symbols-outlined" data-weight="fill">dashboard</span>
-                    <span class="text-sm">Tổng Quan</span>
+                    <span class="text-sm">Tổng quan</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Tours" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Tours" asp-action="Index">
+                <a class='@NavClass("tours", withGroup: true)' asp-area="Admin" asp-controller="Tours" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">map</span>
-                    <span class="text-sm font-medium">Quản Lý Tour</span>
+                    <span class="text-sm font-medium">Quản lý tour</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Bookings" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Bookings" asp-action="Index">
+                <a class='@NavClass("bookings", withGroup: true)' asp-area="Admin" asp-controller="Bookings" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">confirmation_number</span>
-                    <span class="text-sm font-medium">Đơn Đặt Vé</span>
-                    <!-- <span class="ml-auto bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full">12</span> -->
+                    <span class="text-sm font-medium">Đơn đặt vé</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Payments" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-controller="Payments" asp-action="Index">
+                <a class='@NavClass("payments", withGroup: true)' asp-controller="Payments" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
-                    <span class="text-sm font-medium">Thanh Toán</span>
+                    <span class="text-sm font-medium">Thanh toán</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Customers" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Customers" asp-action="Index">
+                <a class='@NavClass("customers", withGroup: true)' asp-area="Admin" asp-controller="Customers" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
-                    <span class="text-sm font-medium">Khách Hàng</span>
+                    <span class="text-sm font-medium">Khách hàng</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Tin nhắn" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Messages" asp-action="Index">
+                <a class='@NavClass("messages", withGroup: true)' asp-area="Admin" asp-controller="Messages" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">forum</span>
-                    <span class="text-sm font-medium">Tin Nhắn</span>
+                    <span class="text-sm font-medium">Tin nhắn</span>
                 </a>
-                <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Nội Dung Website" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Content" asp-action="Index">
+                <a class='@NavClass("content", withGroup: true)' asp-area="Admin" asp-controller="Content" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">web_stories</span>
-                    <span class="text-sm font-medium">Nội Dung Website</span>
+                    <span class="text-sm font-medium">Nội dung website</span>
                 </a>
                 @if (User.IsInRole("Admin"))
                 {
-                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl @((string)ViewData["Title"] == "Users" ? "bg-primary-soft text-primary-strong font-bold shadow-sm ring-1 ring-primary/30 dark:bg-primary/10 dark:text-primary dark:ring-accent/30" : "text-slate-600 dark:text-text-muted-dark hover:bg-white/60 dark:hover:bg-surface-elevated-dark hover:text-slate-900 dark:hover:text-text-strong-dark transition-all group")" asp-area="Admin" asp-controller="Users" asp-action="Index">
+                    <a class='@NavClass("users", withGroup: true)' asp-area="Admin" asp-controller="Users" asp-action="Index">
                         <span class="material-symbols-outlined group-hover:scale-110 transition-transform">admin_panel_settings</span>
-                        <span class="text-sm font-medium">Quản Lý Tài Khoản</span>
+                        <span class="text-sm font-medium">Quản lý tài khoản</span>
                     </a>
                 }
             </nav>
@@ -330,14 +362,14 @@
                 <div class="absolute top-0 right-0 -mt-2 -mr-2 bg-white/10 w-20 h-20 rounded-full blur-xl group-hover:bg-primary/20 transition-all duration-500"></div>
                 <div class="relative z-10 flex gap-3 items-center mb-2">
                     <span class="material-symbols-outlined text-primary">support_agent</span>
-                    <p class="font-bold text-sm">Cần Hỗ Trợ?</p>
+                    <p class="font-bold text-sm">Cần hỗ trợ?</p>
                 </div>
                 <p class="relative z-10 text-xs text-slate-300 mb-3">Xem tài liệu hoặc liên hệ hỗ trợ.</p>
-                <button class="relative z-10 w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold transition-colors">Mở Hỗ Trợ</button>
+                <button class="relative z-10 w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-semibold transition-colors">Mở hỗ trợ</button>
             </div>
             <a class="flex items-center gap-3 px-4 py-3 mt-4 rounded-xl text-slate-500 dark:text-text-muted-dark hover:text-red-500 dark:hover:text-red-400 transition-colors" asp-area="Admin" asp-controller="Auth" asp-action="Logout">
                 <span class="material-symbols-outlined">logout</span>
-                <span class="text-sm font-medium">Đăng Xuất</span>
+                <span class="text-sm font-medium">Đăng xuất</span>
             </a>
         </div>
     </aside>
@@ -354,7 +386,7 @@
                     </div>
                     <input class="block w-full pl-12 pr-4 py-3 bg-surface-light dark:bg-surface-elevated-dark border-none rounded-xl text-sm shadow-sm ring-1 ring-border-light dark:ring-border-dark focus:ring-2 focus:ring-primary placeholder:text-text-muted-light dark:placeholder:text-text-muted-dark text-text-strong-light dark:text-text-strong-dark transition-all" placeholder="Tìm kiếm tour, đơn hàng, điểm đến..." type="text" />
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <span class="text-xs text-slate-400 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">⌘K</span>
+                        <span class="text-xs text-slate-400 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">Ctrl K</span>
                     </div>
                 </label>
             </div>
@@ -362,7 +394,7 @@
             <div class="flex items-center gap-4 ml-6">
                 <a asp-area="Admin" asp-controller="Tours" asp-action="Create" class="flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:brightness-105 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-primary/30 transition-all active:scale-95">
                     <span class="material-symbols-outlined text-[20px]">add</span>
-                    <span class="text-sm">Tạo Tour Mới</span>
+                    <span class="text-sm">Tạo tour mới</span>
                 </a>
                 <div class="relative" id="notification-container">
                     <button onclick="toggleNotificationDropdown()" class="relative w-12 h-12 flex items-center justify-center bg-surface-light dark:bg-surface-elevated-dark rounded-2xl shadow-sm ring-1 ring-border-light dark:ring-border-dark text-slate-500 dark:text-text-muted-dark hover:text-primary hover:bg-primary-soft dark:hover:bg-surface-dark transition-all duration-200 group">
@@ -508,7 +540,7 @@
 
             // 2a. Breadcrumb nav
             mainContent.querySelectorAll(':scope > nav, :scope > div > nav').forEach(function(nav) {
-                if (nav.querySelector('a') && nav.textContent.includes('Trang Chủ')) {
+                if (nav.querySelector('a') && nav.textContent.includes('Trang Ch?')) {
                     animateEl(nav, 'fade-in', autoDelay += STEP);
                 }
             });
