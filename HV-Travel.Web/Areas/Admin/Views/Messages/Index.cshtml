@@ -1,0 +1,433 @@
+@{
+    ViewData["Title"] = "Tin nhắn";
+}
+
+<form id="admin-chat-antiforgery-form" class="hidden">
+    @Html.AntiForgeryToken()
+</form>
+
+<div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between" data-animate="fade-in-up" data-delay="0.05">
+    <div>
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="hover:text-primary transition-colors">Trang chủ</a>
+            <span>/</span>
+            <span class="font-medium text-slate-900 dark:text-white">Tin nhắn</span>
+        </nav>
+        <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Hộp thư hỗ trợ</h1>
+        <p class="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
+            Theo dõi hội thoại của khách hàng theo thời gian thực và phản hồi ngay trong không gian làm việc riêng.
+        </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <div class="rounded-xl bg-surface-light px-3 py-2 shadow-sm ring-1 ring-border-light dark:bg-surface-elevated-dark dark:ring-border-dark">
+            <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400">Thời gian thực</p>
+            <p id="admin-chat-summary" class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Đang kết nối trung tâm tin nhắn...</p>
+        </div>
+        <button id="admin-chat-refresh" type="button" class="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:bg-primary-dark">
+            <span class="material-symbols-outlined text-[20px]">refresh</span>
+            Làm mới
+        </button>
+    </div>
+</div>
+
+<section class="grid grid-cols-1 gap-6 xl:h-[calc(100vh-14rem)] xl:min-h-[calc(100vh-14rem)] xl:grid-cols-[360px_minmax(0,1fr)]" data-animate="fade-in-up" data-delay="0.1">
+    <aside class="relative flex min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border-light/80 bg-gradient-to-b from-surface-light via-primary-soft/30 to-surface-muted-light shadow-[0_24px_60px_rgba(15,23,42,0.12)] ring-1 ring-border-light/80 dark:border-border-dark dark:bg-gradient-to-b dark:from-surface-dark dark:via-surface-dark dark:to-background-dark dark:ring-border-dark">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-r from-primary/15 via-accent-soft/50 to-transparent dark:from-primary/10 dark:via-slate-800/40 dark:to-transparent"></div>
+        <div class="relative border-b border-border-light px-4 py-4 dark:border-border-dark">
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Hộp thư</p>
+                    <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">Hội thoại gần đây</h2>
+                </div>
+                <span id="admin-chat-unread-badge" class="inline-flex min-w-9 items-center justify-center rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">0</span>
+            </div>
+            <div class="mt-3 rounded-xl border border-border-light bg-surface-light/92 px-3 py-2.5 text-sm text-slate-600 shadow-sm ring-1 ring-border-light dark:border-border-dark dark:bg-surface-elevated-dark/90 dark:text-text-muted-dark dark:ring-border-dark">
+                Mỗi hội thoại sẽ tự cập nhật khi có tin nhắn mới từ khách hoặc từ nhân viên.
+            </div>
+        </div>
+
+        <div id="admin-chat-conversation-list" class="relative min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3">
+            <div class="rounded-2xl border border-dashed border-border-light bg-surface-light/80 px-4 py-8 text-center text-sm text-slate-500 shadow-sm dark:border-border-dark dark:bg-surface-elevated-dark/50 dark:text-text-muted-dark">
+                Chưa có hội thoại nào.
+            </div>
+        </div>
+    </aside>
+
+    <section class="relative flex min-h-0 flex-col overflow-hidden rounded-[1.5rem] border border-border-light/80 bg-gradient-to-br from-surface-light via-surface-muted-light to-primary-soft/20 shadow-[0_24px_60px_rgba(15,23,42,0.14)] ring-1 ring-border-light/80 xl:h-full dark:border-border-dark dark:bg-gradient-to-br dark:from-surface-dark dark:via-surface-dark dark:to-background-dark dark:ring-border-dark">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-r from-primary/10 via-accent-soft/55 to-transparent dark:from-primary/10 dark:via-slate-800/30 dark:to-transparent"></div>
+        <header id="admin-chat-thread-header" class="relative border-b border-border-light px-5 py-4 dark:border-border-dark">
+            <p class="text-lg font-bold text-slate-900 dark:text-white">Chưa chọn hội thoại</p>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Chọn một khách từ danh sách bên trái để xem và phản hồi tin nhắn.</p>
+        </header>
+
+        <div id="admin-chat-thread" class="min-h-[320px] flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top,_rgba(20,184,212,0.10),_transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.82),rgba(236,244,248,0.96))] px-5 py-5 dark:bg-[radial-gradient(circle_at_top,_rgba(20,184,212,0.10),_transparent_28%),linear-gradient(180deg,rgba(13,27,42,0.44),rgba(7,17,27,0.26))] xl:min-h-0">
+            <div class="space-y-3">
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-white/85 px-4 py-10 text-center text-sm text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+                    Tin nhắn sẽ hiển thị ở đây sau khi bạn mở một hội thoại.
+                </div>
+            </div>
+        </div>
+
+        <div class="relative border-t border-border-light bg-surface-light/92 px-5 py-3 backdrop-blur-sm dark:border-border-dark dark:bg-surface-dark/90">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <p id="admin-chat-status" class="text-sm text-slate-500 dark:text-slate-400">Không gian chat đang khởi tạo.</p>
+                <button id="admin-chat-mobile-list-toggle" type="button" class="inline-flex items-center gap-2 self-start rounded-xl border border-border-light bg-surface-light px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-surface-muted-light xl:hidden dark:border-border-dark dark:bg-surface-elevated-dark dark:text-slate-200 dark:hover:bg-surface-dark">
+                    <span class="material-symbols-outlined text-[18px]">forum</span>
+                    Xem danh sách hội thoại
+                </button>
+            </div>
+
+            <form id="admin-chat-form" class="mt-4">
+                <div class="rounded-[1.25rem] border border-border-light bg-surface-light p-2.5 shadow-[0_18px_40px_rgba(15,23,42,0.08)] ring-1 ring-accent-soft/60 dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:ring-border-dark">
+                    <textarea id="admin-chat-input" rows="2" class="w-full resize-none border-0 bg-transparent p-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500" placeholder="Chọn hội thoại để bắt đầu phản hồi..." disabled></textarea>
+                    <div class="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-xs text-slate-400 dark:text-slate-500">Nhấn Enter để xuống dòng, dùng nút gửi để phản hồi.</p>
+                        <button id="admin-chat-send" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50" disabled>
+                            <span class="material-symbols-outlined text-[18px]">send</span>
+                            Gửi phản hồi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+<script>
+    (() => {
+        const listEl = document.getElementById('admin-chat-conversation-list');
+        const threadEl = document.getElementById('admin-chat-thread');
+        const headerEl = document.getElementById('admin-chat-thread-header');
+        const inputEl = document.getElementById('admin-chat-input');
+        const sendEl = document.getElementById('admin-chat-send');
+        const formEl = document.getElementById('admin-chat-form');
+        const refreshEl = document.getElementById('admin-chat-refresh');
+        const badgeEl = document.getElementById('admin-chat-unread-badge');
+        const statusEl = document.getElementById('admin-chat-status');
+        const summaryEl = document.getElementById('admin-chat-summary');
+        const mobileListToggleEl = document.getElementById('admin-chat-mobile-list-toggle');
+        const tokenEl = document.querySelector('#admin-chat-antiforgery-form input[name="__RequestVerificationToken"]');
+
+        if (!listEl || !threadEl || !headerEl || !inputEl || !sendEl || !formEl || typeof signalR === 'undefined') {
+            return;
+        }
+
+        const state = {
+            connection: null,
+            conversations: [],
+            messages: [],
+            selectedConversationId: '',
+            joinedConversationIds: new Set()
+        };
+
+        const escapeHtml = (value) => (value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const formatTime = (value) => {
+            if (!value) {
+                return '';
+            }
+
+            return new Intl.DateTimeFormat('vi-VN', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date(value));
+        };
+
+        const setStatus = (message) => {
+            statusEl.textContent = message;
+            summaryEl.textContent = message;
+        };
+
+        const renderConversations = () => {
+            const unreadCount = state.conversations.reduce((total, item) => total + (item.unreadForAdminCount || 0), 0);
+            badgeEl.textContent = unreadCount.toString();
+
+            if (!state.conversations.length) {
+                listEl.innerHTML = `
+                    <div class="rounded-2xl border border-dashed border-border-light bg-surface-light/80 px-4 py-8 text-center text-sm text-slate-500 shadow-sm dark:border-border-dark dark:bg-surface-elevated-dark/50 dark:text-text-muted-dark">
+                        Chưa có hội thoại nào.
+                    </div>`;
+                return;
+            }
+
+            listEl.innerHTML = state.conversations.map((conversation) => {
+                const isActive = conversation.id === state.selectedConversationId;
+                const activeClass = isActive
+                    ? 'border-primary/40 bg-gradient-to-br from-primary/12 via-surface-light to-accent-soft/40 shadow-[0_18px_36px_rgba(20,184,212,0.16)] ring-1 ring-primary/20 dark:from-primary/10 dark:via-surface-dark dark:to-surface-elevated-dark dark:shadow-primary/10'
+                    : 'border-border-light bg-surface-light/92 shadow-sm hover:border-primary/20 hover:bg-surface-light hover:shadow-[0_14px_30px_rgba(15,23,42,0.10)] dark:border-border-dark dark:bg-surface-elevated-dark/90 dark:hover:bg-surface-dark';
+                const unread = conversation.unreadForAdminCount > 0
+                    ? `<span class="inline-flex min-w-7 items-center justify-center rounded-full bg-red-500 px-2 py-1 text-[10px] font-bold text-white">${conversation.unreadForAdminCount}</span>`
+                    : `<span class="inline-flex min-w-7 items-center justify-center rounded-full bg-slate-200 px-2 py-1 text-[10px] font-bold text-slate-500 dark:bg-slate-700 dark:text-slate-300">0</span>`;
+
+                return `
+                    <button type="button" data-conversation-id="${conversation.id}" class="admin-chat-conversation group flex w-full items-start gap-3 rounded-[1.4rem] border px-3.5 py-3 text-left transition-all ${activeClass}">
+                        <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-sm font-bold text-white shadow-lg shadow-primary/20">
+                            ${escapeHtml((conversation.displayName || 'K').trim().charAt(0).toUpperCase() || 'K')}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="truncate text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(conversation.displayName || 'Khách truy cập')}</p>
+                                    <p class="mt-1 truncate text-[11px] uppercase tracking-[0.18em] text-slate-400">${escapeHtml(conversation.conversationCode || '')}</p>
+                                </div>
+                                ${unread}
+                            </div>
+                            <p class="mt-2 line-clamp-2 text-sm leading-5 text-slate-500 dark:text-slate-400">${escapeHtml(conversation.lastMessagePreview || 'Chưa có tin nhắn.')}</p>
+                            <div class="mt-2 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.16em] text-slate-400">
+                                <span>${escapeHtml(conversation.status || 'open')}</span>
+                                <span>${escapeHtml(formatTime(conversation.lastMessageAt))}</span>
+                            </div>
+                        </div>
+                    </button>`;
+            }).join('');
+
+            listEl.querySelectorAll('.admin-chat-conversation').forEach((button) => {
+                button.addEventListener('click', () => openConversation(button.dataset.conversationId || ''));
+            });
+        };
+
+        const renderThread = () => {
+            const conversation = state.conversations.find((item) => item.id === state.selectedConversationId);
+
+            if (!conversation) {
+                headerEl.innerHTML = `
+                    <p class="text-lg font-bold text-slate-900 dark:text-white">Chưa chọn hội thoại</p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Chọn một khách từ danh sách bên trái để xem và phản hồi tin nhắn.</p>`;
+                threadEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="rounded-2xl border border-dashed border-slate-300 bg-white/85 px-4 py-10 text-center text-sm text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+                            Tin nhắn sẽ hiển thị ở đây sau khi bạn mở một hội thoại.
+                        </div>
+                    </div>`;
+                inputEl.value = '';
+                inputEl.disabled = true;
+                sendEl.disabled = true;
+                return;
+            }
+
+            headerEl.innerHTML = `
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white">${escapeHtml(conversation.displayName || 'Khách truy cập')}</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Nguồn truy cập: ${escapeHtml(conversation.sourcePage || '/')}</p>
+                        <p class="mt-2 text-xs uppercase tracking-[0.18em] text-slate-400">${escapeHtml(conversation.conversationCode || '')}</p>
+                    </div>
+                    <span class="inline-flex self-start rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">${escapeHtml(conversation.status || 'open')}</span>
+                </div>`;
+
+            if (!state.messages.length) {
+                threadEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="rounded-2xl border border-dashed border-slate-300 bg-white/85 px-4 py-10 text-center text-sm text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+                            Chưa có tin nhắn nào trong hội thoại này.
+                        </div>
+                    </div>`;
+            } else {
+                threadEl.innerHTML = `<div class="space-y-3">${state.messages.map((message) => {
+                    const isStaff = message.senderType === 'staff';
+                    const isSystem = message.senderType === 'system';
+                    const alignment = isStaff ? 'items-end' : 'items-start';
+                    const bubble = isStaff
+                        ? 'bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-[0_16px_34px_rgba(15,23,42,0.25)] dark:from-primary dark:to-accent'
+                        : isSystem
+                            ? 'bg-amber-50 text-amber-900 ring-1 ring-amber-200 shadow-sm dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50'
+                            : 'bg-surface-light text-slate-800 ring-1 ring-border-light shadow-[0_10px_24px_rgba(15,23,42,0.08)] dark:bg-surface-elevated-dark dark:text-slate-100 dark:ring-border-dark';
+                    const metaClass = isStaff ? 'text-white/70' : 'text-slate-400 dark:text-slate-500';
+
+                    return `
+                        <div class="flex flex-col ${alignment}">
+                            <div class="max-w-[82%] rounded-[1.2rem] px-3.5 py-2.5 text-sm shadow-sm ${bubble}">
+                                <p class="text-[11px] font-bold uppercase tracking-[0.16em] ${metaClass}">${escapeHtml(message.senderDisplayName || 'HV Travel')}</p>
+                                <p class="mt-1.5 whitespace-pre-wrap leading-6">${escapeHtml(message.content || '')}</p>
+                            </div>
+                            <p class="mt-1.5 px-1 text-[11px] text-slate-400">${escapeHtml(formatTime(message.sentAt))}</p>
+                        </div>`;
+                }).join('')}</div>`;
+            }
+
+            inputEl.disabled = false;
+            sendEl.disabled = false;
+            threadEl.scrollTop = threadEl.scrollHeight;
+        };
+
+        const upsertConversation = (conversation) => {
+            const index = state.conversations.findIndex((item) => item.id === conversation.id);
+            if (index === -1) {
+                state.conversations.unshift(conversation);
+            } else {
+                state.conversations[index] = { ...state.conversations[index], ...conversation };
+            }
+
+            state.conversations.sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
+            renderConversations();
+        };
+
+        const markConversationRead = async (conversationId) => {
+            if (!tokenEl || !conversationId) {
+                return;
+            }
+
+            try {
+                await fetch(`/Admin/Messages/MarkRead/${conversationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': tokenEl.value
+                    }
+                });
+            } catch {
+                // Keep UI responsive even if mark-read fails.
+            }
+        };
+
+        const loadConversations = async () => {
+            setStatus('Đang tải danh sách hội thoại...');
+
+            const response = await fetch('/Admin/Messages/Conversations', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Không tải được danh sách hội thoại.');
+            }
+
+            state.conversations = await response.json();
+            renderConversations();
+
+            if (!state.selectedConversationId && state.conversations.length) {
+                await openConversation(state.conversations[0].id);
+            } else {
+                renderThread();
+            }
+
+            setStatus('Danh sách hội thoại đã được cập nhật.');
+        };
+
+        const ensureJoinedConversation = async (conversationId) => {
+            if (!state.connection || state.joinedConversationIds.has(conversationId)) {
+                return;
+            }
+
+            await state.connection.invoke('JoinConversation', conversationId, '');
+            state.joinedConversationIds.add(conversationId);
+        };
+
+        const openConversation = async (conversationId) => {
+            if (!conversationId) {
+                return;
+            }
+
+            setStatus('Đang mở hội thoại...');
+
+            const response = await fetch(`/Admin/Messages/Conversation/${conversationId}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Không tải được chi tiết hội thoại.');
+            }
+
+            const payload = await response.json();
+            state.selectedConversationId = conversationId;
+            state.messages = payload.messages || [];
+            upsertConversation(payload.conversation);
+            renderThread();
+            await ensureJoinedConversation(conversationId);
+            await markConversationRead(conversationId);
+            setStatus('Bạn đang theo dõi hội thoại thời gian thực.');
+
+            if (window.innerWidth < 1280) {
+                threadEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
+        const initializeConnection = async () => {
+            state.connection = new signalR.HubConnectionBuilder()
+                .withUrl('/supportChatHub')
+                .withAutomaticReconnect()
+                .build();
+
+            state.connection.onreconnecting(() => {
+                setStatus('Kết nối đang gián đoạn, đang thử kết nối lại...');
+            });
+
+            state.connection.onreconnected(() => {
+                setStatus('Đã kết nối lại trung tâm tin nhắn.');
+                loadConversations().catch((error) => setStatus(error.message));
+            });
+
+            state.connection.onclose(() => {
+                setStatus('Kết nối thời gian thực đã đóng.');
+            });
+
+            state.connection.on('ConversationUpdated', (conversation) => {
+                upsertConversation(conversation);
+                if (conversation.id === state.selectedConversationId) {
+                    openConversation(conversation.id).catch((error) => setStatus(error.message));
+                }
+            });
+
+            state.connection.on('ReceiveMessage', (message) => {
+                if (message.conversationId !== state.selectedConversationId) {
+                    return;
+                }
+
+                state.messages.push(message);
+                renderThread();
+                markConversationRead(state.selectedConversationId);
+            });
+
+            await state.connection.start();
+            await state.connection.invoke('JoinAdminInbox');
+        };
+
+        refreshEl.addEventListener('click', () => {
+            loadConversations().catch((error) => setStatus(error.message));
+        });
+
+        mobileListToggleEl?.addEventListener('click', () => {
+            listEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        formEl.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const content = inputEl.value.trim();
+            if (!content || !state.selectedConversationId || !state.connection) {
+                return;
+            }
+
+            sendEl.disabled = true;
+            setStatus('Đang gửi phản hồi...');
+
+            try {
+                await state.connection.invoke('SendAdminMessage', state.selectedConversationId, content);
+                inputEl.value = '';
+                setStatus('Phản hồi đã được gửi.');
+            } catch (error) {
+                setStatus(error.message || 'Không gửi được phản hồi.');
+            } finally {
+                sendEl.disabled = false;
+            }
+        });
+
+        initializeConnection()
+            .then(loadConversations)
+            .catch((error) => {
+                setStatus(error.message || 'Không khởi tạo được trung tâm tin nhắn.');
+            });
+    })();
+</script>

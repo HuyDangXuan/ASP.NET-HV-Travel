@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -9,21 +9,21 @@
     var phone = siteSettings.GetGroup("contactInfo")?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
 }
 
-<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chá»§</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             @if (tour != null)
             {
                 <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Đặt Tour</span>
+                <span>Äáº·t Tour</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Thanh Toán</span>
+                <span>Thanh ToÃ¡n</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             }
-            <span class="text-slate-900 dark:text-white font-medium">Thất Bại</span>
+            <span class="text-slate-900 dark:text-white font-medium">Tháº¥t Báº¡i</span>
         </nav>
     </div>
 </div>
@@ -36,20 +36,20 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh ToÃ¡n Tháº¥t Báº¡i")</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toÃ¡n khÃ´ng thÃ nh cÃ´ng. Vui lÃ²ng thá»­ láº¡i hoáº·c chá»n phÆ°Æ¡ng thá»©c khÃ¡c."))</p>
 
         @if (!string.IsNullOrEmpty(booking?.BookingCode))
         {
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Mã đơn: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">MÃ£ Ä‘Æ¡n: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
         }
 
         <div class="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
             <div class="flex gap-3">
                 <span class="material-symbols-outlined text-amber-500 shrink-0">info</span>
                 <div class="text-sm text-amber-800 dark:text-amber-300">
-                    <p class="font-bold mb-1">Đơn đặt tour của bạn vẫn được giữ</p>
-                    <p class="text-xs">Bạn có thể thử lại thanh toán hoặc chọn phương thức khác. Nếu cần hỗ trợ, hãy liên hệ hotline <strong>@phone</strong>.</p>
+                    <p class="font-bold mb-1">ÄÆ¡n Ä‘áº·t tour cá»§a báº¡n váº«n Ä‘Æ°á»£c giá»¯</p>
+                    <p class="text-xs">Báº¡n cÃ³ thá»ƒ thá»­ láº¡i thanh toÃ¡n hoáº·c chá»n phÆ°Æ¡ng thá»©c khÃ¡c. Náº¿u cáº§n há»— trá»£, hÃ£y liÃªn há»‡ hotline <strong>@phone</strong>.</p>
                 </div>
             </div>
         </div>
@@ -58,15 +58,16 @@
             @if (!string.IsNullOrEmpty(booking?.Id))
             {
                 <a asp-controller="Booking" asp-action="Payment" asp-route-bookingId="@booking.Id" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thử Lại
+                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thá»­ Láº¡i
                 </a>
             }
-            <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Về Trang Chủ
+            <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">home</span> Vá» Trang Chá»§
             </a>
-            <a href="tel:@phone" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">call</span> Gọi Hỗ Trợ
+            <a href="tel:@phone" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">call</span> Gá»i Há»— Trá»£
             </a>
         </div>
     </div>
 </section>
+
