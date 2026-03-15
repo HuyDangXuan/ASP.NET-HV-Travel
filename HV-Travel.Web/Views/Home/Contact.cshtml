@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var sections = await ContentService.GetPageSectionsAsync("contact");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -41,7 +41,7 @@
             @if (cards?.IsEnabled != false)
             {
                 <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
-                    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg transition-all group">
+                    <div class="p-6 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark hover:border-primary/30 hover:shadow-lg transition-all group">
                         <div class="flex items-start gap-4">
                             <div class="size-12 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-[24px]">location_on</span>
@@ -52,7 +52,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg transition-all group">
+                    <div class="p-6 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark hover:border-primary/30 hover:shadow-lg transition-all group">
                         <div class="flex items-start gap-4">
                             <div class="size-12 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-[24px]">call</span>
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg transition-all group">
+                    <div class="p-6 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark hover:border-primary/30 hover:shadow-lg transition-all group">
                         <div class="flex items-start gap-4">
                             <div class="size-12 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-[24px]">mail</span>
@@ -74,7 +74,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg transition-all group">
+                    <div class="p-6 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark hover:border-primary/30 hover:shadow-lg transition-all group">
                         <div class="flex items-start gap-4">
                             <div class="size-12 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                                 <span class="material-symbols-outlined text-[24px]">schedule</span>
@@ -91,42 +91,42 @@
             @if (formIntro?.IsEnabled != false)
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-8">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@formIntro.Fields.GetFieldValue("title", "Gui Tin Nhan Cho Chung Toi")</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">@formIntro.Fields.GetFieldValue("description", "Dien thong tin cua ban va doi ngu HV Travel se phan hoi trong thoi gian som nhat.")</p>
 
                         <form id="contact-form" class="space-y-6">
                             <div class="grid sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
-                                    <input type="text" placeholder="Nhập họ và tên" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Há» vÃ  TÃªn <span class="text-red-500">*</span></label>
+                                    <input type="text" placeholder="Nháº­p há» vÃ  tÃªn" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số Điện Thoại <span class="text-red-500">*</span></label>
-                                    <input type="tel" placeholder="Nhập số điện thoại" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Sá»‘ Äiá»‡n Thoáº¡i <span class="text-red-500">*</span></label>
+                                    <input type="tel" placeholder="Nháº­p sá»‘ Ä‘iá»‡n thoáº¡i" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="Nhập địa chỉ email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                <input type="email" placeholder="Nháº­p Ä‘á»‹a chá»‰ email" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chủ Đề</label>
-                                <select class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
-                                    <option>Tư vấn tour du lịch</option>
-                                    <option>Đặt tour</option>
-                                    <option>Khieu nại / Góp ý</option>
-                                    <option>Hợp tác kinh doanh</option>
-                                    <option>Khác</option>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chá»§ Äá»</label>
+                                <select class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
+                                    <option>TÆ° váº¥n tour du lá»‹ch</option>
+                                    <option>Äáº·t tour</option>
+                                    <option>Khieu náº¡i / GÃ³p Ã½</option>
+                                    <option>Há»£p tÃ¡c kinh doanh</option>
+                                    <option>KhÃ¡c</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nội Dung <span class="text-red-500">*</span></label>
-                                <textarea rows="5" placeholder="Nhập nội dung tin nhắn..." required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ná»™i Dung <span class="text-red-500">*</span></label>
+                                <textarea rows="5" placeholder="Nháº­p ná»™i dung tin nháº¯n..." required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
                             </div>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
                                 <span class="material-symbols-outlined text-[18px]">send</span>
-                                @formIntro.Fields.GetFieldValue("submitText", "Gửi Tin Nhắn")
+                                @formIntro.Fields.GetFieldValue("submitText", "Gá»­i Tin Nháº¯n")
                             </button>
                         </form>
                     </div>
@@ -136,9 +136,9 @@
     </div>
 </section>
 
-<section class="bg-white dark:bg-slate-900">
+<section class="bg-surface-light dark:bg-surface-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700" data-animate="scale-in">
+        <div class="rounded-2xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark" data-animate="scale-in">
             <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.5177!2d106.7!3d10.7769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzM2LjkiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1"
                 width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
@@ -168,3 +168,4 @@
     });
 </script>
 }
+

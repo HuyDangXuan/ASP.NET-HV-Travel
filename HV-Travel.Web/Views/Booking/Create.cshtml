@@ -8,7 +8,7 @@
 }
 
 <!-- Breadcrumb -->
-<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
             <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang chủ</a>
@@ -21,7 +21,7 @@
 </div>
 
 <!-- Stepper -->
-<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-center gap-0" data-animate="fade-in">
             <div class="flex items-center gap-2">
@@ -57,7 +57,7 @@
                 <!-- Main Form -->
                 <div class="w-full space-y-6" data-animate="fade-up" data-stagger>
                     <!-- Tour Summary Card -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 flex gap-4">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-5 border border-border-light dark:border-border-dark flex gap-4">
                         @if (tour.Images != null && tour.Images.Any())
                         {
                             <img src="@tour.Images.First()" alt="@tour.Name" class="w-28 h-20 rounded-xl object-cover shrink-0" />
@@ -73,66 +73,66 @@
                     </div>
 
                     <!-- Tour Details (Readonly) -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">info</span> Thông tin Tour
                         </h3>
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mã tour</label>
-                                <input value="@tour.Code" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                                <input value="@tour.Code" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
                             </div>
 
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tên tour</label>
-                                <input value="@tour.Name" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                                <input value="@tour.Name" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Điểm đến</label>
-                                <input value="@(tour.Destination?.City ?? "N/A")" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                                <input value="@(tour.Destination?.City ?? "N/A")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
                             </div>
                              <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời lượng</label>
-                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngÃ y {tour.Duration?.Nights} Ä‘Ãªm")" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngÃ y {tour.Duration?.Nights} Ä‘Ãªm")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô tả ngắn</label>
-                                <div class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[50px]">
+                                <div class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[50px]">
                                     @Html.Raw(tour.ShortDescription)
                                 </div>
                             </div>
                              <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô tả chi tiết</label>
-                                <div class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[80px] prose prose-sm max-w-none dark:prose-invert">
+                                <div class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[80px] prose prose-sm max-w-none dark:prose-invert">
                                     @Html.Raw(tour.Description)
                                 </div>
                             </div>
                             <!-- Hidden Id field just in case user meant visible but not bound -->
                              <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour ID</label>
-                                <input value="@tour.Id" readonly class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed" />
+                                <input value="@tour.Id" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed" />
                             </div>
 
                     <!-- Contact Info -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">person</span> Thông tin LiÃªn Há»‡
                         </h3>
                         <div class="grid sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ và tên <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyá»…n VÄƒn A" />
+                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyá»…n VÄƒn A" />
                                 <span asp-validation-for="ContactName" class="text-xs text-red-500 mt-1"></span>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactEmail" type="email" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
+                                <input asp-for="ContactEmail" type="email" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
                                 <span asp-validation-for="ContactEmail" class="text-xs text-red-500 mt-1"></span>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Sá»‘ Äiá»‡n Thoáº¡i <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactPhone" type="tel" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
+                                <input asp-for="ContactPhone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
                                 <span asp-validation-for="ContactPhone" class="text-xs text-red-500 mt-1"></span>
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                     <!-- Departure Date -->
                     @if (tour.StartDates != null && tour.StartDates.Any())
                     {
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                             <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-primary">event</span> Ngày khởi hành
                             </h3>
@@ -150,7 +150,7 @@
                                 {
                                     <label class="cursor-pointer">
                                         <input type="radio" name="SelectedStartDate" value="@date.ToString("yyyy-MM-dd")" class="peer hidden" />
-                                        <div class="px-5 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center hover:border-primary/50">
+                                        <div class="px-5 py-3 rounded-xl border-2 border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center hover:border-primary/50">
                                             <p class="text-lg font-bold text-slate-900 dark:text-white">@date.ToString("dd")</p>
                                             <p class="text-xs text-slate-500 dark:text-slate-400">@date.ToString("MMM yyyy")</p>
                                         </div>
@@ -161,7 +161,7 @@
                     }
 
                     <!-- Passengers -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">group</span> Sá»‘ LÆ°á»£ng HÃ nh KhÃ¡ch
                             <span id="spots-left-badge" class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all">
@@ -170,49 +170,49 @@
                         </h3>
                         <div class="space-y-4">
                             <!-- Adult -->
-                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                            <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Người lớn</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">Tá»« 12 tuá»•i Â· @adultPrice.ToString("N0")â‚«/ngÆ°á»i</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
                                     <input asp-for="AdultCount" id="AdultCount" type="number" min="1" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('AdultCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('AdultCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
                                 </div>
                             </div>
                             <!-- Child -->
-                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                            <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Trẻ em</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">2 â€“ 11 tuá»•i Â· @childPrice.ToString("N0")â‚«/ngÆ°á»i</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
                                     <input asp-for="ChildCount" id="ChildCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('ChildCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('ChildCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
                                 </div>
                             </div>
                             <!-- Infant -->
-                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                            <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Em bé</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">DÆ°á»›i 2 tuá»•i Â· @infantPrice.ToString("N0")â‚«/ngÆ°á»i</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">remove</span>
                                     </button>
                                     <input asp-for="InfantCount" id="InfantCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('InfantCount', 1)" class="size-9 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
+                                    <button type="button" onclick="adjustCount('InfantCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">add</span>
                                     </button>
                                 </div>
@@ -221,18 +221,18 @@
                     </div>
 
                     <!-- Special Requests -->
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">edit_note</span> Yêu cầu đặc biệt
                         </h3>
-                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: PhÃ²ng view biá»ƒn, Äƒn chay, xe Ä‘Ã³n sÃ¢n bay..."></textarea>
+                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: PhÃ²ng view biá»ƒn, Äƒn chay, xe Ä‘Ã³n sÃ¢n bay..."></textarea>
                     </div>
                 </div>
 
                 <!-- Price Summary -->
                 <div class="w-full">
                     <div class="sticky top-24" data-animate="slide-right">
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                        <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark shadow-sm">
                             <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5">Chi tiết giá</h3>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between items-center">
@@ -254,7 +254,7 @@
                                         <span id="discount-amount" class="font-bold">-0â‚«</span>
                                     </div>
                                 }
-                                <div class="border-t border-slate-100 dark:border-slate-700 pt-3 mt-3">
+                                <div class="border-t border-border-light dark:border-border-dark pt-3 mt-3">
                                     <div class="flex justify-between items-center">
                                         <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
                                         <span id="grand-total" class="text-xl font-extrabold text-primary">@adultPrice.ToString("N0")â‚«</span>
@@ -311,7 +311,7 @@
                             popup: 'animate__animated animate__fadeOutDown animate__faster'
                         },
                         customClass: {
-                            popup: 'rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700',
+                            popup: 'rounded-3xl shadow-2xl border border-border-light dark:border-border-dark',
                             confirmButton: 'rounded-xl px-8 py-3 font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all',
                             title: 'font-display font-bold text-2xl mb-2',
                             htmlContainer: 'text-center px-2'
@@ -406,5 +406,6 @@
     updatePrice();
 </script>
 }
+
 
 

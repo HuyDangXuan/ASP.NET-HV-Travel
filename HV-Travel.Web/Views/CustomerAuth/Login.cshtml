@@ -1,4 +1,4 @@
-@model HVTravel.Web.Models.CustomerLoginViewModel
+﻿@model HVTravel.Web.Models.CustomerLoginViewModel
 @{
     ViewData["ActivePage"] = "Login";
 }
@@ -14,27 +14,27 @@
         <div class="grid w-full gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
             <div class="flex flex-col justify-center text-white" data-animate="slide-left">
                 <span class="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-cyan-100">
-                    Tài Khoản HV Travel
+                    TÃ i Khoáº£n HV Travel
                 </span>
                 <h1 class="mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-                    Đăng nhập để tiếp tục hành trình của bạn.
+                    ÄÄƒng nháº­p Ä‘á»ƒ tiáº¿p tá»¥c hÃ nh trÃ¬nh cá»§a báº¡n.
                 </h1>
                 <p class="mt-5 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
-                    Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.
+                    Sá»­ dá»¥ng email khÃ¡ch hÃ ng Ä‘á»ƒ xem thÃ´ng tin tÃ i khoáº£n, theo dÃµi tráº¡ng thÃ¡i Ä‘áº·t tour vÃ  giá»¯ má»i tráº£i nghiá»‡m du lá»‹ch á»Ÿ cÃ¹ng má»™t nÆ¡i.
                 </p>
 
                 <div class="mt-10 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
                         <p class="text-2xl font-extrabold text-white">24/7</p>
-                        <p class="mt-2 text-sm text-slate-300">Hỗ trợ cập nhật booking mọi lúc</p>
+                        <p class="mt-2 text-sm text-slate-300">Há»— trá»£ cáº­p nháº­t booking má»i lÃºc</p>
                     </div>
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
-                        <p class="text-2xl font-extrabold text-white">1 tài khoản</p>
-                        <p class="mt-2 text-sm text-slate-300">Quản lý email, hồ sơ và điểm thưởng</p>
+                        <p class="text-2xl font-extrabold text-white">1 tÃ i khoáº£n</p>
+                        <p class="mt-2 text-sm text-slate-300">Quáº£n lÃ½ email, há»“ sÆ¡ vÃ  Ä‘iá»ƒm thÆ°á»Ÿng</p>
                     </div>
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
-                        <p class="text-2xl font-extrabold text-white">Bảo mật</p>
-                        <p class="mt-2 text-sm text-slate-300">Mật khẩu đang được mã hóa theo chuẩn hash</p>
+                        <p class="text-2xl font-extrabold text-white">Báº£o máº­t</p>
+                        <p class="mt-2 text-sm text-slate-300">Máº­t kháº©u Ä‘ang Ä‘Æ°á»£c mÃ£ hÃ³a theo chuáº©n hash</p>
                     </div>
                 </div>
             </div>
@@ -42,10 +42,10 @@
             <div class="flex items-center justify-center" data-animate="zoom-in">
                 <div class="w-full max-w-lg rounded-[2rem] border border-white/60 bg-white/90 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
                     <div class="mb-8">
-                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-primary">Chào mừng trở lại</p>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">Đăng nhập khách hàng</h2>
+                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-primary">ChÃ o má»«ng trá»Ÿ láº¡i</p>
+                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">ÄÄƒng nháº­p khÃ¡ch hÃ ng</h2>
                         <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                            Ví dụ tài khoản hợp lệ theo dữ liệu hiện có: <span class="font-semibold text-slate-700 dark:text-slate-200">hhunu114@gmail.com</span>
+                            VÃ­ dá»¥ tÃ i khoáº£n há»£p lá»‡ theo dá»¯ liá»‡u hiá»‡n cÃ³: <span class="font-semibold text-slate-700 dark:text-slate-200">hhunu114@gmail.com</span>
                         </p>
                     </div>
 
@@ -70,30 +70,30 @@
 
                         <div>
                             <div class="mb-2 flex items-center justify-between gap-4">
-                                <label asp-for="Password" class="block text-sm font-bold text-slate-700 dark:text-slate-200">Mật khẩu</label>
-                                <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary hover:text-primary-dark">Quên mật khẩu?</a>
+                                <label asp-for="Password" class="block text-sm font-bold text-slate-700 dark:text-slate-200">Máº­t kháº©u</label>
+                                <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary hover:text-primary-dark">QuÃªn máº­t kháº©u?</a>
                             </div>
-                            <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Nhập mật khẩu của bạn" />
+                            <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Nháº­p máº­t kháº©u cá»§a báº¡n" />
                             <span asp-validation-for="Password" class="mt-2 block text-sm text-red-500"></span>
                         </div>
 
-                        <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/80">
+                        <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-surface-elevated-dark/85">
                             <label class="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
                                 <input asp-for="RememberMe" class="rounded border-slate-300 text-primary focus:ring-primary" />
-                                Ghi nhớ đăng nhập
+                                Ghi nhá»› Ä‘Äƒng nháº­p
                             </label>
-                            <span class="text-xs text-slate-400">Cookie tối đa 14 ngày</span>
+                            <span class="text-xs text-slate-400">Cookie tá»‘i Ä‘a 14 ngÃ y</span>
                         </div>
 
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40">
                             <span class="material-symbols-outlined text-[18px]">login</span>
-                            Đăng nhập
+                            ÄÄƒng nháº­p
                         </button>
                     </form>
 
                     <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-                        <span>Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ.</span>
-                        <a asp-controller="CustomerAuth" asp-action="Register" class="font-bold text-primary hover:text-primary-dark">Đăng ký ngay</a>
+                        <span>ChÆ°a cÃ³ tÃ i khoáº£n? Táº¡o má»›i Ä‘á»ƒ lÆ°u lá»‹ch sá»­ Ä‘áº·t tour vÃ  há»“ sÆ¡ liÃªn há»‡.</span>
+                        <a asp-controller="CustomerAuth" asp-action="Register" class="font-bold text-primary hover:text-primary-dark">ÄÄƒng kÃ½ ngay</a>
                     </div>
                 </div>
             </div>
@@ -104,3 +104,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+

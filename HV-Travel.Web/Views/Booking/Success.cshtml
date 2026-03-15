@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -7,41 +7,41 @@
     var tour = Model.Tour;
 }
 
-<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chá»§</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             @if (tour != null)
             {
                 <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Đặt Tour</span>
+                <span>Äáº·t Tour</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Thanh Toán</span>
+                <span>Thanh ToÃ¡n</span>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             }
-            <span class="text-slate-900 dark:text-white font-medium">Hoàn Tất</span>
+            <span class="text-slate-900 dark:text-white font-medium">HoÃ n Táº¥t</span>
         </nav>
     </div>
 </div>
 
-<div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 py-6">
+<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-center gap-0" data-animate="fade-in">
             <div class="flex items-center gap-2">
                 <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold"><span class="material-symbols-outlined text-[16px]">check</span></div>
-                <span class="text-sm font-medium text-primary hidden sm:inline">Thông Tin</span>
+                <span class="text-sm font-medium text-primary hidden sm:inline">ThÃ´ng Tin</span>
             </div>
             <div class="w-12 sm:w-20 h-0.5 bg-primary mx-2"></div>
             <div class="flex items-center gap-2">
                 <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold"><span class="material-symbols-outlined text-[16px]">check</span></div>
-                <span class="text-sm font-medium text-primary hidden sm:inline">Thanh Toán</span>
+                <span class="text-sm font-medium text-primary hidden sm:inline">Thanh ToÃ¡n</span>
             </div>
             <div class="w-12 sm:w-20 h-0.5 bg-primary mx-2"></div>
             <div class="flex items-center gap-2">
                 <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30"><span class="material-symbols-outlined text-[16px]">check</span></div>
-                <span class="text-sm font-bold text-primary hidden sm:inline">Hoàn Tất</span>
+                <span class="text-sm font-bold text-primary hidden sm:inline">HoÃ n Táº¥t</span>
             </div>
         </div>
     </div>
@@ -55,40 +55,40 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("successTitle", "Đặt Tour Thành Công!")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">@statusCopy?.Fields.GetFieldValue("successDescription", "Cảm ơn bạn đã đặt tour tại HV Travel. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.")</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("successTitle", "Äáº·t Tour ThÃ nh CÃ´ng!")</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">@statusCopy?.Fields.GetFieldValue("successDescription", "Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘áº·t tour táº¡i HV Travel. ChÃºng tÃ´i sáº½ liÃªn há»‡ xÃ¡c nháº­n trong thá»i gian sá»›m nháº¥t.")</p>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 text-left mb-8" data-animate="fade-up" data-delay="200">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark text-left mb-8" data-animate="fade-up" data-delay="200">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Thông Tin Đặt Tour</h3>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">ThÃ´ng Tin Äáº·t Tour</h3>
                 <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Đã xác nhận
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ÄÃ£ xÃ¡c nháº­n
                 </span>
             </div>
             <div class="grid sm:grid-cols-2 gap-4 text-sm">
                 <div class="space-y-3">
-                    <div><span class="text-slate-500 block text-xs mb-0.5">Mã đơn</span><span class="font-bold font-mono text-primary text-lg">@booking.BookingCode</span></div>
+                    <div><span class="text-slate-500 block text-xs mb-0.5">MÃ£ Ä‘Æ¡n</span><span class="font-bold font-mono text-primary text-lg">@booking.BookingCode</span></div>
                     <div><span class="text-slate-500 block text-xs mb-0.5">Tour</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.Name ?? tour?.Name)</span></div>
-                    <div><span class="text-slate-500 block text-xs mb-0.5">Khởi hành</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "-")</span></div>
+                    <div><span class="text-slate-500 block text-xs mb-0.5">Khá»Ÿi hÃ nh</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "-")</span></div>
                 </div>
                 <div class="space-y-3">
-                    <div><span class="text-slate-500 block text-xs mb-0.5">Khách hàng</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Name</span></div>
+                    <div><span class="text-slate-500 block text-xs mb-0.5">KhÃ¡ch hÃ ng</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Name</span></div>
                     <div><span class="text-slate-500 block text-xs mb-0.5">Email</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Email</span></div>
-                    <div><span class="text-slate-500 block text-xs mb-0.5">Số hành khách</span><span class="font-bold text-slate-900 dark:text-white">@booking.ParticipantsCount người</span></div>
+                    <div><span class="text-slate-500 block text-xs mb-0.5">Sá»‘ hÃ nh khÃ¡ch</span><span class="font-bold text-slate-900 dark:text-white">@booking.ParticipantsCount ngÆ°á»i</span></div>
                 </div>
             </div>
-            <div class="border-t border-slate-100 dark:border-slate-700 mt-5 pt-5 flex justify-between items-center">
-                <span class="text-base font-bold text-slate-900 dark:text-white">Tổng thanh toán</span>
-                <span class="text-2xl font-extrabold text-primary">@booking.TotalAmount.ToString("N0")₫</span>
+            <div class="border-t border-border-light dark:border-border-dark mt-5 pt-5 flex justify-between items-center">
+                <span class="text-base font-bold text-slate-900 dark:text-white">Tá»•ng thanh toÃ¡n</span>
+                <span class="text-2xl font-extrabold text-primary">@booking.TotalAmount.ToString("N0")â‚«</span>
             </div>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="400">
-            <button onclick="window.print()" class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">print</span> In Vé
+            <button onclick="window.print()" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[18px]">print</span> In VÃ©
             </button>
             <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Về Trang Chủ
+                <span class="material-symbols-outlined text-[18px]">home</span> Vá» Trang Chá»§
             </a>
         </div>
     </div>
@@ -98,3 +98,4 @@
     .animate-bounce-once { animation: bounceIn 0.6s ease-out; }
     @@keyframes bounceIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 </style>
+

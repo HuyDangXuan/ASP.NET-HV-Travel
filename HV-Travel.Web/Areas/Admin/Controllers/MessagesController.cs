@@ -19,6 +19,14 @@ public class MessagesController : Controller
         _supportChatService = supportChatService;
     }
 
+    [HttpGet("")]
+    [HttpGet("Index")]
+    public IActionResult Index()
+    {
+        ViewData["Title"] = "Tin nhắn";
+        return View();
+    }
+
     [HttpGet("Conversations")]
     public async Task<IActionResult> Conversations()
     {
