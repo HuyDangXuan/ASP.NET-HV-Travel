@@ -12,15 +12,15 @@ namespace HVTravel.Domain.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        [BsonElement("booking_code")]
+        [BsonElement("bookingCode")]
         public string BookingCode { get; set; }
 
         [Required]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("tour_id")]
+        [BsonElement("tourId")]
         public string TourId { get; set; }
 
-        [BsonElement("tour_snapshot")]
+        [BsonElement("tourSnapshot")]
         public TourSnapshot TourSnapshot { get; set; }
 
         [BsonIgnore]
@@ -28,55 +28,55 @@ namespace HVTravel.Domain.Entities
 
         [Required]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("customer_id")]
+        [BsonElement("customerId")]
         public string CustomerId { get; set; }
 
         [BsonIgnore]
         public Customer Customer { get; set; }
 
         [Required]
-        [BsonElement("booking_date")]
+        [BsonElement("bookingDate")]
         public DateTime BookingDate { get; set; } = DateTime.UtcNow;
 
         [Required]
-        [BsonElement("total_amount")]
+        [BsonElement("totalAmount")]
         public decimal TotalAmount { get; set; }
 
         [Required]
         [BsonElement("status")]
         public string Status { get; set; } // Pending, Paid, Confirmed, Completed, Cancelled, Refunded
 
-        [BsonElement("payment_status")]
+        [BsonElement("paymentStatus")]
         public string PaymentStatus { get; set; } = "Unpaid"; // Unpaid, Partial, Full, Refunded
 
-        [BsonElement("participants_count")]
+        [BsonElement("participantsCount")]
         public int ParticipantsCount { get; set; }
 
         [BsonElement("passengers")]
         public List<Passenger> Passengers { get; set; } = new List<Passenger>();
 
-        [BsonElement("contact_info")]
+        [BsonElement("contactInfo")]
         public ContactInfo ContactInfo { get; set; }
 
         [BsonElement("notes")]
         public string Notes { get; set; }
 
-        [BsonElement("history_log")]
+        [BsonElement("historyLog")]
         public List<BookingHistoryLog> HistoryLog { get; set; } = new List<BookingHistoryLog>();
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [BsonElement("updated_at")]
+        [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        [BsonElement("is_deleted")]
+        [BsonElement("isDeleted")]
         public bool IsDeleted { get; set; } = false;
 
-        [BsonElement("deleted_by")]
+        [BsonElement("deletedBy")]
         public string? DeletedBy { get; set; }
 
-        [BsonElement("deleted_at")]
+        [BsonElement("deletedAt")]
         public DateTime? DeletedAt { get; set; }
     }
 
@@ -89,8 +89,8 @@ namespace HVTravel.Domain.Entities
         [BsonElement("name")]
         public string Name { get; set; }
         
-        [BsonElement("start_date")]
-        public DateTime StartDate { get; set; }
+        [BsonElement("startDate")]
+        public DateTime? StartDate { get; set; }
         
         [BsonElement("duration")]
         public string Duration { get; set; }
@@ -99,10 +99,10 @@ namespace HVTravel.Domain.Entities
     [BsonIgnoreExtraElements]
     public class Passenger
     {
-        [BsonElement("full_name")]
+        [BsonElement("fullName")]
         public string FullName { get; set; }
         
-        [BsonElement("birth_date")]
+        [BsonElement("birthDate")]
         public DateTime? BirthDate { get; set; }
         
         [BsonElement("type")]
@@ -111,7 +111,7 @@ namespace HVTravel.Domain.Entities
         [BsonElement("gender")]
         public string Gender { get; set; }
         
-        [BsonElement("passport_number")]
+        [BsonElement("passportNumber")]
         public string PassportNumber { get; set; }
     }
 

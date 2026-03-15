@@ -164,7 +164,7 @@
             </div>
         </div>
     </div>
-    <!-- Category Breakdown Donut Chart -->
+    <!-- Tour Breakdown Donut Chart -->
     <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Thống Kê Tour</h3>
         <div class="flex-1 flex items-center justify-center relative">
@@ -236,7 +236,7 @@
                         </td>
                         <td class="p-4">
                             <p class="font-medium text-slate-700 dark:text-slate-300">@item.TourSnapshot?.Name</p>
-                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "Updating...")</p>
+                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "Updating...")</p>
                         </td>
                         <td class="p-4 text-center font-medium">@item.ParticipantsCount</td>
                         <td class="p-4 font-bold text-slate-900 dark:text-white">@item.TotalAmount.ToString("N0") ₫</td>
@@ -288,3 +288,4 @@
         </table>
     </div>
 </div>
+

@@ -13,12 +13,12 @@ namespace HVTravel.Domain.Entities
 
         [Required]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("tour_id")]
+        [BsonElement("tourId")]
         public string TourId { get; set; }
 
         [Required]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("customer_id")]
+        [BsonElement("customerId")]
         public string CustomerId { get; set; }
 
         [Required]
@@ -29,10 +29,10 @@ namespace HVTravel.Domain.Entities
         [BsonElement("comment")]
         public string Comment { get; set; }
 
-        [BsonElement("created_at")]
+        [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [BsonElement("is_approved")]
+        [BsonElement("isApproved")]
         public bool IsApproved { get; set; } = false;
     }
 }

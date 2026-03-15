@@ -4,6 +4,11 @@
 }
 
 @functions {
+    public string GetShortId(string? id) {
+        if (string.IsNullOrWhiteSpace(id)) return "N/A";
+        return id.Length <= 8 ? id : id.Substring(0, 8);
+    }
+
     public string GetStatusText(string status) {
         if (string.IsNullOrEmpty(status)) return "";
         return status.Trim() switch {
@@ -366,7 +371,7 @@
                        @foreach (var item in Model)
                        {
                             <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                               <td class="p-4 pl-6 col-trans-id"><span class="text-primary font-bold text-sm">#@item.Id.Substring(0, 8)</span></td>
+                                <td class="p-4 pl-6 col-trans-id"><span class="text-primary font-bold text-sm">#@GetShortId(item.Id)</span></td>
                                <td class="p-4 col-date">
                                    <div class="flex flex-col"><span class="text-sm font-medium text-slate-900 dark:text-white">@item.BookingDate.ToLocalTime().ToString("dd/MM/yyyy")</span><span class="text-xs text-slate-500">@item.BookingDate.ToLocalTime().ToString("HH:mm")</span></div>
                                </td>

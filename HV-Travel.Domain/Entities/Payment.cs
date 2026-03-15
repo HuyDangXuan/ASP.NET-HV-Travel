@@ -13,7 +13,7 @@ namespace HVTravel.Domain.Entities
 
         [Required]
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("booking_id")]
+        [BsonElement("bookingId")]
         public string BookingId { get; set; }
 
         [Required]
@@ -21,14 +21,14 @@ namespace HVTravel.Domain.Entities
         public decimal Amount { get; set; }
 
         [Required]
-        [BsonElement("payment_method")]
+        [BsonElement("paymentMethod")]
         public string PaymentMethod { get; set; } // CreditCard, BankTransfer, Cash
 
-        [BsonElement("transaction_id")]
+        [BsonElement("transactionId")]
         public string TransactionId { get; set; }
 
         [Required]
-        [BsonElement("payment_date")]
+        [BsonElement("paymentDate")]
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
 
         [Required]

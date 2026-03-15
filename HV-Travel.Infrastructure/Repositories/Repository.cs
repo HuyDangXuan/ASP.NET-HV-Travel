@@ -8,12 +8,14 @@ using HVTravel.Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Reflection;
 
 namespace HVTravel.Infrastructure.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly IMongoCollection<T> _collection;
+        private static readonly PropertyInfo? IdProperty = typeof(T).GetProperty("Id");
 
         public Repository(MongoContext context, IConfiguration configuration)
         {
@@ -38,7 +40,7 @@ namespace HVTravel.Infrastructure.Repositories
 
         public async Task<T> GetByIdAsync(string id)
         {
-            var filter = Builders<T>.Filter.Eq("Id", id);
+            var filter = BuildIdFilter(id);
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
@@ -49,20 +51,34 @@ namespace HVTravel.Infrastructure.Repositories
 
         public async Task AddAsync(T entity)
         {
+            if (IdProperty?.PropertyType == typeof(string))
+            {
+                var currentId = IdProperty.GetValue(entity) as string;
+                if (string.IsNullOrWhiteSpace(currentId))
+                {
+                    IdProperty.SetValue(entity, ObjectId.GenerateNewId().ToString());
+                }
+            }
+
             await _collection.InsertOneAsync(entity);
         }
 
         public async Task UpdateAsync(string id, T entity)
         {
-            var filter = Builders<T>.Filter.Eq("Id", id);
+            var filter = BuildIdFilter(id);
             
             // Optimistic Concurrency Control (OCC)
             // If the entity has a Version property, we use it for the filter and increment it
             var versionProp = typeof(T).GetProperty("Version");
             if (versionProp != null && versionProp.PropertyType == typeof(uint))
             {
-                var currentVersion = (uint)versionProp.GetValue(entity);
-                var versionFilter = Builders<T>.Filter.Eq("Version", currentVersion);
+                var versionValue = versionProp.GetValue(entity);
+                if (versionValue is not uint currentVersion)
+                {
+                    throw new InvalidOperationException($"Type {typeof(T).Name} has an invalid Version value.");
+                }
+
+                var versionFilter = BuildUIntPropertyFilter(versionProp, currentVersion);
                 filter = Builders<T>.Filter.And(filter, versionFilter);
                 
                 // Increment version for the next save
@@ -79,23 +95,51 @@ namespace HVTravel.Infrastructure.Repositories
 
         public async Task DeleteAsync(string id)
         {
-            var filter = Builders<T>.Filter.Eq("Id", id);
+            var filter = BuildIdFilter(id);
             await _collection.DeleteOneAsync(filter);
         }
 
         public async Task<PaginatedResult<T>> GetPagedAsync(int pageIndex, int pageSize, Expression<Func<T, bool>>? filter = null)
         {
-            var filterDefinition = filter != null
+            var filterDef = filter != null
                 ? Builders<T>.Filter.Where(filter)
                 : Builders<T>.Filter.Empty;
 
-            var count = await _collection.CountDocumentsAsync(filterDefinition);
-            var items = await _collection.Find(filterDefinition)
+            var count = (int)await _collection.CountDocumentsAsync(filterDef);
+            var items = await _collection.Find(filterDef)
                 .Skip((pageIndex - 1) * pageSize)
                 .Limit(pageSize)
                 .ToListAsync();
 
-            return new PaginatedResult<T>(items, (int)count, pageIndex, pageSize);
+            return new PaginatedResult<T>(items, count, pageIndex, pageSize);
         }
+
+        private static FilterDefinition<T> BuildIdFilter(string id)
+        {
+            if (IdProperty == null)
+            {
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not contain an Id property.");
+            }
+
+            var parameter = Expression.Parameter(typeof(T), "entity");
+            var property = Expression.Property(parameter, IdProperty);
+            var constant = Expression.Constant(id, typeof(string));
+            var body = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<T, bool>>(body, parameter);
+
+            return Builders<T>.Filter.Where(lambda);
+        }
+
+        private static FilterDefinition<T> BuildUIntPropertyFilter(PropertyInfo propertyInfo, uint value)
+        {
+            var parameter = Expression.Parameter(typeof(T), "entity");
+            var property = Expression.Property(parameter, propertyInfo);
+            var constant = Expression.Constant(value, typeof(uint));
+            var body = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<T, bool>>(body, parameter);
+
+            return Builders<T>.Filter.Where(lambda);
+        }
+
     }
 }

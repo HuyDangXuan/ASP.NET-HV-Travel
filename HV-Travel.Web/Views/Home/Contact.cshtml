@@ -98,35 +98,35 @@
                         <form id="contact-form" class="space-y-6">
                             <div class="grid sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ho va Ten <span class="text-red-500">*</span></label>
-                                    <input type="text" placeholder="Nhap ho va ten" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
+                                    <input type="text" placeholder="Nhập họ và tên" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">So Dien Thoai <span class="text-red-500">*</span></label>
-                                    <input type="tel" placeholder="Nhap so dien thoai" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số Điện Thoại <span class="text-red-500">*</span></label>
+                                    <input type="tel" placeholder="Nhập số điện thoại" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="Nhap dia chi email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                <input type="email" placeholder="Nhập địa chỉ email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chu De</label>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chủ Đề</label>
                                 <select class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
-                                    <option>Tu van tour du lich</option>
-                                    <option>Dat tour</option>
-                                    <option>Khieu nai / Gop y</option>
-                                    <option>Hop tac kinh doanh</option>
-                                    <option>Khac</option>
+                                    <option>Tư vấn tour du lịch</option>
+                                    <option>Đặt tour</option>
+                                    <option>Khieu nại / Góp ý</option>
+                                    <option>Hợp tác kinh doanh</option>
+                                    <option>Khác</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Noi Dung <span class="text-red-500">*</span></label>
-                                <textarea rows="5" placeholder="Nhap noi dung tin nhan..." required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nội Dung <span class="text-red-500">*</span></label>
+                                <textarea rows="5" placeholder="Nhập nội dung tin nhắn..." required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
                             </div>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
                                 <span class="material-symbols-outlined text-[18px]">send</span>
-                                @formIntro.Fields.GetFieldValue("submitText", "Gui Tin Nhan")
+                                @formIntro.Fields.GetFieldValue("submitText", "Gửi Tin Nhắn")
                             </button>
                         </form>
                     </div>

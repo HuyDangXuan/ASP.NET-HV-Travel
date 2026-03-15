@@ -1,4 +1,4 @@
-@model HVTravel.Domain.Entities.Tour
+﻿@model HVTravel.Domain.Entities.Tour
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
     
@@ -12,15 +12,6 @@
         _ => status
     };
 
-    string GetCategoryText(string category) => category switch
-    {
-        "Adventure" => "Khám phá & Mạo hiểm",
-        "Culture" => "Văn hóa & Lịch sử",
-        "Food" => "Ẩm thực",
-        "Nature" => "Thiên nhiên & Nghỉ dưỡng",
-        "City" => "City Tour",
-        _ => category
-    };
 }
 
 <style type="text/tailwindcss">
@@ -121,35 +112,6 @@
                             </select>
                         </div>
 
-                        <!-- Custom Select: Category -->
-                        <div class="relative custom-select-container" data-id="Category">
-                             <label class="label-text">Loại hình Tour</label>
-                             <div class="input-field select-field" onclick="toggleCustomSelect('Category')">
-                                 <span class="selected-label">@(string.IsNullOrEmpty(Model.Category) ? "Chọn loại hình" : GetCategoryText(Model.Category))</span>
-                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                             </div>
-                             <div class="options-menu">
-                                 <div class="custom-option @(string.IsNullOrEmpty(Model.Category) ? "selected" : "")" onclick="selectCustomOption('Category', '', 'Chọn loại hình')">
-                                     Chọn loại hình
-                                     @if (string.IsNullOrEmpty(Model.Category)) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                                 </div>
-                                 @foreach (var cat in new[] { "Adventure", "Culture", "Food", "Nature", "City" })
-                                 {
-                                     <div class="custom-option @(Model.Category == cat ? "selected" : "")" onclick="selectCustomOption('Category', '@cat', '@GetCategoryText(cat)')">
-                                         @GetCategoryText(cat)
-                                         @if (Model.Category == cat) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                                     </div>
-                                 }
-                             </div>
-                             <select asp-for="Category" class="hidden">
-                                <option value="">Chọn loại hình</option>
-                                <option value="Adventure">Adventure</option>
-                                <option value="Culture">Culture</option>
-                                <option value="Food">Food</option>
-                                <option value="Nature">Nature</option>
-                                <option value="City">City</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                          <div>

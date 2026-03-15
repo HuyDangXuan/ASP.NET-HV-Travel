@@ -152,7 +152,7 @@
                         <div class="flex justify-between"><span class="text-slate-500">Mã đơn</span><span class="font-bold font-mono text-primary">@booking.BookingCode</span></div>
                         <div class="flex justify-between"><span class="text-slate-500">Khách hàng</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Name</span></div>
                         <div class="flex justify-between"><span class="text-slate-500">Số hành khách</span><span class="font-bold text-slate-900 dark:text-white">@booking.ParticipantsCount</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Khởi hành</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate.ToString("dd/MM/yyyy") ?? "—")</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Khởi hành</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "—")</span></div>
                     </div>
                     <div class="border-t border-slate-100 dark:border-slate-700 mt-4 pt-4">
                         <div class="flex justify-between items-center">

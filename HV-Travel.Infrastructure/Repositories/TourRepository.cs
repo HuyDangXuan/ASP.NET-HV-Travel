@@ -22,7 +22,7 @@ namespace HVTravel.Infrastructure.Repositories
             );
 
             var update = Builders<Tour>.Update
-                .Inc("current_participants", count)
+                .Inc(t => t.CurrentParticipants, count)
                 .Set(t => t.UpdatedAt, DateTime.UtcNow)
                 .Inc("version", 1);
 

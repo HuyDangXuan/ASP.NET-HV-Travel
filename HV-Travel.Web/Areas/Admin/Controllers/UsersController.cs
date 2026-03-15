@@ -4,11 +4,12 @@ using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 using BCrypt.Net;
+using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme)]
     public class UsersController : Controller
     {
         private readonly IRepository<User> _userRepository;
@@ -28,7 +29,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             int page = 1,
             int pageSize = 10)
         {
-            var users = await _userRepository.GetAllAsync();
+            var allUsersList = (await _userRepository.GetAllAsync()).ToList();
+            var users = allUsersList.AsEnumerable();
 
             // Filter by status tab
             if (status == "active")
@@ -77,14 +79,13 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 _ => users.OrderBy(u => u.FullName)
             };
 
-            // Stats
-            var allUsers = await _userRepository.GetAllAsync();
+            // Stats (reuse initial fetch, no second DB call)
             var stats = new UserStatsSummary
             {
-                TotalUsers = allUsers.Count(),
-                ActiveCount = allUsers.Count(u => u.Status == "Active"),
-                InactiveCount = allUsers.Count(u => u.Status == "Inactive"),
-                RoleCounts = allUsers.GroupBy(u => u.Role)
+                TotalUsers = allUsersList.Count(),
+                ActiveCount = allUsersList.Count(u => u.Status == "Active"),
+                InactiveCount = allUsersList.Count(u => u.Status == "Inactive"),
+                RoleCounts = allUsersList.GroupBy(u => u.Role)
                     .ToDictionary(g => g.Key, g => g.Count())
             };
 
