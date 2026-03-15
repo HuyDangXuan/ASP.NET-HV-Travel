@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Tạo Tour Mới";
 }
 @model HVTravel.Domain.Entities.Tour
@@ -23,7 +23,7 @@
         <nav class="flex items-center gap-2 text-sm text-slate-500">
             <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <a class="hover:text-primary transition-colors" asp-action="Index">Tours</a>
+            <a class="hover:text-primary transition-colors" asp-action="Index">Danh Sách Tour</a>
             <span class="material-symbols-outlined text-[16px]">chevron_right</span>
             <span class="text-slate-900 dark:text-white font-medium">Tạo Tour Mới</span>
         </nav>
@@ -140,7 +140,7 @@
                 <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-[#618389] uppercase tracking-wider mb-1">Giá hiển thị thực tế (Người lớn)</p>
-                        <p id="calculated-price-display" class="text-2xl font-black text-primary">0 VND</p>
+                        <p id="calculated-price-display" class="text-2xl font-black text-primary">0 ₫</p>
                     </div>
                     <span class="material-symbols-outlined text-primary/40 text-4xl">calculate</span>
                 </div>
@@ -171,7 +171,7 @@
 
                 <!-- Start Dates -->
                 <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
-                    <label class="label-text mb-2">Ngày khởi hành (Start Dates)</label>
+                    <label class="label-text mb-2">Ngày khởi hành</label>
                     <div id="start-dates-container" class="space-y-2">
                         @if (Model.StartDates != null && Model.StartDates.Any())
                         {
@@ -191,7 +191,7 @@
 
                 <!-- Schedule -->
                 <div class="mt-8 border-t border-dashed border-gray-200 dark:border-gray-700 pt-6">
-                    <label class="label-text mb-4">Lịch trình chi tiết (Schedule)</label>
+                    <label class="label-text mb-4">Lịch trình chi tiết</label>
                     <div id="schedule-container" class="space-y-6">
                         @if (Model.Schedule != null && Model.Schedule.Any())
                         {

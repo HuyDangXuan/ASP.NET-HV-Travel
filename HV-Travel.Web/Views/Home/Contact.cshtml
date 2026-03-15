@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @{
     var sections = await ContentService.GetPageSectionsAsync("contact");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -7,13 +7,13 @@
     var formIntro = sections.GetSection("formIntro");
     var contactGroup = siteSettings.GetGroup("contactInfo");
 
-    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Duong Nguyen Hue, Quan 1, TP.HCM") ?? "123 Duong Nguyen Hue, Quan 1, TP.HCM";
+    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM") ?? "123 Đường Nguyễn Huệ, Quận 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
-    var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
+    var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "Thứ 2 - Thứ 7: 8:00 - 18:00") ?? "Thứ 2 - Thứ 7: 8:00 - 18:00";
 
-    ViewData["Title"] = "Lien He";
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Lien he voi HV Travel de duoc tu van va ho tro");
+    ViewData["Title"] = "Liên Hệ";
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn và hỗ trợ");
 }
 
 @if (hero?.IsEnabled != false)
@@ -25,12 +25,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative z-10 text-center" data-animate="fade-up">
             <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
                 <span class="material-symbols-outlined text-primary text-[16px]">call</span>
-                @hero.Fields.GetFieldValue("badgeText", "Lien He")
+                @hero.Fields.GetFieldValue("badgeText", "Liên Hệ")
             </span>
             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                @hero.Fields.GetFieldValue("title", "Chung Toi Luon San Sang Lang Nghe")
+                @hero.Fields.GetFieldValue("title", "Chúng Tôi Luôn Sẵn Sàng Lắng Nghe")
             </h1>
-            <p class="text-lg text-slate-300 max-w-2xl mx-auto">@hero.Fields.GetFieldValue("description", "Lien he voi HV Travel de duoc tu van hanh trinh phu hop va nhan ho tro nhanh chong.")</p>
+            <p class="text-lg text-slate-300 max-w-2xl mx-auto">@hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng.")</p>
         </div>
     </section>
 }
@@ -47,7 +47,7 @@
                                 <span class="material-symbols-outlined text-[24px]">location_on</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("addressTitle", "Dia Chi")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("addressTitle", "Địa Chỉ")</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">@contactAddress</p>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                 <span class="material-symbols-outlined text-[24px]">call</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("phoneTitle", "Dien Thoai")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("phoneTitle", "Điện Thoại")</h3>
                                 <a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="tel:@contactPhone">@contactPhone</a>
                             </div>
                         </div>
@@ -80,7 +80,7 @@
                                 <span class="material-symbols-outlined text-[24px]">schedule</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("hoursTitle", "Gio Lam Viec")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1">@cards.Fields.GetFieldValue("hoursTitle", "Giờ Làm Việc")</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400">@businessHours</p>
                             </div>
                         </div>
@@ -92,41 +92,41 @@
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
                     <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@formIntro.Fields.GetFieldValue("title", "Gui Tin Nhan Cho Chung Toi")</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">@formIntro.Fields.GetFieldValue("description", "Dien thong tin cua ban va doi ngu HV Travel se phan hoi trong thoi gian som nhat.")</p>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@formIntro.Fields.GetFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">@formIntro.Fields.GetFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất.")</p>
 
                         <form id="contact-form" class="space-y-6">
                             <div class="grid sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Há» vÃ  TÃªn <span class="text-red-500">*</span></label>
-                                    <input type="text" placeholder="Nháº­p há» vÃ  tÃªn" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
+                                    <input type="text" placeholder="Nhập họ và tên" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Sá»‘ Äiá»‡n Thoáº¡i <span class="text-red-500">*</span></label>
-                                    <input type="tel" placeholder="Nháº­p sá»‘ Ä‘iá»‡n thoáº¡i" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số Điện Thoại <span class="text-red-500">*</span></label>
+                                    <input type="tel" placeholder="Nhập số điện thoại" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="Nháº­p Ä‘á»‹a chá»‰ email" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                <input type="email" placeholder="Nhập địa chỉ email" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chá»§ Äá»</label>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chủ Đề</label>
                                 <select class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
-                                    <option>TÆ° váº¥n tour du lá»‹ch</option>
-                                    <option>Äáº·t tour</option>
-                                    <option>Khieu náº¡i / GÃ³p Ã½</option>
-                                    <option>Há»£p tÃ¡c kinh doanh</option>
-                                    <option>KhÃ¡c</option>
+                                    <option>Tư vấn tour du lịch</option>
+                                    <option>Đặt tour</option>
+                                    <option>Khiếu nại / Góp ý</option>
+                                    <option>Hợp tác kinh doanh</option>
+                                    <option>Khác</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ná»™i Dung <span class="text-red-500">*</span></label>
-                                <textarea rows="5" placeholder="Nháº­p ná»™i dung tin nháº¯n..." required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
+                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nội Dung <span class="text-red-500">*</span></label>
+                                <textarea rows="5" placeholder="Nhập nội dung tin nhắn..." required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
                             </div>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
                                 <span class="material-symbols-outlined text-[18px]">send</span>
-                                @formIntro.Fields.GetFieldValue("submitText", "Gá»­i Tin Nháº¯n")
+                                @formIntro.Fields.GetFieldValue("submitText", "Gửi Tin Nhắn")
                             </button>
                         </form>
                     </div>
@@ -153,10 +153,10 @@
         e.preventDefault();
         const btn = this.querySelector('button[type="submit"]');
         const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Dang gui...';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Đang gửi...';
         btn.disabled = true;
         setTimeout(() => {
-            btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span> Da gui thanh cong!';
+            btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span> Đã gửi thành công!';
             btn.classList.replace('bg-primary', 'bg-emerald-500');
             setTimeout(() => {
                 btn.innerHTML = originalText;

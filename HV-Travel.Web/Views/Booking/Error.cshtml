@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -7,15 +7,15 @@
     var phone = contactGroup?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
     var email = contactGroup?.Fields.GetFieldValue("email", "support@hvtravel.vn") ?? "support@hvtravel.vn";
 
-    ViewData["Title"] = "Lá»—i Há»‡ Thá»‘ng";
+    ViewData["Title"] = "Lỗi Hệ Thống";
 }
 
 <div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chá»§</a>
+            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Lá»—i Há»‡ Thá»‘ng</span>
+            <span class="text-slate-900 dark:text-white font-medium">Lỗi Hệ Thống</span>
         </nav>
     </div>
 </div>
@@ -31,29 +31,29 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "ÄÃ£ Xáº£y Ra Lá»—i")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-2">@statusCopy?.Fields.GetFieldValue("errorDescription", "ÄÃ£ xáº£y ra lá»—i há»‡ thá»‘ng trong quÃ¡ trÃ¬nh xá»­ lÃ½. Vui lÃ²ng thá»­ láº¡i sau.")</p>
-        <p class="text-xs text-slate-400 mb-8">MÃ£ lá»—i: 500 Â· @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
+        <p class="text-slate-500 dark:text-slate-400 mb-2">@statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")</p>
+        <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
 
         <div class="bg-surface-muted-light dark:bg-surface-elevated-dark/70 rounded-2xl p-5 border border-border-light dark:border-border-dark mb-8 text-left" data-animate="fade-up" data-delay="200">
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Báº¡n cÃ³ thá»ƒ thá»­:</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Bạn có thể thử:</h4>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Táº£i láº¡i trang</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay láº¡i trang trÆ°á»›c</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> LiÃªn há»‡ há»— trá»£: <strong>@phone</strong></li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tải lại trang</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay lại trang trước</li>
+                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> Liên hệ hỗ trợ: <strong>@phone</strong></li>
                 <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">mail</span> Email: <strong>@email</strong></li>
             </ul>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
             <button onclick="location.reload()" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                <span class="material-symbols-outlined text-[18px]">refresh</span> Táº£i Láº¡i
+                <span class="material-symbols-outlined text-[18px]">refresh</span> Tải Lại
             </button>
             <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chá»§
+                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chủ
             </a>
             <button onclick="history.back()" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Láº¡i
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Lại
             </button>
         </div>
     </div>

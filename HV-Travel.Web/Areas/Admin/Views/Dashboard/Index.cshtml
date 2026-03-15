@@ -1,6 +1,6 @@
 @model HVTravel.Web.Models.DashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Tổng Quan";
 
     var bookingStatusMapping = new Dictionary<string, string>
     {
@@ -154,13 +154,13 @@
         <div class="relative h-64 w-full bg-gradient-to-t from-primary/5 to-transparent rounded-xl border-b border-l border-slate-200 dark:border-slate-700 p-4">
             <!-- Simplified Mock for Static View - Enhancements would require Chart.js -->
             <div class="flex items-end justify-between h-full w-full gap-2 px-4 pb-4">
-                 <div class="w-full bg-primary/20 h-[40%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mon</div></div>
-                 <div class="w-full bg-primary/30 h-[60%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Tue</div></div>
-                 <div class="w-full bg-primary/40 h-[30%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Wed</div></div>
-                 <div class="w-full bg-primary/50 h-[80%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Thu</div></div>
-                 <div class="w-full bg-primary/60 h-[50%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Fri</div></div>
-                 <div class="w-full bg-primary h-[90%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Sat</div></div>
-                 <div class="w-full bg-primary/80 h-[70%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">Sun</div></div>
+                 <div class="w-full bg-primary/20 h-[40%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T2</div></div>
+                 <div class="w-full bg-primary/30 h-[60%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T3</div></div>
+                 <div class="w-full bg-primary/40 h-[30%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T4</div></div>
+                 <div class="w-full bg-primary/50 h-[80%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T5</div></div>
+                 <div class="w-full bg-primary/60 h-[50%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T6</div></div>
+                 <div class="w-full bg-primary h-[90%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T7</div></div>
+                 <div class="w-full bg-primary/80 h-[70%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">CN</div></div>
             </div>
         </div>
     </div>
@@ -179,12 +179,12 @@
          <div class="grid grid-cols-2 gap-4 mt-6">
             <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-primary"></span>
-                <span class="text-sm text-slate-600 dark:text-slate-300">Active</span>
+                <span class="text-sm text-slate-600 dark:text-slate-300">Hoạt động</span>
                 <span class="text-xs font-bold ml-auto text-slate-900 dark:text-white">70%</span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-orange-500"></span>
-                <span class="text-sm text-slate-600 dark:text-slate-300">Inactive</span>
+                <span class="text-sm text-slate-600 dark:text-slate-300">Ngừng hoạt động</span>
                 <span class="text-xs font-bold ml-auto text-slate-900 dark:text-white">30%</span>
             </div>
         </div>
@@ -236,7 +236,7 @@
                         </td>
                         <td class="p-4">
                             <p class="font-medium text-slate-700 dark:text-slate-300">@item.TourSnapshot?.Name</p>
-                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "Updating...")</p>
+                            <p class="text-xs text-slate-400">Khởi hành: @(item.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "Đang cập nhật...")</p>
                         </td>
                         <td class="p-4 text-center font-medium">@item.ParticipantsCount</td>
                         <td class="p-4 font-bold text-slate-900 dark:text-white">@item.TotalAmount.ToString("N0") ₫</td>

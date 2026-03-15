@@ -1,4 +1,4 @@
-﻿@model HVTravel.Web.Models.BookingViewModel
+@model HVTravel.Web.Models.BookingViewModel
 @{
     var tour = Model.Tour;
     var adultPrice = tour.Price?.Adult ?? 0;
@@ -65,7 +65,7 @@
                         <div class="min-w-0">
                             <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate">@tour.Name</h2>
                             <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Ä")</span>
+                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")</span>
                                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">location_on</span>@(tour.Destination?.City ?? "Việt Nam")</span>
                                 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-amber-400 text-[14px]">star</span>@tour.Rating.ToString("0.0")</span>
                             </div>
@@ -94,7 +94,7 @@
                             </div>
                              <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời lượng</label>
-                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngÃ y {tour.Duration?.Nights} Ä‘Ãªm")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
+                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngày {tour.Duration?.Nights} đêm")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô tả ngắn</label>
@@ -113,16 +113,18 @@
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour ID</label>
                                 <input value="@tour.Id" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed" />
                             </div>
+                        </div>
+                    </div>
 
                     <!-- Contact Info -->
                     <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">person</span> Thông tin LiÃªn Há»‡
+                            <span class="material-symbols-outlined text-primary">person</span> Thông tin Liên Hệ
                         </h3>
                         <div class="grid sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ và tên <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyá»…n VÄƒn A" />
+                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
                                 <span asp-validation-for="ContactName" class="text-xs text-red-500 mt-1"></span>
                             </div>
                             <div>
@@ -131,7 +133,7 @@
                                 <span asp-validation-for="ContactEmail" class="text-xs text-red-500 mt-1"></span>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Sá»‘ Äiá»‡n Thoáº¡i <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
                                 <input asp-for="ContactPhone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
                                 <span asp-validation-for="ContactPhone" class="text-xs text-red-500 mt-1"></span>
                             </div>
@@ -163,7 +165,7 @@
                     <!-- Passengers -->
                     <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">group</span> Sá»‘ LÆ°á»£ng HÃ nh KhÃ¡ch
+                            <span class="material-symbols-outlined text-primary">group</span> Số Lượng Hành Khách
                             <span id="spots-left-badge" class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all">
                                 Còn @tour.RemainingSpots chỗ
                             </span>
@@ -173,7 +175,7 @@
                             <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Người lớn</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">Tá»« 12 tuá»•i Â· @adultPrice.ToString("N0")â‚«/ngÆ°á»i</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Từ 12 tuổi · @adultPrice.ToString("N0")₫/người</p>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
@@ -189,7 +191,7 @@
                             <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Trẻ em</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">2 â€“ 11 tuá»•i Â· @childPrice.ToString("N0")â‚«/ngÆ°á»i</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">2 – 11 tuổi · @childPrice.ToString("N0")₫/người</p>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
@@ -205,7 +207,7 @@
                             <div class="flex items-center justify-between p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl">
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">Em bé</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">DÆ°á»›i 2 tuá»•i Â· @infantPrice.ToString("N0")â‚«/ngÆ°á»i</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Dưới 2 tuổi · @infantPrice.ToString("N0")₫/người</p>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
@@ -225,7 +227,7 @@
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">edit_note</span> Yêu cầu đặc biệt
                         </h3>
-                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: PhÃ²ng view biá»ƒn, Äƒn chay, xe Ä‘Ã³n sÃ¢n bay..."></textarea>
+                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: Phòng view biển, ăn chay, xe đón sân bay..."></textarea>
                     </div>
                 </div>
 
@@ -236,37 +238,37 @@
                             <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5">Chi tiết giá</h3>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-slate-600 dark:text-slate-400">Người lớn Ã— <span id="adult-display">1</span></span>
-                                    <span id="adult-total" class="font-bold text-slate-900 dark:text-white">@adultPrice.ToString("N0")â‚«</span>
+                                    <span class="text-slate-600 dark:text-slate-400">Người lớn × <span id="adult-display">1</span></span>
+                                    <span id="adult-total" class="font-bold text-slate-900 dark:text-white">@adultPrice.ToString("N0")₫</span>
                                 </div>
                                 <div class="flex justify-between items-center" id="child-row" style="display:none">
-                                    <span class="text-slate-600 dark:text-slate-400">Trẻ em Ã— <span id="child-display">0</span></span>
-                                    <span id="child-total" class="font-bold text-slate-900 dark:text-white">0â‚«</span>
+                                    <span class="text-slate-600 dark:text-slate-400">Trẻ em × <span id="child-display">0</span></span>
+                                    <span id="child-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
                                 </div>
                                 <div class="flex justify-between items-center" id="infant-row" style="display:none">
-                                    <span class="text-slate-600 dark:text-slate-400">Em bé Ã— <span id="infant-display">0</span></span>
-                                    <span id="infant-total" class="font-bold text-slate-900 dark:text-white">0â‚«</span>
+                                    <span class="text-slate-600 dark:text-slate-400">Em bé × <span id="infant-display">0</span></span>
+                                    <span id="infant-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
                                 </div>
                                 @if (discount > 0)
                                 {
                                     <div class="flex justify-between items-center text-green-600">
                                         <span>Giảm giá (@discount%)</span>
-                                        <span id="discount-amount" class="font-bold">-0â‚«</span>
+                                        <span id="discount-amount" class="font-bold">-0₫</span>
                                     </div>
                                 }
                                 <div class="border-t border-border-light dark:border-border-dark pt-3 mt-3">
                                     <div class="flex justify-between items-center">
                                         <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
-                                        <span id="grand-total" class="text-xl font-extrabold text-primary">@adultPrice.ToString("N0")â‚«</span>
+                                        <span id="grand-total" class="text-xl font-extrabold text-primary">@adultPrice.ToString("N0")₫</span>
                                     </div>
                                 </div>
                             </div>
 
                             <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
                                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                Tiáº¿p Tá»¥c Thanh toán
+                                Tiếp Tục Thanh toán
                             </button>
-                            <p class="text-[11px] text-slate-400 text-center mt-3">Báº¡n chÆ°a bá»‹ tÃ­nh phÃ­ á»Ÿ bÆ°á»›c nÃ y</p>
+                            <p class="text-[11px] text-slate-400 text-center mt-3">Bạn chưa bị tính phí ở bước này</p>
                         </div>
                     </div>
                 </div>
@@ -293,13 +295,13 @@
 
                 if (errors.length > 0) {
                     Swal.fire({
-                        title: 'ThÃ´ng tin chÆ°a há»£p lá»‡!',
-                        html: '<div class="text-center"><p class="mb-3 text-slate-500 dark:text-slate-400">Vui lÃ²ng kiá»ƒm tra láº¡i cÃ¡c má»¥c sau:</p><ul class="list-none space-y-2 text-sm text-slate-700 dark:text-slate-200 inline-block text-left">' +
+                        title: 'Thông tin chưa hợp lệ!',
+                        html: '<div class="text-center"><p class="mb-3 text-slate-500 dark:text-slate-400">Vui lòng kiểm tra lại các mục sau:</p><ul class="list-none space-y-2 text-sm text-slate-700 dark:text-slate-200 inline-block text-left">' +
                               errors.map(e => `<li class="flex items-start gap-2"><span class="material-symbols-outlined text-red-500 text-[18px] shrink-0 mt-0.5">error</span><span>${e}</span></li>`).join('') +
                               '</ul></div>',
                         icon: 'warning',
                         iconColor: '#f59e0b', // Amber-500
-                        confirmButtonText: 'ÄÃ£ hiá»ƒu, Ä‘á»ƒ tÃ´i sá»­a',
+                        confirmButtonText: 'Đã hiểu, để tôi sửa',
                         confirmButtonColor: '#2bcdee',
                         background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
                         color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0f172a',
@@ -340,8 +342,8 @@
         
         if (delta > 0 && currentTotal >= remainingSpots) {
             Swal.fire({
-                title: 'Háº¿t chỗ!',
-                text: `Tour nÃ y hiá»‡n chá»‰ cÃ²n ${remainingSpots} chỗ trá»‘ng.`,
+                title: 'Hết chỗ!',
+                text: `Tour này hiện chỉ còn ${remainingSpots} chỗ trống.`,
                 icon: 'warning',
                 confirmButtonColor: '#2bcdee'
             });
@@ -365,7 +367,7 @@
 
         const badge = document.getElementById('spots-left-badge');
         if (badge) {
-            badge.textContent = spotsLeft > 0 ? `Còn ${spotsLeft} chỗ` : 'ÄÃ£ háº¿t chỗ';
+            badge.textContent = spotsLeft > 0 ? `Còn ${spotsLeft} chỗ` : 'Đã hết chỗ';
             if (spotsLeft <= 5) {
                 badge.className = "ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-500 border border-red-100 transition-all animate-pulse";
             } else {
@@ -381,26 +383,26 @@
         const grandTotal = subtotal - discountAmt;
 
         document.getElementById('adult-display').textContent = adults;
-        document.getElementById('adult-total').textContent = adultTotal.toLocaleString('vi-VN') + 'â‚«';
+        document.getElementById('adult-total').textContent = adultTotal.toLocaleString('vi-VN') + '₫';
 
         const childRow = document.getElementById('child-row');
         if (children > 0) {
             childRow.style.display = 'flex';
             document.getElementById('child-display').textContent = children;
-            document.getElementById('child-total').textContent = childTotal.toLocaleString('vi-VN') + 'â‚«';
+            document.getElementById('child-total').textContent = childTotal.toLocaleString('vi-VN') + '₫';
         } else { childRow.style.display = 'none'; }
 
         const infantRow = document.getElementById('infant-row');
         if (infants > 0) {
             infantRow.style.display = 'flex';
             document.getElementById('infant-display').textContent = infants;
-            document.getElementById('infant-total').textContent = infantTotal.toLocaleString('vi-VN') + 'â‚«';
+            document.getElementById('infant-total').textContent = infantTotal.toLocaleString('vi-VN') + '₫';
         } else { infantRow.style.display = 'none'; }
 
         const discEl = document.getElementById('discount-amount');
-        if (discEl) discEl.textContent = '-' + discountAmt.toLocaleString('vi-VN') + 'â‚«';
+        if (discEl) discEl.textContent = '-' + discountAmt.toLocaleString('vi-VN') + '₫';
 
-        document.getElementById('grand-total').textContent = grandTotal.toLocaleString('vi-VN') + 'â‚«';
+        document.getElementById('grand-total').textContent = grandTotal.toLocaleString('vi-VN') + '₫';
     }
 
     updatePrice();

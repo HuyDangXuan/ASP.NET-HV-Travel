@@ -113,20 +113,20 @@
                 <h3 class="text-[#111718] dark:text-white text-lg font-bold mb-4">Xem trước hồ sơ</h3>
                 <div class="flex flex-col items-center text-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                     <div class="size-20 rounded-full bg-slate-200 overflow-hidden mb-3 shadow-sm border-2 border-white dark:border-slate-700">
-                         <img id="preview-avatar" src="https://ui-avatars.com/api/?name=New+User" alt="Preview" class="w-full h-full object-cover" />
+                         <img id="preview-avatar" src="https://ui-avatars.com/api/?name=Kh%C3%A1ch+H%C3%A0ng" alt="Preview" class="w-full h-full object-cover" />
                     </div>
                     <h4 id="preview-name" class="font-bold text-slate-900 dark:text-white text-lg">Tên Khách Hàng</h4>
                     <p id="preview-email" class="text-sm text-slate-500">email@example.com</p>
-                    <p id="preview-location" class="text-xs font-semibold text-primary mt-2 uppercase tracking-wide">LOCATION</p>
+                    <p id="preview-location" class="text-xs font-semibold text-primary mt-2 uppercase tracking-wide">ĐỊA CHỈ</p>
                     
                     <div class="flex gap-2 mt-4 w-full">
                         <div class="flex-1 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
                             <span class="block text-[10px] text-slate-400 uppercase">Phân khúc</span>
-                            <span id="preview-segment" class="text-sm font-bold text-slate-700 dark:text-slate-300">Standard</span>
+                            <span id="preview-segment" class="text-sm font-bold text-slate-700 dark:text-slate-300">Tiêu chuẩn</span>
                         </div>
                          <div class="flex-1 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
                             <span class="block text-[10px] text-slate-400 uppercase">Trạng thái</span>
-                             <span id="preview-status" class="text-sm font-bold text-green-600">Active</span>
+                             <span id="preview-status" class="text-sm font-bold text-green-600">Đang hoạt động</span>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
         function updatePreview() {
             if(inputs.name) preview.name.textContent = inputs.name.value || 'Tên Khách Hàng';
             if(inputs.email) preview.email.textContent = inputs.email.value || 'email@example.com';
-            if(inputs.city) preview.location.textContent = inputs.city.value || 'LOCATION';
+            if(inputs.city) preview.location.textContent = inputs.city.value || 'ĐỊA CHỈ';
             
             if(inputs.avatar && inputs.avatar.value) {
                 preview.avatar.src = inputs.avatar.value;

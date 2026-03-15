@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @model List<Tour>
 @{
     var sections = await ContentService.GetPageSectionsAsync("home");
@@ -8,8 +8,8 @@
     var commitments = sections.GetSection("commitments");
     var finalCta = sections.GetSection("finalCta");
 
-    ViewData["Title"] = "Trang Chu";
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "HV Travel - Kham pha ve dep Viet Nam voi nhung tour du lich duoc thiet ke rieng cho ban");
+    ViewData["Title"] = "Trang Chủ";
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "HV Travel - Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng cho bạn");
 }
 
 <section class="hero-gradient relative overflow-hidden">
@@ -23,24 +23,24 @@
             {
                 <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10">
                     <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
-                    @hero.Fields.GetFieldValue("badgeText", $"Kham pha hon {(Model?.Count ?? 0)}+ diem den tuyet voi")
+                    @hero.Fields.GetFieldValue("badgeText", $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời")
                 </div>
                 <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
-                    @hero.Fields.GetFieldValue("titleLine1", "Kham Pha")
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "Viet Nam")</span>
-                    <br />@hero.Fields.GetFieldValue("titleLine2", "Theo Cach Cua Ban")
+                    @hero.Fields.GetFieldValue("titleLine1", "Khám Phá")
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
+                    <br />@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")
                 </h1>
                 <p class="text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                    @hero.Fields.GetFieldValue("description", "Nhung hanh trinh duoc thiet ke rieng, trai nghiem van hoa doc dao va phong canh thien nhien tuyet dep dang cho don ban.")
+                    @hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn.")
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
                         <span class="material-symbols-outlined">explore</span>
-                        @hero.Fields.GetFieldValue("primaryCtaText", "Kham Pha Ngay")
+                        @hero.Fields.GetFieldValue("primaryCtaText", "Khám Phá Ngay")
                     </a>
                     <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
                         <span class="material-symbols-outlined">call</span>
-                        @hero.Fields.GetFieldValue("secondaryCtaText", "Lien He Tu Van")
+                        @hero.Fields.GetFieldValue("secondaryCtaText", "Liên Hệ Tư Vấn")
                     </a>
                 </div>
             }
@@ -53,7 +53,7 @@
                 {
                     <div class="text-center">
                         <p class="text-3xl sm:text-4xl font-extrabold text-white">@stats.Fields.GetFieldValue($"stat{index}Number", "0")</p>
-                        <p class="text-sm text-slate-400 mt-1 font-medium">@stats.Fields.GetFieldValue($"stat{index}Label", $"Chi so {index}")</p>
+                        <p class="text-sm text-slate-400 mt-1 font-medium">@stats.Fields.GetFieldValue($"stat{index}Label", $"Chỉ số {index}")</p>
                     </div>
                 }
             </div>
@@ -67,10 +67,10 @@
         {
             <div class="text-center mb-14" data-animate="fade-up">
                 <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
-                    <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Noi Bat")
+                    <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Nổi Bật")
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hanh Trinh Duoc Yeu Thich Nhat")</h2>
-                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@featured.Fields.GetFieldValue("description", "Nhung tour du lich hang dau duoc danh gia cao boi hang ngan du khach")</p>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
+                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách")</p>
             </div>
         }
 
@@ -102,7 +102,7 @@
                         <div class="p-5">
                             <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
                                 <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
-                                @(tour.Destination?.City ?? "Viet Nam")@(tour.Destination?.Region != null ? $", {tour.Destination.Region}" : "")
+                                @(tour.Destination?.City ?? "Việt Nam")@(tour.Destination?.Region != null ? $", {tour.Destination.Region}" : "")
                             </div>
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
                             <div class="flex items-center justify-between mb-4">
@@ -113,7 +113,7 @@
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <span class="material-symbols-outlined text-[14px]">group</span>
-                                        @tour.MaxParticipants nguoi
+                                        @tour.MaxParticipants người
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -123,11 +123,11 @@
                             </div>
                             <div class="flex items-end justify-between pt-4 border-t border-border-light dark:border-border-dark">
                                 <div>
-                                    <p class="text-xs text-slate-400">Tu</p>
-                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))d</p>
+                                    <p class="text-xs text-slate-400">Từ</p>
+                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
                                 </div>
                                 <span class="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
-                                    Xem chi tiet
+                                    Xem chi tiết
                                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                                 </span>
                             </div>
@@ -138,7 +138,7 @@
 
             <div class="text-center mt-12">
                 <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 hover:text-primary px-8 py-3.5 rounded-xl text-sm font-bold shadow-sm ring-1 ring-border-light dark:ring-border-dark hover:ring-primary/30 hover:shadow-lg transition-all">
-                    @(featured?.Fields.GetFieldValue("viewAllText", "Xem Tat Ca Tour") ?? "Xem Tat Ca Tour")
+                    @(featured?.Fields.GetFieldValue("viewAllText", "Xem Tất Cả Tour") ?? "Xem Tất Cả Tour")
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
             </div>
@@ -147,7 +147,7 @@
         {
             <div class="text-center py-16">
                 <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">travel_explore</span>
-                <p class="text-slate-500 dark:text-slate-400">Chua co tour nao. Vui long quay lai sau.</p>
+                <p class="text-slate-500 dark:text-slate-400">Chưa có tour nào. Vui lòng quay lại sau.</p>
             </div>
         }
     </div>
@@ -159,10 +159,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14" data-animate="fade-up">
                 <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
-                    <span class="material-symbols-outlined text-[16px]">verified</span> Tai Sao Chon Chung Toi
+                    <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Ket Chat Luong")</h2>
-                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@commitments.Fields.GetFieldValue("description", "Dich vu chuyen nghiep, lich trinh chin chu va trai nghiem dang nho trong tung hanh trinh")</p>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
+                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình")</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
                 @{
@@ -174,8 +174,8 @@
                         <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
                             <span class="material-symbols-outlined text-[28px]">@icons[index - 1]</span>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">@commitments.Fields.GetFieldValue($"item{index}Title", $"Cam ket {index}")</h3>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">@commitments.Fields.GetFieldValue($"item{index}Description", "Noi dung se duoc cap nhat trong CMS.")</p>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">@commitments.Fields.GetFieldValue($"item{index}Title", $"Cam kết {index}")</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">@commitments.Fields.GetFieldValue($"item{index}Description", "Nội dung sẽ được cập nhật trong CMS.")</p>
                     </div>
                 }
             </div>
@@ -190,16 +190,16 @@
             <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
         </div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-animate="scale-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "San Sang Cho Hanh Trinh Tiep Theo?")</h2>
-            <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">@finalCta.Fields.GetFieldValue("description", "Hay de HV Travel dong hanh cung ban trong chuyen di tiep theo voi lich trinh duoc thiet ke rieng.")</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
+            <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">@finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng.")</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
                     <span class="material-symbols-outlined">mail</span>
-                    @finalCta.Fields.GetFieldValue("primaryCtaText", "Lien He Ngay")
+                    @finalCta.Fields.GetFieldValue("primaryCtaText", "Liên Hệ Ngay")
                 </a>
                 <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
                     <span class="material-symbols-outlined">explore</span>
-                    @finalCta.Fields.GetFieldValue("secondaryCtaText", "Kham Pha Tour")
+                    @finalCta.Fields.GetFieldValue("secondaryCtaText", "Khám Phá Tour")
                 </a>
             </div>
         </div>

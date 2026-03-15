@@ -1,7 +1,7 @@
 @using HVTravel.Domain.Entities
 @model User
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = "Tài Khoản";
 }
 
 <style type="text/tailwindcss">
@@ -115,7 +115,7 @@
 
         <!-- Avatar URL (Optional) -->
         <div>
-            <label for="AvatarUrl" class="label-text">Avatar URL <span class="text-gray-400 font-normal normal-case">(Tùy chọn)</span></label>
+            <label for="AvatarUrl" class="label-text">Ảnh đại diện (URL) <span class="text-gray-400 font-normal normal-case">(Tùy chọn)</span></label>
             <input asp-for="AvatarUrl" type="url" class="input-field" placeholder="https://example.com/avatar.jpg" />
         </div>
 
