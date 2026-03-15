@@ -8,32 +8,11 @@
         .input-field {
             @@apply w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl h-14 px-4 text-[#111718] dark:text-white font-semibold focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-[#618389]/50 dark:placeholder:text-slate-500 shadow-sm;
         }
-        .select-field {
-            @@apply flex items-center justify-between cursor-pointer;
-        }
         .section-card {
             @@apply bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm space-y-6;
         }
         .label-text {
             @@apply text-[#111718] dark:text-white text-sm font-bold uppercase tracking-wider mb-2 block;
-        }
-        .custom-option {
-            @@apply p-4 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors first:rounded-t-2xl last:rounded-b-2xl flex items-center justify-between;
-        }
-        .custom-option.selected {
-            @@apply bg-primary/10 text-primary dark:text-primary;
-        }
-        .options-menu {
-            @@apply absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-[1000] hidden origin-top scale-95 opacity-0 transition-all duration-200;
-        }
-        .options-menu.visible {
-            @@apply block scale-100 opacity-100;
-        }
-        .custom-select-container.active {
-            @@apply z-[1000];
-        }
-        .section-card.active-section {
-            @@apply relative z-[500];
         }
     }
 </style>
@@ -113,15 +92,24 @@
                         <!-- Custom Select: Status -->
                         <div class="relative custom-select-container" data-id="Status">
                              <label class="label-text">Trạng thái Đơn hàng</label>
-                             <div class="input-field select-field" onclick="toggleCustomSelect('Status')">
-                                 <span class="selected-label">@GetStatusText(Model.Status)</span>
+                             <div class="custom-select-trigger" onclick="toggleCustomSelect('Status')">
+                                 <div class="flex items-center gap-3 min-w-0">
+                                     <span class="custom-select-leading material-symbols-outlined">receipt_long</span>
+                                     <div class="custom-select-meta">
+                                         <span class="custom-select-caption">Booking status</span>
+                                         <span class="selected-label">@GetStatusText(Model.Status)</span>
+                                     </div>
+                                 </div>
                                  <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
                              </div>
                              <div class="options-menu">
                                  @foreach (var status in new[] { "Pending", "Paid", "Confirmed", "Completed", "Cancelled", "Refunded" })
                                  {
-                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" onclick="selectCustomOption('Status', '@status', '@GetStatusText(status)')">
-                                         @GetStatusText(status)
+                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" data-value="@status" data-label="@GetStatusText(status)" onclick="selectCustomOptionAndRefreshBadge('Status', '@status', '@GetStatusText(status)')">
+                                         <span class="custom-option-main">
+                                             <span class="custom-option-dot"></span>
+                                             <span>@GetStatusText(status)</span>
+                                         </span>
                                          @if (Model.Status == status) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
                                      </div>
                                  }
@@ -139,15 +127,24 @@
                         <!-- Custom Select: PaymentStatus -->
                         <div class="relative custom-select-container" data-id="PaymentStatus">
                              <label class="label-text">Trạng thái Thanh toán</label>
-                             <div class="input-field select-field" onclick="toggleCustomSelect('PaymentStatus')">
-                                 <span class="selected-label">@GetPaymentStatusText(Model.PaymentStatus)</span>
+                             <div class="custom-select-trigger" onclick="toggleCustomSelect('PaymentStatus')">
+                                 <div class="flex items-center gap-3 min-w-0">
+                                     <span class="custom-select-leading material-symbols-outlined">payments</span>
+                                     <div class="custom-select-meta">
+                                         <span class="custom-select-caption">Payment</span>
+                                         <span class="selected-label">@GetPaymentStatusText(Model.PaymentStatus)</span>
+                                     </div>
+                                 </div>
                                  <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
                              </div>
                              <div class="options-menu">
                                  @foreach (var pStat in new[] { "Unpaid", "Pending", "Partial", "Full", "Refunded" })
                                  {
-                                     <div class="custom-option @(Model.PaymentStatus == pStat ? "selected" : "")" onclick="selectCustomOption('PaymentStatus', '@pStat', '@GetPaymentStatusText(pStat)')">
-                                         @GetPaymentStatusText(pStat)
+                                     <div class="custom-option @(Model.PaymentStatus == pStat ? "selected" : "")" data-value="@pStat" data-label="@GetPaymentStatusText(pStat)" onclick="selectCustomOption('PaymentStatus', '@pStat', '@GetPaymentStatusText(pStat)')">
+                                         <span class="custom-option-main">
+                                             <span class="custom-option-dot"></span>
+                                             <span>@GetPaymentStatusText(pStat)</span>
+                                         </span>
                                          @if (Model.PaymentStatus == pStat) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
                                      </div>
                                  }
@@ -274,66 +271,10 @@
 </form>
 
 @section Scripts {
+    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script>
-        function toggleCustomSelect(id) {
-            const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
-            const menu = container.querySelector('.options-menu');
-            const arrow = container.querySelector('.arrow-icon');
-            const section = container.closest('.section-card');
-            
-            // Close other menus
-            document.querySelectorAll('.options-menu.visible').forEach(m => {
-                if (m !== menu) {
-                    m.classList.remove('visible');
-                    const otherContainer = m.closest('.custom-select-container');
-                    otherContainer.querySelector('.arrow-icon').style.transform = '';
-                    otherContainer.classList.remove('active');
-                    const otherSection = otherContainer.closest('.section-card');
-                    if (otherSection) otherSection.classList.remove('active-section');
-                }
-            });
-
-            menu.classList.toggle('visible');
-            container.classList.toggle('active');
-            if (section) section.classList.toggle('active-section');
-            arrow.style.transform = menu.classList.contains('visible') ? 'rotate(180deg)' : '';
-        }
-
-        function selectCustomOption(id, value, text) {
-            const container = document.querySelector(`.custom-select-container[data-id="${id}"]`);
-            const label = container.querySelector('.selected-label');
-            const nativeSelect = container.querySelector('select');
-            const menu = container.querySelector('.options-menu');
-            const arrow = container.querySelector('.arrow-icon');
-
-            // Update label and native select
-            label.innerText = text;
-            nativeSelect.value = value;
-            
-            // Trigger change event for potentially other listeners
-            nativeSelect.dispatchEvent(new Event('change'));
-
-            // Close menu
-            menu.classList.remove('visible');
-            container.classList.remove('active');
-            const section = container.closest('.section-card');
-            if (section) section.classList.remove('active-section');
-            arrow.style.transform = '';
-
-            // Update selected class in UI
-            container.querySelectorAll('.custom-option').forEach(opt => {
-                opt.classList.remove('selected');
-                const existingCheck = opt.querySelector('.check-icon');
-                if (existingCheck) existingCheck.remove();
-            });
-
-            const selectedItem = Array.from(container.querySelectorAll('.custom-option')).find(el => el.textContent.trim() === text);
-            if (selectedItem) {
-                selectedItem.classList.add('selected');
-                selectedItem.insertAdjacentHTML('beforeend', '<span class="material-symbols-outlined text-lg check-icon">check</span>');
-            }
-
-            // If Status changed, update header badge
+        function selectCustomOptionAndRefreshBadge(id, value, text) {
+            selectCustomOption(id, value, text);
             if (id === 'Status') {
                 updateHeaderStatusBadge(value, text);
             }

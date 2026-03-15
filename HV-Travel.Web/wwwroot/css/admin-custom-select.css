@@ -1,0 +1,191 @@
+.custom-select-container {
+    position: relative;
+}
+
+.custom-select-container.active {
+    z-index: 1000;
+}
+
+.section-card.active-section {
+    position: relative;
+    z-index: 500;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 1rem;
+    background:
+        radial-gradient(circle at top left, rgb(14 165 233 / 0.08), transparent 42%),
+        linear-gradient(135deg, rgb(255 255 255), rgb(248 250 252));
+    box-shadow: 0 14px 30px rgb(15 23 42 / 0.08);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-select-trigger:hover {
+    border-color: rgb(14 165 233 / 0.55);
+    box-shadow: 0 18px 40px rgb(15 23 42 / 0.12);
+    transform: translateY(-1px);
+}
+
+.custom-select-container.active .custom-select-trigger {
+    border-color: rgb(14 165 233 / 0.7);
+    box-shadow: 0 0 0 3px rgb(14 165 233 / 0.14), 0 18px 40px rgb(15 23 42 / 0.12);
+}
+
+.custom-select-leading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, rgb(14 165 233 / 0.18), rgb(56 189 248 / 0.08));
+    color: var(--color-primary, #0ea5e9);
+    flex-shrink: 0;
+}
+
+.custom-select-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.custom-select-caption {
+    font-size: 0.625rem;
+    line-height: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-weight: 800;
+    color: rgb(100 116 139);
+    margin-bottom: 0.125rem;
+}
+
+.selected-label {
+    display: block;
+    font-size: 0.95rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: rgb(17 23 24);
+}
+
+.custom-select-container .arrow-icon {
+    color: rgb(100 116 139);
+}
+
+.options-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.65rem);
+    display: none;
+    padding: 0.5rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 1.25rem;
+    background: rgb(255 255 255 / 0.96);
+    box-shadow: 0 24px 60px rgb(15 23 42 / 0.16);
+    backdrop-filter: blur(14px);
+    z-index: 1000;
+    transform-origin: top;
+    transform: scale(0.96) translateY(-8px);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.options-menu.visible {
+    display: block;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.custom-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: 1rem;
+    color: rgb(51 65 85);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+
+.custom-option:hover {
+    background: rgb(248 250 252);
+    color: rgb(14 165 233);
+    transform: translateX(2px);
+}
+
+.custom-option.selected {
+    background: linear-gradient(135deg, rgb(14 165 233 / 0.16), rgb(56 189 248 / 0.08));
+    color: var(--color-primary, #0ea5e9);
+}
+
+.custom-option-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.custom-option-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 9999px;
+    background: rgb(148 163 184);
+    flex-shrink: 0;
+}
+
+.custom-option.selected .custom-option-dot {
+    background: currentColor;
+    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.12);
+}
+
+.check-icon {
+    font-size: 1.125rem;
+}
+
+.dark .custom-select-trigger {
+    border-color: rgb(51 65 85);
+    background:
+        radial-gradient(circle at top left, rgb(14 165 233 / 0.16), transparent 40%),
+        linear-gradient(135deg, rgb(15 23 42), rgb(15 23 42 / 0.94));
+    box-shadow: 0 18px 40px rgb(2 6 23 / 0.35);
+}
+
+.dark .custom-select-caption,
+.dark .custom-select-container .arrow-icon {
+    color: rgb(148 163 184);
+}
+
+.dark .selected-label {
+    color: rgb(255 255 255);
+}
+
+.dark .options-menu {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.96);
+    box-shadow: 0 24px 60px rgb(2 6 23 / 0.5);
+}
+
+.dark .custom-option {
+    color: rgb(203 213 225);
+}
+
+.dark .custom-option:hover {
+    background: rgb(30 41 59 / 0.8);
+}
+
+.dark .custom-option-dot {
+    background: rgb(100 116 139);
+}
