@@ -1,0 +1,57 @@
+.date-field-custom {
+    display: block;
+    width: 100%;
+    height: 3.5rem; /* h-14 */
+    padding-left: 2.5rem; /* pl-10 */
+    padding-right: 2.5rem; /* pr-10 */
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid #d9e5f2;
+    border-radius: 1.25rem;
+    color: #111718;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.45);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    outline: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+.date-field-custom:hover {
+    border-color: #7dd3fc;
+    box-shadow: 0 18px 34px -24px rgba(14, 165, 233, 0.35);
+    transform: translateY(-1px);
+}
+
+.date-field-custom:focus {
+    border-color: #0ea5e9;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.12), 0 18px 34px -24px rgba(14, 165, 233, 0.35);
+}
+
+.dark .date-field-custom {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(17, 24, 39, 0.98) 100%);
+    border-color: rgb(51 65 85);
+    color: white;
+    box-shadow: 0 16px 30px -24px rgba(2, 6, 23, 0.85);
+}
+
+.dark .date-field-custom:hover {
+    border-color: rgb(56 189 248 / 0.9);
+    box-shadow: 0 18px 34px -24px rgba(14, 165, 233, 0.4);
+}
+
+.dark .date-field-custom:focus {
+    border-color: rgb(56 189 248 / 0.95);
+    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.16), 0 18px 34px -24px rgba(14, 165, 233, 0.4);
+}
+
+/* Hide default browser date picker icons */
+.date-field-custom::-webkit-calendar-picker-indicator,
+.date-field-custom::-webkit-inner-spin-button,
+.date-field-custom::-webkit-clear-button {
+    display: none;
+    -webkit-appearance: none;
+}

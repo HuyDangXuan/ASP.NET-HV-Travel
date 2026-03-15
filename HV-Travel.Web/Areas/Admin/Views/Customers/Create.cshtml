@@ -138,18 +138,65 @@
                     <h2 class="text-[#111718] dark:text-white text-xl font-bold">Cấu hình</h2>
                 </div>
                 <div class="space-y-4">
-                    <div>
+                    <div class="relative custom-select-container" data-id="Segment">
                         <label class="label-text">Phân khúc khách hàng</label>
-                         <select asp-for="Segment" id="segment-select" class="input-field appearance-none cursor-pointer">
+                        <div class="custom-select-trigger" onclick="toggleCustomSelect('Segment')">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="custom-select-leading material-symbols-outlined">loyalty</span>
+                                <div class="custom-select-meta">
+                                    <span class="custom-select-caption">Segment</span>
+                                    <span class="selected-label">Standard (Tiêu chuẩn)</span>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                        </div>
+                        <div class="options-menu">
+                            <div class="custom-option selected" data-value="Standard" data-label="Standard (Tiêu chuẩn)" onclick="selectCustomOption('Segment', 'Standard', 'Standard (Tiêu chuẩn)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>Standard (Tiêu chuẩn)</span></span>
+                                <span class="material-symbols-outlined text-lg check-icon">check</span>
+                            </div>
+                            <div class="custom-option" data-value="VIP" data-label="VIP" onclick="selectCustomOption('Segment', 'VIP', 'VIP')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>VIP</span></span>
+                            </div>
+                            <div class="custom-option" data-value="New" data-label="New (Mới)" onclick="selectCustomOption('Segment', 'New', 'New (Mới)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>New (Mới)</span></span>
+                            </div>
+                            <div class="custom-option" data-value="ChurnRisk" data-label="Churn Risk (Nguy cơ)" onclick="selectCustomOption('Segment', 'ChurnRisk', 'Churn Risk (Nguy cơ)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>Churn Risk (Nguy cơ)</span></span>
+                            </div>
+                        </div>
+                        <select asp-for="Segment" id="segment-select" class="hidden">
                             <option value="Standard">Standard (Tiêu chuẩn)</option>
                             <option value="VIP">VIP</option>
                             <option value="New">New (Mới)</option>
                             <option value="ChurnRisk">Churn Risk (Nguy cơ)</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="relative custom-select-container" data-id="Status">
                         <label class="label-text">Trạng thái tài khoản</label>
-                        <select asp-for="Status" id="status-select" class="input-field appearance-none cursor-pointer">
+                        <div class="custom-select-trigger" onclick="toggleCustomSelect('Status')">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="custom-select-leading material-symbols-outlined">manage_accounts</span>
+                                <div class="custom-select-meta">
+                                    <span class="custom-select-caption">Account status</span>
+                                    <span class="selected-label">Active (Hoạt động)</span>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
+                        </div>
+                        <div class="options-menu">
+                            <div class="custom-option selected" data-value="Active" data-label="Active (Hoạt động)" onclick="selectCustomOption('Status', 'Active', 'Active (Hoạt động)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>Active (Hoạt động)</span></span>
+                                <span class="material-symbols-outlined text-lg check-icon">check</span>
+                            </div>
+                            <div class="custom-option" data-value="Banned" data-label="Banned (Bị khóa)" onclick="selectCustomOption('Status', 'Banned', 'Banned (Bị khóa)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>Banned (Bị khóa)</span></span>
+                            </div>
+                            <div class="custom-option" data-value="Inactive" data-label="Inactive (Ngừng hoạt động)" onclick="selectCustomOption('Status', 'Inactive', 'Inactive (Ngừng hoạt động)')">
+                                <span class="custom-option-main"><span class="custom-option-dot"></span><span>Inactive (Ngừng hoạt động)</span></span>
+                            </div>
+                        </div>
+                        <select asp-for="Status" id="status-select" class="hidden">
                             <option value="Active">Active (Hoạt động)</option>
                             <option value="Banned">Banned (Bị khóa)</option>
                              <option value="Inactive">Inactive (Ngưng hoạt động)</option>
@@ -176,6 +223,7 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script>
         // Live Preview Logic
         const inputs = {

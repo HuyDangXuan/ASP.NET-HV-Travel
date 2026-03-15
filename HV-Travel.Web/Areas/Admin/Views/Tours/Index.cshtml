@@ -102,8 +102,8 @@
                     </button>
                 </form>
                 <form id="bulk-status-form" asp-action="BulkUpdateStatus" method="post" class="inline flex items-center gap-2">
-                    <div class="relative group">
-                        <select name="newStatus" class="appearance-none h-9 pl-3 pr-10 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-200 outline-none transition-all cursor-pointer shadow-sm hover:border-primary/50">
+                    <div class="custom-select-container min-w-[170px]" data-id="BulkTourStatus">
+                        <select name="newStatus" class="hidden">
                             <option value="">-- Đổi trạng thái --</option>
                             <option value="Active">Hoạt Động</option>
                             <option value="Draft">Bản Nháp</option>
@@ -112,9 +112,51 @@
                             <option value="Hidden">Ẩn</option>
                             <option value="Deleted">Đã Xóa</option>
                         </select>
-                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-primary transition-colors flex items-center">
-                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                        </span>
+                        <div class="custom-select-trigger min-h-9 px-3 py-2 rounded-2xl" onclick="toggleCustomSelect('BulkTourStatus')">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="custom-select-leading material-symbols-outlined text-[18px]">swap_horiz</span>
+                                <span class="selected-label text-xs font-bold">-- Đổi trạng thái --</span>
+                            </div>
+                            <span class="material-symbols-outlined transition-transform duration-300 arrow-icon text-[18px]">expand_more</span>
+                        </div>
+                        <div class="options-menu">
+                            <div class="custom-option" data-value="Active" onclick="selectCustomOption('BulkTourStatus', 'Active', 'Hoạt động')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Hoạt động</span>
+                                </span>
+                            </div>
+                            <div class="custom-option" data-value="Draft" onclick="selectCustomOption('BulkTourStatus', 'Draft', 'Bản nháp')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Bản nháp</span>
+                                </span>
+                            </div>
+                            <div class="custom-option" data-value="SoldOut" onclick="selectCustomOption('BulkTourStatus', 'SoldOut', 'Hết chỗ')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Hết chỗ</span>
+                                </span>
+                            </div>
+                            <div class="custom-option" data-value="ComingSoon" onclick="selectCustomOption('BulkTourStatus', 'ComingSoon', 'Sắp ra mắt')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Sắp ra mắt</span>
+                                </span>
+                            </div>
+                            <div class="custom-option" data-value="Hidden" onclick="selectCustomOption('BulkTourStatus', 'Hidden', 'Ẩn')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Ẩn</span>
+                                </span>
+                            </div>
+                            <div class="custom-option" data-value="Deleted" onclick="selectCustomOption('BulkTourStatus', 'Deleted', 'Đã xóa')">
+                                <span class="custom-option-main">
+                                    <span class="custom-option-dot"></span>
+                                    <span>Đã xóa</span>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <button type="submit" class="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-600 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors">
                         <span class="material-symbols-outlined text-[18px]">update</span> Cập nhật
@@ -404,6 +446,7 @@
 
 
 @section Scripts {
+    <script src="~/js/admin-custom-select.js"></script>
     <script>
 
         function toggleColumn(colClass) {
