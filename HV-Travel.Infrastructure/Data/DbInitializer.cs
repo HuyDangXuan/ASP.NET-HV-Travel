@@ -15,6 +15,8 @@ namespace HVTravel.Infrastructure.Data
     {
         public static async Task SeedAsync(IServiceProvider serviceProvider)
         {
+            await EnsureBookingIndexesAsync(serviceProvider);
+
             var userRepository = serviceProvider.GetRequiredService<IRepository<User>>();
             var tourRepository = serviceProvider.GetRequiredService<IRepository<Tour>>();
             var customerRepository = serviceProvider.GetRequiredService<IRepository<Customer>>();
@@ -292,11 +294,61 @@ namespace HVTravel.Infrastructure.Data
                 {
                     var reviews = new List<Review>
                     {
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault().Id, CustomerId = customers.FirstOrDefault().Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true },
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault().Id, CustomerId = customers.LastOrDefault().Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true }
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault()?.Id, CustomerId = customers.FirstOrDefault()?.Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true },
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault()?.Id, CustomerId = customers.LastOrDefault()?.Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true }
                     };
                     foreach (var r in reviews) await reviewRepository.AddAsync(r);
                 }
+            }
+        }
+
+        private static async Task EnsureBookingIndexesAsync(IServiceProvider serviceProvider)
+        {
+            try
+            {
+                var context = serviceProvider.GetRequiredService<MongoContext>();
+                var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                var bookingCollectionName = configuration.GetValue<string>("HVTravelDatabase:BookingCollectionName") ?? "Bookings";
+                var bookingCollection = context.GetCollection<BsonDocument>(bookingCollectionName);
+
+                var existingIndexes = await bookingCollection.Indexes.ListAsync();
+                var indexDocs = await existingIndexes.ToListAsync();
+                var hasBookingCodeIndex = false;
+
+                foreach (var indexDoc in indexDocs)
+                {
+                    var indexName = indexDoc.GetValue("name", "").AsString;
+                    if (indexName == "booking_code_1")
+                    {
+                        await bookingCollection.Indexes.DropOneAsync(indexName);
+                        continue;
+                    }
+
+                    if (indexName == "bookingCode_unique")
+                    {
+                        hasBookingCodeIndex = true;
+                    }
+                }
+
+                if (!hasBookingCodeIndex)
+                {
+                    var indexKeys = Builders<BsonDocument>.IndexKeys.Ascending("bookingCode");
+                    var indexOptions = new CreateIndexOptions<BsonDocument>
+                    {
+                        Name = "bookingCode_unique",
+                        Unique = true,
+                        PartialFilterExpression = new BsonDocument
+                        {
+                            { "bookingCode", new BsonDocument { { "$exists", true }, { "$type", "string" }, { "$ne", "" } } }
+                        }
+                    };
+
+                    await bookingCollection.Indexes.CreateOneAsync(new CreateIndexModel<BsonDocument>(indexKeys, indexOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Could not ensure booking indexes: {ex.Message}");
             }
         }
     }
