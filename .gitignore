@@ -1,6 +1,41 @@
-.env
-bin/
-obj/
+## [Visual Studio]
 .vs/
 *.user
+*.userosscache
+*.sln.docstates
+
+## [Build Results]
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Tt]est[Rr]esult*/
+
+## [Environment Variables]
+.env
+.env.*
+
+## [Agent & AI]
 .agent/
+.gemini/
+brain/
+
+## [OS Specific]
+.DS_Store
+Thumbs.db
+
+## [User Specific]
+.dotnet/
+*.mongosh.js
+staged_files.txt
+temp_staged_files.txt
+build_log.txt
+build_errors.txt
+build_log_2.txt
+build_output.txt
+temp_staged_files.txt
+staged_files.txt
+
+## [Miscellaneous]
+*.swp
+*~
+node_modules/

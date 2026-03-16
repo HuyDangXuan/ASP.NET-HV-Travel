@@ -664,33 +664,13 @@
     function toggleFilterMenu() {
         const menu = document.getElementById('filter-menu');
         if (!menu) return;
-        if (menu.classList.contains('menu-visible')) {
-            menu.classList.remove('menu-visible');
-            menu.classList.add('menu-hidden');
-            setTimeout(() => menu.classList.add('hidden'), 200);
-        } else {
-            menu.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                menu.classList.remove('menu-hidden');
-                menu.classList.add('menu-visible');
-            });
-        }
+        window.AdminMenu?.toggle(menu);
     }
     
     function toggleColumnMenu() {
         const menu = document.getElementById('column-menu');
         if (!menu) return;
-        if (menu.classList.contains('menu-visible')) {
-            menu.classList.remove('menu-visible');
-            menu.classList.add('menu-hidden');
-            setTimeout(() => menu.classList.add('hidden'), 200);
-        } else {
-            menu.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                menu.classList.remove('menu-hidden');
-                menu.classList.add('menu-visible');
-            });
-        }
+        window.AdminMenu?.toggle(menu);
     }
 
     // Close filter menu AND sidebar when clicking outside
@@ -701,9 +681,7 @@
         const insideMenu = event.target.closest('#filter-menu');
 
         if (menu && !button && !insideMenu && menu.classList.contains('menu-visible')) {
-            menu.classList.remove('menu-visible');
-            menu.classList.add('menu-hidden');
-            setTimeout(() => menu.classList.add('hidden'), 200);
+            window.AdminMenu?.close(menu);
         }
         
         // Column Menu Logic
@@ -712,9 +690,7 @@
         const insideColMenu = event.target.closest('#column-menu');
         
         if (colMenu && !colButton && !insideColMenu && colMenu.classList.contains('menu-visible')) {
-            colMenu.classList.remove('menu-visible');
-            colMenu.classList.add('menu-hidden');
-            setTimeout(() => colMenu.classList.add('hidden'), 200);
+            window.AdminMenu?.close(colMenu);
         }
 
         // Sidebar Logic (Closed when handled by Overlay, but keep this for extra safety or programmatic closing if needed)

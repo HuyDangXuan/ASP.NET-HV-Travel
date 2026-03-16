@@ -45,7 +45,7 @@
         <!-- Current Avatar Preview -->
         <div class="flex items-center gap-4">
             <div class="size-16 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                <img alt="Avatar" class="size-full object-cover" src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.FullName ?? "U")}&background=random" : Model.AvatarUrl)" />
+                <img id="user-avatar-preview" alt="Avatar" class="size-full object-cover" src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.FullName ?? "U")}&background=random" : Model.AvatarUrl)" />
             </div>
             <div>
                 <p class="text-sm font-bold text-slate-900 dark:text-white">@Model.FullName</p>
@@ -158,6 +158,14 @@
         <div>
             <label for="AvatarUrl" class="label-text">Ảnh đại diện (URL) <span class="text-gray-400 font-normal normal-case">(Tùy chọn)</span></label>
             <input asp-for="AvatarUrl" type="url" class="input-field" placeholder="https://example.com/avatar.jpg" />
+            <div class="flex flex-wrap items-center gap-3 mt-3">
+                <button type="button" id="user-avatar-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
+                </button>
+                <button type="button" id="user-avatar-remove" class="px-4 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-all">
+                    <span class="material-symbols-outlined text-lg align-[-3px] mr-1">delete</span> Xóa ảnh
+                </button>
+            </div>
         </div>
 
         <!-- Actions -->
@@ -177,4 +185,39 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            const avatarInput = document.querySelector('input[name="AvatarUrl"]');
+            const preview = document.getElementById('user-avatar-preview');
+            const uploadButton = document.getElementById('user-avatar-upload');
+            const removeButton = document.getElementById('user-avatar-remove');
+
+            function updatePreview() {
+                if (!preview) return;
+                const url = avatarInput && avatarInput.value ? avatarInput.value.trim() : '';
+                const fallbackName = '@(Uri.EscapeDataString(Model.FullName ?? "U"))';
+                preview.src = url || `https://ui-avatars.com/api/?name=${fallbackName}&background=random`;
+            }
+
+            if (avatarInput) {
+                avatarInput.addEventListener('input', updatePreview);
+            }
+
+            if (uploadButton && avatarInput) {
+                uploadButton.addEventListener('click', function () {
+                    window.openCloudinaryWidget({ multiple: false, folder: 'hv-travel/avatars' }, function (url) {
+                        avatarInput.value = url;
+                        updatePreview();
+                    });
+                });
+            }
+
+            if (removeButton && avatarInput) {
+                removeButton.addEventListener('click', function () {
+                    avatarInput.value = '';
+                    updatePreview();
+                });
+            }
+        })();
+    </script>
 }

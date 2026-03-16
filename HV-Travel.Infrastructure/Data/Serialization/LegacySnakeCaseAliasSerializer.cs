@@ -56,7 +56,7 @@ namespace HVTravel.Infrastructure.Data.Serialization
         {
             if (value == null || value.IsBsonNull)
             {
-                return value;
+                return value!;
             }
 
             if (value is BsonDocument document)
