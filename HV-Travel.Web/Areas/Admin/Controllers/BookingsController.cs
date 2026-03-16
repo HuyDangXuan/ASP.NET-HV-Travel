@@ -1,25 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
-using System.Threading.Tasks;
 using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Staff")]
+    [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme)]
     public class BookingsController : Controller
     {
         private readonly IRepository<Booking> _bookingRepository;
+        private static readonly HashSet<string> AllowedBulkStatuses = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Confirmed",
+            "Completed",
+            "Cancelled"
+        };
 
         public BookingsController(IRepository<Booking> bookingRepository)
         {
             _bookingRepository = bookingRepository;
         }
 
-        // Index - Tất cả roles đều xem được
+        private static string EnsureBookingCode(Booking booking)
+        {
+            if (!string.IsNullOrWhiteSpace(booking.BookingCode))
+            {
+                return booking.BookingCode;
+            }
+
+            var suffix = !string.IsNullOrWhiteSpace(booking.Id) && booking.Id.Length >= 6
+                ? booking.Id[^6..].ToUpperInvariant()
+                : Guid.NewGuid().ToString("N")[..6].ToUpperInvariant();
+
+            booking.BookingCode = $"BK-LEGACY-{suffix}";
+            return booking.BookingCode;
+        }
+
+        private static void PrepareBookingForPersistence(Booking booking, string id)
+        {
+            if (string.IsNullOrWhiteSpace(booking.Id))
+            {
+                booking.Id = id;
+            }
+
+            EnsureBookingCode(booking);
+            booking.Passengers ??= new List<Passenger>();
+            booking.HistoryLog ??= new List<BookingHistoryLog>();
+            booking.ContactInfo ??= new ContactInfo();
+            booking.Status ??= "Pending";
+            booking.PaymentStatus ??= "Unpaid";
+
+            if (booking.BookingDate == default)
+            {
+                booking.BookingDate = booking.CreatedAt != default ? booking.CreatedAt : DateTime.UtcNow;
+            }
+
+            if (booking.CreatedAt == default)
+            {
+                booking.CreatedAt = booking.BookingDate != default ? booking.BookingDate : DateTime.UtcNow;
+            }
+        }
+
         [Authorize(Roles = "Admin,Manager,Staff,Guide")]
         public async Task<IActionResult> Index(
             string status = "all",
@@ -32,9 +81,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             if (pageSize < 5) pageSize = 10;
             if (pageSize > 100) pageSize = 100;
 
-            // Sort Params
             ViewBag.CurrentSort = sortOrder;
-            ViewBag.DateSortParm = String.IsNullOrEmpty(sortOrder) ? "date_asc" : ""; // Default desc, toggle to asc
+            ViewBag.DateSortParm = string.IsNullOrEmpty(sortOrder) ? "date_asc" : "";
             ViewBag.TotalSortParm = sortOrder == "total" ? "total_desc" : "total";
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
 
@@ -53,13 +101,12 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             DateTime? start = null; 
             DateTime? end = null;
 
-            // Handle date
             if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out var s)) start = s;
             if (!string.IsNullOrEmpty(endDate) && DateTime.TryParse(endDate, out var e)) end = e;
             
             if (end.HasValue) end = end.Value.Date.AddDays(1).AddTicks(-1);
 
-            System.Linq.Expressions.Expression<Func<Booking, bool>> filter = b =>
+            Expression<Func<Booking, bool>> filter = b =>
                 (targetStatus == "Deleted" ? b.IsDeleted : !b.IsDeleted) &&
                 (targetStatus == null || targetStatus == "Deleted" || b.Status == targetStatus || b.PaymentStatus == targetStatus) &&
                 (search == null || 
@@ -72,10 +119,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 (start == null || b.CreatedAt >= start) &&
                 (end == null || b.CreatedAt <= end);
 
-            // Fetch ALL matching items to Sort in Memory
             var bookingsList = await _bookingRepository.FindAsync(filter);
             
-            // Apply Sorting
             switch (sortOrder)
             {
                 case "date_asc":
@@ -93,37 +138,23 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 case "status_desc":
                     bookingsList = bookingsList.OrderByDescending(b => b.Status);
                     break;
-                default: // Default: Date Descending
+                default: 
                     bookingsList = bookingsList.OrderByDescending(b => b.CreatedAt);
                     break;
             }
 
-            // Pagination logic on the sorted list
             var totalCount = bookingsList.Count();
             var items = bookingsList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var pagedBookings = new PaginatedResult<Booking>(items, totalCount, page, pageSize);
 
-            // KPI Calculation (Still needs global stats, likely unrelated to current filters or respecting them? 
-            // Original code:
-            // 1. Today's Bookings (Global)
-            // 2. Pending Payments (Global)
-            // 3. Refund Requests (Global)
-            // It seems KPIs are Global/Dashboard-like, so independent of filters. 
-            // However, "ViewBag.TodayBookingsCount" implies global.
-            // Let's keep the ORIGINAL KPI logic which used separate repository calls, unaware of the main list filter.
-            
             var today = DateTime.UtcNow.Date;
-            
-            // 1. Today's Bookings
             var todayBookings = await _bookingRepository.FindAsync(b => b.CreatedAt >= today);
             ViewBag.TodayBookingsCount = todayBookings?.Count() ?? 0;
 
-            // 2. Pending Payments (Unpaid or Pending)
             var pendingPayments = await _bookingRepository.FindAsync(b => b.PaymentStatus == "Unpaid" || b.Status == "Pending");
             ViewBag.PendingPaymentCount = pendingPayments?.Count() ?? 0;
             ViewBag.PendingPaymentTotal = pendingPayments?.Sum(b => b.TotalAmount) ?? 0;
 
-            // 3. Refund Requests (Refunded or Cancelled)
             var refundRequests = await _bookingRepository.FindAsync(b => b.Status == "Cancelled" || b.PaymentStatus == "Refunded");
             ViewBag.RefundRequestCount = refundRequests?.Count() ?? 0;
             
@@ -136,7 +167,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             return View(pagedBookings);
         }
 
-        // Details - Tất cả roles đều xem được
         [Authorize(Roles = "Admin,Manager,Staff,Guide")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
@@ -146,7 +176,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             return View(booking);
         }
 
-        // Edit GET - Admin, Manager, Staff (Guide không có quyền)
         [Authorize(Roles = "Admin,Manager,Staff")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
@@ -165,8 +194,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             var existingBooking = await _bookingRepository.GetByIdAsync(id);
             if (existingBooking == null) return NotFound();
 
-            // Only update fields editable from the UI to prevent data loss 
-            // of fields like TourSnapshot, HistoryLog, etc.
             existingBooking.Status = booking.Status;
             existingBooking.PaymentStatus = booking.PaymentStatus;
             existingBooking.ParticipantsCount = booking.ParticipantsCount;
@@ -178,13 +205,13 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 existingBooking.ContactInfo = booking.ContactInfo;
             }
 
+            PrepareBookingForPersistence(existingBooking, id);
             existingBooking.UpdatedAt = DateTime.UtcNow;
 
             await _bookingRepository.UpdateAsync(id, existingBooking);
             return RedirectToAction(nameof(Index));
         }
 
-        // Delete - Admin, Manager, Staff (Guide không có quyền)
         [Authorize(Roles = "Admin,Manager,Staff")]
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
@@ -192,11 +219,65 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             var booking = await _bookingRepository.GetByIdAsync(id);
             if (booking != null)
             {
+                PrepareBookingForPersistence(booking, id);
                 booking.IsDeleted = true;
                 booking.DeletedBy = User.Identity?.Name ?? "Admin System";
                 booking.DeletedAt = DateTime.UtcNow;
                 booking.UpdatedAt = DateTime.UtcNow;
                 await _bookingRepository.UpdateAsync(id, booking);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,Manager,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> BulkDelete([FromForm] List<string> ids)
+        {
+            if (ids == null || !ids.Any()) return RedirectToAction(nameof(Index));
+
+            var validIds = ids.Where(id => !string.IsNullOrEmpty(id) && id.Length == 24).ToList();
+            if (!validIds.Any()) return RedirectToAction(nameof(Index));
+
+            foreach (var id in validIds)
+            {
+                var booking = await _bookingRepository.GetByIdAsync(id);
+                if (booking != null)
+                {
+                    PrepareBookingForPersistence(booking, id);
+                    booking.IsDeleted = true;
+                    booking.DeletedBy = User.Identity?.Name ?? "Admin System";
+                    booking.DeletedAt = DateTime.UtcNow;
+                    booking.UpdatedAt = DateTime.UtcNow;
+                    await _bookingRepository.UpdateAsync(id, booking);
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,Manager,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> BulkUpdateStatus([FromForm] List<string> ids, [FromForm] string newStatus)
+        {
+            if (ids == null || !ids.Any() || string.IsNullOrEmpty(newStatus)) return RedirectToAction(nameof(Index));
+
+            if (!AllowedBulkStatuses.Contains(newStatus))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var validIds = ids.Where(id => !string.IsNullOrEmpty(id) && id.Length == 24).ToList();
+            if (!validIds.Any()) return RedirectToAction(nameof(Index));
+
+            foreach (var id in validIds)
+            {
+                var booking = await _bookingRepository.GetByIdAsync(id);
+                if (booking != null)
+                {
+                    PrepareBookingForPersistence(booking, id);
+                    booking.Status = newStatus;
+                    booking.UpdatedAt = DateTime.UtcNow;
+                    await _bookingRepository.UpdateAsync(id, booking);
+                }
             }
             return RedirectToAction(nameof(Index));
         }

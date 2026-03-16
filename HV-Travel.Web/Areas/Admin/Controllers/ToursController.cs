@@ -281,6 +281,10 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
             // Preserve critical fields not in form
             tour.CreatedAt = existingTour.CreatedAt;
+            if (!Request.Form.ContainsKey(nameof(Tour.Version)))
+            {
+                tour.Version = existingTour.Version;
+            }
             
             // Update status functionality: Priority: saveAction button > form selection > existing status
             tour.Status = !string.IsNullOrEmpty(saveAction) ? saveAction : (tour.Status ?? existingTour.Status);

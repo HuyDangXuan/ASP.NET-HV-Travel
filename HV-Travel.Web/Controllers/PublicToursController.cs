@@ -19,7 +19,7 @@ public class PublicToursController : Controller
         ViewData["Title"] = "Tour Du Lịch";
 
         var allTours = await _tourRepository.GetAllAsync();
-        var tours = allTours.Where(t => t.Status == "Active").AsEnumerable();
+        var tours = allTours.Where(t => IsPubliclyVisible(t.Status)).AsEnumerable();
 
         // Search
         if (!string.IsNullOrEmpty(search))
@@ -67,7 +67,7 @@ public class PublicToursController : Controller
             return RedirectToAction("Index");
 
         var tour = await _tourRepository.GetByIdAsync(id);
-        if (tour == null)
+        if (tour == null || !IsPubliclyVisible(tour.Status))
             return NotFound();
 
         ViewData["Title"] = tour.Name;
@@ -75,7 +75,7 @@ public class PublicToursController : Controller
         // Get related tours
         var allTours = await _tourRepository.GetAllAsync();
         var relatedTours = allTours
-            .Where(t => t.Status == "Active" && t.Id != id)
+            .Where(t => IsPubliclyVisible(t.Status) && t.Id != id)
             .OrderByDescending(t => string.Equals(t.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
             .ThenByDescending(t => string.Equals(t.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
             .ThenByDescending(t => t.Rating)
@@ -84,5 +84,10 @@ public class PublicToursController : Controller
         ViewData["RelatedTours"] = relatedTours;
 
         return View(tour);
+    }
+
+    private static bool IsPubliclyVisible(string? status)
+    {
+        return status is "Active" or "ComingSoon" or "SoldOut";
     }
 }

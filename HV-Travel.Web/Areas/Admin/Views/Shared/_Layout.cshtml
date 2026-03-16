@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     var requestedSection = (ViewData["AdminSection"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
     var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
@@ -136,20 +137,94 @@
 
         /* Dropdown animation (generic - works for column-menu, role-dropdown, etc.) */
         #column-menu,
+        #filter-menu,
         #role-dropdown,
         #status-dropdown,
         #date-dropdown {
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform-origin: top right;
+            backface-visibility: hidden;
+            will-change: opacity, transform, filter, box-shadow;
+        }
+        .menu-closing {
+            pointer-events: none !important;
         }
         .menu-hidden {
             opacity: 0 !important;
-            transform: scale(0.9) translateY(-4px) !important;
+            transform: translateY(-8px) scale(0.985) !important;
+            filter: blur(0.5px);
+            box-shadow: 0 0 0 0 rgba(14, 165, 233, 0) !important;
             pointer-events: none !important;
+            transition: opacity 0.18s ease-out,
+                        transform 0.18s ease-out,
+                        filter 0.16s ease-out,
+                        box-shadow 0.18s ease-out;
         }
         .menu-visible {
             opacity: 1 !important;
-            transform: scale(1) translateY(0) !important;
+            transform: translateY(0) scale(1) !important;
+            filter: blur(0px);
+            box-shadow: 0 18px 38px -18px rgba(15, 23, 42, 0.2),
+                        0 10px 18px -14px rgba(14, 165, 233, 0.14),
+                        0 0 0 1px rgba(148, 163, 184, 0.12) !important;
             pointer-events: auto !important;
+            transition: opacity 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.4s ease-out,
+                        box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #filter-menu > *,
+        #column-menu > *,
+        #role-dropdown > *,
+        #status-dropdown > *,
+        #date-dropdown > * {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.16s ease-out, transform 0.2s ease-out;
+        }
+        .menu-closing > * {
+            animation: dropdown-item-hide 0.18s ease-out both;
+        }
+        .menu-visible > * {
+            animation: dropdown-item-reveal 0.54s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .menu-closing > *:nth-child(1) { animation-delay: 0.12s; }
+        .menu-closing > *:nth-child(2) { animation-delay: 0.1s; }
+        .menu-closing > *:nth-child(3) { animation-delay: 0.08s; }
+        .menu-closing > *:nth-child(4) { animation-delay: 0.06s; }
+        .menu-closing > *:nth-child(5) { animation-delay: 0.04s; }
+        .menu-closing > *:nth-child(6) { animation-delay: 0.03s; }
+        .menu-closing > *:nth-child(7) { animation-delay: 0.02s; }
+        .menu-closing > *:nth-child(8) { animation-delay: 0.01s; }
+        .menu-closing > *:nth-child(n+9) { animation-delay: 0s; }
+        .menu-visible > *:nth-child(1) { animation-delay: 0.02s; }
+        .menu-visible > *:nth-child(2) { animation-delay: 0.06s; }
+        .menu-visible > *:nth-child(3) { animation-delay: 0.1s; }
+        .menu-visible > *:nth-child(4) { animation-delay: 0.14s; }
+        .menu-visible > *:nth-child(5) { animation-delay: 0.18s; }
+        .menu-visible > *:nth-child(6) { animation-delay: 0.22s; }
+        .menu-visible > *:nth-child(7) { animation-delay: 0.26s; }
+        .menu-visible > *:nth-child(8) { animation-delay: 0.3s; }
+        .menu-visible > *:nth-child(n+9) { animation-delay: 0.34s; }
+
+        @@keyframes dropdown-item-reveal {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @@keyframes dropdown-item-hide {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
         }
 
         /* ===== Filter Toolbar: Buttons, Inputs, Selects ===== */
@@ -299,7 +374,7 @@
         }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display h-screen overflow-hidden flex selection:bg-primary selection:text-white">
+<body class="bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display h-screen overflow-hidden flex selection:bg-primary selection:text-white" data-cloudinary-cloud-name="@Configuration["Cloudinary:CloudName"]" data-cloudinary-upload-preset="@Configuration["Cloudinary:UploadPreset"]">
     <!-- Left Sidebar (Navigation) -->
     <aside class="w-64 h-full flex flex-col justify-between glass-panel z-20 shrink-0 border-r border-border-light dark:border-border-dark">
         <div class="p-6">
@@ -475,9 +550,91 @@
         </div>
     </main>
 
+    <link rel="preconnect" href="https://api.cloudinary.com" crossorigin />
+    <script>
+        window.CloudinaryConfig = {
+            cloudName: "@Configuration["Cloudinary:CloudName"]",
+            uploadPreset: "@Configuration["Cloudinary:UploadPreset"]"
+        };
+    </script>
+    <script src="~/js/admin-cloudinary.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
     
     <script>
+        (function () {
+            const HIDE_DELAY_MS = 340;
+
+            function clearHideTimer(menu) {
+                if (menu && menu._menuHideTimer) {
+                    clearTimeout(menu._menuHideTimer);
+                    menu._menuHideTimer = null;
+                }
+            }
+
+            function resetMenuPhase(menu) {
+                if (!menu) return;
+                menu.classList.remove('menu-closing', 'menu-hidden');
+            }
+
+            function openMenu(menu) {
+                if (!menu) return;
+
+                clearHideTimer(menu);
+                resetMenuPhase(menu);
+                menu.classList.remove('hidden');
+                menu.dataset.menuState = 'opening';
+
+                requestAnimationFrame(() => {
+                    menu.classList.add('menu-visible');
+                    menu.dataset.menuState = 'open';
+                });
+            }
+
+            function closeMenu(menu) {
+                if (!menu) return;
+
+                clearHideTimer(menu);
+                resetMenuPhase(menu);
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-closing');
+                menu.dataset.menuState = 'closing';
+
+                menu._menuHideTimer = setTimeout(() => {
+                    if (menu.dataset.menuState === 'closing') {
+                        menu.classList.remove('menu-closing');
+                        menu.classList.add('menu-hidden');
+                        menu.classList.add('hidden');
+                        menu.dataset.menuState = 'closed';
+                    }
+                }, HIDE_DELAY_MS);
+            }
+
+            function toggleMenu(menu) {
+                if (!menu) return;
+
+                const isHidden = menu.classList.contains('hidden');
+                const state = menu.dataset.menuState;
+                const isVisible = menu.classList.contains('menu-visible') || state === 'open' || state === 'opening';
+
+                if (isVisible && !isHidden) {
+                    closeMenu(menu);
+                    return;
+                }
+
+                openMenu(menu);
+            }
+
+            window.AdminMenu = {
+                hideDelay: HIDE_DELAY_MS,
+                open(menu) { openMenu(menu); },
+                close(menu) { closeMenu(menu); },
+                toggle(menu) { toggleMenu(menu); },
+                openById(id) { openMenu(document.getElementById(id)); },
+                closeById(id) { closeMenu(document.getElementById(id)); },
+                toggleById(id) { toggleMenu(document.getElementById(id)); }
+            };
+        })();
 
 
         function toggleNotificationDropdown() {
