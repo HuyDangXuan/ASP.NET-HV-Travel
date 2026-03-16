@@ -369,17 +369,7 @@
         function toggleColumnMenu() {
             const menu = document.getElementById('column-menu');
             if (!menu) return;
-            if (menu.classList.contains('menu-visible')) {
-                menu.classList.remove('menu-visible');
-                menu.classList.add('menu-hidden');
-                setTimeout(() => menu.classList.add('hidden'), 200);
-            } else {
-                menu.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    menu.classList.remove('menu-hidden');
-                    menu.classList.add('menu-visible');
-                });
-            }
+            window.AdminMenu?.toggle(menu);
         }
 
         // Close dropdowns when clicking outside
@@ -388,9 +378,7 @@
             const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
             const insideCol = event.target.closest('#column-menu');
             if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
-                colMenu.classList.remove('menu-visible');
-                colMenu.classList.add('menu-hidden');
-                setTimeout(() => colMenu.classList.add('hidden'), 200);
+                window.AdminMenu?.close(colMenu);
             }
         });
 
@@ -398,17 +386,7 @@
         function toggleFilterMenu() {
             const menu = document.getElementById('filter-menu');
             if (!menu) return;
-            if (menu.classList.contains('menu-visible')) {
-                menu.classList.remove('menu-visible');
-                menu.classList.add('menu-hidden');
-                setTimeout(() => menu.classList.add('hidden'), 200);
-            } else {
-                menu.classList.remove('hidden');
-                requestAnimationFrame(() => {
-                    menu.classList.remove('menu-hidden');
-                    menu.classList.add('menu-visible');
-                });
-            }
+            window.AdminMenu?.toggle(menu);
         }
 
         function resetFilters() {
@@ -434,9 +412,7 @@
             const insideFilter = event.target.closest('#filter-menu');
 
             if (filterMenu && !filterBtn && !insideFilter && filterMenu.classList.contains('menu-visible')) {
-                filterMenu.classList.remove('menu-visible');
-                filterMenu.classList.add('menu-hidden');
-                setTimeout(() => filterMenu.classList.add('hidden'), 200);
+                window.AdminMenu?.close(filterMenu);
             }
 
             // Column Menu Logic
@@ -445,9 +421,7 @@
             const insideCol = event.target.closest('#column-menu');
 
             if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
-                colMenu.classList.remove('menu-visible');
-                colMenu.classList.add('menu-hidden');
-                setTimeout(() => colMenu.classList.add('hidden'), 200);
+                window.AdminMenu?.close(colMenu);
             }
         });
 

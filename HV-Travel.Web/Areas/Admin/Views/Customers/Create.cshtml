@@ -66,6 +66,14 @@
                      <div>
                         <label class="label-text">Ảnh đại diện (URL)</label>
                         <input asp-for="AvatarUrl" id="avatar-input" class="input-field" placeholder="https://..." type="text" />
+                        <div class="flex flex-wrap items-center gap-3 mt-3">
+                            <button type="button" id="customer-avatar-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
+                            </button>
+                            <button type="button" id="customer-avatar-remove" class="px-4 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">delete</span> Xóa ảnh
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -268,6 +276,24 @@
         Object.values(inputs).forEach(input => {
             if(input) input.addEventListener('input', updatePreview);
         });
+
+        const uploadButton = document.getElementById('customer-avatar-upload');
+        if (uploadButton && inputs.avatar) {
+            uploadButton.addEventListener('click', function () {
+                window.openCloudinaryWidget({ multiple: false, folder: 'hv-travel/avatars' }, function (url) {
+                    inputs.avatar.value = url;
+                    updatePreview();
+                });
+            });
+        }
+
+        const removeButton = document.getElementById('customer-avatar-remove');
+        if (removeButton && inputs.avatar) {
+            removeButton.addEventListener('click', function () {
+                inputs.avatar.value = '';
+                updatePreview();
+            });
+        }
         
     </script>
 }
