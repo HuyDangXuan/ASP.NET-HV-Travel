@@ -31,6 +31,7 @@
 
 <form id="edit-tour-form" asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
 <input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="Version" />
 <div class="pb-24">
     <div class="flex flex-col gap-1 mb-10">
         <nav class="flex items-center gap-2 text-sm text-slate-500">
@@ -123,25 +124,31 @@
                     </div>
                     <div>
                         <label class="label-text">Hình ảnh</label>
-                         <div id="images-container" class="space-y-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button type="button" id="tour-images-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
+                            </button>
+                            <button type="button" onclick="addImage()" class="px-4 py-2 rounded-xl border border-primary/30 text-primary text-sm font-bold hover:bg-primary/5 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">add_photo_alternate</span> Thêm ảnh từ URL
+                            </button>
+                        </div>
+                        <div id="images-container" class="space-y-3 mt-4">
                             @if (Model.Images != null && Model.Images.Any())
                             {
                                 for (int i = 0; i < Model.Images.Count; i++)
                                 {
-                                    <div class="flex gap-2 items-center image-item">
-                                        <input name="Images[@i]" value="@Model.Images[i]" type="text" class="input-field" placeholder="https://example.com/image.jpg" />
+                                    var hasImage = !string.IsNullOrWhiteSpace(Model.Images[i]);
+                                    <div class="flex min-w-0 gap-3 items-center image-item">
+                                        <div class="size-16 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                            <img src="@Model.Images[i]" class="image-preview w-full h-full object-cover @(hasImage ? "" : "hidden")" alt="Tour image" />
+                                            <span class="image-placeholder text-xs text-slate-400 @(hasImage ? "hidden" : "")">Chưa có ảnh</span>
+                                        </div>
+                                        <input name="Images[@i]" value="@Model.Images[i]" type="text" class="input-field image-url-input flex-1 min-w-0" placeholder="https://example.com/image.jpg" />
                                         <button type="button" onclick="removeImage(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full flex-shrink-0"><span class="material-symbols-outlined">delete</span></button>
                                     </div>
                                 }
                             }
-                            else
-                            {
-                                <!-- Default empty slot if needed, or just button -->
-                            }
                         </div>
-                        <button type="button" onclick="addImage()" class="mt-3 text-sm text-primary font-bold flex items-center gap-1 hover:underline">
-                            <span class="material-symbols-outlined text-lg">add_photo_alternate</span> Thêm ảnh từ URL
-                        </button>
                     </div>
                 </div>
             </section>
@@ -348,21 +355,74 @@
 
 <script>
     // --- Images ---
-    function addImage() {
-        const container = document.getElementById('images-container');
-        const index = container.querySelectorAll('.image-item').length;
-        const html = `
-            <div class="flex gap-2 items-center image-item">
-                <input name="Images[${index}]" type="text" class="input-field" placeholder="https://example.com/image.jpg" />
-                <button type="button" onclick="removeImage(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full flex-shrink-0"><span class="material-symbols-outlined">delete</span></button>
+    function createImageItem(url) {
+        const container = document.createElement('div');
+        container.className = 'flex min-w-0 gap-3 items-center image-item';
+        container.innerHTML = `
+            <div class="size-16 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                <img class="image-preview w-full h-full object-cover hidden" alt="Tour image" />
+                <span class="image-placeholder text-xs text-slate-400">Chưa có ảnh</span>
             </div>
+            <input type="text" class="input-field image-url-input flex-1 min-w-0" placeholder="https://example.com/image.jpg" />
+            <button type="button" onclick="removeImage(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full flex-shrink-0"><span class="material-symbols-outlined">delete</span></button>
         `;
-        container.insertAdjacentHTML('beforeend', html);
+
+        const input = container.querySelector('.image-url-input');
+        input.value = url || '';
+        input.addEventListener('input', function () {
+            updateImagePreview(input);
+        });
+        updateImagePreview(input);
+        return container;
+    }
+
+    function addImage(url) {
+        const imagesContainer = document.getElementById('images-container');
+        const item = createImageItem(url || '');
+        imagesContainer.appendChild(item);
+        reindexItems('#images-container .image-url-input', 'Images');
     }
 
     function removeImage(btn) {
         btn.closest('.image-item').remove();
-        reindexItems('#images-container .image-item input', 'Images');
+        reindexItems('#images-container .image-url-input', 'Images');
+        syncPreviewImage();
+    }
+
+    function updateImagePreview(input) {
+        const item = input.closest('.image-item');
+        if (!item) return;
+        const preview = item.querySelector('.image-preview');
+        const placeholder = item.querySelector('.image-placeholder');
+        const url = input.value.trim();
+
+        if (url) {
+            preview.src = url;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } else {
+            preview.removeAttribute('src');
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+        }
+    }
+
+    function syncPreviewImage() {
+        const previewImage = document.getElementById('preview-image');
+        const previewPlaceholder = document.getElementById('preview-image-placeholder');
+        const firstInput = document.querySelector('#images-container .image-url-input');
+        const url = firstInput ? firstInput.value.trim() : '';
+
+        if (!previewImage || !previewPlaceholder) return;
+
+        if (url) {
+            previewImage.src = url;
+            previewImage.classList.remove('hidden');
+            previewPlaceholder.classList.add('hidden');
+        } else {
+            previewImage.classList.add('hidden');
+            previewPlaceholder.classList.remove('hidden');
+        }
     }
 
     // --- Schedule ---
@@ -451,7 +511,7 @@
 
             // Image
             // Find first image input value
-            const firstImgInput = inputs.imagesContainer.querySelector('input[name^="Images"]');
+            const firstImgInput = inputs.imagesContainer ? inputs.imagesContainer.querySelector('.image-url-input') : null;
             const imgUrl = firstImgInput ? firstImgInput.value : '';
             
             if(imgUrl) {
@@ -471,9 +531,32 @@
         if(inputs.location) inputs.location.addEventListener('input', updatePreview);
         
         // Delegate for dynamic images
-        inputs.imagesContainer.addEventListener('input', function(e) {
-            if(e.target.tagName === 'INPUT') updatePreview();
-        });
+        if (inputs.imagesContainer) {
+            inputs.imagesContainer.addEventListener('input', function(e) {
+                if (e.target.tagName === 'INPUT') updatePreview();
+            });
+
+            inputs.imagesContainer.querySelectorAll('.image-url-input').forEach(function(input) {
+                input.addEventListener('input', function () {
+                    updateImagePreview(input);
+                });
+                updateImagePreview(input);
+            });
+        }
+
+        const uploadButton = document.getElementById('tour-images-upload');
+        if (uploadButton) {
+            if (typeof window.prewarmCloudinaryWidget === 'function') {
+                window.prewarmCloudinaryWidget({ multiple: true, folder: 'hv-travel/tours' });
+            }
+
+            uploadButton.addEventListener('click', function () {
+                window.openCloudinaryWidget({ multiple: true, folder: 'hv-travel/tours' }, function (url) {
+                    addImage(url);
+                    updatePreview();
+                });
+            });
+        }
 
         // Initialize
         updatePreview();

@@ -20,11 +20,16 @@ public class HomeController : Controller
         ViewData["ActivePage"] = "Home";
         var tours = await _tourRepository.GetAllAsync();
         var featuredTours = tours
-            .Where(t => t.Status == "Active")
+            .Where(t => IsPubliclyVisible(t.Status))
             .OrderByDescending(t => t.Rating)
             .Take(6)
             .ToList();
         return View(featuredTours);
+    }
+
+    private static bool IsPubliclyVisible(string? status)
+    {
+        return status is "Active" or "ComingSoon" or "SoldOut";
     }
 
     public IActionResult About()

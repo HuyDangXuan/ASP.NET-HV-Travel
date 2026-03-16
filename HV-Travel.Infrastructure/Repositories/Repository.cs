@@ -121,24 +121,12 @@ namespace HVTravel.Infrastructure.Repositories
                 throw new InvalidOperationException($"Type {typeof(T).Name} does not contain an Id property.");
             }
 
-            var parameter = Expression.Parameter(typeof(T), "entity");
-            var property = Expression.Property(parameter, IdProperty);
-            var constant = Expression.Constant(id, typeof(string));
-            var body = Expression.Equal(property, constant);
-            var lambda = Expression.Lambda<Func<T, bool>>(body, parameter);
-
-            return Builders<T>.Filter.Where(lambda);
+            return Builders<T>.Filter.Eq(IdProperty.Name, id);
         }
 
         private static FilterDefinition<T> BuildUIntPropertyFilter(PropertyInfo propertyInfo, uint value)
         {
-            var parameter = Expression.Parameter(typeof(T), "entity");
-            var property = Expression.Property(parameter, propertyInfo);
-            var constant = Expression.Constant(value, typeof(uint));
-            var body = Expression.Equal(property, constant);
-            var lambda = Expression.Lambda<Func<T, bool>>(body, parameter);
-
-            return Builders<T>.Filter.Where(lambda);
+            return Builders<T>.Filter.Eq(propertyInfo.Name, value);
         }
 
     }
