@@ -17,16 +17,16 @@
     }
 </style>
 
-<!-- Breadcrumb -->
-<nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
-    <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
-    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-    <a class="hover:text-primary transition-colors" asp-action="Index">Đơn Đặt Vé</a>
-    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-    <span class="text-slate-900 dark:text-white font-medium">Chỉnh sửa</span>
-    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-    <span class="text-slate-900 dark:text-white font-medium">#@Model.BookingCode</span>
-</nav>
+@await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+{
+    Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+    {
+        new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+        new() { Label = "Đơn đặt vé", Url = Url.Action("Index", "Bookings") },
+        new() { Label = "Chỉnh sửa", Url = Url.Action("Edit", "Bookings", new { id = Model.Id }) },
+        new() { Label = $"#{Model.BookingCode}", IsCurrent = true }
+    }
+})
 
 @{
     string GetStatusText(string status) => status switch
@@ -202,7 +202,7 @@
                 </div>
                 <div>
                     <label class="label-text">Ghi chú cho đơn hàng</label>
-                    <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" placeholder="Ghi chú yêu cầu đặc biệt của khách..."></textarea>
+                    <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" data-rich-editor="true" data-editor-height="220" placeholder="Ghi chú yêu cầu đặc biệt của khách..."></textarea>
                 </div>
             </section>
         </div>

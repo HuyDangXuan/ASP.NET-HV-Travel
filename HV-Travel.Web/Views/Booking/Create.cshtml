@@ -5,20 +5,19 @@
     var childPrice = tour.Price?.Child ?? 0;
     var infantPrice = tour.Price?.Infant ?? 0;
     var discount = tour.Price?.Discount ?? 0;
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
+    {
+        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+        {
+            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
+            new() { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") },
+            new() { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = tour.Id }) },
+            new() { Label = "Đặt tour", IsCurrent = true }
+        }
+    };
 }
 
-<!-- Breadcrumb -->
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang chủ</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Đặt tour</span>
-        </nav>
-    </div>
-</div>
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <!-- Stepper -->
 <div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">

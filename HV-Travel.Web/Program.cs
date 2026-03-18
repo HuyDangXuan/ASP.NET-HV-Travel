@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
+builder.Services.AddHttpContextAccessor();
 
 // Add Layered Services
 builder.Services.AddInfrastructure(builder.Configuration);

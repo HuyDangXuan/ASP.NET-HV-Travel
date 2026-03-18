@@ -1,0 +1,30 @@
+@model HVTravel.Web.Models.BreadcrumbViewModel
+
+@if (Model.Items.Any())
+{
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400" aria-label="Breadcrumb">
+        @for (var i = 0; i < Model.Items.Count; i++)
+        {
+            var item = Model.Items[i];
+            var isCurrent = item.IsCurrent || i == Model.Items.Count - 1;
+
+            if (!string.IsNullOrWhiteSpace(item.Url) && !isCurrent)
+            {
+                <a class="hover:text-primary transition-colors" href="@item.Url">@item.Label</a>
+            }
+            else if (isCurrent)
+            {
+                <span class="text-slate-900 dark:text-white font-medium">@item.Label</span>
+            }
+            else
+            {
+                <span>@item.Label</span>
+            }
+
+            @if (i < Model.Items.Count - 1)
+            {
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            }
+        }
+    </nav>
+}
