@@ -320,6 +320,14 @@
         }
 
         modalElements.fileList.innerHTML = modalState.files.map(function (item, index) {
+            var detailMarkup = '';
+
+            if (item.message) {
+                detailMarkup = item.status === 'done'
+                    ? '<div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500"><span class="block truncate" title="' + escapeHtml(item.message) + '">' + escapeHtml(item.message) + '</span></div>'
+                    : '<p class="mt-2 truncate text-xs text-slate-400" title="' + escapeHtml(item.message) + '">' + escapeHtml(item.message) + '</p>';
+            }
+
             return [
                 '<div class="flex min-w-0 items-center gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-3 shadow-sm">',
                 '  <div class="size-16 shrink-0 overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200">',
@@ -330,10 +338,10 @@
                 '  <div class="min-w-0 flex-1 overflow-hidden">',
                 '    <p class="truncate text-sm font-black text-slate-900">' + escapeHtml(item.file.name) + '</p>',
                 '    <p class="mt-1 text-xs font-medium text-slate-400">' + escapeHtml(formatBytes(item.file.size)) + '</p>',
-                '    <div class="mt-2 flex min-w-0 items-center gap-2 overflow-hidden">',
+                '    <div class="mt-2 flex min-w-0 flex-wrap items-center gap-2 overflow-hidden">',
                 '      <span class="inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-bold ' + statusBadgeClass(item.status) + '">' + escapeHtml(statusLabel(item.status)) + '</span>',
-                item.message ? '      <span class="min-w-0 flex-1 truncate text-xs text-slate-400" title="' + escapeHtml(item.message) + '">' + escapeHtml(item.message) + '</span>' : '',
                 '    </div>',
+                detailMarkup,
                 '  </div>',
                 '  <button type="button" data-cloudinary-remove="' + index + '" class="inline-flex size-10 items-center justify-center rounded-2xl text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"' + (modalState.isUploading ? ' disabled' : '') + '>',
                 '    <span class="material-symbols-outlined text-[20px]">delete</span>',
