@@ -6,19 +6,20 @@
     var contactGroup = siteSettings.GetGroup("contactInfo");
     var phone = contactGroup?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
     var email = contactGroup?.Fields.GetFieldValue("email", "support@hvtravel.vn") ?? "support@hvtravel.vn";
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
+    {
+        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+        {
+            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
+            new() { Label = "Đặt tour" },
+            new() { Label = "Lỗi hệ thống", IsCurrent = true }
+        }
+    };
 
     ViewData["Title"] = "Lỗi Hệ Thống";
 }
 
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Lỗi Hệ Thống</span>
-        </nav>
-    </div>
-</div>
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
     <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -32,7 +33,9 @@
         </div>
 
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-2">@statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")</p>
+        <div class="text-slate-500 dark:text-slate-400 mb-2">
+            @Html.Raw(statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau."))
+        </div>
         <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
 
         <div class="bg-surface-muted-light dark:bg-surface-elevated-dark/70 rounded-2xl p-5 border border-border-light dark:border-border-dark mb-8 text-left" data-animate="fade-up" data-delay="200">
@@ -58,4 +61,3 @@
         </div>
     </div>
 </section>
-

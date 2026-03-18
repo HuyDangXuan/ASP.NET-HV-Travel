@@ -7,11 +7,14 @@
 <!-- Page Header -->
 <div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div class="flex flex-col gap-1">
-        <nav class="flex items-center gap-2 text-sm text-slate-500">
-            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Danh Sách Tour</span>
-        </nav>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Danh sách tour", IsCurrent = true }
+            }
+        })
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản Lý Tour Du Lịch</h1>
     </div>
 </div>

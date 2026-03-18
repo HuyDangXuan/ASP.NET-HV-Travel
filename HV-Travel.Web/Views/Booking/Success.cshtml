@@ -5,26 +5,22 @@
     var statusCopy = sections.GetSection("statusCopy");
     var booking = Model.Booking;
     var tour = Model.Tour;
+    var breadcrumbItems = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+    {
+        new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") }
+    };
+    if (tour != null)
+    {
+        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") });
+        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = tour.Id }) });
+    }
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Đặt tour" });
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Thanh toán" });
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Hoàn tất", IsCurrent = true });
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel { Items = breadcrumbItems };
 }
 
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            @if (tour != null)
-            {
-                <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Đặt Tour</span>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Thanh Toán</span>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            }
-            <span class="text-slate-900 dark:text-white font-medium">Hoàn Tất</span>
-        </nav>
-    </div>
-</div>
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,7 +52,9 @@
         </div>
 
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("successTitle", "Đặt Tour Thành Công!")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">@statusCopy?.Fields.GetFieldValue("successDescription", "Cảm ơn bạn đã đặt tour tại HV Travel. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.")</p>
+        <div class="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">
+            @Html.Raw(statusCopy?.Fields.GetFieldValue("successDescription", "Cảm ơn bạn đã đặt tour tại HV Travel. Chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất."))
+        </div>
 
         <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark text-left mb-8" data-animate="fade-up" data-delay="200">
             <div class="flex items-center justify-between mb-5">
@@ -98,4 +96,3 @@
     .animate-bounce-once { animation: bounceIn 0.6s ease-out; }
     @@keyframes bounceIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 </style>
-

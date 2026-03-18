@@ -1,6 +1,23 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Chính sách riêng tư";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-1">
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Chính sách riêng tư", IsCurrent = true }
+            }
+        })
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
+        <p class="max-w-3xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            Trang này dùng để trình bày chính sách quyền riêng tư cho khu vực quản trị và hệ thống vận hành của website.
+        </p>
+    </div>
+</div>

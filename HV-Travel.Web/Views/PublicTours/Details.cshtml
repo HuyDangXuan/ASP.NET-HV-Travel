@@ -2,17 +2,18 @@
 @{
     ViewData["Description"] = Model.ShortDescription ?? Model.Description;
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
+    {
+        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+        {
+            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
+            new() { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") },
+            new() { Label = Model.Name, IsCurrent = true }
+        }
+    };
 }
 
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang chủ</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium truncate max-w-[200px]">@Model.Name</span>
-        </nav>
-    </div>
-</div>
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="py-10 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

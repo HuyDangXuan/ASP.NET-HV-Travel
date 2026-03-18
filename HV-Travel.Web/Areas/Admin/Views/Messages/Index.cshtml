@@ -10,11 +10,14 @@
 <div class="mb-6 flex flex-col gap-4" data-animate="fade-in-up" data-delay="0.05">
     <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="hover:text-primary transition-colors">Trang chủ</a>
-                <span>/</span>
-                <span class="font-medium text-slate-900 dark:text-white">Tin nhắn</span>
-            </nav>
+            @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+            {
+                Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+                {
+                    new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                    new() { Label = "Tin nhắn", IsCurrent = true }
+                }
+            })
             <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Trung tâm hỗ trợ khách hàng</h1>
             <p class="mt-2 max-w-3xl text-sm text-slate-500 dark:text-slate-400">
                 Theo dõi hội thoại theo thời gian thực, xác định cuộc trò chuyện nào cần phản hồi trước và trả lời ngay trong cùng một không gian làm việc.

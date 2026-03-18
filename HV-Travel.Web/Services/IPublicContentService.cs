@@ -9,6 +9,8 @@ public interface IPublicContentService
 
     Dictionary<string, List<string>> GetEditableInventory();
 
+    ContentAdminEditorDefinition ResolveAdminEditor(string? tab, string? subtab);
+
     Task<SiteSettings> GetSiteSettingsAsync();
 
     Task<IReadOnlyDictionary<string, ContentSection>> GetPageSectionsAsync(string pageKey);
@@ -17,7 +19,18 @@ public interface IPublicContentService
 
     Task SaveSiteSettingsAsync(SiteSettings siteSettings);
 
-    Task SaveSectionsAsync(IEnumerable<ContentSection> sections);
+    Task SaveSectionsAsync(IEnumerable<ContentSection> sections, string tab, string? subtab);
+
+    Task<ContentPreviewSnapshot> BuildPreviewSnapshotAsync(
+        string tab,
+        string? subtab,
+        string previewToken,
+        SiteSettings? siteSettings,
+        IEnumerable<ContentSection>? sections);
+
+    Task<string> StorePreviewSnapshotAsync(ContentPreviewSnapshot snapshot);
+
+    Task<ContentPreviewSnapshot?> GetPreviewSnapshotAsync(string previewToken);
 
     void InvalidateCache();
 }

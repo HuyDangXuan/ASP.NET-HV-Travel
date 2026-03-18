@@ -30,9 +30,9 @@
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
                     <br />@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")
                 </h1>
-                <p class="text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                    @hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn.")
-                </p>
+                <div class="text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn."))
+                </div>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
                         <span class="material-symbols-outlined">explore</span>
@@ -70,7 +70,9 @@
                     <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Nổi Bật")
                 </span>
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
-                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách")</p>
+                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                    @Html.Raw(featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"))
+                </div>
             </div>
         }
 
@@ -162,7 +164,9 @@
                     <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
                 </span>
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
-                <p class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">@commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình")</p>
+                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                    @Html.Raw(commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"))
+                </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
                 @{
@@ -175,7 +179,9 @@
                             <span class="material-symbols-outlined text-[28px]">@icons[index - 1]</span>
                         </div>
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">@commitments.Fields.GetFieldValue($"item{index}Title", $"Cam kết {index}")</h3>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">@commitments.Fields.GetFieldValue($"item{index}Description", "Nội dung sẽ được cập nhật trong CMS.")</p>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                            @Html.Raw(commitments.Fields.GetFieldValue($"item{index}Description", "Nội dung sẽ được cập nhật trong CMS."))
+                        </div>
                     </div>
                 }
             </div>
@@ -191,7 +197,9 @@
         </div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-animate="scale-in">
             <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
-            <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">@finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng.")</p>
+            <div class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+                @Html.Raw(finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."))
+            </div>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
                     <span class="material-symbols-outlined">mail</span>
@@ -205,5 +213,3 @@
         </div>
     </section>
 }
-
-

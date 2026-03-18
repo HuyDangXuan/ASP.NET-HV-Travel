@@ -7,26 +7,22 @@
     var booking = Model.Booking;
     var tour = Model.Tour;
     var phone = siteSettings.GetGroup("contactInfo")?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
+    var breadcrumbItems = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+    {
+        new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") }
+    };
+    if (tour != null)
+    {
+        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") });
+        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = tour.Id }) });
+    }
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Đặt tour" });
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Thanh toán" });
+    breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Thất bại", IsCurrent = true });
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel { Items = breadcrumbItems };
 }
 
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-            <a asp-controller="Home" asp-action="Index" class="hover:text-primary transition-colors">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            @if (tour != null)
-            {
-                <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="hover:text-primary transition-colors">@tour.Name</a>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Đặt Tour</span>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span>Thanh Toán</span>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            }
-            <span class="text-slate-900 dark:text-white font-medium">Thất Bại</span>
-        </nav>
-    </div>
-</div>
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
     <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -37,7 +33,9 @@
         </div>
 
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-3">@(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))</p>
+        <div class="text-slate-500 dark:text-slate-400 mb-3">
+            @Html.Raw(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))
+        </div>
 
         @if (!string.IsNullOrEmpty(booking?.BookingCode))
         {

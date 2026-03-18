@@ -2,10 +2,23 @@
     ViewData["Title"] = "Trang quản trị";
 }
 
-<div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
-    <p class="text-sm font-bold uppercase tracking-[0.28em] text-primary">HV Travel Admin</p>
-    <h1 class="mt-4 text-3xl font-extrabold text-slate-900 dark:text-white">Khu vực quản trị đã sẵn sàng</h1>
-    <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-        Sử dụng thanh điều hướng để quản lý tour, đơn đặt, khách hàng, thanh toán và nội dung website.
-    </p>
+<div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-1">
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", IsCurrent = true }
+            }
+        })
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Trang quản trị</h1>
+    </div>
+
+    <div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
+        <p class="text-sm font-bold uppercase tracking-[0.28em] text-primary">HV Travel Admin</p>
+        <h2 class="mt-4 text-3xl font-extrabold text-slate-900 dark:text-white">Khu vực quản trị đã sẵn sàng</h2>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            Sử dụng thanh điều hướng để quản lý tour, đơn đặt, khách hàng, thanh toán và nội dung website.
+        </p>
+    </div>
 </div>

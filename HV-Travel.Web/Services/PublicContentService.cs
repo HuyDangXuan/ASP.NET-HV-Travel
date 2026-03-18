@@ -1,7 +1,11 @@
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
+using HVTravel.Web.Security;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
 
 namespace HVTravel.Web.Services;
 
@@ -11,23 +15,34 @@ public class PublicContentService : IPublicContentService
     private readonly IRepository<SiteSettings> _siteSettingsRepository;
     private readonly IRepository<ContentSection> _contentSectionRepository;
     private readonly IMemoryCache _memoryCache;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public PublicContentService(
         IRepository<SiteSettings> siteSettingsRepository,
         IRepository<ContentSection> contentSectionRepository,
-        IMemoryCache memoryCache)
+        IMemoryCache memoryCache,
+        IHttpContextAccessor httpContextAccessor)
     {
         _siteSettingsRepository = siteSettingsRepository;
         _contentSectionRepository = contentSectionRepository;
         _memoryCache = memoryCache;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public IReadOnlyList<ContentTabOption> GetTabs() => PublicContentDefaults.Tabs;
+    public IReadOnlyList<ContentTabOption> GetTabs() => ContentAdminCatalog.GetTabs();
 
     public Dictionary<string, List<string>> GetEditableInventory() => PublicContentDefaults.Inventory;
 
+    public ContentAdminEditorDefinition ResolveAdminEditor(string? tab, string? subtab) => ContentAdminCatalog.Resolve(tab, subtab);
+
     public async Task<SiteSettings> GetSiteSettingsAsync()
     {
+        var previewSnapshot = await GetActivePreviewSnapshotAsync();
+        if (previewSnapshot?.SiteSettings != null)
+        {
+            return CloneSiteSettings(previewSnapshot.SiteSettings);
+        }
+
         if (_memoryCache.TryGetValue(SiteSettingsCacheKey, out SiteSettings? cached) && cached != null)
         {
             return cached;
@@ -43,10 +58,14 @@ public class PublicContentService : IPublicContentService
 
     public async Task<IReadOnlyDictionary<string, ContentSection>> GetPageSectionsAsync(string pageKey)
     {
+        var previewSnapshot = await GetActivePreviewSnapshotAsync();
+
         var cacheKey = $"public-content-page-{pageKey}";
         if (_memoryCache.TryGetValue(cacheKey, out Dictionary<string, ContentSection>? cached) && cached != null)
         {
-            return cached;
+            return previewSnapshot == null
+                ? cached
+                : ApplyPreviewSections(cached, previewSnapshot, pageKey);
         }
 
         var defaults = PublicContentDefaults.CreateSectionsForPage(pageKey);
@@ -59,7 +78,9 @@ public class PublicContentService : IPublicContentService
             .ToDictionary(section => section.SectionKey, section => section);
 
         _memoryCache.Set(cacheKey, merged, TimeSpan.FromMinutes(5));
-        return merged;
+        return previewSnapshot == null
+            ? merged
+            : ApplyPreviewSections(merged, previewSnapshot, pageKey);
     }
 
     public async Task<List<ContentSection>> GetPageSectionsForAdminAsync(string pageKey)
@@ -92,24 +113,78 @@ public class PublicContentService : IPublicContentService
         InvalidateCache();
     }
 
-    public async Task SaveSectionsAsync(IEnumerable<ContentSection> sections)
+    public async Task SaveSectionsAsync(IEnumerable<ContentSection> sections, string tab, string? subtab)
     {
-        foreach (var section in sections)
+        var editor = ResolveAdminEditor(tab, subtab);
+        if (editor.TabKey == "site")
         {
-            section.UpdatedAt = DateTime.UtcNow;
-            var existing = (await _contentSectionRepository.FindAsync(s => s.PageKey == section.PageKey && s.SectionKey == section.SectionKey)).FirstOrDefault();
+            return;
+        }
+
+        var postedSections = sections.ToList();
+        var defaults = PublicContentDefaults.CreateSectionsForPage(editor.PageKey);
+        var storedSections = (await _contentSectionRepository.FindAsync(s => s.PageKey == editor.PageKey)).ToList();
+
+        foreach (var sectionDefinition in editor.Sections)
+        {
+            var postedSection = postedSections.FirstOrDefault(section => section.SectionKey == sectionDefinition.SectionKey);
+            var defaultSection = defaults.FirstOrDefault(section => section.SectionKey == sectionDefinition.SectionKey);
+            if (postedSection == null || defaultSection == null)
+            {
+                continue;
+            }
+
+            var existing = storedSections.FirstOrDefault(section => section.SectionKey == sectionDefinition.SectionKey);
+            var mergedSection = MergeSection(defaultSection, existing);
+
+            ApplyPostedSectionChanges(mergedSection, postedSection, sectionDefinition);
+
+            mergedSection.UpdatedAt = DateTime.UtcNow;
             if (existing == null)
             {
-                await _contentSectionRepository.AddAsync(section);
+                await _contentSectionRepository.AddAsync(mergedSection);
             }
             else
             {
-                section.Id = existing.Id;
-                await _contentSectionRepository.UpdateAsync(existing.Id, section);
+                mergedSection.Id = existing.Id;
+                await _contentSectionRepository.UpdateAsync(existing.Id, mergedSection);
             }
         }
 
         InvalidateCache();
+    }
+
+    public async Task<ContentPreviewSnapshot> BuildPreviewSnapshotAsync(
+        string tab,
+        string? subtab,
+        string previewToken,
+        SiteSettings? siteSettings,
+        IEnumerable<ContentSection>? sections)
+    {
+        var editor = ResolveAdminEditor(tab, subtab);
+
+        return new ContentPreviewSnapshot
+        {
+            PreviewToken = previewToken,
+            Tab = editor.TabKey,
+            Subtab = editor.SubtabKey,
+            PageKey = editor.PageKey,
+            SiteSettings = siteSettings == null ? null : CloneSiteSettings(siteSettings),
+            Sections = sections?.Select(CloneSection).ToList() ?? new List<ContentSection>(),
+            UpdatedAtUtc = DateTime.UtcNow
+        };
+    }
+
+    public Task<string> StorePreviewSnapshotAsync(ContentPreviewSnapshot snapshot)
+    {
+        var cacheKey = BuildPreviewCacheKey(snapshot.PreviewToken, GetCurrentUserScopeKey(_httpContextAccessor.HttpContext?.User));
+        _memoryCache.Set(cacheKey, snapshot, TimeSpan.FromMinutes(ContentPreviewConstants.CacheTtlMinutes));
+        return Task.FromResult(snapshot.PreviewToken);
+    }
+
+    public Task<ContentPreviewSnapshot?> GetPreviewSnapshotAsync(string previewToken)
+    {
+        return Task.FromResult(GetPreviewSnapshotForUser(previewToken, _httpContextAccessor.HttpContext?.User));
     }
 
     public void InvalidateCache()
@@ -119,6 +194,79 @@ public class PublicContentService : IPublicContentService
         {
             _memoryCache.Remove($"public-content-page-{tab.Key}");
         }
+    }
+
+    private async Task<ContentPreviewSnapshot?> GetActivePreviewSnapshotAsync()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        var previewToken = httpContext?.Request.Query[ContentPreviewConstants.QueryKey].ToString();
+        if (string.IsNullOrWhiteSpace(previewToken))
+        {
+            return null;
+        }
+
+        var authResult = await httpContext!.AuthenticateAsync(AuthSchemes.AdminScheme);
+        if (!authResult.Succeeded)
+        {
+            return null;
+        }
+
+        return GetPreviewSnapshotForUser(previewToken, authResult.Principal);
+    }
+
+    private static IReadOnlyDictionary<string, ContentSection> ApplyPreviewSections(
+        IReadOnlyDictionary<string, ContentSection> baseSections,
+        ContentPreviewSnapshot previewSnapshot,
+        string pageKey)
+    {
+        if (!string.Equals(previewSnapshot.PageKey, pageKey, StringComparison.OrdinalIgnoreCase) || previewSnapshot.Sections.Count == 0)
+        {
+            return baseSections;
+        }
+
+        var editor = ContentAdminCatalog.Resolve(previewSnapshot.Tab, previewSnapshot.Subtab);
+        var previewSectionMap = previewSnapshot.Sections.ToDictionary(section => section.SectionKey, section => section, StringComparer.OrdinalIgnoreCase);
+        var merged = baseSections.ToDictionary(entry => entry.Key, entry => CloneSection(entry.Value), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var definition in editor.Sections)
+        {
+            if (!previewSectionMap.TryGetValue(definition.SectionKey, out var previewSection))
+            {
+                continue;
+            }
+
+            if (!merged.TryGetValue(definition.SectionKey, out var targetSection))
+            {
+                targetSection = new ContentSection
+                {
+                    PageKey = pageKey,
+                    SectionKey = definition.SectionKey
+                };
+                merged[definition.SectionKey] = targetSection;
+            }
+
+            ApplyPostedSectionChanges(targetSection, previewSection, definition);
+        }
+
+        return merged
+            .OrderBy(entry => entry.Value.DisplayOrder)
+            .ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string BuildPreviewCacheKey(string previewToken, string userScopeKey)
+        => $"public-content-preview::{userScopeKey}::{previewToken}";
+
+    private ContentPreviewSnapshot? GetPreviewSnapshotForUser(string previewToken, ClaimsPrincipal? principal)
+    {
+        var cacheKey = BuildPreviewCacheKey(previewToken, GetCurrentUserScopeKey(principal));
+        return _memoryCache.TryGetValue(cacheKey, out ContentPreviewSnapshot? snapshot) ? snapshot : null;
+    }
+
+    private string GetCurrentUserScopeKey(ClaimsPrincipal? user)
+    {
+        return user?.FindFirstValue(ClaimTypes.NameIdentifier)
+               ?? user?.Identity?.Name
+               ?? "anonymous-admin";
     }
 
     private static SiteSettings MergeSiteSettings(SiteSettings defaults, SiteSettings? stored)
@@ -192,6 +340,42 @@ public class PublicContentService : IPublicContentService
         }
 
         return merged;
+    }
+
+    private static void ApplyPostedSectionChanges(ContentSection target, ContentSection posted, ContentAdminSectionDefinition definition)
+    {
+        if (definition.AllowSectionSettings)
+        {
+            target.Title = posted.Title;
+            target.Description = posted.Description;
+            target.IsEnabled = posted.IsEnabled;
+            target.IsPublished = posted.IsPublished;
+            target.DisplayOrder = posted.DisplayOrder;
+        }
+
+        HashSet<string>? editableKeys = definition.EditableFieldKeys.Count > 0
+            ? new HashSet<string>(definition.EditableFieldKeys, StringComparer.OrdinalIgnoreCase)
+            : null;
+
+        foreach (var postedField in posted.Fields)
+        {
+            if (editableKeys != null && !editableKeys.Contains(postedField.Key))
+            {
+                continue;
+            }
+
+            var targetField = target.Fields.FirstOrDefault(field => string.Equals(field.Key, postedField.Key, StringComparison.OrdinalIgnoreCase));
+            if (targetField == null)
+            {
+                target.Fields.Add(CloneField(postedField));
+                continue;
+            }
+
+            targetField.Value = postedField.Value;
+            targetField.Label = string.IsNullOrWhiteSpace(postedField.Label) ? targetField.Label : postedField.Label;
+            targetField.FieldType = string.IsNullOrWhiteSpace(postedField.FieldType) ? targetField.FieldType : postedField.FieldType;
+            targetField.Placeholder = string.IsNullOrWhiteSpace(postedField.Placeholder) ? targetField.Placeholder : postedField.Placeholder;
+        }
     }
 
     private static SiteSettings CloneSiteSettings(SiteSettings source)

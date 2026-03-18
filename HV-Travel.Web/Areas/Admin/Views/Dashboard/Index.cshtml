@@ -46,9 +46,13 @@
 <!-- Page Header- -->
 <div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div class="flex flex-col gap-1">
-        <nav class="flex items-center gap-2 text-sm text-slate-500">
-            <span class="text-slate-900 dark:text-white font-medium">Trang Chủ</span>
-        </nav>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", IsCurrent = true }
+            }
+        })
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Tổng Quan</h1>
     </div>
 </div>

@@ -25,7 +25,9 @@
             <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
                 @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
             </h1>
-            <p class="text-lg text-slate-300 max-w-xl mx-auto">@hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn.")</p>
+            <div class="text-lg text-slate-300 max-w-xl mx-auto">
+                @Html.Raw(hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn."))
+            </div>
         </div>
     </section>
 }
@@ -89,7 +91,9 @@
                             <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
                         </div>
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@benefits?.Fields.GetFieldValue("successTitle", "Gửi Yêu Cầu Thành Công!")</h2>
-                        <p class="text-slate-500 dark:text-slate-400 mb-6">@benefits?.Fields.GetFieldValue("successDescription", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất.")</p>
+                        <div class="text-slate-500 dark:text-slate-400 mb-6">
+                            @Html.Raw(benefits?.Fields.GetFieldValue("successDescription", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất."))
+                        </div>
                         <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
                             <span class="material-symbols-outlined text-[18px]">explore</span> @benefits?.Fields.GetFieldValue("exploreToursText", "Khám Phá Tour")
                         </a>
@@ -172,4 +176,3 @@
         </div>
     </div>
 </section>
-

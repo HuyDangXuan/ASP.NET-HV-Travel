@@ -20,13 +20,15 @@
 <form id="create-customer-form" asp-action="Create" method="post">
 <div class="pb-24">
     <div class="flex flex-col gap-1 mb-10">
-        <nav class="flex items-center gap-2 text-sm text-slate-500">
-            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <a class="hover:text-primary transition-colors" asp-action="Index">Khách Hàng</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Thêm Mới</span>
-        </nav>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Khách hàng", Url = Url.Action("Index", "Customers") },
+                new() { Label = "Thêm mới", IsCurrent = true }
+            }
+        })
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Thêm Khách Hàng Mới</h1>
         <p class="text-slate-500 dark:text-gray-400 mt-1">Nhập thông tin cá nhân và chi tiết liên hệ của khách hàng.</p>
     </div>
@@ -109,7 +111,7 @@
                     <h2 class="text-[#111718] dark:text-white text-xl font-bold">Ghi chú</h2>
                 </div>
                 <div>
-                     <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" placeholder="Ghi chú thêm về khách hàng này..."></textarea>
+                     <textarea asp-for="Notes" class="input-field h-32 py-4 resize-none" data-rich-editor="true" data-editor-height="220" placeholder="Ghi chú thêm về khách hàng này..."></textarea>
                 </div>
             </section>
         </div>

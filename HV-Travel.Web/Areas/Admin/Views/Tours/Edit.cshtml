@@ -34,13 +34,15 @@
 <input type="hidden" asp-for="Version" />
 <div class="pb-24">
     <div class="flex flex-col gap-1 mb-10">
-        <nav class="flex items-center gap-2 text-sm text-slate-500">
-            <a class="hover:text-primary transition-colors" href="@Url.Action("Index", "Dashboard")">Trang Chủ</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <a class="hover:text-primary transition-colors" asp-action="Index">Danh Sách Tour</a>
-            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-            <span class="text-slate-900 dark:text-white font-medium">Chỉnh Sửa Tour</span>
-        </nav>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Danh sách tour", Url = Url.Action("Index", "Tours") },
+                new() { Label = "Chỉnh sửa tour", IsCurrent = true }
+            }
+        })
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Chỉnh Sửa Tour: @Model.Name</h1>
         <p class="text-slate-500 dark:text-gray-400 mt-1">Cập nhật thông tin chi tiết, giá cả và lịch trình cho tour của bạn.</p>
     </div>
@@ -116,11 +118,11 @@
                     </div>
                     <div>
                         <label class="label-text">Mô tả ngắn</label>
-                        <textarea asp-for="ShortDescription" class="input-field h-32 py-4 resize-none" placeholder="Viết một đoạn giới thiệu ngắn gọn về tour này..."></textarea>
+                        <textarea asp-for="ShortDescription" class="input-field h-32 py-4 resize-none" data-rich-editor="true" data-editor-height="220" placeholder="Viết một đoạn giới thiệu ngắn gọn về tour này..."></textarea>
                     </div>
                     <div>
                         <label class="label-text">Mô tả chi tiết</label>
-                        <textarea asp-for="Description" class="input-field h-48 py-4 resize-none" placeholder="Mô tả chi tiết về tour, các điểm nổi bật..."></textarea>
+                        <textarea asp-for="Description" class="input-field h-48 py-4 resize-none" data-rich-editor="true" data-editor-height="320" placeholder="Mô tả chi tiết về tour, các điểm nổi bật..."></textarea>
                     </div>
                     <div>
                         <label class="label-text">Hình ảnh</label>
@@ -265,7 +267,7 @@
                                         </div>
                                         <div class="col-span-12">
                                             <label class="text-xs font-bold uppercase text-gray-500">Mô tả hoạt động</label>
-                                            <textarea name="Schedule[@i].Description" class="input-field h-24 py-2 text-sm resize-none" placeholder="Chi tiết hoạt động trong ngày...">@Model.Schedule[i].Description</textarea>
+                                            <textarea name="Schedule[@i].Description" class="input-field h-24 py-2 text-sm resize-none" data-rich-editor="true" data-editor-height="180" placeholder="Chi tiết hoạt động trong ngày...">@Model.Schedule[i].Description</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -444,16 +446,23 @@
                     </div>
                     <div class="col-span-12">
                         <label class="text-xs font-bold uppercase text-gray-500">Mô tả hoạt động</label>
-                        <textarea name="Schedule[${index}].Description" class="input-field h-24 py-2 text-sm resize-none" placeholder="Chi tiết hoạt động..."></textarea>
+                        <textarea name="Schedule[${index}].Description" class="input-field h-24 py-2 text-sm resize-none" data-rich-editor="true" data-editor-height="180" placeholder="Chi tiết hoạt động..."></textarea>
                     </div>
                 </div>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', html);
+        if (window.AdminRichText) {
+            window.AdminRichText.refresh(container.lastElementChild);
+        }
     }
 
     function removeSchedule(btn) {
-        btn.closest('.schedule-item').remove();
+        const item = btn.closest('.schedule-item');
+        if (window.AdminRichText) {
+            window.AdminRichText.remove(item);
+        }
+        item.remove();
         reindexSchedule();
     }
 
