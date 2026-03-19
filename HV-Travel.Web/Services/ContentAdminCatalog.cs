@@ -27,7 +27,7 @@ public static class ContentAdminCatalog
         new()
         {
             Title = "Dùng dữ liệu từ Toàn site > contactInfo",
-            Description = "Địa chỉ, số điện thoại, email và giờ làm việc đang được dùng chung. Muốn đổi các thông tin đó, hãy chỉnh trong phần Toàn site.",
+            Description = "Địa chỉ, số điện thoại, email, giờ làm việc và URL bản đồ đang được dùng chung. Muốn đổi các thông tin đó, hãy chỉnh trong phần Toàn site.",
             NavigateTab = "site"
         }
     };
