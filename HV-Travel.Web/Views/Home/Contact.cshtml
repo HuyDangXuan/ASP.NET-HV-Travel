@@ -11,6 +11,7 @@
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "Thứ 2 - Thứ 7: 8:00 - 18:00") ?? "Thứ 2 - Thứ 7: 8:00 - 18:00";
+    var mapEmbedUrl = contactGroup?.Fields.GetFieldValue("mapEmbedUrl", "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.5177!2d106.7!3d10.7769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzM2LjkiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1") ?? "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.5177!2d106.7!3d10.7769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzM2LjkiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1";
 
     ViewData["Title"] = "Liên Hệ";
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn và hỗ trợ");
@@ -144,7 +145,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div class="rounded-2xl overflow-hidden shadow-sm border border-border-light dark:border-border-dark" data-animate="scale-in">
             <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.5177!2d106.7!3d10.7769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQ2JzM2LjkiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1svi!2svn!4v1"
+                src="@mapEmbedUrl"
                 width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
                 class="w-full"></iframe>
         </div>

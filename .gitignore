@@ -25,6 +25,7 @@ Thumbs.db
 
 ## [User Specific]
 .dotnet/
+.codex-build/
 *.mongosh.js
 staged_files.txt
 temp_staged_files.txt
