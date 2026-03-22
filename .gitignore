@@ -17,6 +17,8 @@
 ## [Agent & AI]
 .agent/
 .gemini/
+.codex/build/
+.dotnet/
 brain/
 
 ## [OS Specific]
