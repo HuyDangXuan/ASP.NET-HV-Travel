@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>HV_Travel.Web.Tests</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="xunit" Version="2.5.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HV-Travel.Domain\HV-Travel.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\HV-Travel.Web\Models\ChatModels.cs" Link="ChatModels.cs" />
+    <Compile Include="..\HV-Travel.Web\Models\CustomerRegisterViewModel.cs" Link="CustomerRegisterViewModel.cs" />
+    <Compile Include="..\HV-Travel.Web\Services\ISupportChatService.cs" Link="ISupportChatService.cs" />
+    <Compile Include="..\HV-Travel.Web\Services\SupportChatService.cs" Link="SupportChatService.cs" />
+    <Compile Include="..\HV-Travel.Web\Validation\MustBeTrueAttribute.cs" Link="MustBeTrueAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>
