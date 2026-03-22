@@ -1,6 +1,7 @@
 services:
   hv-travel-web:
     image: hv-travel-web
+    restart: "no"
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,13 +10,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - HVTravelDatabase__ConnectionString=mongodb://mongodb:27017
-      - HVTravelDatabase__DatabaseName=HVTravelDb
-    depends_on:
-      - mongodb
+      - HVTravelDatabase__ConnectionString=${HVTravelDatabase__ConnectionString}
+      - HVTravelDatabase__DatabaseName=HV-Travel
 
   mongodb:
     image: mongo:latest
+    restart: "no"
+    profiles:
+      - local-db
     ports:
       - "27018:27017"
     volumes:
@@ -24,7 +26,7 @@ services:
   tunnel:
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
-    restart: always
+    restart: "no"
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN} # Token will be read from .env file
     depends_on:
