@@ -46,6 +46,7 @@
                     <textarea id="admin-chat-input" rows="3" class="w-full resize-none border-0 bg-transparent p-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500" placeholder="Chọn hội thoại để bắt đầu phản hồi..." disabled></textarea>
                     <div class="mt-3 flex items-center justify-between gap-3">
                         <p id="admin-chat-status" class="text-xs text-slate-400 dark:text-slate-500">Sidebar tin nhắn đang sẵn sàng.</p>
+                        <p class="text-xs text-primary/80 dark:text-primary-light/80">Nhấn Enter để gửi nhanh, Shift + Enter để xuống dòng.</p>
                         <button id="admin-chat-send" type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50" disabled>
                             <span class="material-symbols-outlined text-[18px]">send</span>
                             Gửi
@@ -340,6 +341,13 @@
                 setStatus(error.message || 'Không gửi được phản hồi.');
             } finally {
                 sendEl.disabled = false;
+            }
+        });
+
+        inputEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+                event.preventDefault();
+                formEl.requestSubmit();
             }
         });
 

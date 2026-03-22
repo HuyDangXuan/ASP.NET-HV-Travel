@@ -18,14 +18,21 @@ public class SupportChatController : Controller
     [HttpPost("bootstrap")]
     public async Task<IActionResult> Bootstrap([FromBody] ChatBootstrapRequest request)
     {
-        var conversation = await _supportChatService.BootstrapConversationAsync(request, User);
-        var messages = await _supportChatService.GetMessagesAsync(conversation.Id);
-
-        return Json(new
+        try
         {
-            conversation = ToConversationDto(conversation),
-            messages = messages.Select(ToMessageDto)
-        });
+            var conversation = await _supportChatService.BootstrapConversationAsync(request, User);
+            var messages = await _supportChatService.GetMessagesAsync(conversation.Id);
+
+            return Json(new
+            {
+                conversation = ToConversationDto(conversation),
+                messages = messages.Select(ToMessageDto)
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpGet("history")]

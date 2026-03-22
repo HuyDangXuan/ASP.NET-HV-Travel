@@ -78,8 +78,10 @@ public class CustomerAuthController : Controller
         {
             new(ClaimTypes.NameIdentifier, customer.Id ?? string.Empty),
             new(ClaimTypes.Name, customer.Email),
+            new(ClaimTypes.Email, customer.Email),
             new(ClaimTypes.Role, "Customer"),
             new("FullName", customer.FullName),
+            new("PhoneNumber", customer.PhoneNumber ?? string.Empty),
             new("CustomerCode", customer.CustomerCode ?? string.Empty),
             new("EmailVerified", customer.EmailVerified.ToString())
         };

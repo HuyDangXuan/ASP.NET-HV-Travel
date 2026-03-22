@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
@@ -22,6 +23,9 @@ public class SupportChatService : ISupportChatService
     {
         var isCustomer = user.Identity?.IsAuthenticated == true && user.IsInRole("Customer");
         var customerId = isCustomer ? user.FindFirst(ClaimTypes.NameIdentifier)?.Value : null;
+        var profile = ResolveProfile(request, user);
+
+        ValidateBootstrapRequest(profile);
 
         ChatConversation? conversation = null;
 
@@ -48,9 +52,9 @@ public class SupportChatService : ISupportChatService
                 VisitorSessionId = request.VisitorSessionId,
                 GuestProfile = new GuestChatProfile
                 {
-                    DisplayName = isCustomer ? user.FindFirst("FullName")?.Value ?? request.DisplayName.Trim() : request.DisplayName.Trim(),
-                    Email = request.Email.Trim(),
-                    PhoneNumber = request.PhoneNumber.Trim()
+                    DisplayName = profile.DisplayName,
+                    Email = profile.Email,
+                    PhoneNumber = profile.PhoneNumber
                 },
                 SourcePage = string.IsNullOrWhiteSpace(request.SourcePage) ? "/" : request.SourcePage,
                 LastMessageAt = DateTime.UtcNow,
@@ -75,13 +79,10 @@ public class SupportChatService : ISupportChatService
         else
         {
             conversation.SourcePage = string.IsNullOrWhiteSpace(request.SourcePage) ? conversation.SourcePage : request.SourcePage;
-            if (!isCustomer)
-            {
-                conversation.VisitorSessionId = string.IsNullOrWhiteSpace(request.VisitorSessionId) ? conversation.VisitorSessionId : request.VisitorSessionId;
-                conversation.GuestProfile.DisplayName = string.IsNullOrWhiteSpace(request.DisplayName) ? conversation.GuestProfile.DisplayName : request.DisplayName.Trim();
-                conversation.GuestProfile.Email = string.IsNullOrWhiteSpace(request.Email) ? conversation.GuestProfile.Email : request.Email.Trim();
-                conversation.GuestProfile.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? conversation.GuestProfile.PhoneNumber : request.PhoneNumber.Trim();
-            }
+            conversation.VisitorSessionId = string.IsNullOrWhiteSpace(request.VisitorSessionId) ? conversation.VisitorSessionId : request.VisitorSessionId;
+            conversation.GuestProfile.DisplayName = profile.DisplayName;
+            conversation.GuestProfile.Email = profile.Email;
+            conversation.GuestProfile.PhoneNumber = profile.PhoneNumber;
 
             conversation.UpdatedAt = DateTime.UtcNow;
             await _conversationRepository.UpdateAsync(conversation.Id, conversation);
@@ -229,5 +230,61 @@ public class SupportChatService : ISupportChatService
     private static string BuildPreview(string content)
     {
         return content.Length <= 120 ? content : $"{content[..117]}...";
+    }
+
+    private static GuestChatProfile ResolveProfile(ChatBootstrapRequest request, ClaimsPrincipal user)
+    {
+        var displayName = request.DisplayName.Trim();
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = user.FindFirst("FullName")?.Value?.Trim() ?? string.Empty;
+        }
+
+        var email = request.Email.Trim();
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            email = user.FindFirst(ClaimTypes.Email)?.Value?.Trim()
+                ?? user.FindFirst(ClaimTypes.Name)?.Value?.Trim()
+                ?? string.Empty;
+        }
+
+        var phoneNumber = request.PhoneNumber.Trim();
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            phoneNumber = user.FindFirst("PhoneNumber")?.Value?.Trim()
+                ?? user.FindFirst(ClaimTypes.MobilePhone)?.Value?.Trim()
+                ?? string.Empty;
+        }
+
+        return new GuestChatProfile
+        {
+            DisplayName = displayName,
+            Email = email,
+            PhoneNumber = phoneNumber
+        };
+    }
+
+    private static void ValidateBootstrapRequest(GuestChatProfile profile)
+    {
+        if (string.IsNullOrWhiteSpace(profile.DisplayName))
+        {
+            throw new ArgumentException("Display name is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(profile.Email))
+        {
+            throw new ArgumentException("Email is required.");
+        }
+
+        var emailValidator = new EmailAddressAttribute();
+        if (!emailValidator.IsValid(profile.Email))
+        {
+            throw new ArgumentException("Email is invalid.");
+        }
+
+        if (string.IsNullOrWhiteSpace(profile.PhoneNumber))
+        {
+            throw new ArgumentException("Phone number is required.");
+        }
     }
 }

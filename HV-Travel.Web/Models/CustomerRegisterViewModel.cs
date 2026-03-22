@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HVTravel.Web.Validation;
 
 namespace HVTravel.Web.Models;
 
@@ -31,6 +32,6 @@ public class CustomerRegisterViewModel
 
     public string Country { get; set; } = "Việt Nam";
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Bạn cần đồng ý với điều khoản để tiếp tục.")]
+    [MustBeTrue(ErrorMessage = "Bạn cần đồng ý với điều khoản để tiếp tục.")]
     public bool AcceptTerms { get; set; }
 }

@@ -107,6 +107,7 @@
                     <textarea id="admin-chat-input" rows="3" class="w-full resize-none border-0 bg-transparent p-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500" placeholder="Chọn hội thoại để bắt đầu phản hồi..." disabled></textarea>
                     <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <p class="text-xs text-slate-400 dark:text-slate-500">Nhấn Enter để xuống dòng. Dùng nút gửi để phản hồi và giữ lịch sử trao đổi rõ ràng.</p>
+                        <p class="text-xs text-primary/80 dark:text-primary-light/80">Nhấn Enter để gửi nhanh, Shift + Enter để xuống dòng.</p>
                         <button id="admin-chat-send" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50" disabled>
                             <span class="material-symbols-outlined text-[18px]">send</span>
                             Gửi phản hồi
@@ -535,6 +536,13 @@
                 setStatus(error.message || 'Không gửi được phản hồi.');
             } finally {
                 sendEl.disabled = false;
+            }
+        });
+
+        inputEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+                event.preventDefault();
+                formEl.requestSubmit();
             }
         });
 
