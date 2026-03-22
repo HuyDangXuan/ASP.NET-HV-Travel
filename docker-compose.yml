@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "5028:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
@@ -25,10 +25,10 @@ services:
 
   tunnel:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run --token ${LOCAL_TUNNEL_TOKEN}
     restart: "no"
     environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN} # Token will be read from .env file
+      - TUNNEL_TOKEN=${LOCAL_TUNNEL_TOKEN} # Token will be read from .env file
     depends_on:
       - hv-travel-web
 

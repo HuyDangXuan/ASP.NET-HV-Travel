@@ -1,146 +1,333 @@
-# ✈️ HV Travel - Hệ Thống Quản Lý Du Lịch Cao Cấp (Comprehensive Review)
+# HV Travel
 
-![HV-Travel](https://img.shields.io/badge/ASP.NET_Core-8.0-blue?style=for-the-badge&logo=dotnet) ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+Hệ thống quản lý và bán tour du lịch xây dựng trên **ASP.NET Core 8 MVC**, áp dụng kiến trúc phân tầng theo hướng **Domain / Application / Infrastructure / Web**. Repo này bao gồm:
 
-HV Travel là một hệ thống web toàn diện, hiệu suất cao dành cho các công ty du lịch và lữ hành. Dự án được triển khai trên nền tảng **ASP.NET Core 8.0 MVC** kết hợp với **MongoDB** cho thiết kế dữ liệu NoSQL linh hoạt, tuân thủ chặt chẽ kiến trúc **Clean Architecture** và **Repository Pattern**. Giao diện người dùng được xây dựng hoàn toàn tinh tế với **Tailwind CSS**, mang lại trải nghiệm UX/UI hiện đại với hỗ trợ *Dark Mode* toàn diện.
+- website public cho khách xem tour và đặt dịch vụ
+- khu vực đăng nhập/đăng ký khách hàng
+- trang quản trị cho đội ngũ vận hành
+- trung tâm chat hỗ trợ realtime giữa khách và admin
+- cấu hình Docker để chạy web, tunnel Cloudflare và MongoDB local khi cần
 
----
+## Tổng quan tính năng
 
-## 🏗 Kiến Trúc Hệ Thống (Clean Architecture)
+### Public Website
 
-Dự án được cấu trúc thành 4 tầng riêng biệt, tuân thủ nguyên tắc Dependency Inversion:
+- Trang chủ, giới thiệu, liên hệ
+- Danh sách tour và trang chi tiết tour
+- Luồng đặt chỗ, tư vấn và thanh toán
+- Nội dung public được phục vụ qua `PublicContentService`
 
-### 1. 🛡️ Tầng Lõi Nghiệp Vụ (`HV-Travel.Domain`)
-Nơi chứa các thực thể (Entities) cốt lõi và các Interfaces cơ bản. Không có bất kỳ dependency nào hướng ra bên ngoài.
-*   **Entities:**
-    *   `User`: Quản lý tài khoản quản trị (Role, Status, PasswordHash).
-    *   `Customer`: Lưu trữ hồ sơ, lịch sử giao dịch và phân khúc khách hàng (VIP, Potential, v.v.).
-    *   `Tour`: Lưu chi tiết sản phẩm du lịch (Tên, Mã, Giá, Địa điểm, Trạng thái, Lưu trữ mềm - Soft Delete).
-    *   `Booking`: Đơn đặt chỗ của khách, liên kết thông tin `TourSnapshot`, tổng số tiền và số người tham gia.
-    *   `Payment`: Lưu vết các giao dịch tài chính liên quan đến Booking.
-    *   `Review`, `Promotion`, `Notification`: Các module thành phần hỗ trợ hoạt động kinh doanh.
-*   **Interfaces**: `IRepository<T>` định nghĩa các thao tác CRUD chung.
+### Customer Experience
 
-### 2. ⚙️ Tầng Ứng Dụng (`HV-Travel.Application`)
-Chứa Business Logic, DTOs và định nghĩa Services.
-*   **Services**: `AuthService`, `DashboardService`, `TourService`. Xử lý các nghiệp vụ phức tạp mà Repositories thông thường không đảm nhận (Thống kê KPI, xác thực người dùng).
+- Đăng ký / đăng nhập khách hàng
+- Ghi nhận thông tin hồ sơ khách
+- Hỗ trợ chat realtime với nhân viên
+- Tự điền thông tin chat khi khách đã đăng nhập
 
-### 3. 💾 Tầng Hạ Tầng (`HV-Travel.Infrastructure`)
-Triển khai kỹ thuật của Interfaces được định nghĩa ở tầng Core.
-*   **Data Access**: `MongoDbContext.cs` để kết nối database thông qua chuỗi kết nối ở `appsettings.json`.
-*   **Repositories**: `MongoRepository<T>` triển khai các lệnh bất đồng bộ (`GetAllAsync`, `GetByIdAsync`, `InsertAsync`, `UpdateAsync`, `DeleteAsync`, `FindAsync`) cho mọi collection tương ứng của Model.
-*   **Seeding**: `DbInitializer.cs` đảm nhận tạo dữ liệu mấu hoặc thiết lập tài khoản Admin khởi tạo đầu tiên.
+### Admin Area
 
-### 4. 🎨 Tầng Trình Diễn (`HV-Travel.Web`)
-Chịu trách nhiệm tương tác bằng ASP.NET Core MVC (Controller + View).
-*   **Admin Area (`/Admin/`)**: Trang dành cho nhân viên quản trị (Controllers: `Dashboard`, `Tours`, `Bookings`, `Customers`, `Payments`, `Users`, `Auth`).
-*   **Giao Diện Phía Dưới**: View dùng Razor Engine với cấu trúc bố cục Layout (`_Layout.cshtml`), Header (`_Header.cshtml`) và giao diện nhất quán. Hỗ trợ AJAX cho các thao tác mượt mà và Modal/Popups thao tác UI.
+- Dashboard thống kê
+- Quản lý tours
+- Quản lý bookings
+- Quản lý customers
+- Quản lý payments
+- Quản lý users
+- Quản lý nội dung
+- Hộp thư và màn hình chat hỗ trợ khách hàng theo thời gian thực
 
----
+### Realtime Support Chat
 
-## 🚀 Tính Năng Nổi Bật
+- SignalR hub tại `/supportChatHub`
+- Chat widget phía public
+- Inbox/chat center phía admin
+- Khách chưa đăng nhập phải nhập thông tin trước khi chat
+- Khách đã đăng nhập có thể vào chat trực tiếp
+- Hỗ trợ `Enter để gửi`, `Shift + Enter để xuống dòng`
 
-### 🔐 1. Quản Lý Quyền & Xác Thực (Authentication & Authorization)
-*   **Cookie Authentication**: Quản lý phiên đăng nhập an toàn với Cookie (`.AspNetCore.Cookies`).
-*   **Role-based Access Control (RBAC)**: Phân quyền đa cấp độ bao gồm `Admin`, `Manager`, `Staff`, và `Guide`. Ví dụ: `Guide` có thể giới hạn truy cập chức năng Chỉnh sửa so với `Admin`.
+## Kiến trúc dự án
 
-### 📊 2. Dashboard Tiên Tiến & KPI Metrics
-*   Trang chủ Dashboard tổng hợp dữ liệu qua `DashboardService`.
-*   Cung cấp thẻ thông tin (KPI cards) như tổng doanh thu, biểu đồ đăng ký đặt tour mới, và danh sách các thay đổi trạng thái theo thời gian thực.
-*   Thống kê toàn cục trên phạm vi hệ thống.
+Repo được tách thành 4 project chính:
 
-### 🧩 3. Panels Bộ Lọc & Tìm Kiếm Thông Minh (Smart Filtering)
-Mọi trang danh sách (Tours, Bookings, Customers, Payments, Users) đều được chuẩn hóa hệ thống bảng với các tính năng sau:
-*   **Thanh Tìm Kiếm (Search)**: Tra cứu nhanh mã ID, Tên, hay Email.
-*   **Panel Bộ Lọc Trạng Thái Động**: Cung cấp thẻ lọc theo Tab (hoặc Dropdown/Radio) như "Đang Xử Lý", "Hoàn Tiền", "Đã Thanh Toán", "Thành Công/Thất Bại".
-*   **Sắp Xếp Cột Mũi Tên (Sorting)**: Cho phép nhấp vào tiêu đề bảng (Header) để đổi hướng sắp xếp ASC / DESC (Ngày tạo, Giá tiền, Trạng thái).
-*   **Bộ nhớ Filters**: Giá trị truy vấn được giữ nguyên khi điều hướng và sắp xếp cùng lúc qua biến `Query String`.
+### `HV-Travel.Domain`
 
-### 🛒 4. Tính Năng Nghiệp Vụ Chính
-*   **Tours**: Quản lý ảnh bìa, lịch trình, lưu lượng nhóm (`MaxParticipants`), và gắn Tag trạng thái mượt mà bằng UI.
-*   **Bookings**: Cung cấp cái nhìn toàn cảnh về đơn yêu cầu, kết xuất (Export - UI) chi tiết giá và trạng thái Booking (`Pending`, `Paid`, `Cancelled`).
-*   **Customers**: Phân tích lịch sử chi tiêu, tự động định danh (Tags phân khúc VIP/Potential) để có kế hoạch sale phù hợp.
-*   **Payments**: Phân biệt nguồn thu (Transactions) & nguồn chi (Expenses/Refunds). Tự động mapping Data từ Payment Status.
+Chứa entity, model và interface lõi của hệ thống.
 
-### 🌗 5. UX/UI Đẳng Cấp & Dark Mode
-*   Toàn bộ hệ thống kế thừa cấu hình `Tailwind CSS 3+` (hoạt động thông qua CDN hoặc Pre-compiled).
-*   **Theme Switcher**: Hỗ trợ chuyển đổi Sáng/Tối mượt mà qua các Icon mặt trời/mặt trăng ở góc Navbar, ghi nhớ qua `localStorage`.
-*   **Visual Elements**: Biểu tượng Material Symbols hiện đại, các Badge trạng thái đầy màu sắc với Dot Indicator (Chấm tròn), Glassmorphism (Kính lờ) và Micro-animations chuyển cảnh tinh tế.
+Entity tiêu biểu:
 
----
+- `Tour`
+- `Booking`
+- `Payment`
+- `Customer`
+- `User`
+- `Review`
+- `Promotion`
+- `Notification`
+- `ChatConversation`
+- `ChatMessage`
+- `ContentSection`
+- `SiteSettings`
 
-## 💻 Hướng Dẫn Kỹ Thuật (Developer Guide)
+### `HV-Travel.Application`
 
-### Yêu Cầu Chạy Tools
-1.  **SDK**: `.NET 8.0` SDK.
-2.  **Database**: MongoDB Server (chạy port mặc định `27017` hoặc khai báo Mongo Atlas URl).
+Chứa service nghiệp vụ ở tầng application:
 
-### ⚙️ Biến Môi Trường (`appsettings.json`)
-Cấu trúc cơ bản yêu cầu khi setup:
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "MongoDb": "mongodb://localhost:27017"
-  },
-  "DatabaseSettings": {
-    "DatabaseName": "HVTravelDb"
-  }
-}
+- `AuthService`
+- `DashboardService`
+- `TourService`
+
+### `HV-Travel.Infrastructure`
+
+Chứa phần triển khai hạ tầng:
+
+- MongoDB context
+- seeding dữ liệu
+- repository implementation
+
+Thành phần đáng chú ý:
+
+- `DbInitializer`
+- `Repository`
+- `TourRepository`
+
+### `HV-Travel.Web`
+
+Là project ASP.NET Core MVC chứa:
+
+- controller phía public
+- area `Admin`
+- SignalR hub
+- service web layer
+- Razor views
+
+Controller public:
+
+- `HomeController`
+- `PublicToursController`
+- `BookingController`
+- `CustomerAuthController`
+- `SupportChatController`
+
+Controller admin:
+
+- `DashboardController`
+- `ToursController`
+- `BookingsController`
+- `CustomersController`
+- `PaymentsController`
+- `UsersController`
+- `ContentController`
+- `MessagesController`
+- `AuthController`
+
+## Công nghệ sử dụng
+
+- **ASP.NET Core 8 MVC**
+- **SignalR**
+- **MongoDB**
+- **DotNetEnv** để nạp biến môi trường từ `.env`
+- **Tailwind CSS** trong giao diện
+- **xUnit** cho test
+- **Docker / Docker Compose**
+- **Cloudflare Tunnel**
+
+## Cấu trúc thư mục
+
+```text
+.
+├── HV-Travel.Domain
+├── HV-Travel.Application
+├── HV-Travel.Infrastructure
+├── HV-Travel.Web
+├── HV-Travel.Web.Tests
+├── docs
+├── scripts
+├── Dockerfile
+├── docker-compose.yml
+├── docker-commands.md
+└── HV-Travel.slnx
 ```
 
-### 🏃🏾 Cài đặt và Chạy hệ thống local
+## Yêu cầu môi trường
 
-1.  **Restore gói Dependencies:**
-    ```bash
-    dotnet restore
-    ```
-2.  **Khởi chạy Dự án:**
-    Sử dụng Terminal ở Root folder để watch (Hot reload):
-    ```bash
-    cd HV-Travel.Web
-    dotnet watch run
-    ```
-3.  **Tài Khoản Test (Seeded by DbInitializer):**
-    *   **User/Email**: `admin@hvtravel.com`
-    *   **Password**: `admin123`
-4.  Truy cập hệ thống tại: `http://localhost:5028/` hoặc `https://localhost:7190/` (Dựa trên launchSettings.json).
+Để chạy local bằng .NET:
 
----
+- .NET SDK 8.0
+- MongoDB local hoặc MongoDB Atlas
 
-## 🛠 Những Bản Cập Nhật Chú Ý Gần Đây
-*(Thông tin cung cấp dựa trên Tracking của Git/Các file log)*
-1.  **Chuẩn Hóa Bộ Lọc (Standardizing Filter Panels)**: Hệ thống bộ lọc đã được đồng bộ hóa trên `Tours`, `Bookings`, `Payments`, và `Users` theo giao diện của `Customers`. Loại bỏ thành công lỗi kẹt input ẩn (duplicate hidden `status`).
-2.  **Table Sorting**: Controllers đã được cập nhật tham số `sortOrder` động, kèm chức năng tích hợp bộ lọc cũ (duy trì `searchString`, `statusFilter`).
-3.  **UI Xác Thực (Auth UI)**: Áp dụng Dark Mode và Gradient Layout vào các trang Identity như Login (Đăng nhập) và Account Recovery.
+Để chạy bằng Docker:
 
----
-*Dành cho nhóm phát triển HV Travel - Phá vỡ rào cản nền tảng công nghệ trong ngành lữ hành!*
+- Docker Desktop
+- Docker Compose
 
----
+## Biến môi trường
 
-## 📱 Hướng Dẫn Mapping Dữ Liệu (Mobile App ↔ Backend ASP.NET)
+Ứng dụng đọc `.env` từ thư mục hiện tại hoặc ngược lên solution root thông qua `DotNetEnv`.
 
-Dự án này sử dụng cấu trúc dữ liệu tối ưu cho quản trị nghiệp vụ. Khi phát triển Mobile App (React Native), cần lưu ý các quy tắc mapping dữ liệu sau để đảm bảo đồng bộ với API trả về từ Backend. Toàn bộ API Response mặc định sử dụng format `camelCase`, và ID của MongoDB (`_id`) được biểu diễn qua `id` (kiểu string).
+Những biến quan trọng:
 
-### 1. Sự Khác Biệt Cấu Trúc Chính
-*   **User vs Customer:** Backend tách biệt hoàn toàn `User` (Dành cho Admin/Nhân viên nội bộ) và `Customer` (Dành cho khách hàng cuối). Mobile App **chỉ sử dụng entity `Customer`** để quản lý tài khoản người dùng, không gọi vào bảng `User`.
-*   **Không có Collection Danh mục (Category/City):** Backend thiết kế NoSQL tối ưu số lần đọc bằng cách nhúng trực tiếp.
-    *   `Category` được lưu dạng chuỗi giá trị trực tiếp (VD: `"Adventure"`, `"Luxury"`) trong document `Tour`.
-    *   `City` được nhúng thành object `destination: { city, country, region }` trong bảng `Tour`. Mobile filter bằng cách query string trực tiếp.
-*   **Thuộc tính Hình ảnh (Images):** Không tách rời `thumbnail` và `gallery`. Gộp chung thành mảng `images: string[]` trên entity `Tour`. Ảnh đầu tiên (`images[0]`) mặc định là ảnh đại diện.
-*   **Cấu trúc Giá (Pricing):** Entity `Tour` sử dụng object `price: { adult, child, infant, currency, discount }`. Backend đã gộp `newPrice` và `discount` cũ vào chung thuộc tính `discount` (tính theo %). Thuộc tính vé trẻ em dùng `child` và `infant` (không dùng `children`/`baby`).
+| Biến | Mục đích |
+|---|---|
+| `HVTravelDatabase__ConnectionString` | Chuỗi kết nối MongoDB |
+| `HVTravelDatabase__DatabaseName` | Tên database MongoDB |
+| `TUNNEL_TOKEN` | Token Cloudflare Tunnel cũ hoặc tunnel Docker cũ |
+| `LOCAL_TUNNEL_TOKEN` | Token Cloudflare Tunnel mới dùng cho local app |
+| `CLOUDINARY__CLOUDNAME` | Cloudinary cloud name |
+| `CLOUDINARY__UPLOADPRESET` | Cloudinary upload preset |
+| `TINYMCE__APIKEY` | API key TinyMCE |
+| `SMTP_HOST` | SMTP server |
+| `SMTP_PORT` | SMTP port |
+| `SMTP_SECURE` | SMTP secure flag |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password |
+| `MAIL_TO` | Email nhận thông báo |
+| `MAIL_FROM_NAME` | Tên người gửi mail |
 
-### 2. Mapping Các Thực Thể Giao Dịch
-*   **Tour Duration:** Thay vì chuỗi text thuần túy, frontend cần map qua object `duration: { days, nights, text }` để linh hoạt tính toán logic UI.
-*   **Hành Khách (Passengers):** Khi tạo `Booking`, không truyền số lượng đơn thuần mà phải truyền mảng object chi tiết `passengers: [{ fullName, type: "Adult"|"Child"|"Infant" }]`. Việc giới hạn số chỗ dựa trên `tour.maxParticipants` và `tour.currentParticipants`.
-*   **Payment (Thanh Toán):** Tách biệt hoàn toàn khỏi `Booking`. Phương thức thanh toán được định nghĩa qua `paymentMethod` (`"CreditCard"`, `"BankTransfer"`, `"Cash"`). Mobile App cần gọi API tạo Payment riêng biệt sau khi Booking thành công.
-*   **Reviews (Đánh giá):** Entity độc lập, liên kết qua `tourId` và `customerId`. Không embed vào bảng `Tour` để tránh phình to kích thước document. Khi fetch cần nối (populate) thông tin khách hàng.
+Khuyến nghị:
 
-*(Xem chi tiết từng field trong tài liệu `data_mapping_analysis.md`)*
+- không commit `.env` thật lên remote public
+- dùng `.env.example` nếu bạn muốn chuẩn hóa onboarding cho team
+
+## Chạy local bằng .NET
+
+Restore package:
+
+```bash
+dotnet restore
+```
+
+Chạy web app:
+
+```bash
+cd HV-Travel.Web
+dotnet watch run
+```
+
+Các URL local theo `launchSettings.json`:
+
+- `http://localhost:5028`
+- `https://localhost:7190`
+
+## Tài khoản seed mặc định
+
+Seeder hiện tạo sẵn tài khoản admin mặc định:
+
+- Email: `admin@hvtravel.com`
+- Password: `admin123`
+
+Lưu ý:
+
+- đây là tài khoản seed cho môi trường phát triển
+- nên đổi hoặc vô hiệu hóa ở môi trường production
+
+## Chạy bằng Docker
+
+### Build image
+
+```powershell
+docker compose build
+```
+
+### Chạy mặc định web + Cloudflare Tunnel
+
+```powershell
+docker compose up -d
+```
+
+Với cấu hình hiện tại:
+
+- `hv-travel-web` được publish ra host tại `http://localhost:5028`
+- `tunnel` chạy cùng stack
+- `mongodb` **không** chạy mặc định
+
+### Chạy thêm MongoDB local
+
+MongoDB local đang nằm trong profile `local-db`:
+
+```powershell
+docker compose --profile local-db up -d
+```
+
+Hoặc chỉ chạy MongoDB local:
+
+```powershell
+docker compose --profile local-db up -d mongodb
+```
+
+MongoDB local được map ra:
+
+- `localhost:27018`
+
+### Cloudflare Tunnel
+
+Repo đã có service `tunnel` dùng:
+
+```yaml
+cloudflare/cloudflared:latest
+tunnel --no-autoupdate run --token ${LOCAL_TUNNEL_TOKEN}
+```
+
+Hostname public được điều khiển từ cấu hình tunnel trên Cloudflare, không phải bởi lệnh `docker compose build`.
+
+Khi tunnel được cấu hình đúng, app có thể được truy cập qua domain public của bạn, ví dụ:
+
+- `https://hv-travel.fshdx2105.id.vn/`
+
+### Các lệnh Docker thường dùng
+
+Xem file:
+
+[docker-commands.md](./docker-commands.md)
+
+## Kiểm thử
+
+Project test hiện có:
+
+- `HV-Travel.Web.Tests`
+
+Chạy test:
+
+```bash
+dotnet test HV-Travel.Web.Tests/HV-Travel.Web.Tests.csproj
+```
+
+Một số nhóm test hiện có:
+
+- validate bootstrap của support chat
+- validate checkbox điều khoản
+- regression test cho keyboard shortcut trong chat
+
+## File đáng chú ý
+
+- [HV-Travel.Web/Program.cs](./HV-Travel.Web/Program.cs)
+  Nơi đăng ký service, auth scheme, SignalR hub và seeding
+
+- [HV-Travel.Infrastructure/Data/DbInitializer.cs](./HV-Travel.Infrastructure/Data/DbInitializer.cs)
+  Seeder dữ liệu và tài khoản mặc định
+
+- [docker-compose.yml](./docker-compose.yml)
+  Cấu hình Docker Compose cho web, tunnel và MongoDB local
+
+- [Dockerfile](./Dockerfile)
+  Multi-stage build cho ASP.NET Core
+
+- [HV-Travel.Web/README_BOOKING.md](./HV-Travel.Web/README_BOOKING.md)
+  Tài liệu chi tiết riêng cho luồng booking
+
+## Ghi chú vận hành
+
+- Ứng dụng hiện có một số warning nullability khi build, nhưng vẫn build và chạy được
+- Data Protection key trong container hiện chưa được persist ra volume riêng
+- Nếu dùng Cloudflare Tunnel trong Docker, service đích nên là `http://hv-travel-web:8080`
+- Nếu dùng MongoDB Atlas, không cần bật service `mongodb`
+
+## Hướng phát triển đề xuất
+
+- thêm `.env.example`
+- thêm migration/seed guide rõ ràng hơn cho môi trường mới
+- bổ sung test cho controller và view model quan trọng
+- chuẩn hóa tài liệu triển khai production
+- persist Data Protection keys khi chạy Docker
+
+## License
+
+Hiện repo chưa khai báo license riêng trong README. Nếu đây là dự án nội bộ, nên bổ sung ghi chú sử dụng nội bộ hoặc thêm file `LICENSE` phù hợp.

@@ -6,7 +6,7 @@ Tai lieu nay tong hop cac lenh Docker Compose hay dung cho du an `ASP.NET-HV-Tra
 
 - File `docker-compose.yml` hien dang de `restart: "no"`, nen container se khong tu dong start lai.
 - App web doc `HVTravelDatabase__ConnectionString` tu file `.env`.
-- Web mac dinh chay tai `http://localhost:8080`.
+- Web trong Docker duoc publish tai `http://localhost:5028`.
 - Mongo local neu duoc start se map ra `localhost:27018`.
 
 ## Build

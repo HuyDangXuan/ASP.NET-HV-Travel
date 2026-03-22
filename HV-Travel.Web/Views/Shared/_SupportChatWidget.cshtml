@@ -15,11 +15,16 @@
 
     #support-chat-panel {
         width: min(100vw - 1.75rem, 30rem);
+        height: min(48rem, calc(100dvh - 1.75rem));
         max-height: min(48rem, calc(100dvh - 1.75rem));
     }
 
     #support-chat-messages {
         min-height: 0;
+    }
+
+    #support-chat-thread {
+        min-height: 100%;
     }
 
     @@media (max-width: 640px), (max-height: 760px) {
@@ -30,6 +35,7 @@
 
         #support-chat-panel {
             width: 100%;
+            height: calc(100dvh - 1.5rem);
             max-width: none;
             max-height: calc(100dvh - 1.5rem);
             border-radius: 1.75rem;
@@ -42,12 +48,12 @@
         @Html.AntiForgeryToken()
     </form>
 
-    <div id="support-chat-panel" class="hidden flex-col overflow-hidden border border-border-light/80 bg-surface-light shadow-2xl shadow-slate-900/20 dark:border-border-dark dark:bg-surface-dark sm:rounded-[2rem]">
+    <div id="support-chat-panel" class="public-chat-panel hidden flex-col overflow-hidden border border-border-light/80 bg-surface-light shadow-2xl shadow-slate-900/20 dark:border-border-dark dark:bg-surface-dark sm:rounded-[2rem]">
         <div class="hero-gradient shrink-0 px-5 py-5 text-white sm:px-6">
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="max-w-[82%]">
                     <p class="text-[11px] font-bold uppercase tracking-[0.34em] text-primary-light/90">Tư vấn trực tuyến</p>
-                    <h3 class="mt-3 text-2xl font-bold leading-tight">Hỗ trợ trực tuyến dành riêng cho chuyến đi của bạn</h3>
+                    <h3 class="public-chat-title mt-3 text-2xl font-bold leading-tight">Hỗ trợ trực tuyến dành riêng cho chuyến đi của bạn</h3>
                 </div>
                 <button id="support-chat-close" type="button" class="inline-flex size-11 items-center justify-center rounded-2xl bg-white/10 text-white transition-all hover:bg-white/20">
                     <span class="material-symbols-outlined text-[20px]">close</span>
@@ -55,88 +61,78 @@
             </div>
         </div>
 
-        <div id="support-chat-intro-step" class="flex flex-1 flex-col overflow-y-auto bg-gradient-to-b from-white via-slate-50/70 to-slate-100/80 px-5 py-5 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:px-6">
-            <div class="rounded-[1.75rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
-                <div class="flex items-start gap-4">
-                    <div class="flex size-14 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-accent/25 text-primary shadow-lg shadow-primary/10 dark:text-primary-light">
-                        <span class="material-symbols-outlined text-[28px]">support_agent</span>
-                    </div>
-                    <div class="min-w-0">
-                        <p class="text-xs font-bold uppercase tracking-[0.28em] text-primary/80 dark:text-primary-light/90">Bước 1 / 2</p>
-                        <h4 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Xác nhận thông tin để bắt đầu trò chuyện</h4>
-                    </div>
-                </div>
-
-                <form id="support-chat-profile-form" class="mt-6 space-y-4">
-                    <div>
-                        <label for="support-chat-display-name" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Tên hiển thị</label>
-                        <input id="support-chat-display-name" value="@(isCustomer ? customerName : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="Nguyễn Văn A" />
-                        <p id="support-chat-display-name-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
-                    </div>
-
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <label for="support-chat-email" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Email</label>
-                            <input id="support-chat-email" type="email" value="@(isCustomer ? customerEmail : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="email@example.com" />
-                            <p id="support-chat-email-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
-                        </div>
-                        <div>
-                            <label for="support-chat-phone" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Số điện thoại</label>
-                            <input id="support-chat-phone" value="@(isCustomer ? customerPhone : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="09xx xxx xxx" />
-                            <p id="support-chat-phone-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
-                        </div>
-                    </div>
-
-                    <div class="rounded-[1.5rem] border border-primary/10 bg-primary/5 px-4 py-3 text-sm text-slate-600 dark:border-primary/20 dark:bg-primary/10 dark:text-slate-300">
-                        @if (isCustomer)
-                        {
-                            <p>Thông tin đã được điền sẵn từ tài khoản của bạn. Bạn có thể kiểm tra lại trước khi bắt đầu chat.</p>
-                        }
-                        else
-                        {
-                            <p>Vui lòng điền đủ thông tin để đội ngũ tư vấn theo sát đúng hành trình và dễ liên hệ lại khi cần.</p>
-                        }
-                    </div>
-
-                    <div id="support-chat-intro-status" class="hidden rounded-2xl border px-4 py-3 text-sm"></div>
-
-                    <div class="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:items-center sm:justify-center">
-                        <button id="support-chat-start" type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:brightness-105">
-                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                            Bắt đầu trò chuyện
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div id="support-chat-chat-step" class="hidden min-h-0 flex-1 flex-col">
+        <div id="support-chat-chat-step" class="min-h-0 flex flex-1 flex-col">
             <div class="shrink-0 border-b border-border-light bg-surface-light/95 px-5 py-4 backdrop-blur dark:border-border-dark dark:bg-surface-dark/95 sm:px-6">
-                <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 dark:text-primary-light/90">Bước 2 / 2</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary/80 dark:text-primary-light/90">Hỗ trợ trực tuyến</p>
                         <h4 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Phòng chat hỗ trợ của bạn</h4>
-                        <p id="support-chat-chat-status" class="mt-2 text-sm text-slate-500 dark:text-slate-400">Hệ thống chat đang sẵn sàng.</p>
+                        <p id="support-chat-chat-status" class="public-chat-status mt-2 text-sm text-slate-500 dark:text-slate-400">Hệ thống chat đang sẵn sàng.</p>
                     </div>
-                    <div class="flex items-center gap-2 rounded-2xl border border-border-light bg-surface-muted-light px-3 py-2 text-right whitespace-nowrap dark:border-border-dark dark:bg-surface-elevated-dark">
+                    <div class="flex max-w-full flex-wrap items-center justify-end gap-2 rounded-2xl border border-border-light bg-surface-muted-light px-3 py-2 text-right dark:border-border-dark dark:bg-surface-elevated-dark sm:whitespace-nowrap">
                         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Liên hệ</p>
                         <p id="support-chat-summary-name" class="text-sm font-semibold text-slate-900 dark:text-white"></p>
                     </div>
                 </div>
             </div>
 
-            <div id="support-chat-messages" class="min-h-[240px] flex-1 space-y-3 overflow-y-auto bg-slate-50/70 px-5 py-5 dark:bg-slate-950/70 sm:px-6">
-                <div class="rounded-3xl border border-dashed border-border-light bg-white/70 px-4 py-8 text-center text-sm text-slate-400 dark:border-border-dark dark:bg-surface-elevated-dark/45 dark:text-slate-500">
-                    Khung chat sẽ hiển thị lịch sử hội thoại sau khi bạn xác nhận thông tin.
+            <div id="support-chat-messages" class="min-h-[240px] flex flex-1 flex-col overflow-y-auto bg-slate-50/70 px-5 py-5 dark:bg-slate-950/70 sm:px-6">
+                <div id="support-chat-profile-card" class="hidden flex min-h-full flex-1 flex-col justify-center rounded-[1.75rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-slate-900/5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+                    <div class="flex items-start gap-4">
+                        <div class="flex size-14 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-primary/20 via-primary/10 to-accent/25 text-primary shadow-lg shadow-primary/10 dark:text-primary-light">
+                            <span class="material-symbols-outlined text-[28px]">support_agent</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold uppercase tracking-[0.28em] text-primary/80 dark:text-primary-light/90">Xác nhận thông tin</p>
+                            <h4 class="mt-2 text-lg font-bold text-slate-900 dark:text-white">Để lại thông tin để bắt đầu trò chuyện</h4>
+                            <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">Điền nhanh vài thông tin để đội ngũ tư vấn theo sát đúng hành trình và liên hệ lại khi cần.</p>
+                        </div>
+                    </div>
+
+                    <form id="support-chat-profile-form" class="mt-6 space-y-4">
+                        <div>
+                            <label for="support-chat-display-name" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Tên hiển thị</label>
+                            <input id="support-chat-display-name" value="@(isCustomer ? customerName : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="Nguyễn Văn A" />
+                            <p id="support-chat-display-name-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="support-chat-email" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Email</label>
+                                <input id="support-chat-email" type="email" value="@(isCustomer ? customerEmail : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="email@example.com" />
+                                <p id="support-chat-email-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
+                            </div>
+                            <div>
+                                <label for="support-chat-phone" class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Số điện thoại</label>
+                                <input id="support-chat-phone" value="@(isCustomer ? customerPhone : "")" class="w-full rounded-2xl border border-border-light bg-surface-light px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-border-dark dark:bg-surface-elevated-dark dark:text-white" placeholder="09xx xxx xxx" />
+                                <p id="support-chat-phone-error" class="mt-2 hidden text-xs font-medium text-red-500"></p>
+                            </div>
+                        </div>
+
+                        <div id="support-chat-intro-status" class="hidden rounded-2xl border px-4 py-3 text-sm"></div>
+
+                        <div class="flex flex-col items-center gap-3 pt-1 sm:flex-row sm:items-center sm:justify-center">
+                            <button id="support-chat-start" type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:brightness-105">
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                Bắt đầu trò chuyện
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="support-chat-thread" class="flex flex-1 flex-col space-y-3">
+                    <div class="flex flex-1 items-center justify-center rounded-3xl border border-dashed border-border-light bg-white/70 px-4 py-8 text-center text-sm text-slate-400 dark:border-border-dark dark:bg-surface-elevated-dark/45 dark:text-slate-500">
+                        Khung chat sẽ hiển thị lịch sử hội thoại sau khi bạn xác nhận thông tin.
+                    </div>
                 </div>
             </div>
 
-            <form id="support-chat-form" class="shrink-0 border-t border-border-light bg-surface-light px-5 py-4 dark:border-border-dark dark:bg-surface-dark sm:px-6">
+            <form id="support-chat-form" class="public-chat-composer shrink-0 border-t border-border-light bg-surface-light px-5 py-4 dark:border-border-dark dark:bg-surface-dark sm:px-6">
                 <div class="rounded-[1.75rem] border border-border-light bg-white p-3 shadow-sm dark:border-border-dark dark:bg-surface-elevated-dark">
-                    <textarea id="support-chat-input" rows="3" class="w-full h-[40px] resize-none border-0 bg-transparent p-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
+                    <textarea id="support-chat-input" rows="3" class="h-[40px] w-full resize-none border-0 bg-transparent p-1 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 dark:text-white dark:placeholder:text-slate-500" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
                     <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-[11px] leading-relaxed text-primary/80 dark:text-primary-light/80">Nhấn Enter để gửi, Shift+Enter để xuống dòng.</p>
-                        <button id="support-chat-send" type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:brightness-105">
+                        <p id="support-chat-input-hint" class="text-[11px] leading-relaxed text-primary/80 dark:text-primary-light/80">Nhấn Enter để gửi, Shift+Enter để xuống dòng.</p>
+                        <button id="support-chat-send" type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60">
                             <span class="material-symbols-outlined text-[18px]">send</span>
                             Gửi
                         </button>
@@ -165,13 +161,15 @@
         const panelEl = document.getElementById('support-chat-panel');
         const toggleEl = document.getElementById('support-chat-toggle');
         const closeEl = document.getElementById('support-chat-close');
-        const introStepEl = document.getElementById('support-chat-intro-step');
         const chatStepEl = document.getElementById('support-chat-chat-step');
+        const profileCardEl = document.getElementById('support-chat-profile-card');
         const introStatusEl = document.getElementById('support-chat-intro-status');
         const chatStatusEl = document.getElementById('support-chat-chat-status');
         const summaryNameEl = document.getElementById('support-chat-summary-name');
         const messagesEl = document.getElementById('support-chat-messages');
+        const threadEl = document.getElementById('support-chat-thread');
         const inputEl = document.getElementById('support-chat-input');
+        const inputHintEl = document.getElementById('support-chat-input-hint');
         const formEl = document.getElementById('support-chat-form');
         const profileFormEl = document.getElementById('support-chat-profile-form');
         const startButtonEl = document.getElementById('support-chat-start');
@@ -300,36 +298,46 @@
             summaryNameEl.textContent = profile.displayName || 'Khách hàng HV Travel';
         };
 
-        const showIntroStep = () => {
-            introStepEl.classList.remove('hidden');
-            introStepEl.classList.add('flex');
-            chatStepEl.classList.add('hidden');
-            chatStepEl.classList.remove('flex');
-            clearValidationErrors();
-            if (!state.bootstrapped) {
+        const updateComposerState = () => {
+            const locked = !state.bootstrapped && !state.isCustomer;
+            inputEl.disabled = locked;
+            sendButtonEl.disabled = locked;
+            inputEl.placeholder = locked
+                ? 'Xác nhận thông tin trước để bắt đầu trò chuyện...'
+                : 'Nhập nội dung cần hỗ trợ...';
+            inputHintEl.textContent = locked
+                ? 'Điền thông tin ở trên để mở khóa khung chat.'
+                : 'Nhấn Enter để gửi, Shift+Enter để xuống dòng.';
+        };
+
+        const updateGuestProfileCard = () => {
+            const shouldShowProfileCard = !state.bootstrapped && !state.isCustomer;
+            profileCardEl.classList.toggle('hidden', !shouldShowProfileCard);
+        };
+
+        const showChatStep = () => {
+            chatStepEl.classList.remove('hidden');
+            chatStepEl.classList.add('flex');
+            updateSummary();
+            updateGuestProfileCard();
+            updateComposerState();
+            if (state.bootstrapped || state.isCustomer) {
                 setIntroStatus('', 'neutral');
             }
         };
 
-        const showChatStep = () => {
-            introStepEl.classList.add('hidden');
-            introStepEl.classList.remove('flex');
-            chatStepEl.classList.remove('hidden');
-            chatStepEl.classList.add('flex');
-            updateSummary();
-            setIntroStatus('', 'neutral');
-        };
-
         const renderMessages = () => {
             if (!state.messages.length) {
-                messagesEl.innerHTML = `
+                threadEl.innerHTML = `
                     <div class="rounded-3xl border border-dashed border-border-light bg-white/70 px-4 py-8 text-center text-sm text-slate-400 dark:border-border-dark dark:bg-surface-elevated-dark/45 dark:text-slate-500">
-                        Hội thoại của bạn đã sẵn sàng. Hãy gửi tin nhắn đầu tiên để đội ngũ HV Travel hỗ trợ ngay.
+                        ${state.bootstrapped
+                            ? 'Hội thoại của bạn đã sẵn sàng. Hãy gửi tin nhắn đầu tiên để đội ngũ HV Travel hỗ trợ ngay.'
+                            : 'Xác nhận thông tin ở trên để bắt đầu cuộc trò chuyện với đội ngũ HV Travel.'}
                     </div>`;
                 return;
             }
 
-            messagesEl.innerHTML = state.messages.map((message) => {
+            threadEl.innerHTML = state.messages.map((message) => {
                 const isStaff = message.senderType === 'staff';
                 const alignment = isStaff ? 'items-start' : 'items-end';
                 const bubble = isStaff
@@ -353,9 +361,9 @@
 
         const setBusyState = (isBusy) => {
             startButtonEl.disabled = isBusy;
-            sendButtonEl.disabled = isBusy;
+            sendButtonEl.disabled = isBusy || (!state.bootstrapped && !state.isCustomer);
             startButtonEl.classList.toggle('opacity-70', isBusy);
-            sendButtonEl.classList.toggle('opacity-70', isBusy);
+            sendButtonEl.classList.toggle('opacity-70', isBusy || (!state.bootstrapped && !state.isCustomer));
         };
 
         const ensureConnection = async () => {
@@ -426,6 +434,7 @@
             state.bootstrapped = true;
             updateSummary();
             renderMessages();
+            showChatStep();
             await ensureConnection();
             await joinConversation();
             await markRead();
@@ -452,16 +461,15 @@
             panelEl.classList.remove('hidden');
             panelEl.classList.add('flex');
             toggleEl.classList.add('hidden');
+            showChatStep();
 
             if (state.bootstrapped) {
-                showChatStep();
                 renderMessages();
                 requestAnimationFrame(() => inputEl.focus());
                 return;
             }
 
             if (state.isCustomer) {
-                showChatStep();
                 setChatStatus('Đang kết nối cuộc trò chuyện của bạn...');
                 bootstrapAndOpenChat(true).catch((error) => {
                     setChatStatus(error.message || 'Không thể khởi tạo chat.');
@@ -469,8 +477,9 @@
                 return;
             }
 
-            showIntroStep();
+            setChatStatus('Điền thông tin để bắt đầu cuộc trò chuyện với đội ngũ tư vấn.');
             setIntroStatus('Vui lòng xác nhận thông tin trước khi bắt đầu chat.', 'neutral');
+            renderMessages();
             requestAnimationFrame(() => {
                 if (!displayNameEl.value.trim()) {
                     displayNameEl.focus();
@@ -505,7 +514,7 @@
                     await bootstrap(profile);
                 }
 
-                showChatStep();
+                renderMessages();
                 setChatStatus('Hội thoại đã sẵn sàng. Bạn có thể gửi tin nhắn ngay bây giờ.');
                 if (!skipValidation) {
                     setIntroStatus('Thông tin đã được xác nhận thành công.', 'success');
@@ -519,6 +528,7 @@
                 }
             } finally {
                 setBusyState(false);
+                updateComposerState();
             }
         };
 
@@ -550,6 +560,7 @@
                 setChatStatus(error.message || 'Không gửi được tin nhắn.');
             } finally {
                 setBusyState(false);
+                updateComposerState();
             }
         });
 
@@ -564,13 +575,17 @@
             field.addEventListener('input', () => {
                 updateSummary();
                 clearValidationErrors();
-                if (!state.bootstrapped) {
+                if (!state.bootstrapped && !state.isCustomer) {
                     setIntroStatus('Thông tin của bạn sẽ được dùng để tạo hội thoại hỗ trợ.', 'neutral');
                 }
             });
         });
 
+        showChatStep();
+        renderMessages();
         updateSummary();
-        setChatStatus('Hệ thống chat đang sẵn sàng.');
+        setChatStatus(state.isCustomer ? 'Hệ thống chat đang sẵn sàng.' : 'Điền thông tin để bắt đầu cuộc trò chuyện với đội ngũ tư vấn.');
     })();
 </script>
+
+

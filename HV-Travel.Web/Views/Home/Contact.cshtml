@@ -24,14 +24,14 @@
             <div class="absolute bottom-10 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative z-10 text-center" data-animate="fade-up">
-            <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
+            <span class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
                 <span class="material-symbols-outlined text-primary text-[16px]">call</span>
                 @hero.Fields.GetFieldValue("badgeText", "Liên Hệ")
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+            <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
                 @hero.Fields.GetFieldValue("title", "Chúng Tôi Luôn Sẵn Sàng Lắng Nghe")
             </h1>
-            <div class="text-lg text-slate-300 max-w-2xl mx-auto">
+            <div class="public-body-copy text-lg text-slate-300 max-w-2xl mx-auto">
                 @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
             </div>
         </div>
@@ -40,7 +40,7 @@
 
 <section class="py-20 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-5 gap-12">
+        <div class="public-card-grid grid lg:grid-cols-5 gap-12">
             @if (cards?.IsEnabled != false)
             {
                 <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
@@ -94,7 +94,7 @@
             @if (formIntro?.IsEnabled != false)
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
+                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@formIntro.Fields.GetFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
                         <div class="text-sm text-slate-500 dark:text-slate-400 mb-8">
                             @Html.Raw(formIntro.Fields.GetFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."))
