@@ -60,7 +60,9 @@ public class PublicResponsiveMarkupTests
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Shared\_SupportChatWidget.cshtml"));
 
         Assert.Contains("public-chat-panel", content);
-        Assert.Contains("public-chat-title", content);
+        Assert.Contains("public-chat-onboarding", content);
+        Assert.Contains("public-chat-thread", content);
+        Assert.Contains("public-chat-bubble", content);
         Assert.Contains("public-chat-status", content);
         Assert.Contains("public-chat-composer", content);
     }
@@ -77,3 +79,7 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
+
+
+

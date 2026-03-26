@@ -3,16 +3,28 @@
 public class SupportChatWidgetLayoutTests
 {
     [Fact]
-    public void GuestChat_UsesUnifiedChatStepLayout()
+    public void GuestChat_UsesSeparateOnboardingAndConversationStates()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Shared\_SupportChatWidget.cshtml"));
 
-        Assert.DoesNotContain("support-chat-intro-step", content);
-        Assert.Contains("support-chat-profile-card", content);
-        Assert.Contains("support-chat-chat-step", content);
+        Assert.Contains("support-chat-onboarding-step", content);
+        Assert.Contains("support-chat-conversation-step", content);
+        Assert.DoesNotContain("support-chat-profile-card", content);
+        Assert.DoesNotContain("support-chat-chat-step", content);
+        Assert.Contains("support-chat-conversation-mode", content);
+    }
+
+    [Fact]
+    public void ActiveConversation_PrioritizesThreadOverDecorativeChrome()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Shared\_SupportChatWidget.cshtml"));
+
         Assert.Contains("support-chat-messages", content);
-        Assert.Contains("support-chat-messages\" class=\"min-h-[240px] flex flex-1 flex-col", content);
-        Assert.Contains("support-chat-profile-card\" class=\"hidden flex min-h-full", content);
+        Assert.Contains("support-chat-thread", content);
+        Assert.Contains("public-chat-thread", content);
+        Assert.Contains("public-chat-bubble", content);
+        Assert.DoesNotContain("public-chat-conversation-header", content);
+        Assert.DoesNotContain("hero-gradient shrink-0 px-5 py-5 text-white", content);
     }
 
     private static string GetRepoPath(string relativePath)
@@ -21,5 +33,7 @@ public class SupportChatWidgetLayoutTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
+
 
 

@@ -239,6 +239,32 @@ Với cấu hình hiện tại:
 - `tunnel` chạy cùng stack
 - `mongodb` **không** chạy mặc định
 
+### Chạy Docker ở chế độ hot reload
+
+Để sửa code local và thấy thay đổi ngay trong container, dùng thêm file override dev:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d hv-travel-web
+```
+
+Chế độ này:
+
+- mount source code từ máy local vào container
+- chạy `dotnet watch` trong container
+- vẫn publish web ra `http://localhost:5028`
+
+Nếu muốn chạy kèm MongoDB local:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile local-db up -d mongodb hv-travel-web
+```
+
+Xem log hot reload:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f hv-travel-web
+```
+
 ### Chạy thêm MongoDB local
 
 MongoDB local đang nằm trong profile `local-db`:

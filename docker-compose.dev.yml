@@ -1,0 +1,23 @@
+services:
+  hv-travel-web:
+    build:
+      target: build
+    working_dir: /src
+    command: >
+      dotnet watch run
+      --project HV-Travel.Web/HV-Travel.Web.csproj
+      --no-launch-profile
+      --urls http://0.0.0.0:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_WATCH_RESTART_ON_RUDE_EDIT=1
+      - HVTravelDatabase__ConnectionString=${HVTravelDatabase__ConnectionString}
+      - HVTravelDatabase__DatabaseName=HV-Travel
+    volumes:
+      - .:/src
+      - nuget_packages:/root/.nuget/packages
+
+volumes:
+  nuget_packages:

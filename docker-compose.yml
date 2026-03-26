@@ -1,7 +1,7 @@
 services:
   hv-travel-web:
     image: hv-travel-web
-    restart: "no"
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,10 +25,10 @@ services:
 
   tunnel:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${LOCAL_TUNNEL_TOKEN}
-    restart: "no"
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    restart: unless-stopped
     environment:
-      - TUNNEL_TOKEN=${LOCAL_TUNNEL_TOKEN} # Token will be read from .env file
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN} # Token will be read from .env file
     depends_on:
       - hv-travel-web
 
