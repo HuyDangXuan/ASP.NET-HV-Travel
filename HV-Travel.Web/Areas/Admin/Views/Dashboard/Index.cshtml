@@ -1,3 +1,5 @@
+﻿@using System.Globalization
+@using System.Text.Json
 @model HVTravel.Web.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Tổng Quan";
@@ -19,31 +21,58 @@
         { "Full", "Đã thanh toán" },
         { "Refunded", "Đã hoàn tiền" }
     };
-    
-    // Helper function to safely get translated status
+
+    var revenueChart = Model.RevenueChart ?? new HVTravel.Application.Models.DashboardRevenueStatsResult();
+    var revenuePoints = revenueChart.Points ?? new List<HVTravel.Application.Models.DashboardRevenuePoint>();
+    var revenueMax = revenuePoints.Any() ? Math.Max(revenuePoints.Max(point => point.Value), 1m) : 1m;
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
     string GetStatusVietnamese(string status)
     {
         if (string.IsNullOrEmpty(status)) return "N/A";
-        
-        // Try exact match
+
         if (bookingStatusMapping.ContainsKey(status)) return bookingStatusMapping[status];
         if (paymentStatusMapping.ContainsKey(status)) return paymentStatusMapping[status];
 
-        // Try case-insensitive keys (Title Case approach or iteration)
-        foreach(var key in bookingStatusMapping.Keys)
+        foreach (var key in bookingStatusMapping.Keys)
         {
-            if(key.Equals(status, StringComparison.OrdinalIgnoreCase)) return bookingStatusMapping[key];
+            if (key.Equals(status, StringComparison.OrdinalIgnoreCase)) return bookingStatusMapping[key];
         }
-        foreach(var key in paymentStatusMapping.Keys)
+        foreach (var key in paymentStatusMapping.Keys)
         {
-            if(key.Equals(status, StringComparison.OrdinalIgnoreCase)) return paymentStatusMapping[key];
+            if (key.Equals(status, StringComparison.OrdinalIgnoreCase)) return paymentStatusMapping[key];
         }
 
         return status;
     }
-}
 
-<!-- Page Header- -->
+    string FormatGrowth(double? growth)
+    {
+        if (!growth.HasValue) return "Mới";
+        var prefix = growth.Value > 0 ? "+" : string.Empty;
+        return $"{prefix}{growth.Value.ToString("0.#", CultureInfo.InvariantCulture)}%";
+    }
+
+    string GetGrowthBadgeClasses(double? growth)
+    {
+        if (!growth.HasValue || growth.Value > 0)
+        {
+            return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+        }
+
+        if (growth.Value < 0)
+        {
+            return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+        }
+
+        return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300";
+    }
+
+    var revenueStatusText = revenueChart.TotalRevenue > 0
+        ? $"Đang hiển thị doanh thu thực thu cho {revenueChart.PeriodLabel}."
+        : $"Chưa có doanh thu thực thu cho {revenueChart.PeriodLabel}.";
+}
+<!-- Page Header -->
 <div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div class="flex flex-col gap-1">
         @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
@@ -59,27 +88,32 @@
 
 <!-- KPI Grid -->
 <div data-animate="fade-in-up" data-delay="0.1" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-    <!-- KPI 1 -->
+        <!-- KPI 1 -->
     <div class="bg-white dark:bg-surface-dark p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:bg-primary/10 transition-colors"></div>
-        <div class="flex justify-between items-start mb-4">
+        <div class="flex justify-between items-start mb-4 gap-3">
             <div>
-                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Tổng Doanh Thu</p>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Doanh Thu Thực Thu</p>
                 <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalRevenue.ToString("N0") ₫</h3>
             </div>
-            <div class="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+            <div class="@GetGrowthBadgeClasses(Model.RevenueGrowth) px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
                 <span class="material-symbols-outlined text-[14px]">trending_up</span>
-                <span>+@Model.RevenueGrowth%</span>
+                <span>@FormatGrowth(Model.RevenueGrowth)</span>
             </div>
         </div>
-        <!-- Mock Sparkline -->
-        <div class="h-10 w-full flex items-end gap-1 opacity-50">
-            <div class="w-1/6 bg-primary h-[40%] rounded-t-sm"></div>
-            <div class="w-1/6 bg-primary h-[60%] rounded-t-sm"></div>
-            <div class="w-1/6 bg-primary h-[30%] rounded-t-sm"></div>
-            <div class="w-1/6 bg-primary h-[80%] rounded-t-sm"></div>
-            <div class="w-1/6 bg-primary h-[50%] rounded-t-sm"></div>
-            <div class="w-1/6 bg-primary h-[90%] rounded-t-sm"></div>
+        <div class="h-10 w-full flex items-end gap-1 opacity-70">
+            @if (revenuePoints.Any())
+            {
+                @foreach (var point in revenuePoints.Take(7))
+                {
+                    var heightPercent = revenueMax == 0m ? 8d : Math.Max(8d, (double)(point.Value / revenueMax) * 100d);
+                    <div class="flex-1 bg-primary/60 rounded-t-sm" style="height:@($"{heightPercent:0.#}%")" title="@point.Label: @point.Value.ToString("N0") ₫"></div>
+                }
+            }
+            else
+            {
+                <div class="text-xs text-slate-400">Chưa có dữ liệu biểu đồ.</div>
+            }
         </div>
     </div>
     <!-- KPI 2 -->
@@ -96,7 +130,7 @@
             </div>
         </div>
         <!-- Mock Sparkline -->
-        <svg class="w-full h-10 text-purple-500 fill-transparent stroke-current stroke-2" viewbox="0 0 100 25">
+        <svg class="w-full h-10 text-purple-500 fill-transparent stroke-current stroke-2" viewBox="0 0 100 25">
             <path d="M0 20 Q 15 25, 30 15 T 60 10 T 100 5"></path>
         </svg>
     </div>
@@ -137,7 +171,7 @@
             </div>
         </div>
         <!-- Mock Sparkline -->
-        <svg class="w-full h-10 text-red-400 fill-transparent stroke-current stroke-2" viewbox="0 0 100 25">
+        <svg class="w-full h-10 text-red-400 fill-transparent stroke-current stroke-2" viewBox="0 0 100 25">
              <path d="M0 15 Q 25 20, 50 10 T 100 15" stroke="currentColor"></path>
         </svg>
     </div>
@@ -147,26 +181,45 @@
 <div data-animate="fade-in-up" data-delay="0.2" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     <!-- Revenue Analytics Chart -->
     <div class="lg:col-span-2 bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Phân Tích Doanh Thu</h3>
-            <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                <button class="px-3 py-1 bg-white dark:bg-slate-700 text-xs font-bold rounded shadow-sm text-slate-900 dark:text-white">Tuần</button>
-                <button class="px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Tháng</button>
-                <button class="px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Năm</button>
+        <div class="flex flex-col gap-4 mb-6 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Phân Tích Doanh Thu</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Chỉ tính doanh thu thực thu từ đơn đã thanh toán hoặc hoàn thành.</p>
+            </div>
+            <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 self-start">
+                <button type="button" class="dashboard-range-button px-3 py-1 text-xs font-medium rounded transition-colors" data-range="week">Tuần</button>
+                <button type="button" class="dashboard-range-button px-3 py-1 text-xs font-medium rounded transition-colors" data-range="month">Tháng</button>
+                <button type="button" class="dashboard-range-button px-3 py-1 text-xs font-medium rounded transition-colors" data-range="year">Năm</button>
             </div>
         </div>
-        <div class="relative h-64 w-full bg-gradient-to-t from-primary/5 to-transparent rounded-xl border-b border-l border-slate-200 dark:border-slate-700 p-4">
-            <!-- Simplified Mock for Static View - Enhancements would require Chart.js -->
-            <div class="flex items-end justify-between h-full w-full gap-2 px-4 pb-4">
-                 <div class="w-full bg-primary/20 h-[40%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T2</div></div>
-                 <div class="w-full bg-primary/30 h-[60%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T3</div></div>
-                 <div class="w-full bg-primary/40 h-[30%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T4</div></div>
-                 <div class="w-full bg-primary/50 h-[80%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T5</div></div>
-                 <div class="w-full bg-primary/60 h-[50%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T6</div></div>
-                 <div class="w-full bg-primary h-[90%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">T7</div></div>
-                 <div class="w-full bg-primary/80 h-[70%] rounded-t-lg relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">CN</div></div>
+
+        <div id="dashboard-revenue-summary" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Kỳ hiện tại</p>
+                <p id="dashboard-revenue-current-value" class="mt-2 text-xl font-bold text-slate-900 dark:text-white">@revenueChart.TotalRevenue.ToString("N0") ₫</p>
+                <p id="dashboard-revenue-period-label" class="mt-1 text-sm text-slate-500 dark:text-slate-400">@revenueChart.PeriodLabel</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Kỳ trước</p>
+                <p id="dashboard-revenue-previous-value" class="mt-2 text-xl font-bold text-slate-900 dark:text-white">@revenueChart.PreviousPeriodRevenue.ToString("N0") ₫</p>
+                <p id="dashboard-revenue-previous-label" class="mt-1 text-sm text-slate-500 dark:text-slate-400">@revenueChart.PreviousPeriodLabel</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Tăng trưởng</p>
+                <div class="mt-2 flex items-center gap-2">
+                    <span id="dashboard-revenue-growth-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold @GetGrowthBadgeClasses(revenueChart.GrowthPercentage)">
+                        <span class="material-symbols-outlined text-sm">monitoring</span>
+                        <span id="dashboard-revenue-growth-value">@FormatGrowth(revenueChart.GrowthPercentage)</span>
+                    </span>
+                </div>
+                <p id="dashboard-revenue-comparison-label" class="mt-1 text-sm text-slate-500 dark:text-slate-400">So với @revenueChart.PreviousPeriodLabel</p>
             </div>
         </div>
+
+        <div class="relative h-72 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-gradient-to-b from-primary/5 via-transparent to-white/80 dark:to-slate-900/50 p-4">
+            <canvas id="dashboard-revenue-chart" class="w-full h-full"></canvas>
+        </div>
+        <p id="dashboard-revenue-status" class="mt-4 text-sm text-slate-500 dark:text-slate-400">@revenueStatusText</p>
     </div>
     <!-- Tour Breakdown Donut Chart -->
     <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col">
@@ -292,4 +345,252 @@
         </table>
     </div>
 </div>
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (() => {
+            const initialData = @Html.Raw(JsonSerializer.Serialize(revenueChart, jsonOptions));
+            const apiUrl = '/api/dashboard/revenue';
+            const chartCanvas = document.getElementById('dashboard-revenue-chart');
+            const statusElement = document.getElementById('dashboard-revenue-status');
+            const currentValueElement = document.getElementById('dashboard-revenue-current-value');
+            const periodLabelElement = document.getElementById('dashboard-revenue-period-label');
+            const previousValueElement = document.getElementById('dashboard-revenue-previous-value');
+            const previousLabelElement = document.getElementById('dashboard-revenue-previous-label');
+            const growthValueElement = document.getElementById('dashboard-revenue-growth-value');
+            const comparisonLabelElement = document.getElementById('dashboard-revenue-comparison-label');
+            const growthBadgeElement = document.getElementById('dashboard-revenue-growth-badge');
+            const rangeButtons = Array.from(document.querySelectorAll('.dashboard-range-button'));
+
+            if (!chartCanvas || !window.Chart) {
+                return;
+            }
+
+            let revenueChartInstance;
+            let currentRangeKey = initialData.rangeKey || 'week';
+            const growthBaseClasses = ['inline-flex', 'items-center', 'gap-1.5', 'px-3', 'py-1', 'rounded-full', 'text-[11px]', 'font-bold'];
+            const growthToneClasses = {
+                positive: ['bg-green-100', 'text-green-700', 'dark:bg-green-900/30', 'dark:text-green-400'],
+                negative: ['bg-red-100', 'text-red-700', 'dark:bg-red-900/30', 'dark:text-red-400'],
+                neutral: ['bg-slate-100', 'text-slate-700', 'dark:bg-slate-800', 'dark:text-slate-300']
+            };
+
+            function formatCurrency(value) {
+                return `${new Intl.NumberFormat('vi-VN').format(Number(value || 0))} ₫`;
+            }
+
+            function formatCompactCurrency(value) {
+                const amount = Number(value || 0);
+                if (Math.abs(amount) >= 1000000) {
+                    return `${new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 }).format(amount / 1000000)}tr`;
+                }
+
+                if (Math.abs(amount) >= 1000) {
+                    return `${new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(amount / 1000)}k`;
+                }
+
+                return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 }).format(amount);
+            }
+
+            function formatGrowth(value) {
+                if (value === null || value === undefined) {
+                    return 'Mới';
+                }
+
+                const formatted = new Intl.NumberFormat('vi-VN', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 1
+                }).format(Number(value));
+
+                return `${Number(value) > 0 ? '+' : ''}${formatted}%`;
+            }
+
+            function getGrowthTone(value) {
+                if (value === null || value === undefined || Number(value) > 0) {
+                    return 'positive';
+                }
+
+                if (Number(value) < 0) {
+                    return 'negative';
+                }
+
+                return 'neutral';
+            }
+
+            function applyGrowthTone(value) {
+                const tone = getGrowthTone(value);
+                growthBadgeElement.className = [...growthBaseClasses, ...growthToneClasses[tone]].join(' ');
+            }
+
+            function setRangeButtons(selectedRange, disabled) {
+                rangeButtons.forEach((button) => {
+                    const isActive = button.dataset.range === selectedRange;
+                    button.disabled = disabled;
+                    button.classList.toggle('bg-white', isActive);
+                    button.classList.toggle('dark:bg-slate-700', isActive);
+                    button.classList.toggle('text-slate-900', isActive);
+                    button.classList.toggle('dark:text-white', isActive);
+                    button.classList.toggle('shadow-sm', isActive);
+                    button.classList.toggle('text-slate-500', !isActive);
+                    button.classList.toggle('dark:text-slate-400', !isActive);
+                    button.classList.toggle('hover:text-slate-900', !isActive);
+                    button.classList.toggle('dark:hover:text-white', !isActive);
+                    button.classList.toggle('opacity-60', disabled);
+                    button.classList.toggle('cursor-not-allowed', disabled);
+                });
+            }
+
+            function updateSummary(data) {
+                currentValueElement.textContent = formatCurrency(data.totalRevenue);
+                periodLabelElement.textContent = data.periodLabel;
+                previousValueElement.textContent = formatCurrency(data.previousPeriodRevenue);
+                previousLabelElement.textContent = data.previousPeriodLabel;
+                growthValueElement.textContent = formatGrowth(data.growthPercentage);
+                comparisonLabelElement.textContent = `So với ${data.previousPeriodLabel}`;
+                applyGrowthTone(data.growthPercentage);
+            }
+
+            function updateStatus(data, mode) {
+                statusElement.classList.remove('text-red-500', 'dark:text-red-400');
+                statusElement.classList.add('text-slate-500', 'dark:text-slate-400');
+
+                if (mode === 'loading') {
+                    statusElement.textContent = 'Đang tải dữ liệu doanh thu...';
+                    return;
+                }
+
+                if (mode === 'error') {
+                    statusElement.textContent = 'Không thể tải dữ liệu doanh thu. Đang giữ lại số liệu gần nhất.';
+                    statusElement.classList.remove('text-slate-500', 'dark:text-slate-400');
+                    statusElement.classList.add('text-red-500', 'dark:text-red-400');
+                    return;
+                }
+
+                if (Number(data.totalRevenue) <= 0) {
+                    statusElement.textContent = `Chưa có doanh thu thực thu cho ${data.periodLabel.toLowerCase()}.`;
+                    return;
+                }
+
+                statusElement.textContent = `Đang hiển thị doanh thu thực thu cho ${data.periodLabel}.`;
+            }
+
+            function renderChart(data) {
+                const context = chartCanvas.getContext('2d');
+                const gradient = context.createLinearGradient(0, 0, 0, chartCanvas.height || 280);
+                gradient.addColorStop(0, 'rgba(43, 205, 238, 0.75)');
+                gradient.addColorStop(1, 'rgba(43, 205, 238, 0.18)');
+
+                if (revenueChartInstance) {
+                    revenueChartInstance.destroy();
+                }
+
+                revenueChartInstance = new Chart(context, {
+                    type: 'bar',
+                    data: {
+                        labels: data.points.map(point => point.label),
+                        datasets: [
+                            {
+                                label: 'Doanh thu',
+                                data: data.points.map(point => Number(point.value || 0)),
+                                backgroundColor: gradient,
+                                borderColor: '#2bcdee',
+                                borderWidth: 1,
+                                borderRadius: 12,
+                                barPercentage: 0.72,
+                                categoryPercentage: 0.76
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label(context) {
+                                        return `Doanh thu: ${formatCurrency(context.raw)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#64748b'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.12)'
+                                },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    callback(value) {
+                                        return formatCompactCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            async function loadRange(rangeKey) {
+                updateStatus(null, 'loading');
+                setRangeButtons(rangeKey, true);
+
+                try {
+                    const response = await fetch(`${apiUrl}?range=${encodeURIComponent(rangeKey)}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    currentRangeKey = data.rangeKey || rangeKey;
+                    updateSummary(data);
+                    renderChart(data);
+                    updateStatus(data);
+                    setRangeButtons(currentRangeKey, false);
+                } catch (error) {
+                    console.error(error);
+                    setRangeButtons(currentRangeKey, false);
+                    updateStatus(null, 'error');
+                }
+            }
+
+            rangeButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const nextRange = button.dataset.range;
+                    if (!nextRange || nextRange === currentRangeKey) {
+                        return;
+                    }
+
+                    loadRange(nextRange);
+                });
+            });
+
+            updateSummary(initialData);
+            renderChart(initialData);
+            updateStatus(initialData);
+            setRangeButtons(currentRangeKey, false);
+        })();
+    </script>
+}
 

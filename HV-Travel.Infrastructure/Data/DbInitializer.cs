@@ -339,7 +339,7 @@ namespace HVTravel.Infrastructure.Data
                         Unique = true,
                         PartialFilterExpression = new BsonDocument
                         {
-                            { "bookingCode", new BsonDocument { { "$exists", true }, { "$type", "string" }, { "$ne", "" } } }
+                            { "bookingCode", new BsonDocument { { "$exists", true }, { "$type", "string" }, { "$gt", "" } } }
                         }
                     };
 

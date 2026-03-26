@@ -13,11 +13,28 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:8080
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - DOTNET_WATCH_RESTART_ON_RUDE_EDIT=1
+      - NUGET_PACKAGES=/root/.nuget/packages
       - HVTravelDatabase__ConnectionString=${HVTravelDatabase__ConnectionString}
       - HVTravelDatabase__DatabaseName=HV-Travel
     volumes:
       - .:/src
       - nuget_packages:/root/.nuget/packages
+      - hv_travel_web_obj:/src/HV-Travel.Web/obj
+      - hv_travel_web_bin:/src/HV-Travel.Web/bin
+      - hv_travel_application_obj:/src/HV-Travel.Application/obj
+      - hv_travel_application_bin:/src/HV-Travel.Application/bin
+      - hv_travel_domain_obj:/src/HV-Travel.Domain/obj
+      - hv_travel_domain_bin:/src/HV-Travel.Domain/bin
+      - hv_travel_infrastructure_obj:/src/HV-Travel.Infrastructure/obj
+      - hv_travel_infrastructure_bin:/src/HV-Travel.Infrastructure/bin
 
 volumes:
   nuget_packages:
+  hv_travel_web_obj:
+  hv_travel_web_bin:
+  hv_travel_application_obj:
+  hv_travel_application_bin:
+  hv_travel_domain_obj:
+  hv_travel_domain_bin:
+  hv_travel_infrastructure_obj:
+  hv_travel_infrastructure_bin:
