@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using HVTravel.Application;
 using HVTravel.Infrastructure;
 using HVTravel.Infrastructure.Data;
@@ -25,6 +25,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddScoped<IPublicContentService, PublicContentService>();
 builder.Services.AddScoped<ISupportChatService, SupportChatService>();
+builder.Services.AddScoped<CustomerPortalService>();
+builder.Services.AddScoped<BookingWorkflowService>();
 
 // Add Authentication
 builder.Services
@@ -132,3 +134,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+

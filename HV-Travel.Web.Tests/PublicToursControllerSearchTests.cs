@@ -1,8 +1,6 @@
-using System.Linq.Expressions;
-using HVTravel.Domain.Entities;
-using HVTravel.Domain.Interfaces;
-using HVTravel.Domain.Models;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Web.Controllers;
+using HV_Travel.Web.Tests.TestSupport;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HV_Travel.Web.Tests;
@@ -17,19 +15,19 @@ public class PublicToursControllerSearchTests
             new Tour
             {
                 Id = "tour-1",
-                Name = "Kh�m ph� H� N?i",
-                Description = "<p>�u?c tham quan c&aacute;c danh lam th?ng c?nh</p>",
-                ShortDescription = "<p>Tr?i nghi?m th? d�</p>",
+                Name = "Khám phá Hà Nội",
+                Description = "<p>Được tham quan c&aacute;c danh lam thắng cảnh</p>",
+                ShortDescription = "<p>Trải nghiệm thủ đô</p>",
                 Status = "Active",
-                Destination = new Destination { City = "H� N?i", Country = "Vi?t Nam", Region = "Mi?n B?c" },
+                Destination = new Destination { City = "Hà Nội", Country = "Việt Nam", Region = "Miền Bắc" },
                 Price = new TourPrice { Adult = 1000000 },
-                Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 ng�y 1 d�m" }
+                Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 ngày 1 đêm" }
             }
         ]);
 
         var controller = new PublicToursController(repository);
 
-        var result = await controller.Index(search: "c�c", sort: null);
+        var result = await controller.Index(search: "các", sort: null);
 
         var view = Assert.IsType<ViewResult>(result);
         var model = Assert.IsAssignableFrom<List<Tour>>(view.Model);
@@ -37,75 +35,78 @@ public class PublicToursControllerSearchTests
         Assert.Equal("tour-1", tour.Id);
     }
 
-    private sealed class InMemoryRepository<T> : IRepository<T> where T : class
+    [Fact]
+    public async Task Index_FiltersByRegionMonthAvailabilityAndPromotion()
     {
-        private readonly List<T> _items;
-
-        public InMemoryRepository(IEnumerable<T> items)
-        {
-            _items = items.ToList();
-        }
-
-        public Task<IEnumerable<T>> GetAllAsync()
-        {
-            return Task.FromResult<IEnumerable<T>>(_items.ToList());
-        }
-
-        public Task<T> GetByIdAsync(string id)
-        {
-            var item = _items.FirstOrDefault(entity => string.Equals(GetId(entity), id, StringComparison.Ordinal));
-            return Task.FromResult(item)!;
-        }
-
-        public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
-        {
-            var compiled = predicate.Compile();
-            return Task.FromResult<IEnumerable<T>>(_items.Where(compiled).ToList());
-        }
-
-        public Task AddAsync(T entity)
-        {
-            _items.Add(entity);
-            return Task.CompletedTask;
-        }
-
-        public Task UpdateAsync(string id, T entity)
-        {
-            var index = _items.FindIndex(item => string.Equals(GetId(item), id, StringComparison.Ordinal));
-            if (index >= 0)
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var repository = new InMemoryRepository<Tour>(
+        [
+            new Tour
             {
-                _items[index] = entity;
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteAsync(string id)
-        {
-            var index = _items.FindIndex(item => string.Equals(GetId(item), id, StringComparison.Ordinal));
-            if (index >= 0)
+                Id = "tour-deal-north",
+                Name = "Deal Đông Bắc",
+                Description = "Tour deal mùa hè",
+                ShortDescription = "Deal hot",
+                Status = "Active",
+                Destination = new Destination { City = "Hà Giang", Country = "Việt Nam", Region = "North" },
+                Price = new TourPrice { Adult = 3200000, Discount = 15 },
+                Duration = new TourDuration { Days = 3, Nights = 2, Text = "3 ngày 2 đêm" },
+                StartDates = [new DateTime(nextMonth.Year, nextMonth.Month, 10)],
+                MaxParticipants = 20,
+                CurrentParticipants = 8,
+                Rating = 4.8
+            },
+            new Tour
             {
-                _items.RemoveAt(index);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public Task<PaginatedResult<T>> GetPagedAsync(int pageIndex, int pageSize, Expression<Func<T, bool>>? filter = null)
-        {
-            var query = _items.AsEnumerable();
-            if (filter != null)
+                Id = "tour-standard-south",
+                Name = "Miền Tây thư giãn",
+                Description = "Không có ưu đãi",
+                ShortDescription = "Sông nước",
+                Status = "Active",
+                Destination = new Destination { City = "Cần Thơ", Country = "Việt Nam", Region = "South" },
+                Price = new TourPrice { Adult = 2500000, Discount = 0 },
+                Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 ngày 1 đêm" },
+                StartDates = [new DateTime(nextMonth.Year, nextMonth.Month, 12)],
+                MaxParticipants = 20,
+                CurrentParticipants = 6,
+                Rating = 4.6
+            },
+            new Tour
             {
-                query = query.Where(filter.Compile());
+                Id = "tour-sold-out",
+                Name = "Deal hết chỗ",
+                Description = "Đã kín",
+                ShortDescription = "Hết chỗ",
+                Status = "SoldOut",
+                Destination = new Destination { City = "Lào Cai", Country = "Việt Nam", Region = "North" },
+                Price = new TourPrice { Adult = 2800000, Discount = 10 },
+                Duration = new TourDuration { Days = 3, Nights = 2, Text = "3 ngày 2 đêm" },
+                StartDates = [new DateTime(nextMonth.Year, nextMonth.Month, 18)],
+                MaxParticipants = 20,
+                CurrentParticipants = 20,
+                Rating = 4.9
             }
+        ]);
 
-            var items = query.Skip(pageIndex * pageSize).Take(pageSize).ToList();
-            return Task.FromResult(new PaginatedResult<T>(items, query.Count(), pageIndex, pageSize));
-        }
+        var controller = new PublicToursController(repository);
 
-        private static string? GetId(T entity)
-        {
-            return typeof(T).GetProperty("Id")?.GetValue(entity) as string;
-        }
+        var result = await controller.Index(
+            search: null,
+            sort: "price_asc",
+            region: "North",
+            destination: null,
+            minPrice: 2000000,
+            maxPrice: 3500000,
+            departureMonth: nextMonth.Month,
+            maxDays: 4,
+            collection: "deal",
+            availableOnly: true,
+            promotionOnly: true,
+            page: 1);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsAssignableFrom<List<Tour>>(view.Model);
+        var tour = Assert.Single(model);
+        Assert.Equal("tour-deal-north", tour.Id);
     }
 }

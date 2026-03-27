@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var siteSettings = await ContentService.GetSiteSettingsAsync();
     var headerGroup = siteSettings.GetGroup("header");
@@ -10,35 +10,35 @@
     var seoGroup = siteSettings.GetGroup("seo");
 
     var brandName = headerGroup?.Fields.GetFieldValue("brandName", "HV Travel") ?? "HV Travel";
-    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "Khám phá Việt Nam") ?? "Khám phá Việt Nam";
-    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang chủ") ?? "Trang chủ";
-    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour du lịch") ?? "Tour du lịch";
-    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Giới thiệu") ?? "Giới thiệu";
-    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "Liên hệ") ?? "Liên hệ";
-    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "Đăng ký") ?? "Đăng ký";
-    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "Đăng nhập") ?? "Đăng nhập";
-    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất")
-        ?? "HV Travel - Khám phá Việt Nam cùng những tour du lịch tuyệt vời nhất";
+    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "KhÃ¡m phÃ¡ Viá»‡t Nam") ?? "KhÃ¡m phÃ¡ Viá»‡t Nam";
+    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang chá»§") ?? "Trang chá»§";
+    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour du lá»‹ch") ?? "Tour du lá»‹ch";
+    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Giá»›i thiá»‡u") ?? "Giá»›i thiá»‡u";
+    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "LiÃªn há»‡") ?? "LiÃªn há»‡";
+    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "ÄÄƒng kÃ½") ?? "ÄÄƒng kÃ½";
+    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "ÄÄƒng nháº­p") ?? "ÄÄƒng nháº­p";
+    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - KhÃ¡m phÃ¡ Viá»‡t Nam cÃ¹ng nhá»¯ng tour du lá»‹ch tuyá»‡t vá»i nháº¥t")
+        ?? "HV Travel - KhÃ¡m phÃ¡ Viá»‡t Nam cÃ¹ng nhá»¯ng tour du lá»‹ch tuyá»‡t vá»i nháº¥t";
 
     var footerBrandTitle = footerBrandGroup?.Fields.GetFieldValue("title", "HV Travel") ?? "HV Travel";
-    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Khám phá Việt Nam") ?? "Khám phá Việt Nam";
-    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.")
-        ?? "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.";
+    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "KhÃ¡m phÃ¡ Viá»‡t Nam") ?? "KhÃ¡m phÃ¡ Viá»‡t Nam";
+    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "KhÃ¡m phÃ¡ váº» Ä‘áº¹p Viá»‡t Nam vá»›i nhá»¯ng tour du lá»‹ch Ä‘Æ°á»£c thiáº¿t káº¿ riÃªng. Tráº£i nghiá»‡m vÄƒn hÃ³a, áº©m thá»±c vÃ  thiÃªn nhiÃªn tuyá»‡t vá»i.")
+        ?? "KhÃ¡m phÃ¡ váº» Ä‘áº¹p Viá»‡t Nam vá»›i nhá»¯ng tour du lá»‹ch Ä‘Æ°á»£c thiáº¿t káº¿ riÃªng. Tráº£i nghiá»‡m vÄƒn hÃ³a, áº©m thá»±c vÃ  thiÃªn nhiÃªn tuyá»‡t vá»i.";
 
-    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "Khám phá") ?? "Khám phá";
-    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "Tất cả tour") ?? "Tất cả tour";
-    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour phổ biến") ?? "Tour phổ biến";
-    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "Điểm đến hot") ?? "Điểm đến hot";
-    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "Ưu đãi đặc biệt") ?? "Ưu đãi đặc biệt";
+    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "KhÃ¡m phÃ¡") ?? "KhÃ¡m phÃ¡";
+    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "Táº¥t cáº£ tour") ?? "Táº¥t cáº£ tour";
+    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour phá»• biáº¿n") ?? "Tour phá»• biáº¿n";
+    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "Äiá»ƒm Ä‘áº¿n hot") ?? "Äiá»ƒm Ä‘áº¿n hot";
+    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "Æ¯u Ä‘Ã£i Ä‘áº·c biá»‡t") ?? "Æ¯u Ä‘Ã£i Ä‘áº·c biá»‡t";
 
-    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "Công ty") ?? "Công ty";
-    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Giới thiệu") ?? "Giới thiệu";
-    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "Liên hệ") ?? "Liên hệ";
-    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "Chính sách bảo mật") ?? "Chính sách bảo mật";
-    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Điều khoản sử dụng") ?? "Điều khoản sử dụng";
+    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "CÃ´ng ty") ?? "CÃ´ng ty";
+    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Giá»›i thiá»‡u") ?? "Giá»›i thiá»‡u";
+    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "LiÃªn há»‡") ?? "LiÃªn há»‡";
+    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "ChÃ­nh sÃ¡ch báº£o máº­t") ?? "ChÃ­nh sÃ¡ch báº£o máº­t";
+    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Äiá»u khoáº£n sá»­ dá»¥ng") ?? "Äiá»u khoáº£n sá»­ dá»¥ng";
 
-    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "Liên hệ") ?? "Liên hệ";
-    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM") ?? "123 Đường Nguyễn Huệ, Quận 1, TP.HCM";
+    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "LiÃªn há»‡") ?? "LiÃªn há»‡";
+    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 ÄÆ°á»ng Nguyá»…n Huá»‡, Quáº­n 1, TP.HCM") ?? "123 ÄÆ°á»ng Nguyá»…n Huá»‡, Quáº­n 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
@@ -160,16 +160,24 @@
                         <p class="text-[10px] font-semibold text-primary tracking-widest uppercase">@brandTagline</p>
                     </div>
                 </a>
-
-                <nav class="hidden md:flex items-center gap-8">
+                <nav class="hidden md:flex items-center gap-6 xl:gap-8">
                     <a asp-controller="Home" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Home" ? "active text-primary dark:text-primary" : "")">
                         @navHomeLabel
                     </a>
                     <a asp-controller="PublicTours" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Tours" ? "active text-primary dark:text-primary" : "")">
                         @navToursLabel
                     </a>
-                    <a asp-controller="Home" asp-action="About" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "About" ? "active text-primary dark:text-primary" : "")">
-                        @navAboutLabel
+                    <a asp-controller="Destinations" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Destinations" ? "active text-primary dark:text-primary" : "")">
+                        Điểm đến
+                    </a>
+                    <a asp-controller="Promotions" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Promotions" ? "active text-primary dark:text-primary" : "")">
+                        Ưu đãi
+                    </a>
+                    <a asp-controller="Inspiration" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Inspiration" ? "active text-primary dark:text-primary" : "")">
+                        Cẩm nang
+                    </a>
+                    <a asp-controller="Services" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Services" ? "active text-primary dark:text-primary" : "")">
+                        Dịch vụ
                     </a>
                     <a asp-controller="Home" asp-action="Contact" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Contact" ? "active text-primary dark:text-primary" : "")">
                         @navContactLabel
@@ -179,22 +187,29 @@
                 <div class="public-nav-actions flex items-center gap-2 sm:gap-3">
                     <button id="theme-toggle-public"
                             class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-text-muted-dark hover:text-primary hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark transition-all font-medium"
-                            aria-label="Chuyển chế độ tối">
+                            aria-label="Chuyá»ƒn cháº¿ Ä‘á»™ tá»‘i">
                         <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
                         <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
-
                     <div class="hidden sm:flex items-center gap-2">
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                         {
                             var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
                             customerName = string.IsNullOrWhiteSpace(customerName) ? "Khách hàng" : customerName.Trim();
                             var customerInitial = customerName[0].ToString().ToUpperInvariant();
+                            <a asp-controller="BookingLookup" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-200">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                Tra cứu
+                            </a>
+                            <a asp-controller="CustomerPortal" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-sm font-bold text-primary transition-all hover:bg-primary/15 dark:bg-primary/15">
+                                <span class="material-symbols-outlined text-[18px]">account_circle</span>
+                                Portal
+                            </a>
                             <div class="flex items-center gap-3 rounded-2xl border border-border-light/80 bg-surface-light/80 px-3 py-2 shadow-sm dark:border-border-dark dark:bg-surface-elevated-dark/85">
                                 <div class="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-sm font-extrabold text-white">
                                     @customerInitial
                                 </div>
-                                <div class="max-w-[180px]">
+                                <div class="max-w-[160px]">
                                     <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
                                     <p class="truncate text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
                                 </div>
@@ -209,6 +224,10 @@
                         }
                         else
                         {
+                            <a asp-controller="BookingLookup" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-200">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                Tra cứu booking
+                            </a>
                             <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">
                                 @registerLabel
                             </a>
@@ -233,6 +252,21 @@
                     <a asp-controller="PublicTours" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
                         <span class="material-symbols-outlined text-[20px]">map</span> @navToursLabel
                     </a>
+                    <a asp-controller="Destinations" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[20px]">globe_asia</span> Điểm đến
+                    </a>
+                    <a asp-controller="Promotions" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[20px]">local_activity</span> Ưu đãi
+                    </a>
+                    <a asp-controller="Inspiration" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[20px]">article</span> Cẩm nang
+                    </a>
+                    <a asp-controller="Services" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[20px]">package_2</span> Dịch vụ
+                    </a>
+                    <a asp-controller="BookingLookup" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[20px]">search</span> Tra cứu booking
+                    </a>
                     <a asp-controller="Home" asp-action="About" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
                         <span class="material-symbols-outlined text-[20px]">info</span> @navAboutLabel
                     </a>
@@ -242,17 +276,25 @@
 
                     @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                     {
-                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
-                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "Khách hàng" : mobileCustomerName.Trim();
+                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "KhÃ¡ch hÃ ng";
+                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "KhÃ¡ch hÃ ng" : mobileCustomerName.Trim();
                         <div class="px-4 py-3 border-t border-border-light dark:border-border-dark mt-2">
                             <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
                                 <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
+                                <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-border-light px-4 py-3 text-sm font-bold text-primary dark:border-border-dark">
+                                    <span class="material-symbols-outlined text-[18px]">account_circle</span>
+                                    Mở portal
+                                </a>
+                                <a asp-controller="BookingLookup" asp-action="Index" class="mt-2 flex items-center justify-center gap-2 rounded-xl border border-border-light px-4 py-3 text-sm font-bold text-slate-600 dark:border-border-dark dark:text-slate-200">
+                                    <span class="material-symbols-outlined text-[18px]">search</span>
+                                    Tra cứu booking
+                                </a>
                                 <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-4">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
                                         <span class="material-symbols-outlined text-[18px]">logout</span>
-                                        Đăng xuất
+                                        ÄÄƒng xuáº¥t
                                     </button>
                                 </form>
                             </div>
@@ -311,9 +353,9 @@
                     <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@footerExploreTitle</h4>
                     <ul class="space-y-3">
                         <li><a asp-controller="PublicTours" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@allToursLabel</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@popularToursLabel</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@hotDestinationsLabel</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@specialOffersLabel</a></li>
+                        <li><a asp-controller="Promotions" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@popularToursLabel</a></li>
+                        <li><a asp-controller="Destinations" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@hotDestinationsLabel</a></li>
+                        <li><a asp-controller="Services" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@specialOffersLabel</a></li>
                     </ul>
                 </div>
 
@@ -353,11 +395,11 @@
 
         <div class="border-t border-border-dark">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. Bảo lưu mọi quyền.</p>
+                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. Báº£o lÆ°u má»i quyá»n.</p>
                 <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">Sơ đồ trang</a>
+                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">SÆ¡ Ä‘á»“ trang</a>
                 </div>
             </div>
         </div>
@@ -410,4 +452,12 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 

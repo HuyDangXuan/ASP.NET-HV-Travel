@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using MongoDB.Bson;
 using System.Threading.Tasks;
@@ -24,6 +24,7 @@ namespace HVTravel.Infrastructure.Data
             var notificationRepository = serviceProvider.GetRequiredService<IRepository<Notification>>();
             var promotionRepository = serviceProvider.GetRequiredService<IRepository<Promotion>>();
             var reviewRepository = serviceProvider.GetRequiredService<IRepository<Review>>();
+            var articleRepository = serviceProvider.GetRequiredService<IRepository<TravelArticle>>();
 
 
             // 1. Seed Users
@@ -62,7 +63,7 @@ namespace HVTravel.Infrastructure.Data
                 {
                     new Tour
                     {
-                        Name = "Hà Giang Loop Adventure",
+                        Name = "HÃ  Giang Loop Adventure",
                         Code = "TOUR-001",
                         Description = "<p>Explore the majestic landscapes of Ha Giang with our 3-day loop tour. Experience the Ma Pi Leng Pass, Nho Que River, and authentic Hmong culture.</p>",
                         ShortDescription = "3 Days of breathtaking mountain views and cultural immersion.",
@@ -75,8 +76,8 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 3500000, Child = 2500000, Infant = 0, Currency = "VND" },
                         Duration = new TourDuration { Days = 3, Nights = 2, Text = "3 Days 2 Nights" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(5), DateTime.UtcNow.AddDays(12), DateTime.UtcNow.AddDays(20) },
-                        GeneratedInclusions = new List<string> { "Thuê xe máy", "Homestay", "Bữa ăn", "Hướng dẫn viên" },
-                        GeneratedExclusions = new List<string> { "Chi tiêu cá nhân", "Đồ uống" },
+                        GeneratedInclusions = new List<string> { "ThuÃª xe mÃ¡y", "Homestay", "Bá»¯a Äƒn", "HÆ°á»›ng dáº«n viÃªn" },
+                        GeneratedExclusions = new List<string> { "Chi tiÃªu cÃ¡ nhÃ¢n", "Äá»“ uá»‘ng" },
                         Schedule = new List<ScheduleItem> 
                         {
                             new ScheduleItem { Day = 1, Title = "Ha Giang - Quan Ba - Yen Minh", Description = "Start your journey...", Activities = new List<string> { "Ride to Quan Ba", "Visit Twin Mountains" } },
@@ -105,7 +106,7 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 4200000, Child = 3000000, Infant = 500000, Currency = "VND" },
                         Duration = new TourDuration { Days = 4, Nights = 3, Text = "4 Days 3 Nights" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(2), DateTime.UtcNow.AddDays(15) },
-                        GeneratedInclusions = new List<string> { "Khách sạn 4*", "Vé Bà Nà Hills", "Bữa ăn", "Xe đưa đón" },
+                        GeneratedInclusions = new List<string> { "KhÃ¡ch sáº¡n 4*", "VÃ© BÃ  NÃ  Hills", "Bá»¯a Äƒn", "Xe Ä‘Æ°a Ä‘Ã³n" },
                         Status = "Active",
                         MaxParticipants = 20,
                         CurrentParticipants = 15,
@@ -128,7 +129,7 @@ namespace HVTravel.Infrastructure.Data
                         Price = new TourPrice { Adult = 3800000, Child = 2800000, Infant = 1000000, Currency = "VND" },
                         Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 Days 1 Night" },
                         StartDates = new List<DateTime> { DateTime.UtcNow.AddDays(10), DateTime.UtcNow.AddDays(25) },
-                        GeneratedInclusions = new List<string> { "Cabin cao cấp", "Toàn bộ bữa ăn", "Chèo kayak", "Vé tham quan" },
+                        GeneratedInclusions = new List<string> { "Cabin cao cáº¥p", "ToÃ n bá»™ bá»¯a Äƒn", "ChÃ¨o kayak", "VÃ© tham quan" },
                         Status = "Active",
                         MaxParticipants = 30,
                         CurrentParticipants = 10,
@@ -237,7 +238,7 @@ namespace HVTravel.Infrastructure.Data
                         Passengers = new List<Passenger> 
                         { 
                             new Passenger { FullName = customer2.FullName, Type = "Adult" },
-                            new Passenger { FullName = "Chồng", Type = "Adult" }
+                            new Passenger { FullName = "Chá»“ng", Type = "Adult" }
                         },
                         ContactInfo = new ContactInfo { Name = customer2.FullName, Email = customer2.Email, Phone = customer2.PhoneNumber },
                         CreatedAt = DateTime.UtcNow.AddHours(-1)
@@ -252,9 +253,9 @@ namespace HVTravel.Infrastructure.Data
             {
                 var notifications = new List<Notification>
                 {
-                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Thanh toán đơn đặt mới", Message = "Đơn #BK-9420-2024 đã được thanh toán đầy đủ.", Type = "Order", IsRead = false, CreatedAt = DateTime.UtcNow.AddMinutes(-10) },
-                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Khách hàng mới đăng ký", Message = "Khách hàng Trần Thị Hương vừa đăng ký tài khoản.", Type = "System", IsRead = true, CreatedAt = DateTime.UtcNow.AddHours(-2) },
-                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Đánh giá tour", Message = "Hà Giang Loop Adventure vừa nhận được đánh giá 5 sao.", Type = "Review", IsRead = false, CreatedAt = DateTime.UtcNow.AddHours(-5) }
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "Thanh toÃ¡n Ä‘Æ¡n Ä‘áº·t má»›i", Message = "ÄÆ¡n #BK-9420-2024 Ä‘Ã£ Ä‘Æ°á»£c thanh toÃ¡n Ä‘áº§y Ä‘á»§.", Type = "Order", IsRead = false, CreatedAt = DateTime.UtcNow.AddMinutes(-10) },
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "KhÃ¡ch hÃ ng má»›i Ä‘Äƒng kÃ½", Message = "KhÃ¡ch hÃ ng Tráº§n Thá»‹ HÆ°Æ¡ng vá»«a Ä‘Äƒng kÃ½ tÃ i khoáº£n.", Type = "System", IsRead = true, CreatedAt = DateTime.UtcNow.AddHours(-2) },
+                    new Notification { Id = ObjectId.GenerateNewId().ToString(), Title = "ÄÃ¡nh giÃ¡ tour", Message = "HÃ  Giang Loop Adventure vá»«a nháº­n Ä‘Æ°á»£c Ä‘Ã¡nh giÃ¡ 5 sao.", Type = "Review", IsRead = false, CreatedAt = DateTime.UtcNow.AddHours(-5) }
                 };
                 foreach (var n in notifications) await notificationRepository.AddAsync(n);
             }
@@ -264,8 +265,8 @@ namespace HVTravel.Infrastructure.Data
             {
                 var promotions = new List<Promotion>
                 {
-                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "WELCOME2024", DiscountPercentage = 10, Description = "Ưu đãi chào mừng dành cho thành viên mới", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(1), IsActive = true },
-                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "SUMMER_SALE", DiscountPercentage = 15, Description = "Ưu đãi đặc biệt cho mùa du lịch hè", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(3), IsActive = true }
+                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "WELCOME2024", DiscountPercentage = 10, Description = "Æ¯u Ä‘Ã£i chÃ o má»«ng dÃ nh cho thÃ nh viÃªn má»›i", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(1), IsActive = true },
+                    new Promotion { Id = ObjectId.GenerateNewId().ToString(), Code = "SUMMER_SALE", DiscountPercentage = 15, Description = "Æ¯u Ä‘Ã£i Ä‘áº·c biá»‡t cho mÃ¹a du lá»‹ch hÃ¨", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddMonths(3), IsActive = true }
                 };
                 foreach (var p in promotions) await promotionRepository.AddAsync(p);
             }
@@ -294,14 +295,71 @@ namespace HVTravel.Infrastructure.Data
                 {
                     var reviews = new List<Review>
                     {
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault()?.Id, CustomerId = customers.FirstOrDefault()?.Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true },
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault()?.Id, CustomerId = customers.LastOrDefault()?.Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true }
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault()?.Id, CustomerId = customers.FirstOrDefault()?.Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.FirstOrDefault()?.FullName ?? "Khách hàng" },
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault()?.Id, CustomerId = customers.LastOrDefault()?.Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.LastOrDefault()?.FullName ?? "Khách hàng" }
                     };
                     foreach (var r in reviews) await reviewRepository.AddAsync(r);
                 }
             }
-        }
 
+            // 8. Seed Travel Articles
+            if (!(await articleRepository.GetAllAsync()).Any())
+            {
+                var articles = new List<TravelArticle>
+                {
+                    new TravelArticle
+                    {
+                        Slug = "visa-nhat-ban-checklist",
+                        Title = "Checklist visa Nhật Bản cho khách đi tự túc hoặc theo tour",
+                        Summary = "Tổng hợp hồ sơ, timeline và các lỗi thường gặp khi chuẩn bị visa Nhật Bản.",
+                        Body = "<p>Chuẩn bị visa Nhật Bản nên bắt đầu từ lịch trình, chứng minh tài chính và tệp chứng từ nhân thân. Nếu đi theo tour, bạn vẫn nên chốt lịch nghỉ và kiểm tra hiệu lực hộ chiếu trước.</p><p>HV Travel có thể hỗ trợ rà soát checklist và timeline nộp hồ sơ theo mùa cao điểm.</p>",
+                        Category = "Visa Tips",
+                        Destination = "Nhật Bản",
+                        HeroImageUrl = "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200",
+                        Tags = new List<string> { "visa", "nhật bản", "checklist" },
+                        Featured = true,
+                        IsPublished = true,
+                        PublishedAt = DateTime.UtcNow.AddDays(-5),
+                        CreatedAt = DateTime.UtcNow.AddDays(-5),
+                        UpdatedAt = DateTime.UtcNow.AddDays(-5)
+                    },
+                    new TravelArticle
+                    {
+                        Slug = "hanh-trinh-san-deal-cuoi-nam",
+                        Title = "Cách săn deal cuối năm mà không bị vỡ ngân sách",
+                        Summary = "Gợi ý chọn tháng khởi hành, kết hợp voucher và đọc đúng tín hiệu flash sale.",
+                        Body = "<p>Deal tốt không chỉ nằm ở giá rẻ mà còn ở tổng chi phí sau khi cộng hành lý, di chuyển và phụ thu mùa cao điểm. Hãy ưu tiên những hành trình có khuyến mãi rõ ràng, lịch khởi hành gần và số chỗ còn ít.</p><p>Trang promotion center của HV Travel được thiết kế để làm đúng việc đó.</p>",
+                        Category = "Seasonal Campaign",
+                        Destination = "Châu Á",
+                        HeroImageUrl = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200",
+                        Tags = new List<string> { "deal", "flash sale", "ngân sách" },
+                        Featured = false,
+                        IsPublished = true,
+                        PublishedAt = DateTime.UtcNow.AddDays(-2),
+                        CreatedAt = DateTime.UtcNow.AddDays(-2),
+                        UpdatedAt = DateTime.UtcNow.AddDays(-2)
+                    },
+                    new TravelArticle
+                    {
+                        Slug = "lich-trinh-gia-dinh-ngan-ngay",
+                        Title = "Thiết kế lịch trình gia đình ngắn ngày mà vẫn nhiều trải nghiệm",
+                        Summary = "Cân đối nhịp di chuyển, độ tuổi trẻ nhỏ và các điểm dừng có giá trị thật cho cả nhà.",
+                        Body = "<p>Gia đình đi ngắn ngày nên tránh lịch trình đổi khách sạn liên tục. Thay vào đó, hãy chọn tuyến bay dễ, một điểm chính đủ sâu và một số hoạt động có thể thay đổi theo thời tiết.</p>",
+                        Category = "Destination Guide",
+                        Destination = "Việt Nam",
+                        HeroImageUrl = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1200",
+                        Tags = new List<string> { "gia đình", "ngắn ngày", "itinerary" },
+                        Featured = false,
+                        IsPublished = true,
+                        PublishedAt = DateTime.UtcNow.AddDays(-1),
+                        CreatedAt = DateTime.UtcNow.AddDays(-1),
+                        UpdatedAt = DateTime.UtcNow.AddDays(-1)
+                    }
+                };
+
+                foreach (var article in articles) await articleRepository.AddAsync(article);
+            }
+        }
         private static async Task EnsureBookingIndexesAsync(IServiceProvider serviceProvider)
         {
             try
@@ -353,3 +411,7 @@ namespace HVTravel.Infrastructure.Data
         }
     }
 }
+
+
+
+

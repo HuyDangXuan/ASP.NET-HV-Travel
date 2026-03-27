@@ -1,0 +1,80 @@
+﻿@model HVTravel.Web.Models.DestinationHubViewModel
+
+<section class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute left-0 top-20 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
+        <div class="absolute right-10 bottom-0 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20" data-animate="fade-up">
+        <p class="text-sm font-bold uppercase tracking-[0.35em] text-emerald-200">Destination Hub</p>
+        <h1 class="public-hero-title mt-4 text-white">Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá.</h1>
+        <p class="mt-5 max-w-2xl text-sm leading-7 text-slate-200">Trang này hỗ trợ marketing mở landing theo vùng, theo nhu cầu và theo mức giá thay vì chỉ có danh sách tour phẳng.</p>
+    </div>
+</section>
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-primary">Collections</p>
+            <h2 class="public-section-title mt-2">Bộ sưu tập nổi bật</h2>
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
+                @foreach (var collection in Model.Collections)
+                {
+                    <article class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@collection.Key</p>
+                        <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">@collection.Title</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@collection.Description</p>
+                        <div class="mt-5 space-y-3">
+                            @foreach (var tour in collection.Tours)
+                            {
+                                <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="flex items-center justify-between gap-4 rounded-2xl border border-border-light px-4 py-4 transition hover:border-primary dark:border-border-dark">
+                                    <div>
+                                        <p class="text-sm font-black text-slate-900 dark:text-white">@tour.Name</p>
+                                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text)</p>
+                                    </div>
+                                    <span class="text-base font-black text-primary">@(tour.Price?.Adult.ToString("N0"))₫</span>
+                                </a>
+                            }
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-primary">Regions</p>
+            <h2 class="public-section-title mt-2">Khám phá theo vùng</h2>
+            <div class="mt-6 space-y-8">
+                @foreach (var region in Model.Regions)
+                {
+                    <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Region</p>
+                            <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">@region.Region</h3>
+                        </div>
+                        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                            @foreach (var destination in region.Destinations)
+                            {
+                                <article class="overflow-hidden rounded-[1.5rem] border border-border-light bg-white dark:border-border-dark dark:bg-slate-900/40">
+                                    @if (!string.IsNullOrWhiteSpace(destination.RepresentativeImage))
+                                    {
+                                        <img src="@destination.RepresentativeImage" alt="@destination.City" class="h-44 w-full object-cover" />
+                                    }
+                                    <div class="p-5">
+                                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@destination.Country</p>
+                                        <h4 class="mt-2 text-xl font-black text-slate-900 dark:text-white">@destination.City</h4>
+                                        <div class="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                                            <span>@destination.TourCount tour</span>
+                                            <span>Rating @destination.BestRating.ToString("0.0")</span>
+                                        </div>
+                                        <p class="mt-3 text-lg font-black text-primary">Từ @destination.StartingPrice.ToString("N0")₫</p>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+        </div>
+    </div>
+</section>

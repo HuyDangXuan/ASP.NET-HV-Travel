@@ -1,0 +1,88 @@
+﻿@model HVTravel.Web.Models.PromotionsIndexViewModel
+
+<section class="hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute left-12 top-0 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl"></div>
+        <div class="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-rose-500/20 blur-3xl"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20" data-animate="fade-up">
+        <p class="text-sm font-bold uppercase tracking-[0.35em] text-amber-200">Promotion Center</p>
+        <h1 class="public-hero-title mt-4 text-white">Flash sale, voucher campaign và deal landing page cho HV Travel.</h1>
+        <p class="mt-5 max-w-2xl text-sm leading-7 text-slate-200">Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment. @if (!string.IsNullOrWhiteSpace(Model.CustomerSegment)) { <span>Segment của bạn hiện là <strong>@Model.CustomerSegment</strong>.</span> }</p>
+    </div>
+</section>
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div>
+            <div class="flex items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-primary">Flash sale</p>
+                    <h2 class="public-section-title mt-2">Khuyến mãi tạo urgency</h2>
+                </div>
+            </div>
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
+                @foreach (var promo in Model.FlashSales)
+                {
+                    <article class="overflow-hidden rounded-[2rem] border border-border-light bg-surface-light shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                        <div class="bg-gradient-to-r from-rose-500 to-orange-500 px-6 py-6 text-white">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.3em] text-white/70">@promo.Code</p>
+                                    <h3 class="mt-2 text-2xl font-black">@(string.IsNullOrWhiteSpace(promo.Title) ? promo.Code : promo.Title)</h3>
+                                </div>
+                                <p class="text-4xl font-black">-@promo.DiscountPercentage.ToString("0")%</p>
+                            </div>
+                        </div>
+                        <div class="px-6 py-5">
+                            <p class="text-sm leading-7 text-slate-600 dark:text-slate-300">@promo.Description</p>
+                            <div class="mt-4 flex flex-wrap gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                <span>Hiệu lực đến @promo.ValidTo.ToString("dd/MM/yyyy")</span>
+                                @if (promo.MinimumSpend > 0)
+                                {
+                                    <span>Đơn tối thiểu @promo.MinimumSpend.ToString("N0")₫</span>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+
+        <div class="grid gap-8 lg:grid-cols-2">
+            <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary">Voucher campaigns</p>
+                <h2 class="public-section-title mt-2">Ví voucher</h2>
+                <div class="mt-5 space-y-4">
+                    @foreach (var promo in Model.VoucherCampaigns)
+                    {
+                        <div class="rounded-2xl border border-border-light px-4 py-4 dark:border-border-dark">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@promo.Code</p>
+                                    <h3 class="mt-2 text-lg font-black text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(promo.Title) ? promo.Code : promo.Title)</h3>
+                                </div>
+                                <p class="text-2xl font-black text-primary">@promo.DiscountPercentage.ToString("0")%</p>
+                            </div>
+                            <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@promo.Description</p>
+                        </div>
+                    }
+                </div>
+            </section>
+            <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary">Seasonal deals</p>
+                <h2 class="public-section-title mt-2">Deal theo mùa</h2>
+                <div class="mt-5 space-y-4">
+                    @foreach (var promo in Model.SeasonalDeals)
+                    {
+                        <div class="rounded-2xl border border-border-light px-4 py-4 dark:border-border-dark">
+                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@promo.CampaignType</p>
+                            <h3 class="mt-2 text-lg font-black text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(promo.Title) ? promo.Code : promo.Title)</h3>
+                            <p class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400">@promo.Description</p>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+</section>

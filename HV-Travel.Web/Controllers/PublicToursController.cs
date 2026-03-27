@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
-using HVTravel.Domain.Entities;
 using HVTravel.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Controllers;
 
@@ -14,13 +14,41 @@ public class PublicToursController : Controller
         _tourRepository = tourRepository;
     }
 
-    public async Task<IActionResult> Index(string? search, string? sort, int page = 1)
+    public async Task<IActionResult> Index(
+        string? search,
+        string? sort,
+        string? region = null,
+        string? destination = null,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        int? departureMonth = null,
+        int? maxDays = null,
+        string? collection = null,
+        bool availableOnly = false,
+        bool promotionOnly = false,
+        int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
-        ViewData["Title"] = "Tour Du \u1ECBch";
+        ViewData["Title"] = "Tour Du Lịch";
 
-        var allTours = await _tourRepository.GetAllAsync();
-        var tours = allTours.Where(t => IsPubliclyVisible(t.Status)).AsEnumerable();
+        var allTours = (await _tourRepository.GetAllAsync())
+            .Where(t => IsPubliclyVisible(t.Status))
+            .ToList();
+
+        ViewData["Regions"] = allTours
+            .Select(t => t.Destination?.Region)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value)
+            .ToList();
+        ViewData["Destinations"] = allTours
+            .Select(t => t.Destination?.City)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value)
+            .ToList();
+
+        IEnumerable<Tour> tours = allTours;
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -29,9 +57,67 @@ public class PublicToursController : Controller
                 (t.Name != null && t.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
                 RichTextContentFormatter.ToPlainText(t.ShortDescription).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
                 RichTextContentFormatter.ToPlainText(t.Description).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
-                (t.Destination?.City != null && t.Destination.City.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
+                (t.Destination?.City != null && t.Destination.City.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
+                (t.Destination?.Region != null && t.Destination.Region.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
+                (t.Destination?.Country != null && t.Destination.Country.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
             );
             ViewData["CurrentSearch"] = normalizedSearch;
+        }
+
+        if (!string.IsNullOrWhiteSpace(region))
+        {
+            tours = tours.Where(t => string.Equals(t.Destination?.Region, region, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(destination))
+        {
+            tours = tours.Where(t => string.Equals(t.Destination?.City, destination, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (minPrice.HasValue)
+        {
+            tours = tours.Where(t => (t.Price?.Adult ?? 0) >= minPrice.Value);
+        }
+
+        if (maxPrice.HasValue)
+        {
+            tours = tours.Where(t => (t.Price?.Adult ?? 0) <= maxPrice.Value);
+        }
+
+        if (departureMonth.HasValue)
+        {
+            tours = tours.Where(t => (t.StartDates ?? new List<DateTime>()).Any(date => date.Month == departureMonth.Value));
+        }
+
+        if (maxDays.HasValue)
+        {
+            tours = tours.Where(t => (t.Duration?.Days ?? int.MaxValue) <= maxDays.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(collection))
+        {
+            tours = collection.Trim().ToLowerInvariant() switch
+            {
+                "domestic" => tours.Where(t => string.Equals(t.Destination?.Country, "Vietnam", StringComparison.OrdinalIgnoreCase) || string.Equals(t.Destination?.Country, "Việt Nam", StringComparison.OrdinalIgnoreCase)),
+                "international" => tours.Where(t => !string.Equals(t.Destination?.Country, "Vietnam", StringComparison.OrdinalIgnoreCase) && !string.Equals(t.Destination?.Country, "Việt Nam", StringComparison.OrdinalIgnoreCase)),
+                "premium" => tours.Where(t => (t.Price?.Adult ?? 0) >= 10000000),
+                "budget" => tours.Where(t => (t.Price?.Adult ?? 0) <= 3000000),
+                "family" => tours.Where(t => t.MaxParticipants >= 10 && (t.Duration?.Days ?? 0) <= 6),
+                "couple" => tours.Where(t => t.MaxParticipants <= 12 && (t.Duration?.Days ?? 0) <= 5),
+                "seasonal" => tours.Where(t => (t.StartDates ?? new List<DateTime>()).Any(date => date >= DateTime.UtcNow && date <= DateTime.UtcNow.AddDays(90))),
+                "deal" => tours.Where(t => (t.Price?.Discount ?? 0) > 0),
+                _ => tours
+            };
+        }
+
+        if (availableOnly)
+        {
+            tours = tours.Where(t => t.RemainingSpots > 0 && !string.Equals(t.Status, "SoldOut", StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (promotionOnly)
+        {
+            tours = tours.Where(t => (t.Price?.Discount ?? 0) > 0);
         }
 
         tours = sort switch
@@ -40,9 +126,20 @@ public class PublicToursController : Controller
             "price_desc" => tours.OrderByDescending(t => t.Price?.Adult ?? 0),
             "rating" => tours.OrderByDescending(t => t.Rating),
             "newest" => tours.OrderByDescending(t => t.CreatedAt),
+            "departure" => tours.OrderBy(t => t.StartDates?.Where(d => d >= DateTime.UtcNow).DefaultIfEmpty(DateTime.MaxValue).Min()),
             _ => tours.OrderByDescending(t => t.Rating)
         };
+
         ViewData["CurrentSort"] = sort;
+        ViewData["CurrentRegion"] = region;
+        ViewData["CurrentDestination"] = destination;
+        ViewData["CurrentMinPrice"] = minPrice;
+        ViewData["CurrentMaxPrice"] = maxPrice;
+        ViewData["CurrentDepartureMonth"] = departureMonth;
+        ViewData["CurrentMaxDays"] = maxDays;
+        ViewData["CurrentCollection"] = collection;
+        ViewData["CurrentAvailableOnly"] = availableOnly;
+        ViewData["CurrentPromotionOnly"] = promotionOnly;
 
         int pageSize = 9;
         var tourList = tours.ToList();
@@ -77,8 +174,9 @@ public class PublicToursController : Controller
             .Where(t => IsPubliclyVisible(t.Status) && t.Id != id)
             .OrderByDescending(t => string.Equals(t.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
             .ThenByDescending(t => string.Equals(t.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(t => (t.Price?.Discount ?? 0) > 0)
             .ThenByDescending(t => t.Rating)
-            .Take(3)
+            .Take(4)
             .ToList();
         ViewData["RelatedTours"] = relatedTours;
 
@@ -90,4 +188,3 @@ public class PublicToursController : Controller
         return status is "Active" or "ComingSoon" or "SoldOut";
     }
 }
-
