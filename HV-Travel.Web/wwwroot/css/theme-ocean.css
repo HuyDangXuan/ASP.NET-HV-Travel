@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --theme-scrollbar-thumb: #9cc8d6;
   --theme-scrollbar-thumb-hover: #5faac2;
   --theme-glass-bg: rgba(255, 255, 255, 0.86);
@@ -311,3 +311,53 @@ body.public-page-shell .public-chat-metadata {
   }
 }
 
+
+body.public-page-shell .public-rich-text {
+  font-size: inherit;
+  line-height: 1.75;
+}
+
+body.public-page-shell .public-rich-text :where(p, ul, ol, blockquote, table) {
+  margin-block: 0 1rem;
+}
+
+body.public-page-shell .public-rich-text :where(ul, ol) {
+  padding-left: 1.5rem;
+}
+
+body.public-page-shell .public-rich-text ul {
+  list-style: disc;
+}
+
+body.public-page-shell .public-rich-text ol {
+  list-style: decimal;
+}
+
+body.public-page-shell .public-rich-text li {
+  display: list-item;
+  margin: 0.35rem 0;
+}
+
+body.public-page-shell .public-rich-text li::marker {
+  color: currentColor;
+}
+
+body.public-page-shell .public-rich-text :where(strong, b) {
+  font-weight: 700;
+}
+
+body.public-page-shell .public-rich-text a {
+  color: var(--color-primary, #0ea5e9);
+  text-decoration: underline;
+}
+
+body.public-page-shell .public-rich-text blockquote {
+  border-left: 3px solid rgb(56 189 248 / 0.7);
+  padding-left: 1rem;
+  color: rgb(100 116 139);
+}
+
+body.public-page-shell.dark .public-rich-text blockquote,
+body.public-page-shell .dark .public-rich-text blockquote {
+  color: rgb(148 163 184);
+}
