@@ -32,13 +32,13 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
-        <div class="text-slate-500 dark:text-slate-400 mb-2">
+        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
+        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-2">
             @Html.Raw(statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau."))
         </div>
         <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
 
-        <div class="bg-surface-muted-light dark:bg-surface-elevated-dark/70 rounded-2xl p-5 border border-border-light dark:border-border-dark mb-8 text-left" data-animate="fade-up" data-delay="200">
+        <div class="public-form-card bg-surface-muted-light dark:bg-surface-elevated-dark/70 rounded-2xl p-5 border border-border-light dark:border-border-dark mb-8 text-left" data-animate="fade-up" data-delay="200">
             <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Bạn có thể thử:</h4>
             <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                 <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tải lại trang</li>
@@ -48,7 +48,7 @@
             </ul>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
+        <div class="public-action-stack flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
             <button onclick="location.reload()" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
                 <span class="material-symbols-outlined text-[18px]">refresh</span> Tải Lại
             </button>

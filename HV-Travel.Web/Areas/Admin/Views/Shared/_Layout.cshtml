@@ -41,7 +41,6 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://cdn.tiny.cloud" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
     
@@ -558,7 +557,7 @@
             uploadPreset: "@Configuration["Cloudinary:UploadPreset"]"
         };
     </script>
-    <script src="https://cdn.tiny.cloud/1/@(string.IsNullOrWhiteSpace(Configuration["TinyMCE:ApiKey"]) ? "no-api-key" : Configuration["TinyMCE:ApiKey"])/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/lib/tinymce/tinymce.min.js" asp-append-version="true"></script>
     <script src="~/js/admin-rich-text.js" asp-append-version="true"></script>
     <script src="~/js/admin-cloudinary.js" asp-append-version="true"></script>
 

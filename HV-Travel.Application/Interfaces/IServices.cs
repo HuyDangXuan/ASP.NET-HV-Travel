@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using HVTravel.Application.Models;
 using HVTravel.Domain.Entities;
 
 namespace HVTravel.Application.Interfaces
@@ -23,7 +24,8 @@ namespace HVTravel.Application.Interfaces
 
     public interface IDashboardService
     {
-        Task<object> GetRevenueStatsAsync(string range);
-        Task<object> GetRecentBookingsAsync();
+        Task<DashboardRevenueOverviewResult> GetRevenueOverviewAsync(DashboardRevenueRange defaultRange);
+        Task<DashboardRevenueStatsResult> GetRevenueStatsAsync(DashboardRevenueRange range);
+        Task<IEnumerable<Booking>> GetRecentBookingsAsync();
     }
 }

@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
@@ -10,7 +11,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(AuthenticationSchemes = AuthSchemes.AdminScheme, Roles = "Admin,Manager,Staff")]
-    // [Route("Admin/[controller]")]
     public class DashboardController : Controller
     {
         private readonly IRepository<Booking> _bookingRepository;
@@ -37,16 +37,19 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 var bookings = await _bookingRepository.GetAllAsync();
                 var tours = await _tourRepository.GetAllAsync();
                 var customers = await _customerRepository.GetAllAsync();
+                var revenueOverview = await _dashboardService.GetRevenueOverviewAsync(DashboardRevenueRange.Week);
 
                 var viewModel = new DashboardViewModel
                 {
-                    TotalRevenue = bookings.Sum(b => b.TotalAmount),
+                    TotalRevenue = revenueOverview.AllTimeRevenue,
                     TotalBookings = bookings.Count(),
                     TotalTickets = bookings.Sum(b => b.ParticipantsCount),
                     TotalCustomers = customers.Count(),
                     TotalTours = tours.Count(),
                     RecentBookings = bookings.OrderByDescending(b => b.BookingDate).Take(10).ToList(),
-                    PopularTours = tours.Take(5).ToList()
+                    PopularTours = tours.Take(5).ToList(),
+                    RevenueGrowth = revenueOverview.RevenueGrowthPercentage,
+                    RevenueChart = revenueOverview.DefaultChart
                 };
 
                 return View(viewModel);
@@ -57,7 +60,12 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 return View(new DashboardViewModel
                 {
                     RecentBookings = new List<Booking>(),
-                    PopularTours = new List<Tour>()
+                    PopularTours = new List<Tour>(),
+                    RevenueChart = new DashboardRevenueStatsResult
+                    {
+                        Range = DashboardRevenueRange.Week,
+                        RangeKey = "week"
+                    }
                 });
             }
         }
@@ -65,10 +73,12 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         [HttpGet("api/dashboard/revenue")]
         public async Task<IActionResult> GetRevenueStats([FromQuery] string range = "week")
         {
-            var result = await _dashboardService.GetRevenueStatsAsync(range);
+            var selectedRange = Enum.TryParse<DashboardRevenueRange>(range, true, out var parsedRange)
+                ? parsedRange
+                : DashboardRevenueRange.Week;
+
+            var result = await _dashboardService.GetRevenueStatsAsync(selectedRange);
             return Ok(result);
         }
     }
 }
-
-

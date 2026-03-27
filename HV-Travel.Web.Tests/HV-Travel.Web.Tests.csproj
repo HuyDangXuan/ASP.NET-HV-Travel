@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HV-Travel.Web\HV-Travel.Web.csproj" />
     <ProjectReference Include="..\HV-Travel.Domain\HV-Travel.Domain.csproj" />
   </ItemGroup>
 
@@ -26,15 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\HV-Travel.Web\Models\ChatModels.cs" Link="ChatModels.cs" />
-    <Compile Include="..\HV-Travel.Web\Models\CustomerRegisterViewModel.cs" Link="CustomerRegisterViewModel.cs" />
-    <Compile Include="..\HV-Travel.Web\Services\ISupportChatService.cs" Link="ISupportChatService.cs" />
-    <Compile Include="..\HV-Travel.Web\Services\SupportChatService.cs" Link="SupportChatService.cs" />
-    <Compile Include="..\HV-Travel.Web\Validation\MustBeTrueAttribute.cs" Link="MustBeTrueAttribute.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>
+
+

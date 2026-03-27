@@ -147,11 +147,11 @@
         }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
-    <header class="sticky top-0 z-50 bg-surface-light/82 dark:bg-surface-dark/82 backdrop-blur-xl border-b border-border-light/60 dark:border-border-dark/60 transition-all duration-300" id="site-header">
+<body class="public-page-shell bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
+    <header class="public-site-header sticky top-0 z-50 bg-surface-light/82 dark:bg-surface-dark/82 backdrop-blur-xl border-b border-border-light/60 dark:border-border-dark/60 transition-all duration-300" id="site-header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
-                <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 group">
+                <a asp-controller="Home" asp-action="Index" class="public-brand-lockup flex items-center gap-3 group">
                     <div class="bg-gradient-to-br from-primary to-accent text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all group-hover:scale-105">
                         <span class="material-symbols-outlined">flight_takeoff</span>
                     </div>
@@ -176,7 +176,7 @@
                     </a>
                 </nav>
 
-                <div class="flex items-center gap-2 sm:gap-3">
+                <div class="public-nav-actions flex items-center gap-2 sm:gap-3">
                     <button id="theme-toggle-public"
                             class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-text-muted-dark hover:text-primary hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark transition-all font-medium"
                             aria-label="Chuyển chế độ tối">
@@ -274,13 +274,13 @@
         </div>
     </header>
 
-    <main class="flex-1">
+    <main class="public-page-main flex-1">
         @RenderBody()
     </main>
 
     <footer class="bg-surface-dark dark:bg-background-dark text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" data-animate="fade-up" data-stagger>
+            <div class="public-footer-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" data-animate="fade-up" data-stagger>
                 <div class="lg:col-span-1">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="bg-gradient-to-br from-primary to-accent text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30">
@@ -354,7 +354,7 @@
         <div class="border-t border-border-dark">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. Bảo lưu mọi quyền.</p>
-                <div class="flex items-center gap-6">
+                <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">Sơ đồ trang</a>

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --theme-scrollbar-thumb: #9cc8d6;
   --theme-scrollbar-thumb-hover: #5faac2;
   --theme-glass-bg: rgba(255, 255, 255, 0.86);
@@ -65,3 +65,249 @@
   background: linear-gradient(180deg, rgba(13, 27, 42, 0.94), rgba(19, 38, 58, 0.88));
   border: 1px solid rgba(31, 51, 71, 0.95);
 }
+
+/* Public responsive foundation */
+:root {
+  --public-fluid-display: clamp(2.55rem, 5vw, 5rem);
+  --public-fluid-heading: clamp(1.85rem, 3vw, 3.25rem);
+  --public-fluid-subheading: clamp(1.3rem, 2vw, 1.85rem);
+  --public-fluid-body: clamp(0.97rem, 0.92rem + 0.25vw, 1.125rem);
+  --public-fluid-label: clamp(0.74rem, 0.7rem + 0.18vw, 0.84rem);
+  --public-fluid-badge: clamp(0.68rem, 0.64rem + 0.14vw, 0.78rem);
+  --public-fluid-gutter: clamp(1rem, 0.72rem + 1vw, 2rem);
+  --public-fluid-section-y: clamp(3.5rem, 7vw, 5rem);
+  --public-fluid-card-pad: clamp(1rem, 0.75rem + 0.9vw, 1.75rem);
+  --public-fluid-gap: clamp(1rem, 0.78rem + 0.85vw, 2rem);
+  --public-fluid-radius: clamp(1.25rem, 1rem + 0.6vw, 2rem);
+}
+
+html {
+  overflow-x: clip;
+}
+
+body.public-page-shell,
+body.public-page-shell main {
+  overflow-x: clip;
+}
+
+body.public-page-shell :where(img, svg, video, iframe) {
+  max-width: 100%;
+}
+
+body.public-page-shell :where(p, li, span, a, h1, h2, h3, h4, h5, h6) {
+  overflow-wrap: anywhere;
+}
+
+body.public-page-shell :where(input, select, textarea, button) {
+  min-width: 0;
+}
+
+body.public-page-shell section > div,
+body.public-page-shell footer > div,
+body.public-page-shell .public-site-header > div {
+  padding-inline: var(--public-fluid-gutter);
+}
+
+body.public-page-shell .public-brand-lockup {
+  min-width: 0;
+  max-width: min(100%, 16rem);
+}
+
+body.public-page-shell .public-brand-lockup h1 {
+  font-size: clamp(1.25rem, 1.08rem + 0.55vw, 1.5rem);
+}
+
+body.public-page-shell .public-brand-lockup p {
+  font-size: clamp(0.58rem, 0.54rem + 0.18vw, 0.72rem);
+}
+
+body.public-page-shell .public-nav-actions {
+  min-width: 0;
+  gap: clamp(0.5rem, 0.42rem + 0.3vw, 0.75rem);
+}
+
+body.public-page-shell .public-footer-grid {
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+
+body.public-page-shell .public-breadcrumb-nav {
+  row-gap: 0.55rem;
+  column-gap: 0.35rem;
+  font-size: clamp(0.82rem, 0.78rem + 0.18vw, 0.92rem);
+}
+
+body.public-page-shell .public-badge {
+  max-width: 100%;
+  font-size: var(--public-fluid-badge) !important;
+  line-height: 1.25;
+}
+
+body.public-page-shell .public-hero-title {
+  font-size: var(--public-fluid-display) !important;
+  line-height: 1.03 !important;
+  text-wrap: balance;
+}
+
+body.public-page-shell .public-section-title {
+  font-size: var(--public-fluid-heading) !important;
+  line-height: 1.08 !important;
+  text-wrap: balance;
+}
+
+body.public-page-shell .public-auth-title {
+  font-size: clamp(2.15rem, 4.9vw, 4.4rem) !important;
+  line-height: 1.04 !important;
+  text-wrap: balance;
+}
+
+body.public-page-shell .public-body-copy {
+  font-size: var(--public-fluid-body) !important;
+  line-height: 1.72 !important;
+  text-wrap: pretty;
+}
+
+body.public-page-shell .public-card-grid {
+  gap: var(--public-fluid-gap) !important;
+}
+
+body.public-page-shell .public-card-grid > * {
+  min-width: 0;
+}
+
+body.public-page-shell .public-form-card {
+  padding: var(--public-fluid-card-pad) !important;
+  border-radius: var(--public-fluid-radius) !important;
+}
+
+body.public-page-shell .public-search-shell {
+  display: flex;
+  align-items: stretch;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+body.public-page-shell .public-search-shell input,
+body.public-page-shell .public-search-shell select,
+body.public-page-shell .public-search-shell button {
+  min-width: 0;
+}
+
+body.public-page-shell .public-detail-sidebar,
+body.public-page-shell .public-summary-card {
+  position: static;
+  top: auto;
+  align-self: start;
+}
+
+body.public-page-shell .public-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 0.5rem;
+}
+
+body.public-page-shell .public-stepper-divider {
+  flex: 0 1 clamp(1.75rem, 8vw, 5rem);
+  width: clamp(1.75rem, 8vw, 5rem);
+}
+
+body.public-page-shell .public-action-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-action-stack > * {
+  min-width: min(100%, 13.5rem);
+}
+
+body.public-page-shell .public-chat-panel {
+  border-radius: clamp(1.5rem, 1.1rem + 1vw, 2rem);
+}
+
+body.public-page-shell .public-chat-title {
+  font-size: clamp(1.4rem, 3.6vw, 1.95rem) !important;
+  line-height: 1.12 !important;
+  text-wrap: balance;
+}
+
+body.public-page-shell .public-chat-status {
+  font-size: clamp(0.94rem, 0.88rem + 0.2vw, 1rem) !important;
+  line-height: 1.55 !important;
+}
+
+body.public-page-shell .public-chat-composer textarea {
+  font-size: clamp(0.95rem, 0.92rem + 0.12vw, 1rem);
+}
+
+body.public-page-shell .public-chat-onboarding {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+}
+
+body.public-page-shell .dark .public-chat-onboarding,
+body.public-page-shell.dark .public-chat-onboarding {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.98), rgba(15, 23, 42, 0.96));
+}
+
+
+body.public-page-shell .public-chat-thread {
+  gap: clamp(0.85rem, 0.7rem + 0.5vw, 1.1rem);
+}
+
+body.public-page-shell .public-chat-bubble {
+  font-size: clamp(0.98rem, 0.95rem + 0.12vw, 1.05rem);
+  line-height: 1.75;
+}
+
+body.public-page-shell .public-chat-metadata {
+  font-size: clamp(0.67rem, 0.64rem + 0.08vw, 0.75rem);
+}
+
+@media (max-width: 640px) {
+  body.public-page-shell .public-nav-actions {
+    gap: 0.5rem;
+  }
+
+  body.public-page-shell .public-action-stack > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  body.public-page-shell .public-brand-lockup {
+    gap: 0.65rem !important;
+    max-width: 12rem;
+  }
+
+  body.public-page-shell .public-search-shell {
+    flex-direction: column;
+  }
+
+  body.public-page-shell .public-search-shell button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body.public-page-shell .public-stepper {
+    justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1024px) {
+  body.public-page-shell .public-detail-sidebar,
+  body.public-page-shell .public-summary-card {
+    position: sticky;
+    top: 6rem;
+  }
+
+  body.public-page-shell .public-stepper {
+    flex-wrap: nowrap;
+  }
+}
+

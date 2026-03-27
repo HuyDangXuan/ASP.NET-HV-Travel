@@ -40,7 +40,7 @@
             license_key: 'gpl',
             plugins: 'autolink link lists table code preview searchreplace visualblocks wordcount autoresize',
             toolbar: 'undo redo | blocks | bold italic underline strikethrough | bullist numlist | alignleft aligncenter alignright | blockquote table link | removeformat code preview',
-            block_formats: 'Đoạn văn=p; Tiêu đề 2=h2; Tiêu đề 3=h3; Tiêu đề 4=h4',
+            block_formats: '\u0110o\u1ea1n v\u0103n=p; Ti\u00eau \u0111\u1ec1 2=h2; Ti\u00eau \u0111\u1ec1 3=h3; Ti\u00eau \u0111\u1ec1 4=h4',
             min_height: Number.isFinite(height) ? height : 220,
             autoresize_bottom_margin: 16,
             resize: false,

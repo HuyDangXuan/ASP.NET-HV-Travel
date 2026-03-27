@@ -22,10 +22,10 @@
             <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+            <h1 class="public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
                 @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
             </h1>
-            <div class="text-lg text-slate-300 max-w-xl mx-auto">
+            <div class="public-body-copy text-lg text-slate-300 max-w-xl mx-auto">
                 @Html.Raw(hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn."))
             </div>
         </div>
@@ -34,7 +34,7 @@
 
 <section class="py-12 bg-background-light dark:bg-background-dark">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-5 gap-10">
+        <div class="public-card-grid grid lg:grid-cols-5 gap-10">
             @if (benefits?.IsEnabled != false)
             {
                 <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
@@ -86,7 +86,7 @@
             <div class="lg:col-span-3" data-animate="slide-right">
                 @if (success)
                 {
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-10 border border-border-light dark:border-border-dark text-center">
+                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-10 border border-border-light dark:border-border-dark text-center">
                         <div class="mx-auto size-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
                         </div>
@@ -101,7 +101,7 @@
                 }
                 else
                 {
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark">
+                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark">
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">edit_note</span> @benefits?.Fields.GetFieldValue("formTitle", "Gửi Yêu Cầu Tư Vấn")
                         </h2>

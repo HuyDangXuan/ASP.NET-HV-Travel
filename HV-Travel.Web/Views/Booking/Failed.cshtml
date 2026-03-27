@@ -32,8 +32,8 @@
             </div>
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
-        <div class="text-slate-500 dark:text-slate-400 mb-3">
+        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
+        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-3">
             @Html.Raw(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))
         </div>
 
@@ -42,7 +42,7 @@
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Mã đơn: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
         }
 
-        <div class="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
+        <div class="public-form-card bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
             <div class="flex gap-3">
                 <span class="material-symbols-outlined text-amber-500 shrink-0">info</span>
                 <div class="text-sm text-amber-800 dark:text-amber-300">
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
+        <div class="public-action-stack flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
             @if (!string.IsNullOrEmpty(booking?.Id))
             {
                 <a asp-controller="Booking" asp-action="Payment" asp-route-bookingId="@booking.Id" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">

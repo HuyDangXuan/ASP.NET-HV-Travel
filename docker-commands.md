@@ -6,8 +6,9 @@ Tai lieu nay tong hop cac lenh Docker Compose hay dung cho du an `ASP.NET-HV-Tra
 
 - File `docker-compose.yml` hien dang de `restart: "no"`, nen container se khong tu dong start lai.
 - App web doc `HVTravelDatabase__ConnectionString` tu file `.env`.
-- Web mac dinh chay tai `http://localhost:8080`.
+- Web trong Docker duoc publish tai `http://localhost:5028`.
 - Mongo local neu duoc start se map ra `localhost:27018`.
+- Muon hot reload trong Docker thi dung them file `docker-compose.dev.yml`.
 
 ## Build
 
@@ -21,6 +22,12 @@ Build lai va start ngay:
 
 ```powershell
 docker compose up -d --build
+```
+
+Build lai image dev cho hot reload:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build hv-travel-web
 ```
 
 ## Start
@@ -49,6 +56,26 @@ Start tunnel khi can:
 docker compose up -d tunnel
 ```
 
+## Hot reload trong Docker
+
+Chay web bang `dotnet watch` ben trong container, co mount source code tu may local:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d hv-travel-web
+```
+
+Chay web + Mongo local voi hot reload:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile local-db up -d mongodb hv-travel-web
+```
+
+Luu y:
+
+- Source code local duoc mount vao container, sua file se duoc `dotnet watch` tu restart.
+- Service van publish ra `http://localhost:5028`.
+- Neu stack thuong dang chay truoc do, nen `docker compose stop hv-travel-web` truoc khi bat che do dev.
+
 ## Status
 
 Xem trang thai container:
@@ -69,6 +96,12 @@ Xem log rieng web:
 
 ```powershell
 docker compose logs -f hv-travel-web
+```
+
+Xem log web trong che do hot reload:
+
+```powershell
+docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f hv-travel-web
 ```
 
 Xem log rieng Mongo:

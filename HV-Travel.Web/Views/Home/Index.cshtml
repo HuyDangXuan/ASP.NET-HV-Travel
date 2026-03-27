@@ -21,19 +21,19 @@
         <div class="text-center max-w-4xl mx-auto" data-animate="fade-up">
             @if (hero?.IsEnabled != false)
             {
-                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10">
+                <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10">
                     <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
                     @hero.Fields.GetFieldValue("badgeText", $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời")
                 </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
                     @hero.Fields.GetFieldValue("titleLine1", "Khám Phá")
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
                     <br />@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")
                 </h1>
-                <div class="text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn."))
                 </div>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
                     <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
                         <span class="material-symbols-outlined">explore</span>
                         @hero.Fields.GetFieldValue("primaryCtaText", "Khám Phá Ngay")
@@ -48,7 +48,7 @@
 
         @if (stats?.IsEnabled != false)
         {
-            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto" data-animate="fade-up" data-stagger data-delay="300">
+            <div class="public-card-grid mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto" data-animate="fade-up" data-stagger data-delay="300">
                 @for (var index = 1; index <= 4; index++)
                 {
                     <div class="text-center">
@@ -66,10 +66,10 @@
         @if (featured?.IsEnabled != false)
         {
             <div class="text-center mb-14" data-animate="fade-up">
-                <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
                     <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Nổi Bật")
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
                 <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
                     @Html.Raw(featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"))
                 </div>
@@ -78,7 +78,7 @@
 
         @if (Model != null && Model.Any())
         {
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
                 @foreach (var tour in Model)
                 {
                     <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
@@ -160,15 +160,15 @@
     <section class="py-20 bg-surface-light dark:bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14" data-animate="fade-up">
-                <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
                     <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
                 <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
                     @Html.Raw(commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"))
                 </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
+            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
                 @{
                     var icons = new[] { "shield", "diamond", "support_agent", "payments" };
                 }
@@ -196,11 +196,11 @@
             <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
         </div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-animate="scale-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
-            <div class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+            <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
+            <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
                 @Html.Raw(finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."))
             </div>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
                 <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
                     <span class="material-symbols-outlined">mail</span>
                     @finalCta.Fields.GetFieldValue("primaryCtaText", "Liên Hệ Ngay")

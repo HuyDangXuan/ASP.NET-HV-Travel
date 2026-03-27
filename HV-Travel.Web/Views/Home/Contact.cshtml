@@ -1,4 +1,5 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
+@model HVTravel.Web.Models.ContactViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("contact");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -6,6 +7,7 @@
     var cards = sections.GetSection("cards");
     var formIntro = sections.GetSection("formIntro");
     var contactGroup = siteSettings.GetGroup("contactInfo");
+    var success = TempData["ContactSuccess"] != null;
 
     var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM") ?? "123 Đường Nguyễn Huệ, Quận 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
@@ -24,14 +26,14 @@
             <div class="absolute bottom-10 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative z-10 text-center" data-animate="fade-up">
-            <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
+            <span class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
                 <span class="material-symbols-outlined text-primary text-[16px]">call</span>
                 @hero.Fields.GetFieldValue("badgeText", "Liên Hệ")
             </span>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+            <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
                 @hero.Fields.GetFieldValue("title", "Chúng Tôi Luôn Sẵn Sàng Lắng Nghe")
             </h1>
-            <div class="text-lg text-slate-300 max-w-2xl mx-auto">
+            <div class="public-body-copy text-lg text-slate-300 max-w-2xl mx-auto">
                 @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
             </div>
         </div>
@@ -40,7 +42,7 @@
 
 <section class="py-20 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-5 gap-12">
+        <div class="public-card-grid grid lg:grid-cols-5 gap-12">
             @if (cards?.IsEnabled != false)
             {
                 <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
@@ -94,40 +96,57 @@
             @if (formIntro?.IsEnabled != false)
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
+                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8">
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@formIntro.Fields.GetFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
                         <div class="text-sm text-slate-500 dark:text-slate-400 mb-8">
                             @Html.Raw(formIntro.Fields.GetFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."))
                         </div>
 
-                        <form id="contact-form" class="space-y-6">
+                        @if (success)
+                        {
+                            <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-200">
+                                Chúng tôi đã nhận được thông tin của bạn và đã gửi thông báo nội bộ thành công. HV Travel sẽ liên hệ lại sớm nhất.
+                            </div>
+                        }
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div asp-validation-summary="ModelOnly" class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200"></div>
+                        }
+
+                        <form id="contact-form" asp-action="Contact" method="post" class="space-y-6">
+                            @Html.AntiForgeryToken()
                             <div class="grid sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
-                                    <input type="text" placeholder="Nhập họ và tên" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label asp-for="FullName" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Họ và Tên <span class="text-red-500">*</span></label>
+                                    <input asp-for="FullName" placeholder="Nhập họ và tên" class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <span asp-validation-for="FullName" class="mt-2 block text-sm text-red-500"></span>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số Điện Thoại <span class="text-red-500">*</span></label>
-                                    <input type="tel" placeholder="Nhập số điện thoại" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <label asp-for="PhoneNumber" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Số Điện Thoại <span class="text-red-500">*</span></label>
+                                    <input asp-for="PhoneNumber" type="tel" placeholder="Nhập số điện thoại" class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                    <span asp-validation-for="PhoneNumber" class="mt-2 block text-sm text-red-500"></span>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="Nhập địa chỉ email" required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                <label asp-for="Email" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email <span class="text-red-500">*</span></label>
+                                <input asp-for="Email" type="email" placeholder="Nhập địa chỉ email" class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all" />
+                                <span asp-validation-for="Email" class="mt-2 block text-sm text-red-500"></span>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chủ Đề</label>
-                                <select class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
-                                    <option>Tư vấn tour du lịch</option>
-                                    <option>Đặt tour</option>
-                                    <option>Khiếu nại / Góp ý</option>
-                                    <option>Hợp tác kinh doanh</option>
-                                    <option>Khác</option>
+                                <label asp-for="Subject" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Chủ Đề</label>
+                                <select asp-for="Subject" class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all">
+                                    <option value="Tư vấn tour du lịch">Tư vấn tour du lịch</option>
+                                    <option value="Đặt tour">Đặt tour</option>
+                                    <option value="Khiếu nại / Góp ý">Khiếu nại / Góp ý</option>
+                                    <option value="Hợp tác kinh doanh">Hợp tác kinh doanh</option>
+                                    <option value="Khác">Khác</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nội Dung <span class="text-red-500">*</span></label>
-                                <textarea rows="5" placeholder="Nhập nội dung tin nhắn..." required class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
+                                <label asp-for="Message" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nội Dung <span class="text-red-500">*</span></label>
+                                <textarea asp-for="Message" rows="5" placeholder="Nhập nội dung tin nhắn..." class="w-full px-4 py-3 rounded-xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all resize-none"></textarea>
+                                <span asp-validation-for="Message" class="mt-2 block text-sm text-red-500"></span>
                             </div>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
                                 <span class="material-symbols-outlined text-[18px]">send</span>
@@ -151,25 +170,3 @@
         </div>
     </div>
 </section>
-
-@section Scripts {
-<script>
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = this.querySelector('button[type="submit"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Đang gửi...';
-        btn.disabled = true;
-        setTimeout(() => {
-            btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span> Đã gửi thành công!';
-            btn.classList.replace('bg-primary', 'bg-emerald-500');
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.replace('bg-emerald-500', 'bg-primary');
-                btn.disabled = false;
-                e.target.reset();
-            }, 2000);
-        }, 1500);
-    });
-</script>
-}
