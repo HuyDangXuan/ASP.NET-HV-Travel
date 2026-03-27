@@ -1,6 +1,6 @@
 @model Tour
 @{
-    ViewData["Description"] = Model.ShortDescription ?? Model.Description;
+    ViewData["Description"] = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 160);
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
     var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
     {
@@ -64,7 +64,7 @@
                         <span class="material-symbols-outlined text-primary">description</span> Mô tả
                     </h2>
                     <div class="prose dark:prose-invert prose-sm max-w-none text-slate-600 dark:text-slate-400 leading-relaxed">
-                        @Html.Raw(Model.Description?.Replace("\n", "<br/>") ?? "")
+                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
                     </div>
                 </div>
 
@@ -87,7 +87,9 @@
                                         <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2">@item.Title</h4>
                                         @if (!string.IsNullOrEmpty(item.Description))
                                         {
-                                            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-3">@item.Description</p>
+                                            <div class="prose prose-sm max-w-none text-slate-600 dark:prose-invert dark:text-slate-400 mb-3">
+                                                @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
+                                            </div>
                                         }
                                         @if (item.Activities != null && item.Activities.Any())
                                         {
@@ -274,5 +276,4 @@
         </div>
     </section>
 }
-
 

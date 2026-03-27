@@ -100,12 +100,14 @@
         <div class="lg:col-span-8">
             <section class="mb-10 prose dark:prose-invert max-w-none">
                 <h3 class="text-2xl font-bold mb-4 text-slate-900 dark:text-white">Mô tả Tour</h3>
-                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    @Model.Description
-                </p>
+                <div class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
+                </div>
                 @if(!string.IsNullOrEmpty(Model.ShortDescription))
                 {
-                     <p class="text-sm italic text-slate-500 mt-2">@Model.ShortDescription</p>
+                     <div class="text-sm italic text-slate-500 mt-2">
+                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.ShortDescription))
+                     </div>
                 }
             </section>
 
@@ -119,7 +121,9 @@
                             <div class="relative pl-10 before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
                                 <div class="absolute left-0 top-0 size-6 rounded-full bg-primary border-4 border-white dark:border-slate-900 shadow-md"></div>
                                 <h4 class="font-bold text-lg mb-2 text-slate-900 dark:text-white">Ngày @item.Day: @item.Title</h4>
-                                <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">@item.Description</p>
+                                <div class="prose prose-sm max-w-none text-slate-500 dark:prose-invert dark:text-slate-400 mb-3">
+                                    @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
+                                </div>
                                 @if (item.Activities != null && item.Activities.Count > 0)
                                 {
                                     <div class="flex gap-2 flex-wrap">
@@ -223,5 +227,4 @@
             </div>
         </div>
     </div>
-
 
