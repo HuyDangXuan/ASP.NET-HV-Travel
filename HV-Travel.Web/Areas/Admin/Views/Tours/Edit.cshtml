@@ -720,12 +720,24 @@
             imagePlaceholder: document.getElementById('preview-image-placeholder')
         };
 
+        function htmlToPreviewText(html) {
+            if (!html) return '';
+            const normalizedHtml = String(html)
+                .replace(/<\s*br\s*\/?\s*>/gi, ' ')
+                .replace(/<\/?(?:p|div|li|ul|ol|h[1-6]|blockquote|section|article|tr|td|th)\b[^>]*>/gi, ' ');
+            const container = document.createElement('div');
+            container.innerHTML = normalizedHtml;
+            return (container.textContent || container.innerText || '')
+                .replace(/\u00a0/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
         function updatePreview() {
             // Name
             if(inputs.name) preview.title.textContent = inputs.name.value || 'Tên Tour';
             
             // Description
-            if(inputs.desc) preview.desc.textContent = inputs.desc.value || 'Mô tả ngắn về tour sẽ hiển thị ở đây...';
+            if(inputs.desc) preview.desc.textContent = htmlToPreviewText(inputs.desc.value) || 'Mô tả ngắn về tour sẽ hiển thị ở đây...';
             
             // Price
             if(inputs.price) {

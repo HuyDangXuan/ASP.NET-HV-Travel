@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
+using HVTravel.Web.Services;
 
 namespace HVTravel.Web.Controllers;
 
@@ -16,23 +17,23 @@ public class PublicToursController : Controller
     public async Task<IActionResult> Index(string? search, string? sort, int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
-        ViewData["Title"] = "Tour Du Lịch";
+        ViewData["Title"] = "Tour Du \u1ECBch";
 
         var allTours = await _tourRepository.GetAllAsync();
         var tours = allTours.Where(t => IsPubliclyVisible(t.Status)).AsEnumerable();
 
-        // Search
-        if (!string.IsNullOrEmpty(search))
+        if (!string.IsNullOrWhiteSpace(search))
         {
+            var normalizedSearch = search.Trim();
             tours = tours.Where(t =>
-                (t.Name != null && t.Name.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
-                (t.Description != null && t.Description.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
-                (t.Destination?.City != null && t.Destination.City.Contains(search, StringComparison.OrdinalIgnoreCase))
+                (t.Name != null && t.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
+                RichTextContentFormatter.ToPlainText(t.ShortDescription).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                RichTextContentFormatter.ToPlainText(t.Description).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
+                (t.Destination?.City != null && t.Destination.City.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
             );
-            ViewData["CurrentSearch"] = search;
+            ViewData["CurrentSearch"] = normalizedSearch;
         }
 
-        // Sort
         tours = sort switch
         {
             "price_asc" => tours.OrderBy(t => t.Price?.Adult ?? 0),
@@ -43,7 +44,6 @@ public class PublicToursController : Controller
         };
         ViewData["CurrentSort"] = sort;
 
-        // Pagination
         int pageSize = 9;
         var tourList = tours.ToList();
         int totalItems = tourList.Count;
@@ -72,7 +72,6 @@ public class PublicToursController : Controller
 
         ViewData["Title"] = tour.Name;
 
-        // Get related tours
         var allTours = await _tourRepository.GetAllAsync();
         var relatedTours = allTours
             .Where(t => IsPubliclyVisible(t.Status) && t.Id != id)
@@ -91,3 +90,4 @@ public class PublicToursController : Controller
         return status is "Active" or "ComingSoon" or "SoldOut";
     }
 }
+

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Features;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
 using System.Threading.Tasks;
 using HVTravel.Web.Security;
+using HVTravel.Web.Services;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
@@ -218,6 +220,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             tour.CreatedAt = DateTime.UtcNow;
             tour.UpdatedAt = DateTime.UtcNow;
 
+            NormalizeRichTextFields(tour);
+
             await _tourRepository.AddAsync(tour);
             return RedirectToAction(nameof(Index));
         }
@@ -281,7 +285,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
             // Preserve critical fields not in form
             tour.CreatedAt = existingTour.CreatedAt;
-            if (!Request.Form.ContainsKey(nameof(Tour.Version)))
+            var versionProvided = HttpContext?.Features.Get<IFormFeature>()?.Form?.ContainsKey(nameof(Tour.Version)) == true;
+            if (!versionProvided)
             {
                 tour.Version = existingTour.Version;
             }
@@ -296,11 +301,34 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             if (tour.Price == null) tour.Price = new TourPrice();
             if (tour.Duration == null) tour.Duration = new TourDuration();
 
+            NormalizeRichTextFields(tour);
+
             await _tourRepository.UpdateAsync(id, tour);
             return RedirectToAction(nameof(Index));
         }
 
         // UpdateStatus - Admin, Manager, Staff (Guide không có quyền)
+        private static void NormalizeRichTextFields(Tour tour)
+        {
+            tour.Description = RichTextContentFormatter.ToTrustedHtml(tour.Description);
+            tour.ShortDescription = RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription);
+
+            if (tour.Schedule == null)
+            {
+                return;
+            }
+
+            foreach (var item in tour.Schedule)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                item.Description = RichTextContentFormatter.ToTrustedHtml(item.Description);
+            }
+        }
+
         [Authorize(Roles = "Admin,Manager,Staff")]
         [HttpPost("UpdateStatus/{id}")]
         public async Task<IActionResult> UpdateStatus(string id, string status)
