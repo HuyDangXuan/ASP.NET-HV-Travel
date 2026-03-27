@@ -55,6 +55,19 @@ public class TourRichContentMarkupTests
         Assert.DoesNotContain("@Html.Raw(tour.ShortDescription)", content);
         Assert.DoesNotContain("@Html.Raw(tour.Description)", content);
     }
+
+    [Fact]
+    public void ThemeOcean_DefinesPublicRichTextListStyles()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains(".public-rich-text ul", content);
+        Assert.Contains("list-style: disc;", content);
+        Assert.Contains(".public-rich-text ol", content);
+        Assert.Contains("list-style: decimal;", content);
+        Assert.Contains(".public-rich-text li", content);
+        Assert.Contains("display: list-item;", content);
+    }
     private static string GetRepoPath(string relativePath)
     {
         var repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
