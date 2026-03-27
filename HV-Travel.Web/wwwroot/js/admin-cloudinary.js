@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     'use strict';
 
     var modalState = {
@@ -7,32 +7,58 @@
         options: {},
         onSuccess: null,
         files: [],
-        activeTab: 'upload'
+        activeTab: 'upload',
+        library: {
+            loaded: false,
+            loading: false,
+            items: [],
+            selected: {},
+            nextCursor: '',
+            search: '',
+            error: ''
+        }
     };
 
     var modalElements = null;
     var objectUrls = [];
 
     function getConfig() {
-        if (window.CloudinaryConfig && window.CloudinaryConfig.cloudName && window.CloudinaryConfig.uploadPreset) {
-            return window.CloudinaryConfig;
-        }
-
         var host = document.querySelector('[data-cloudinary-cloud-name]');
+        var config = {
+            cloudName: '',
+            uploadPreset: '',
+            assetsUrl: ''
+        };
+
         if (host) {
-            return {
-                cloudName: host.getAttribute('data-cloudinary-cloud-name') || '',
-                uploadPreset: host.getAttribute('data-cloudinary-upload-preset') || ''
-            };
+            config.cloudName = host.getAttribute('data-cloudinary-cloud-name') || '';
+            config.uploadPreset = host.getAttribute('data-cloudinary-upload-preset') || '';
+            config.assetsUrl = host.getAttribute('data-cloudinary-assets-url') || '';
         }
 
-        return { cloudName: '', uploadPreset: '' };
+        if (window.CloudinaryConfig) {
+            config.cloudName = window.CloudinaryConfig.cloudName || config.cloudName;
+            config.uploadPreset = window.CloudinaryConfig.uploadPreset || config.uploadPreset;
+            config.assetsUrl = window.CloudinaryConfig.assetsUrl || config.assetsUrl;
+        }
+
+        return config;
     }
 
-    function ensureConfig() {
+    function ensureUploadConfig() {
         var config = getConfig();
         if (!config.cloudName || !config.uploadPreset) {
-            alert('Thiếu cấu hình Cloudinary. Hãy kiểm tra Cloudinary:CloudName và Cloudinary:UploadPreset.');
+            alert('Thiếu cấu hình tải ảnh lên Cloudinary. Hãy kiểm tra Cloudinary:CloudName và Cloudinary:UploadPreset.');
+            return null;
+        }
+
+        return config;
+    }
+
+    function ensureAssetsConfig() {
+        var config = getConfig();
+        if (!config.assetsUrl) {
+            alert('Thiếu cấu hình API duyệt ảnh Cloudinary. Hãy kiểm tra data-cloudinary-assets-url trong layout admin.');
             return null;
         }
 
@@ -41,7 +67,6 @@
 
     function normalizeOptions(options) {
         var safeOptions = options || {};
-
         return {
             resourceType: safeOptions.resourceType || 'image',
             multiple: !!safeOptions.multiple,
@@ -49,10 +74,42 @@
             allowedFormats: Array.isArray(safeOptions.allowedFormats) && safeOptions.allowedFormats.length
                 ? safeOptions.allowedFormats.slice()
                 : ['png', 'jpg', 'jpeg', 'webp', 'gif'],
-            maxFileSize: safeOptions.maxFileSize || 5 * 1024 * 1024
+            maxFileSize: safeOptions.maxFileSize || 5 * 1024 * 1024,
+            selectedUrls: normalizeSelectedUrls(safeOptions.selectedUrls),
+            syncSelection: !!safeOptions.syncSelection
         };
     }
 
+    function normalizeSelectedUrls(urls) {
+        var seen = {};
+        return (Array.isArray(urls) ? urls : []).map(function (url) {
+            return String(url || '').trim();
+        }).filter(function (url) {
+            if (!url || seen[url]) {
+                return false;
+            }
+
+            seen[url] = true;
+            return true;
+        });
+    }
+
+    function createSelectedAssetMap(urls) {
+        return normalizeSelectedUrls(urls).reduce(function (selected, url) {
+            selected[url] = {
+                secureUrl: url,
+                publicId: '',
+                thumbnailUrl: url,
+                format: '',
+                sizeLabel: '',
+                width: 0,
+                height: 0,
+                createdAt: '',
+                folder: ''
+            };
+            return selected;
+        }, {});
+    }
     function releaseObjectUrls() {
         objectUrls.forEach(function (url) {
             URL.revokeObjectURL(url);
@@ -92,9 +149,9 @@
             '      <div class="absolute -left-10 bottom-0 size-28 rounded-full bg-cyan-300/20 blur-2xl"></div>',
             '      <div class="relative flex items-start justify-between gap-6">',
             '        <div>',
-            '          <p class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-100">Cloud Upload Studio</p>',
-            '          <h3 class="text-2xl font-black tracking-tight sm:text-3xl">Tải hình ảnh lên</h3>',
-            '          <p class="mt-2 max-w-2xl text-sm text-slate-200/90 sm:text-[15px]">Kéo thả file, chọn ảnh từ máy, hoặc dán liên kết ảnh có sẵn. Mọi thứ sẽ được đưa lên Cloudinary và trả URL ngay sau khi hoàn tất.</p>',
+            '          <p class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-100">Cloudinary Asset Studio</p>',
+            '          <h3 data-cloudinary-title class="text-2xl font-black tracking-tight sm:text-3xl">Quản lý hình ảnh</h3>',
+            '          <p data-cloudinary-subtitle class="mt-2 max-w-2xl text-sm text-slate-200/90 sm:text-[15px]">Tải ảnh mới, dán URL hoặc chọn ảnh đã có trong Cloudinary.</p>',
             '        </div>',
             '        <button type="button" data-cloudinary-close class="inline-flex size-11 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white transition hover:bg-white/20" aria-label="Đóng modal">',
             '          <span class="material-symbols-outlined text-[24px]">close</span>',
@@ -103,6 +160,7 @@
             '      <div class="relative mt-6 flex flex-wrap gap-3">',
             '        <button type="button" data-cloudinary-tab="upload" class="cloudinary-tab inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold transition"></button>',
             '        <button type="button" data-cloudinary-tab="url" class="cloudinary-tab inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold transition"></button>',
+            '        <button type="button" data-cloudinary-tab="library" class="cloudinary-tab inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold transition"></button>',
             '      </div>',
             '    </div>',
             '    <div class="grid min-h-0 gap-0 xl:grid-cols-[minmax(0,1fr)_320px]">',
@@ -129,7 +187,7 @@
             '            <div class="mb-3 flex items-center justify-between">',
             '              <div>',
             '                <h4 class="text-base font-black text-slate-900">Hàng đợi tải lên</h4>',
-            '                <p class="text-sm text-slate-500">Ảnh sẽ được đưa lên Cloudinary ngay trong modal này.</p>',
+            '                <p class="text-sm text-slate-500">Ảnh sẽ được đưa lên Cloudinary ngay trong cửa sổ này.</p>',
             '              </div>',
             '              <button type="button" data-cloudinary-clear class="text-sm font-bold text-slate-400 transition hover:text-rose-500">Xóa hết</button>',
             '            </div>',
@@ -140,17 +198,52 @@
             '          <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50/80 p-6 sm:p-8">',
             '            <div class="mb-4">',
             '              <h4 class="text-xl font-black tracking-tight text-slate-900">Thêm bằng liên kết</h4>',
-            '              <p class="mt-2 text-sm leading-6 text-slate-500">Dán link ảnh công khai. Hệ thống sẽ chèn thẳng vào danh sách hình của tour mà không cần tải lại qua popup gốc của Cloudinary.</p>',
+            '              <p class="mt-2 text-sm leading-6 text-slate-500">Dán link ảnh công khai để chèn trực tiếp vào form hiện tại.</p>',
             '            </div>',
             '            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">URL hình ảnh</label>',
             '            <div class="flex flex-col gap-3 sm:flex-row">',
             '              <input type="url" data-cloudinary-url-input placeholder="https://example.com/image.jpg" class="h-14 flex-1 rounded-2xl border border-slate-200 bg-white px-4 text-[15px] font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100" />',
             '              <button type="button" data-cloudinary-add-url class="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-slate-800">',
-            '                <span class="material-symbols-outlined text-[20px]">add_link</span> Chèn vào tour',
+            '                <span class="material-symbols-outlined text-[20px]">add_link</span> Chèn vào form',
             '              </button>',
             '            </div>',
-            '            <p class="mt-3 text-xs text-slate-400">Phù hợp khi bạn đã có URL ảnh từ Cloudinary, Unsplash hoặc CDN khác.</p>',
+            '            <p class="mt-3 text-xs text-slate-400">Phù hợp khi bạn đã có URL ảnh từ Cloudinary hoặc CDN khác.</p>',
             '          </div>',
+            '        </section>',
+            '        <section data-cloudinary-view="library" class="hidden space-y-5">',
+            '          <div class="rounded-[1.75rem] border border-slate-200 bg-slate-50/80 p-5 sm:p-6">',
+            '            <div class="flex flex-col gap-3 md:flex-row md:items-center">',
+            '              <div class="flex-1">',
+            '                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Tìm ảnh theo tên hoặc public id</label>',
+            '                <input type="search" data-cloudinary-library-search placeholder="Ví dụ: hạ long" class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-100" />',
+            '              </div>',
+            '              <div class="flex gap-3 md:self-end">',
+            '                <button type="button" data-cloudinary-library-search-button class="inline-flex items-center gap-2 rounded-2xl bg-sky-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-sky-500">',
+            '                  <span class="material-symbols-outlined text-[20px]">search</span> Tìm',
+            '                </button>',
+            '                <button type="button" data-cloudinary-library-refresh class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-sky-200 hover:text-sky-700">',
+            '                  <span class="material-symbols-outlined text-[20px]">refresh</span> Tải lại',
+            '                </button>',
+            '              </div>',
+            '            </div>',
+            '          </div>',
+            '          <div class="mb-4 rounded-[1.5rem] border border-slate-200 bg-white/95 px-4 py-4 shadow-sm backdrop-blur">',
+            '            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">',
+            '              <div class="space-y-1">',
+            '                <p class="text-sm font-black text-slate-900">Xác nhận ảnh sẽ dùng cho tour</p>',
+            '                <p data-cloudinary-library-selection class="text-sm font-medium text-slate-500">Chưa có thay đổi nào</p>',
+            '              </div>',
+            '              <div class="flex flex-wrap gap-3">',
+            '                <button type="button" data-cloudinary-library-load-more class="hidden inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-sky-200 hover:text-sky-700">',
+            '                  <span class="material-symbols-outlined text-[20px]">expand_more</span> Tải thêm',
+            '                </button>',
+            '                <button type="button" data-cloudinary-library-confirm-button class="hidden inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-slate-800">',
+            '                  <span class="material-symbols-outlined text-[20px]">check_circle</span> Xác nhận ảnh đã chọn',
+            '                </button>',
+            '              </div>',
+            '            </div>',
+            '          </div>',
+            '          <div data-cloudinary-library-scroll class="max-h-[min(52vh,30rem)] overflow-y-auto pr-1 sm:max-h-[min(58vh,36rem)] sm:pr-2"><div data-cloudinary-library-grid class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"></div></div>',
             '        </section>',
             '      </div>',
             '      <aside class="overflow-y-auto border-t border-slate-200/80 bg-slate-50/80 p-6 sm:p-8 xl:border-t-0">',
@@ -160,14 +253,14 @@
             '              <span class="material-symbols-outlined text-[24px]">bolt</span>',
             '            </div>',
             '            <div>',
-            '              <p class="text-sm font-black text-slate-900">Upload nhanh hơn</p>',
-            '              <p class="text-xs text-slate-500">Không còn popup gốc của Cloudinary.</p>',
+            '              <p class="text-sm font-black text-slate-900">Làm việc trong cùng một modal</p>',
+            '              <p class="text-xs text-slate-500">Tải ảnh mới và duyệt ảnh có sẵn trong cùng một giao diện.</p>',
             '            </div>',
             '          </div>',
             '          <div class="mt-5 grid gap-3">',
             '            <div class="rounded-2xl bg-slate-50 px-4 py-3">',
             '              <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Thư mục</p>',
-            '              <p data-cloudinary-folder class="mt-1 text-sm font-bold text-slate-800">hv-travel/tours</p>',
+            '              <p data-cloudinary-folder class="mt-1 text-sm font-bold text-slate-800">HV-Travel ASP.NET</p>',
             '            </div>',
             '            <div class="rounded-2xl bg-slate-50 px-4 py-3">',
             '              <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Định dạng</p>',
@@ -175,17 +268,9 @@
             '            </div>',
             '            <div class="rounded-2xl bg-slate-50 px-4 py-3">',
             '              <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Trạng thái</p>',
-            '              <p data-cloudinary-status class="mt-1 text-sm font-bold text-slate-800">Sẵn sàng để tải lên</p>',
+            '              <p data-cloudinary-status class="mt-1 text-sm font-bold text-slate-800">Sẵn sàng</p>',
             '            </div>',
             '          </div>',
-            '        </div>',
-            '        <div class="mt-5 rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm">',
-            '          <h4 class="text-sm font-black uppercase tracking-[0.22em] text-slate-400">Hướng dẫn</h4>',
-            '          <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-500">',
-            '            <li class="flex gap-3"><span class="mt-1 size-2 rounded-full bg-sky-500"></span><span>Nếu kéo nhiều ảnh, hệ thống sẽ upload lần lượt và trả URL ngay khi xong.</span></li>',
-            '            <li class="flex gap-3"><span class="mt-1 size-2 rounded-full bg-sky-500"></span><span>Có thể dán URL có sẵn mà không cần upload lại.</span></li>',
-            '            <li class="flex gap-3"><span class="mt-1 size-2 rounded-full bg-sky-500"></span><span>Modal này tự động đóng sau khi upload thành công.</span></li>',
-            '          </ul>',
             '        </div>',
             '      </aside>',
             '    </div>',
@@ -200,6 +285,8 @@
             overlay: wrapper.querySelector('[data-cloudinary-overlay]'),
             panel: wrapper.querySelector('[data-cloudinary-panel]'),
             close: wrapper.querySelector('[data-cloudinary-close]'),
+            title: wrapper.querySelector('[data-cloudinary-title]'),
+            subtitle: wrapper.querySelector('[data-cloudinary-subtitle]'),
             tabs: Array.prototype.slice.call(wrapper.querySelectorAll('[data-cloudinary-tab]')),
             views: Array.prototype.slice.call(wrapper.querySelectorAll('[data-cloudinary-view]')),
             dropzone: wrapper.querySelector('[data-cloudinary-dropzone]'),
@@ -213,13 +300,19 @@
             formatsLabel: wrapper.querySelector('[data-cloudinary-formats]'),
             statusLabel: wrapper.querySelector('[data-cloudinary-status]'),
             urlInput: wrapper.querySelector('[data-cloudinary-url-input]'),
-            addUrlButton: wrapper.querySelector('[data-cloudinary-add-url]')
+            addUrlButton: wrapper.querySelector('[data-cloudinary-add-url]'),
+            librarySearchInput: wrapper.querySelector('[data-cloudinary-library-search]'),
+            librarySearchButton: wrapper.querySelector('[data-cloudinary-library-search-button]'),
+            libraryRefreshButton: wrapper.querySelector('[data-cloudinary-library-refresh]'),
+            libraryGrid: wrapper.querySelector('[data-cloudinary-library-grid]'),
+            libraryLoadMoreButton: wrapper.querySelector('[data-cloudinary-library-load-more]'),
+            libraryConfirmButton: wrapper.querySelector('[data-cloudinary-library-confirm-button]'),
+            librarySelectionLabel: wrapper.querySelector('[data-cloudinary-library-selection]')
         };
 
         bindEvents();
         return modalElements;
     }
-
     function bindEvents() {
         modalElements.overlay.addEventListener('click', closeModal);
         modalElements.close.addEventListener('click', closeModal);
@@ -283,25 +376,74 @@
                 submitUrl();
             }
         });
+
+        modalElements.librarySearchButton.addEventListener('click', function () {
+            modalState.library.search = (modalElements.librarySearchInput.value || '').trim();
+            loadLibraryAssets(true);
+        });
+
+        modalElements.libraryRefreshButton.addEventListener('click', function () {
+            loadLibraryAssets(true);
+        });
+
+        modalElements.librarySearchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                modalState.library.search = (modalElements.librarySearchInput.value || '').trim();
+                loadLibraryAssets(true);
+            }
+        });
+
+        modalElements.libraryLoadMoreButton.addEventListener('click', function () {
+            loadLibraryAssets(false);
+        });
+
+        modalElements.libraryConfirmButton.addEventListener('click', submitSelectedAssets);
     }
 
     function setActiveTab(tab) {
-        modalState.activeTab = tab === 'url' ? 'url' : 'upload';
+        var safeTab = tab === 'url' || tab === 'library' ? tab : 'upload';
+        modalState.activeTab = safeTab;
 
         modalElements.tabs.forEach(function (button) {
-            var isActive = button.getAttribute('data-cloudinary-tab') === modalState.activeTab;
+            var buttonTab = button.getAttribute('data-cloudinary-tab');
+            var isActive = buttonTab === modalState.activeTab;
             button.className = isActive
                 ? 'cloudinary-tab inline-flex items-center gap-2 rounded-2xl bg-white text-slate-900 shadow-lg shadow-slate-950/10 px-4 py-3 text-sm font-extrabold transition'
                 : 'cloudinary-tab inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 text-slate-100/85 px-4 py-3 text-sm font-bold transition hover:bg-white/15';
-            button.innerHTML = button.getAttribute('data-cloudinary-tab') === 'upload'
-                ? '<span class="material-symbols-outlined text-[20px]">upload</span>Tải từ máy'
-                : '<span class="material-symbols-outlined text-[20px]">link</span>Dán liên kết';
+
+            if (buttonTab === 'upload') {
+                button.innerHTML = '<span class="material-symbols-outlined text-[20px]">upload</span>Tải từ máy';
+            } else if (buttonTab === 'url') {
+                button.innerHTML = '<span class="material-symbols-outlined text-[20px]">link</span>Dán URL';
+            } else {
+                button.innerHTML = '<span class="material-symbols-outlined text-[20px]">photo_library</span>Thư viện ảnh';
+            }
         });
 
         modalElements.views.forEach(function (view) {
             var isVisible = view.getAttribute('data-cloudinary-view') === modalState.activeTab;
             view.classList.toggle('hidden', !isVisible);
         });
+
+        if (modalState.activeTab === 'upload') {
+            modalElements.title.textContent = 'Tải hình ảnh mới';
+            modalElements.subtitle.textContent = 'Kéo thả file, chọn ảnh từ máy hoặc mở camera để tải lên Cloudinary.';
+            setStatus(modalState.isUploading ? 'Đang tải lên Cloudinary...' : 'Sẵn sàng để tải lên');
+        } else if (modalState.activeTab === 'url') {
+            modalElements.title.textContent = 'Chèn ảnh bằng URL';
+            modalElements.subtitle.textContent = 'Dán liên kết công khai để chèn trực tiếp vào biểu mẫu hiện tại mà không cần tải lên lại.';
+            setStatus('Chờ URL hình ảnh');
+        } else {
+            modalElements.title.textContent = 'Chọn ảnh đã có trong Cloudinary';
+            modalElements.subtitle.textContent = 'Duyệt, tìm kiếm và chọn lại ảnh đã tải lên để tránh tải trùng lặp.';
+            setStatus(modalState.library.loading ? 'Đang tải danh sách ảnh...' : 'Sẵn sàng chọn ảnh đã có');
+            if (!modalState.library.loaded && !modalState.library.loading) {
+                loadLibraryAssets(true);
+            } else {
+                renderLibrary();
+            }
+        }
     }
 
     function setStatus(text) {
@@ -313,7 +455,7 @@
             modalElements.fileList.innerHTML = [
                 '<div class="rounded-[1.5rem] border border-dashed border-slate-200 bg-white px-5 py-6 text-center">',
                 '  <p class="text-sm font-bold text-slate-700">Chưa có file nào trong hàng đợi</p>',
-                '  <p class="mt-1 text-sm text-slate-400">Thêm ảnh từ máy, camera, hoặc kéo thả vào vùng upload.</p>',
+                '  <p class="mt-1 text-sm text-slate-400">Thêm ảnh từ máy, camera hoặc kéo thả vào vùng upload.</p>',
                 '</div>'
             ].join('');
             return;
@@ -373,7 +515,6 @@
         if (status === 'uploading') return 'Đang tải';
         return 'Chờ tải';
     }
-
     function handleFiles(fileList) {
         if (!fileList || !fileList.length) return;
 
@@ -467,7 +608,7 @@
     }
 
     function uploadFile(file, options) {
-        var config = ensureConfig();
+        var config = ensureUploadConfig();
         if (!config) {
             return Promise.reject(new Error('Thiếu cấu hình Cloudinary.'));
         }
@@ -515,10 +656,257 @@
         }
 
         modalElements.urlInput.value = '';
-        setStatus('Đã chèn liên kết ảnh vào tour');
+        setStatus('Đã chèn liên kết ảnh vào form');
     }
 
-    function openModal(options, onSuccess) {
+    function normalizeAsset(item) {
+        if (!item) return null;
+
+        var secureUrl = item.secureUrl || item.secure_url || item.url || '';
+        if (!secureUrl) return null;
+
+        return {
+            secureUrl: secureUrl,
+            publicId: item.publicId || item.public_id || '',
+            thumbnailUrl: item.thumbnailUrl || item.thumbnail_url || secureUrl,
+            format: (item.format || '').toUpperCase(),
+            sizeLabel: item.sizeLabel || item.size_label || '',
+            width: item.width || 0,
+            height: item.height || 0,
+            createdAt: item.createdAt || item.created_at || '',
+            folder: item.folder || ''
+        };
+    }
+
+    function getSelectionCount() {
+        return Object.keys(modalState.library.selected).length;
+    }
+    function getSelectedAssetUrls() {
+        return normalizeSelectedUrls(Object.keys(modalState.library.selected));
+    }
+    function getInitialSelectedAssetUrls() {
+        return normalizeSelectedUrls(Object.keys(modalState.library.initialSelectedUrls || {}));
+    }
+    function getLibraryChangeCount() {
+        var selectedMap = modalState.library.selected || {};
+        var initialMap = modalState.library.initialSelectedUrls || {};
+        var changeCount = 0;
+        Object.keys(selectedMap).forEach(function (url) {
+            if (!initialMap[url]) {
+                changeCount += 1;
+            }
+        });
+        Object.keys(initialMap).forEach(function (url) {
+            if (!selectedMap[url]) {
+                changeCount += 1;
+            }
+        });
+        return changeCount;
+    }
+    function hasLibrarySelectionChanges() {
+        return getLibraryChangeCount() > 0;
+    }
+    function renderLibrary() {
+        var library = modalState.library;
+        var itemsMarkup = '';
+
+        if (library.loading && !library.items.length) {
+            itemsMarkup = new Array(6).fill(0).map(function () {
+                return '<div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-3 shadow-sm"><div class="aspect-[4/3] rounded-2xl bg-slate-100 animate-pulse"></div><div class="mt-3 h-4 rounded bg-slate-100 animate-pulse"></div><div class="mt-2 h-3 w-2/3 rounded bg-slate-100 animate-pulse"></div></div>';
+            }).join('');
+        } else if (library.error) {
+            itemsMarkup = '<div class="sm:col-span-2 xl:col-span-3 rounded-[1.5rem] border border-rose-200 bg-rose-50 px-5 py-6 text-sm text-rose-700">' + escapeHtml(library.error) + '</div>';
+        } else if (!library.items.length) {
+            itemsMarkup = '<div class="sm:col-span-2 xl:col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-white px-5 py-10 text-center"><p class="text-base font-black text-slate-900">Không tìm thấy ảnh phù hợp</p><p class="mt-2 text-sm text-slate-500">Thử đổi từ khóa tìm kiếm hoặc tải thêm ảnh mới.</p></div>';
+        } else {
+            itemsMarkup = library.items.map(function (item, index) {
+                var isSelected = !!library.selected[item.secureUrl];
+                var meta = [];
+                if (item.format) meta.push(item.format);
+                if (item.sizeLabel) meta.push(item.sizeLabel);
+                if (item.width && item.height) meta.push(item.width + 'x' + item.height);
+
+                return [
+                    '<button type="button" data-cloudinary-asset-index="' + index + '" class="group overflow-hidden rounded-[1.5rem] border p-3 text-left shadow-sm transition ' + (isSelected ? 'border-sky-400 bg-sky-50/70 ring-2 ring-sky-200' : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lg') + '">',
+                    '  <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100">',
+                    '    <img src="' + escapeHtml(item.thumbnailUrl) + '" alt="" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" loading="lazy" />',
+                    '    <span class="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-full ' + (isSelected ? 'bg-sky-600 text-white' : 'bg-white/90 text-slate-400') + '">',
+                    '      <span class="material-symbols-outlined text-[18px]">' + (isSelected ? 'check' : 'add') + '</span>',
+                    '    </span>',
+                    '  </div>',
+                    '  <div class="mt-3">',
+                    '    <p class="truncate text-sm font-black text-slate-900" title="' + escapeHtml(item.publicId || item.secureUrl) + '">' + escapeHtml(item.publicId || item.secureUrl) + '</p>',
+                    '    <p class="mt-1 text-xs font-medium text-slate-500">' + escapeHtml(meta.join(' • ') || 'Ảnh') + '</p>',
+                    '  </div>',
+                    '</button>'
+                ].join('');
+            }).join('');
+        }
+
+        var selectionCount = getSelectionCount();
+        var hasChanges = hasLibrarySelectionChanges();
+        var changeCount = getLibraryChangeCount();
+        modalElements.libraryGrid.innerHTML = itemsMarkup;
+        if (modalState.options.syncSelection) {
+            modalElements.librarySelectionLabel.textContent = hasChanges
+                ? 'Có ' + changeCount + ' thay đổi chưa xác nhận. Đang chọn ' + selectionCount + ' ảnh.'
+                : (selectionCount > 0 ? 'Đang dùng ' + selectionCount + ' ảnh cho tour.' : 'Chưa có ảnh nào được chọn cho tour.');
+        } else {
+            modalElements.librarySelectionLabel.textContent = selectionCount > 0
+                ? 'Đã chọn ' + selectionCount + ' ảnh'
+                : 'Chưa chọn ảnh nào';
+        }
+        modalElements.libraryLoadMoreButton.classList.toggle('hidden', !library.nextCursor || library.loading);
+        modalElements.libraryLoadMoreButton.disabled = library.loading;
+        modalElements.libraryConfirmButton.classList.toggle('hidden', !modalState.options.syncSelection || !hasChanges);
+        modalElements.libraryConfirmButton.disabled = !modalState.options.syncSelection || !hasChanges;
+        modalElements.libraryConfirmButton.classList.toggle('opacity-60', !modalState.options.syncSelection || !hasChanges);
+        Array.prototype.slice.call(modalElements.libraryGrid.querySelectorAll('[data-cloudinary-asset-index]')).forEach(function (button) {
+            button.addEventListener('click', function () {
+                var index = parseInt(button.getAttribute('data-cloudinary-asset-index'), 10);
+                toggleSelectedAsset(modalState.library.items[index]);
+            });
+        });
+    }
+
+    function toggleSelectedAsset(item) {
+        if (!item) return;
+
+        if (!modalState.options.multiple) {
+            modalState.library.selected = {};
+            modalState.library.selected[item.secureUrl] = item;
+            renderLibrary();
+            submitSelectedAssets();
+            return;
+        }
+
+        if (modalState.library.selected[item.secureUrl]) {
+            delete modalState.library.selected[item.secureUrl];
+        } else {
+            modalState.library.selected[item.secureUrl] = item;
+        }
+
+        renderLibrary();
+    }
+
+    function submitSelectedAssets() {
+        var selectedItems = Object.keys(modalState.library.selected).map(function (key) {
+            return modalState.library.selected[key];
+        }).filter(function (item) {
+            return item && item.secureUrl;
+        });
+        if (typeof modalState.onSuccess !== 'function') {
+            closeModal();
+            return;
+        }
+        if (modalState.options.syncSelection) {
+            var selectedUrls = getSelectedAssetUrls();
+            modalState.onSuccess(selectedUrls, {
+                selectedUrls: selectedUrls.slice(),
+                source: 'cloudinary_library',
+                syncSelection: true
+            });
+            closeModal();
+            return;
+        }
+        if (!selectedItems.length) {
+            closeModal();
+            return;
+        }
+        var newSelectedItems = selectedItems.filter(function (item) {
+            return item && item.secureUrl && !modalState.library.initialSelectedUrls[item.secureUrl];
+        });
+        newSelectedItems.forEach(function (item) {
+            modalState.onSuccess(item.secureUrl, {
+                secure_url: item.secureUrl,
+                public_id: item.publicId,
+                source: 'cloudinary_library'
+            });
+        });
+        closeModal();
+    }
+    function loadLibraryAssets(reset) {
+        var config = ensureAssetsConfig();
+        if (!config) {
+            return Promise.resolve();
+        }
+
+        if (modalState.library.loading) {
+            return Promise.resolve();
+        }
+
+        if (reset) {
+            modalState.library.items = [];
+            modalState.library.nextCursor = '';
+            modalState.library.error = '';
+            modalState.library.loaded = false;
+            if (modalElements.librarySearchInput) {
+                modalState.library.search = (modalElements.librarySearchInput.value || '').trim();
+            }
+        }
+
+        modalState.library.loading = true;
+        setStatus('Đang tải danh sách ảnh...');
+        renderLibrary();
+
+        var query = new URLSearchParams();
+        if (modalState.options.folder) {
+            query.set('folder', modalState.options.folder);
+        }
+        if (modalState.library.search) {
+            query.set('search', modalState.library.search);
+        }
+        if (!reset && modalState.library.nextCursor) {
+            query.set('cursor', modalState.library.nextCursor);
+        }
+        query.set('maxResults', modalState.options.multiple ? '24' : '18');
+
+        return fetch(config.assetsUrl + '?' + query.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(function (response) {
+            if (!response.ok) {
+                return response.json().catch(function () { return {}; }).then(function (payload) {
+                    var message = payload && payload.message
+                        ? payload.message
+                        : 'Không thể tải danh sách ảnh từ Cloudinary.';
+                    throw new Error(message);
+                });
+            }
+
+            return response.json();
+        }).then(function (payload) {
+            var incoming = Array.isArray(payload.items) ? payload.items : [];
+            var mappedItems = incoming.map(normalizeAsset).filter(function (item) { return !!item; });
+            var seen = {};
+            var merged = (reset ? [] : modalState.library.items.slice()).concat(mappedItems).filter(function (item) {
+                if (seen[item.secureUrl]) {
+                    return false;
+                }
+
+                seen[item.secureUrl] = true;
+                return true;
+            });
+
+            modalState.library.items = merged;
+            modalState.library.nextCursor = payload.nextCursor || payload.next_cursor || '';
+            modalState.library.loaded = true;
+            modalState.library.error = '';
+            setStatus(merged.length ? 'Đã tải ' + merged.length + ' ảnh từ Cloudinary' : 'Không có ảnh nào phù hợp');
+        }).catch(function (error) {
+            modalState.library.error = error && error.message
+                ? error.message
+                : 'Không thể tải danh sách ảnh từ Cloudinary.';
+            setStatus('Tải danh sách ảnh thất bại');
+        }).finally(function () {
+            modalState.library.loading = false;
+            renderLibrary();
+        });
+    }
+
+    function openModal(options, onSuccess, initialTab) {
         injectModal();
         releaseObjectUrls();
 
@@ -527,17 +915,29 @@
         modalState.files = [];
         modalState.isUploading = false;
         modalState.isOpen = true;
-        modalState.activeTab = 'upload';
+        modalState.activeTab = initialTab === 'library' ? 'library' : (initialTab === 'url' ? 'url' : 'upload');
+        var initialSelectedAssets = createSelectedAssetMap(modalState.options.selectedUrls);
+        modalState.library = {
+            loaded: false,
+            loading: false,
+            items: [],
+            initialSelectedUrls: initialSelectedAssets,
+            selected: Object.assign({}, initialSelectedAssets),
+            nextCursor: '',
+            search: '',
+            error: ''
+        };
 
         modalElements.fileInput.multiple = modalState.options.multiple;
         modalElements.cameraInput.multiple = modalState.options.multiple;
         modalElements.folderLabel.textContent = modalState.options.folder || 'Mặc định';
         modalElements.formatsLabel.textContent = modalState.options.allowedFormats.join(', ').toUpperCase();
         modalElements.urlInput.value = '';
+        modalElements.librarySearchInput.value = '';
 
-        setActiveTab('upload');
         renderFileList();
-        setStatus('Sẵn sàng để tải lên');
+        renderLibrary();
+        setActiveTab(modalState.activeTab);
 
         modalElements.root.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
@@ -561,8 +961,21 @@
             document.body.classList.remove('overflow-hidden');
             modalState.files = [];
             modalState.onSuccess = null;
+            modalState.library.selected = {};
             releaseObjectUrls();
         }, 220);
+    }
+
+    function openCloudinaryWidget(options, onSuccess) {
+        openModal(options, onSuccess, 'upload');
+    }
+
+    function openCloudinaryAssetBrowser(options, onSuccess) {
+        if (!ensureAssetsConfig()) {
+            return;
+        }
+
+        openModal(options, onSuccess, 'library');
     }
 
     function prewarmCloudinaryWidget() {
@@ -570,12 +983,25 @@
         return modalElements;
     }
 
-    window.openCloudinaryWidget = openModal;
+    function prewarmCloudinaryAssetBrowser() {
+        injectModal();
+        return modalElements;
+    }
+
+    window.openCloudinaryWidget = openCloudinaryWidget;
     window.prewarmCloudinaryWidget = prewarmCloudinaryWidget;
+    window.openCloudinaryAssetBrowser = openCloudinaryAssetBrowser;
+    window.prewarmCloudinaryAssetBrowser = prewarmCloudinaryAssetBrowser;
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', prewarmCloudinaryWidget, { once: true });
+        document.addEventListener('DOMContentLoaded', function () {
+            prewarmCloudinaryWidget();
+            prewarmCloudinaryAssetBrowser();
+        }, { once: true });
     } else {
         prewarmCloudinaryWidget();
+        prewarmCloudinaryAssetBrowser();
     }
 })();
+
+

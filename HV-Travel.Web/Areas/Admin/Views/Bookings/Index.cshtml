@@ -23,7 +23,7 @@
     // Helper function to safely get translated status
     string GetStatusVietnamese(string status)
     {
-        if (string.IsNullOrEmpty(status)) return "N/A";
+        if (string.IsNullOrEmpty(status)) return "Chưa có";
         
         // Try exact match
         if (bookingStatusMapping.ContainsKey(status)) return bookingStatusMapping[status];
@@ -951,3 +951,4 @@
         }
     </script>
 }
+

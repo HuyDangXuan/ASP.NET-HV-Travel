@@ -108,6 +108,9 @@
                             <button type="button" id="tour-images-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
                                 <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
                             </button>
+                            <button type="button" id="tour-images-browse-library" class="px-4 py-2 rounded-xl border border-sky-200 text-sky-700 text-sm font-bold hover:bg-sky-50 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">photo_library</span> Chọn từ thư viện Cloudinary
+                            </button>
                             <button type="button" onclick="addImage()" class="px-4 py-2 rounded-xl border border-primary/30 text-primary text-sm font-bold hover:bg-primary/5 transition-all">
                                 <span class="material-symbols-outlined text-lg align-[-3px] mr-1">add_photo_alternate</span> Thêm ảnh từ URL
                             </button>
@@ -120,7 +123,7 @@
                                     var hasImage = !string.IsNullOrWhiteSpace(Model.Images[i]);
                                     <div class="flex min-w-0 gap-3 items-center image-item">
                                         <div class="size-16 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
-                                            <img src="@Model.Images[i]" class="image-preview w-full h-full object-cover @(hasImage ? "" : "hidden")" alt="Tour image" />
+                                            <img src="@Model.Images[i]" class="image-preview w-full h-full object-cover @(hasImage ? "" : "hidden")" alt="Ảnh tour" />
                                             <span class="image-placeholder text-xs text-slate-400 @(hasImage ? "hidden" : "")">Chưa có ảnh</span>
                                         </div>
                                         <input name="Images[@i]" value="@Model.Images[i]" type="text" class="input-field image-url-input flex-1 min-w-0" placeholder="https://example.com/image.jpg" />
@@ -424,7 +427,7 @@
         container.className = 'flex min-w-0 gap-3 items-center image-item';
         container.innerHTML = `
             <div class="size-16 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
-                <img class="image-preview w-full h-full object-cover hidden" alt="Tour image" />
+                <img class="image-preview w-full h-full object-cover hidden" alt="Ảnh tour" />
                 <span class="image-placeholder text-xs text-slate-400">Chưa có ảnh</span>
             </div>
             <input type="text" class="input-field image-url-input flex-1 min-w-0" placeholder="https://example.com/image.jpg" />
@@ -440,11 +443,54 @@
         return container;
     }
 
-    function addImage(url) {
+    function normalizeTourImageUrls(urls) {
+        const seen = new Set();
+        return (Array.isArray(urls) ? urls : [urls])
+            .map((url) => String(url || '').trim())
+            .filter((url) => {
+                if (!url || seen.has(url)) {
+                    return false;
+                }
+                seen.add(url);
+                return true;
+            });
+    }
+
+    function getCurrentTourImageUrls() {
+        return normalizeTourImageUrls(
+            Array.from(document.querySelectorAll('#images-container .image-url-input'))
+                .map((input) => input.value)
+        );
+    }
+
+    function syncTourImages(urls) {
         const imagesContainer = document.getElementById('images-container');
-        const item = createImageItem(url || '');
+        const normalizedUrls = normalizeTourImageUrls(urls);
+        imagesContainer.innerHTML = '';
+        if (!normalizedUrls.length) {
+            imagesContainer.appendChild(createImageItem(''));
+        } else {
+            normalizedUrls.forEach((url) => {
+                imagesContainer.appendChild(createImageItem(url));
+            });
+        }
+        reindexItems('#images-container .image-url-input', 'Images');
+        syncPreviewImage();
+        return normalizedUrls;
+    }
+
+    function addImage(url) {
+        const safeUrl = normalizeTourImageUrls([url])[0] || '';
+        const currentValues = getCurrentTourImageUrls();
+        if (safeUrl && currentValues.includes(safeUrl)) {
+            return false;
+        }
+
+        const imagesContainer = document.getElementById('images-container');
+        const item = createImageItem(safeUrl);
         imagesContainer.appendChild(item);
         reindexItems('#images-container .image-url-input', 'Images');
+        return true;
     }
 
     function removeImage(btn) {
@@ -753,14 +799,29 @@
         }
 
         const uploadButton = document.getElementById('tour-images-upload');
+        const browseLibraryButton = document.getElementById('tour-images-browse-library');
         if (uploadButton) {
             if (typeof window.prewarmCloudinaryWidget === 'function') {
-                window.prewarmCloudinaryWidget({ multiple: true, folder: 'hv-travel/tours' });
+                window.prewarmCloudinaryWidget({ multiple: true, folder: 'HV-Travel ASP.NET' });
+            }
+
+            if (typeof window.prewarmCloudinaryAssetBrowser === 'function') {
+                window.prewarmCloudinaryAssetBrowser();
             }
 
             uploadButton.addEventListener('click', function () {
-                window.openCloudinaryWidget({ multiple: true, folder: 'hv-travel/tours' }, function (url) {
-                    addImage(url);
+                window.openCloudinaryWidget({ multiple: true, folder: 'HV-Travel ASP.NET' }, function (url) {
+                    if (addImage(url)) {
+                        updatePreview();
+                    }
+                });
+            });
+        }
+
+        if (browseLibraryButton) {
+            browseLibraryButton.addEventListener('click', function () {
+                window.openCloudinaryAssetBrowser({ multiple: true, folder: 'HV-Travel ASP.NET', selectedUrls: getCurrentTourImageUrls(), syncSelection: true }, function (selectedUrls) {
+                    syncTourImages(selectedUrls);
                     updatePreview();
                 });
             });

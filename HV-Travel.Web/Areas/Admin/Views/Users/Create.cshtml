@@ -75,10 +75,10 @@
             <label for="Role" class="label-text">Vai Trò <span class="text-red-500">*</span></label>
             <div class="relative">
                 <select asp-for="Role" class="input-field appearance-none cursor-pointer">
-                    <option value="Staff">Staff - Nhân viên</option>
-                    <option value="Manager">Manager - Quản lý</option>
-                    <option value="Guide">Guide - Hướng dẫn viên</option>
-                    <option value="Admin">Admin - Quản trị viên</option>
+                    <option value="Staff">Nhân viên</option>
+                    <option value="Manager">Quản lý</option>
+                    <option value="Guide">Hướng dẫn viên</option>
+                    <option value="Admin">Quản trị viên</option>
                 </select>
                 <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                     <span class="material-symbols-outlined text-[18px]">expand_more</span>
@@ -93,6 +93,9 @@
             <div class="flex flex-wrap items-center gap-3 mt-3">
                 <button type="button" id="user-avatar-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
                     <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
+                </button>
+                <button type="button" id="user-avatar-browse-library" class="px-4 py-2 rounded-xl border border-sky-200 text-sky-700 text-sm font-bold hover:bg-sky-50 transition-all">
+                    <span class="material-symbols-outlined text-lg align-[-3px] mr-1">photo_library</span> Chọn từ thư viện Cloudinary
                 </button>
                 <button type="button" id="user-avatar-remove" class="px-4 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-all">
                     <span class="material-symbols-outlined text-lg align-[-3px] mr-1">delete</span> Xóa ảnh
@@ -127,6 +130,7 @@
             const avatarInput = document.querySelector('input[name="AvatarUrl"]');
             const preview = document.getElementById('user-avatar-preview');
             const uploadButton = document.getElementById('user-avatar-upload');
+            const browseLibraryButton = document.getElementById('user-avatar-browse-library');
             const removeButton = document.getElementById('user-avatar-remove');
 
             function updatePreview() {
@@ -141,7 +145,16 @@
 
             if (uploadButton && avatarInput) {
                 uploadButton.addEventListener('click', function () {
-                    window.openCloudinaryWidget({ multiple: false, folder: 'hv-travel/avatars' }, function (url) {
+                    window.openCloudinaryWidget({ multiple: false, folder: 'HV-Travel ASP.NET' }, function (url) {
+                        avatarInput.value = url;
+                        updatePreview();
+                    });
+                });
+            }
+
+            if (browseLibraryButton && avatarInput) {
+                browseLibraryButton.addEventListener('click', function () {
+                    window.openCloudinaryAssetBrowser({ multiple: false, folder: 'HV-Travel ASP.NET' }, function (url) {
                         avatarInput.value = url;
                         updatePreview();
                     });
@@ -159,3 +172,5 @@
         })();
     </script>
 }
+
+

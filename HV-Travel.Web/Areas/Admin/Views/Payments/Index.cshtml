@@ -5,7 +5,7 @@
 
 @functions {
     public string GetShortId(string? id) {
-        if (string.IsNullOrWhiteSpace(id)) return "N/A";
+        if (string.IsNullOrWhiteSpace(id)) return "Chưa có";
         return id.Length <= 8 ? id : id.Substring(0, 8);
     }
 
@@ -548,5 +548,6 @@
         }
     </script>
 }
+
 
 

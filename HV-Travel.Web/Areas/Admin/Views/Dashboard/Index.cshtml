@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+@using System.Globalization
 @using System.Text.Json
 @model HVTravel.Web.Models.DashboardViewModel
 @{
@@ -29,7 +29,7 @@
 
     string GetStatusVietnamese(string status)
     {
-        if (string.IsNullOrEmpty(status)) return "N/A";
+        if (string.IsNullOrEmpty(status)) return "Chưa có";
 
         if (bookingStatusMapping.ContainsKey(status)) return bookingStatusMapping[status];
         if (paymentStatusMapping.ContainsKey(status)) return paymentStatusMapping[status];
@@ -593,4 +593,5 @@
         })();
     </script>
 }
+
 
