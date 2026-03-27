@@ -16,6 +16,7 @@ namespace HVTravel.Infrastructure
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<ITourRepository, TourRepository>();
             services.AddScoped<HVTravel.Application.Interfaces.IEmailService, HVTravel.Infrastructure.Services.EmailService>();
+            services.AddScoped<HVTravel.Application.Interfaces.ICloudinaryAssetBrowserService>(sp => new HVTravel.Infrastructure.Services.CloudinaryAssetBrowserService(new HttpClient(), sp.GetRequiredService<IConfiguration>()));
             
             // Register specific repositories here if needed
             

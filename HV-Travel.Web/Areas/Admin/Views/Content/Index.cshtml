@@ -413,7 +413,7 @@
                 if (!diagnosticsBox) return;
                 diagnosticsBox.classList.remove('hidden');
                 if (diagnosticsMessage) diagnosticsMessage.textContent = message || 'Preview hiện chưa tải được.';
-                if (diagnosticsUrl) diagnosticsUrl.textContent = url || 'N/A';
+                if (diagnosticsUrl) diagnosticsUrl.textContent = url || 'Chưa có';
                 if (diagnosticsStatus) diagnosticsStatus.textContent = status || 'Không xác định';
             }
 
@@ -456,7 +456,7 @@
             async function applyPreviewUrl(url, readyMessage) {
                 if (!url) {
                     setStatus('Không có URL preview hợp lệ.', 'error');
-                    showDiagnostics('Controller không sinh được URL preview công khai.', '', 'N/A');
+                    showDiagnostics('Controller không sinh được URL preview công khai.', '', 'Chưa có');
                     return;
                 }
                 setStatus('Đang kiểm tra URL preview...', 'saving');
@@ -532,3 +532,4 @@
         })();
     </script>
 }
+

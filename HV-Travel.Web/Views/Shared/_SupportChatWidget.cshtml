@@ -1,4 +1,4 @@
-﻿@{
+@{
     var isCustomer = User.Identity?.IsAuthenticated == true && User.IsInRole("Customer");
     var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
     var customerEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
@@ -555,7 +555,7 @@
 
             setBusyState(true);
             if (!skipValidation) {
-                setIntroStatus('Äang xÃ¡c nháº­n thÃ´ng tin vÃ  chuáº©n bá»‹ phÃ²ng chat...', 'neutral');
+                setIntroStatus('Đang xác nhận thông tin và chuẩn bị phòng chat...', 'neutral');
             }
 
             try {
@@ -641,4 +641,5 @@
         setChatStatus(state.isCustomer ? 'Hệ thống chat đang sẵn sàng.' : 'Điền thông tin để bắt đầu cuộc trò chuyện với đội ngũ tư vấn.');
     })();
 </script>
+
 

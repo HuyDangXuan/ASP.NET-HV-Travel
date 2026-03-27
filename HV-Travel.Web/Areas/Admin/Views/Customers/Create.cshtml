@@ -72,6 +72,9 @@
                             <button type="button" id="customer-avatar-upload" class="px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:brightness-110 transition-all">
                                 <span class="material-symbols-outlined text-lg align-[-3px] mr-1">cloud_upload</span> Tải ảnh lên
                             </button>
+                            <button type="button" id="customer-avatar-browse-library" class="px-4 py-2 rounded-xl border border-sky-200 text-sky-700 text-sm font-bold hover:bg-sky-50 transition-all">
+                                <span class="material-symbols-outlined text-lg align-[-3px] mr-1">photo_library</span> Chọn từ thư viện Cloudinary
+                            </button>
                             <button type="button" id="customer-avatar-remove" class="px-4 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-all">
                                 <span class="material-symbols-outlined text-lg align-[-3px] mr-1">delete</span> Xóa ảnh
                             </button>
@@ -282,7 +285,17 @@
         const uploadButton = document.getElementById('customer-avatar-upload');
         if (uploadButton && inputs.avatar) {
             uploadButton.addEventListener('click', function () {
-                window.openCloudinaryWidget({ multiple: false, folder: 'hv-travel/avatars' }, function (url) {
+                window.openCloudinaryWidget({ multiple: false, folder: 'HV-Travel ASP.NET' }, function (url) {
+                    inputs.avatar.value = url;
+                    updatePreview();
+                });
+            });
+        }
+
+        const browseLibraryButton = document.getElementById('customer-avatar-browse-library');
+        if (browseLibraryButton && inputs.avatar) {
+            browseLibraryButton.addEventListener('click', function () {
+                window.openCloudinaryAssetBrowser({ multiple: false, folder: 'HV-Travel ASP.NET' }, function (url) {
                     inputs.avatar.value = url;
                     updatePreview();
                 });

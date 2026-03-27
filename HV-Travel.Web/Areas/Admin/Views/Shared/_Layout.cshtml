@@ -374,7 +374,7 @@
         }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display h-screen overflow-hidden flex selection:bg-primary selection:text-white" data-cloudinary-cloud-name="@Configuration["Cloudinary:CloudName"]" data-cloudinary-upload-preset="@Configuration["Cloudinary:UploadPreset"]">
+<body class="bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display h-screen overflow-hidden flex selection:bg-primary selection:text-white" data-cloudinary-cloud-name="@Configuration["Cloudinary:CloudName"]" data-cloudinary-upload-preset="@Configuration["Cloudinary:UploadPreset"]" data-cloudinary-assets-url="@Url.Action("Assets", "Cloudinary", new { area = "Admin" })">
     <!-- Left Sidebar (Navigation) -->
     <aside class="w-64 h-full flex flex-col justify-between glass-panel z-20 shrink-0 border-r border-border-light dark:border-border-dark">
         <div class="p-6">
@@ -554,7 +554,8 @@
     <script>
         window.CloudinaryConfig = {
             cloudName: "@Configuration["Cloudinary:CloudName"]",
-            uploadPreset: "@Configuration["Cloudinary:UploadPreset"]"
+            uploadPreset: "@Configuration["Cloudinary:UploadPreset"]",
+            assetsUrl: "@Url.Action("Assets", "Cloudinary", new { area = "Admin" })"
         };
     </script>
     <script src="~/lib/tinymce/tinymce.min.js" asp-append-version="true"></script>

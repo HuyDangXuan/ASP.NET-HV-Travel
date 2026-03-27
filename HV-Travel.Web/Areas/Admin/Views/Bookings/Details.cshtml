@@ -119,15 +119,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <span class="label-text">Họ và tên</span>
-                    <p class="data-text">@(Model.ContactInfo?.Name ?? "N/A")</p>
+                    <p class="data-text">@(Model.ContactInfo?.Name ?? "Chưa có")</p>
                 </div>
                 <div>
                     <span class="label-text">Số điện thoại</span>
-                    <p class="data-text">@(Model.ContactInfo?.Phone ?? "N/A")</p>
+                    <p class="data-text">@(Model.ContactInfo?.Phone ?? "Chưa có")</p>
                 </div>
                 <div>
                     <span class="label-text">Email</span>
-                    <p class="data-text">@(Model.ContactInfo?.Email ?? "N/A")</p>
+                    <p class="data-text">@(Model.ContactInfo?.Email ?? "Chưa có")</p>
                 </div>
             </div>
         </section>
@@ -149,7 +149,7 @@
                         </div>
                         <div class="flex items-center gap-1.5 text-xs text-[#618389] dark:text-slate-400">
                             <span class="material-symbols-outlined text-sm">schedule</span>
-                            Thời lượng: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.Duration ?? "N/A")</span>
+                            Thời lượng: <span class="font-bold text-[#111718] dark:text-white">@(Model.TourSnapshot?.Duration ?? "Chưa có")</span>
                         </div>
                     </div>
                 </div>
@@ -291,3 +291,4 @@
         </div>
     </div>
 </div>
+
