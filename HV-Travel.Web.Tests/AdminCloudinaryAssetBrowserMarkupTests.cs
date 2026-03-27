@@ -1,4 +1,4 @@
-﻿namespace HV_Travel.Web.Tests;
+namespace HV_Travel.Web.Tests;
 
 public class AdminCloudinaryAssetBrowserMarkupTests
 {
@@ -52,6 +52,24 @@ public class AdminCloudinaryAssetBrowserMarkupTests
         AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "syncSelection: true");
         AssertDoesNotContain(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "window.openCloudinaryMediaLibrary");
         AssertDoesNotContain(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "window.openCloudinaryMediaLibrary");
+    }
+    [Fact]
+    public void TourForms_SupportDragAndDropImageReordering()
+    {
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "image-drag-handle");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "image-drag-handle");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "enableImageReordering");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "enableImageReordering");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "reorderImageItem");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "reorderImageItem");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "image-reorder-placeholder");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "image-reorder-placeholder");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "startImagePointerDrag");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "startImagePointerDrag");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "setPointerCapture");
+        AssertContains(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "setPointerCapture");
+        AssertDoesNotContain(@"HV-Travel.Web\Areas\Admin\Views\Tours\Create.cshtml", "draggable=\"true\"");
+        AssertDoesNotContain(@"HV-Travel.Web\Areas\Admin\Views\Tours\Edit.cshtml", "draggable=\"true\"");
     }
 
     [Fact]
