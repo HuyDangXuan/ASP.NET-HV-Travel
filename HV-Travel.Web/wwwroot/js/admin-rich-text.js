@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     var SELECTOR = 'textarea[data-rich-editor="true"]';
@@ -39,9 +39,9 @@
             promotion: false,
             license_key: 'gpl',
             plugins: 'autolink link lists table code preview searchreplace visualblocks wordcount autoresize',
-            toolbar: 'undo redo | blocks | fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | bullist numlist | alignleft aligncenter alignright alignjustify | blockquote table link | removeformat code preview',
+            toolbar: 'undo redo | blocks | fontfamily fontsizeinput | bold italic underline strikethrough | forecolor backcolor | bullist numlist | alignleft aligncenter alignright alignjustify | blockquote table link | removeformat code preview',
             font_family_formats: 'Plus Jakarta Sans="Plus Jakarta Sans",sans-serif; Be Vietnam Pro="Be Vietnam Pro",sans-serif; Manrope=Manrope,sans-serif; Playfair Display="Playfair Display",serif; Merriweather=Merriweather,serif',
-            font_size_formats: '12px 14px 16px 18px 20px 24px 30px 36px 48px',
+            font_size_input_default_unit: 'px',
             block_formats: '\u0110o\u1ea1n v\u0103n=p; Ti\u00eau \u0111\u1ec1 2=h2; Ti\u00eau \u0111\u1ec1 3=h3; Ti\u00eau \u0111\u1ec1 4=h4',
             min_height: Number.isFinite(height) ? height : 220,
             autoresize_bottom_margin: 16,
@@ -149,3 +149,4 @@
         initWithin(document);
     }
 })();
+
