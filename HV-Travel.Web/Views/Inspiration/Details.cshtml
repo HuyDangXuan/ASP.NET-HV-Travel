@@ -1,0 +1,37 @@
+﻿@model HVTravel.Domain.Entities.TravelArticle
+
+<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute left-10 top-0 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl"></div>
+        <div class="absolute right-10 bottom-0 h-96 w-96 rounded-full bg-amber-300/20 blur-3xl"></div>
+    </div>
+    <div class="public-top-section-shell public-top-section-content is-left relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20" data-animate="fade-up">
+        <p class="public-top-section-badge text-xs uppercase tracking-[0.3em] text-cyan-200">@Model.Category</p>
+        <h1 class="public-top-section-title public-hero-title mt-4 text-white">@Model.Title</h1>
+        <p class="public-top-section-lead mt-5 text-sm leading-8 text-slate-200">@Model.Summary</p>
+    </div>
+</section>
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (!string.IsNullOrWhiteSpace(Model.HeroImageUrl))
+        {
+            <img src="@Model.HeroImageUrl" alt="@Model.Title" class="mb-8 h-[420px] w-full rounded-[2rem] object-cover" />
+        }
+        <article class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-8 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+            <div class="prose prose-slate max-w-none dark:prose-invert">
+                @Html.Raw(Model.Body)
+            </div>
+            @if (Model.Tags.Any())
+            {
+                <div class="mt-8 flex flex-wrap gap-3">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="rounded-full border border-border-light px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-slate-500 dark:border-border-dark dark:text-slate-400">@tag</span>
+                    }
+                </div>
+            }
+        </article>
+    </div>
+</section>
+

@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -20,6 +20,19 @@
 }
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
+
+<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-top-section-content is-left" data-animate="fade-up">
+            <span class="public-badge public-top-section-badge">
+                <span class="material-symbols-outlined text-[16px] text-primary">priority_high</span>
+                Hệ thống đang cần bạn thử lại
+            </span>
+            <h1 class="public-top-section-title text-white">Có sự cố trong quá trình xử lý</h1>
+            <p class="public-top-section-lead">Phiên thao tác này chưa thể hoàn tất. Bạn có thể tải lại trang, quay lại bước trước hoặc liên hệ hỗ trợ để HV Travel tiếp tục xử lý cùng bạn.</p>
+        </div>
+    </div>
+</section>
 
 <section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
     <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -61,3 +74,6 @@
         </div>
     </div>
 </section>
+
+
+

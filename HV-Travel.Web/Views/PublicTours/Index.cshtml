@@ -1,173 +1,368 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model List<Tour>
 @{
     var sections = await ContentService.GetPageSectionsAsync("publicTours");
     var hero = sections.GetSection("indexHero");
     var emptyState = sections.GetSection("emptyState");
 
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Khám phá tất cả tour du lịch Việt Nam tại HV Travel");
-
     var currentSearch = ViewData["CurrentSearch"]?.ToString();
     var currentSort = ViewData["CurrentSort"]?.ToString();
     var currentPage = (int)(ViewData["CurrentPage"] ?? 1);
     var totalPages = (int)(ViewData["TotalPages"] ?? 1);
     var totalItems = (int)(ViewData["TotalItems"] ?? 0);
+    var currentRegion = ViewData["CurrentRegion"]?.ToString();
+    var currentDestination = ViewData["CurrentDestination"]?.ToString();
+    var currentCollection = ViewData["CurrentCollection"]?.ToString();
+    var currentMinPrice = ViewData["CurrentMinPrice"]?.ToString();
+    var currentMaxPrice = ViewData["CurrentMaxPrice"]?.ToString();
+    var currentDepartureMonth = ViewData["CurrentDepartureMonth"]?.ToString();
+    var currentMaxDays = ViewData["CurrentMaxDays"]?.ToString();
+    var currentAvailableOnly = (bool)(ViewData["CurrentAvailableOnly"] ?? false);
+    var currentPromotionOnly = (bool)(ViewData["CurrentPromotionOnly"] ?? false);
+    var regions = ViewData["Regions"] as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var destinations = ViewData["Destinations"] as IEnumerable<string> ?? Enumerable.Empty<string>();
 }
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="hero-gradient relative overflow-hidden">
-        <div class="absolute inset-0 opacity-15">
-            <div class="absolute top-20 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
+            <div class="absolute bottom-0 right-10 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
-            <h1 class="public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
-                @hero.Fields.GetFieldValue("titleLine1", "Tour")
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "du lịch")</span>
-            </h1>
-            <div class="public-body-copy text-lg text-slate-300 max-w-xl mx-auto mb-8">
-                @Html.Raw(hero.Fields.GetFieldValue("description", "Khám phá những hành trình nổi bật khắp Việt Nam với lịch trình được tuyển chọn kỹ lưỡng."))
-            </div>
-            <form asp-controller="PublicTours" asp-action="Index" method="get" class="max-w-2xl mx-auto">
-                <input type="hidden" name="sort" value="@currentSort" />
-                <div class="public-search-shell flex flex-col sm:flex-row bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden">
-                    <input type="text" name="search" value="@currentSearch" placeholder="@hero.Fields.GetFieldValue("searchPlaceholder", "Tìm điểm đến, từ khóa, thành phố...")" class="min-w-0 w-full flex-1 bg-transparent text-white placeholder-white/60 px-6 py-4 text-sm outline-none" />
-                    <button type="submit" class="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-8 py-4 font-bold text-sm transition-colors flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[20px]">search</span>
-                        <span class="hidden sm:inline">Tìm kiếm</span>
-                    </button>
+        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="public-top-section-content public-page-hero-content is-centered" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge">
+                    <span class="material-symbols-outlined text-[16px] text-primary">travel_explore</span>
+                    @hero.Fields.GetFieldValue("badgeText", "Tour tuyển chọn")
+                </span>
+                <h1 class="public-top-section-title public-hero-title text-white">
+                    @hero.Fields.GetFieldValue("titleLine1", "Tour")
+                    <span class="public-top-section-highlight public-page-hero-highlight">@hero.Fields.GetFieldValue("titleHighlight", "du lịch")</span>
+                </h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Khám phá hành trình theo điểm đến, mức giá, tháng khởi hành và bộ sưu tập phù hợp với từng nhu cầu."))
                 </div>
-            </form>
+                <div class="public-top-section-actions public-page-hero-actions mt-2 w-full max-w-3xl">
+                    <form asp-controller="PublicTours" asp-action="Index" method="get" class="w-full">
+                        <div class="public-search-shell flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-white/20 bg-white/10 backdrop-blur-md shadow-2xl shadow-slate-950/20">
+                            <input type="text" name="search" value="@currentSearch" placeholder="@hero.Fields.GetFieldValue("searchPlaceholder", "Tìm điểm đến, loại tour, mùa lễ hội...")" class="min-w-0 w-full flex-1 bg-transparent px-6 py-4 text-sm text-white outline-none placeholder-white/60" />
+                            <button type="submit" class="w-full sm:w-auto bg-primary px-8 py-4 text-sm font-bold text-white transition-colors hover:bg-primary-dark flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[20px]">search</span>
+                                <span>Tìm kiếm</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 }
 
 <section class="py-12 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-8" data-animate="fade-in">
-            <div class="flex items-center gap-3">
-                <span class="text-sm text-slate-500 dark:text-slate-400">@totalItems tour</span>
-                <select id="sort-select" class="bg-surface-light dark:bg-surface-dark text-sm text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl ring-1 ring-border-light dark:ring-border-dark outline-none focus:ring-primary/30">
-                    <!option value="" @(string.IsNullOrEmpty(currentSort) || currentSort == "rating" ? "selected" : "")>Đánh giá cao</!option>
-                    <!option value="price_asc" @(currentSort == "price_asc" ? "selected" : "")>Giá thấp đến cao</!option>
-                    <!option value="price_desc" @(currentSort == "price_desc" ? "selected" : "")>Giá cao đến thấp</!option>
-                    <!option value="newest" @(currentSort == "newest" ? "selected" : "")>Mới nhất</!option>
-                </select>
+        <div class="flex flex-wrap gap-3 mb-8" data-animate="fade-in">
+            @foreach (var chip in new[]
+            {
+                new { Key = "domestic", Label = "Trong nước" },
+                new { Key = "premium", Label = "Premium" },
+                new { Key = "family", Label = "Gia đình" },
+                new { Key = "couple", Label = "Cặp đôi" },
+                new { Key = "seasonal", Label = "Mùa lễ hội" },
+                new { Key = "deal", Label = "Săn deal" }
+            })
+            {
+                <a asp-action="Index" asp-route-collection="@chip.Key" asp-route-search="@currentSearch" asp-route-region="@currentRegion" asp-route-destination="@currentDestination" asp-route-sort="@currentSort" class="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] transition @(currentCollection == chip.Key ? "bg-primary text-white" : "bg-surface-light text-slate-600 ring-1 ring-border-light dark:bg-surface-dark dark:text-slate-300 dark:ring-border-dark")">@chip.Label</a>
+            }
+        </div>
+
+        <div class="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <aside class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-left">
+                <form asp-action="Index" method="get" class="space-y-4">
+                    <input type="hidden" name="search" value="@currentSearch" />
+                    <div>
+                        <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Khu vực</label>
+                        <select name="region" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                            <option value="">Tất cả</option>
+                            @foreach (var region in regions)
+                            {
+                                <option value="@region" selected="@(currentRegion == region)">@region</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Điểm đến</label>
+                        <select name="destination" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                            <option value="">Tất cả</option>
+                            @foreach (var destination in destinations)
+                            {
+                                <option value="@destination" selected="@(currentDestination == destination)">@destination</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="grid gap-4 grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Giá từ</label>
+                            <input name="minPrice" value="@currentMinPrice" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Giá đến</label>
+                            <input name="maxPrice" value="@currentMaxPrice" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        </div>
+                    </div>
+                    <div class="grid gap-4 grid-cols-2">
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Tháng</label>
+                            <select name="departureMonth" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                                <option value="">Tất cả</option>
+                                @for (var month = 1; month <= 12; month++)
+                                {
+                                    <option value="@month" selected="@(currentDepartureMonth == month.ToString())">Tháng @month</option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Tối đa ngày</label>
+                            <input name="maxDays" value="@currentMaxDays" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-slate-400">Sắp xếp</label>
+                        <select name="sort" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                            <option value="rating" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating")">Đánh giá cao</option>
+                            <option value="price_asc" selected="@(currentSort == "price_asc")">Giá thấp đến cao</option>
+                            <option value="price_desc" selected="@(currentSort == "price_desc")">Giá cao đến thấp</option>
+                            <option value="newest" selected="@(currentSort == "newest")">Mới nhất</option>
+                            <option value="departure" selected="@(currentSort == "departure")">Khởi hành gần nhất</option>
+                        </select>
+                    </div>
+                    <div class="space-y-3 rounded-2xl bg-surface-muted-light p-4 dark:bg-surface-elevated-dark">
+                        <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                            <input type="checkbox" name="availableOnly" value="true" checked="@currentAvailableOnly" class="rounded border-border-light dark:border-border-dark" /> Còn chỗ
+                        </label>
+                        <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                            <input type="checkbox" name="promotionOnly" value="true" checked="@currentPromotionOnly" class="rounded border-border-light dark:border-border-dark" /> Có khuyến mãi
+                        </label>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-1 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Áp dụng</button>
+                        <a asp-action="Index" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-600 dark:border-border-dark dark:text-slate-300">Reset</a>
+                    </div>
+                </form>
+            </aside>
+
+            <div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-8" data-animate="fade-in">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Discovery</p>
+                        <h2 class="public-section-title mt-2">@totalItems tour phù hợp</h2>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                        <span class="rounded-full bg-surface-light px-4 py-2 ring-1 ring-border-light dark:bg-surface-dark dark:ring-border-dark">Wishlist & compare ở local browser</span>
+                    </div>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+                        @foreach (var tour in Model)
+                        {
+                            var detailUrl = Url.Action("Details", "PublicTours", new { id = tour.Id }) ?? "#";
+                            <article class="tour-card group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border-light dark:border-border-dark hover:-translate-y-1"
+                                     data-tour-id="@tour.Id"
+                                     data-tour-name="@tour.Name"
+                                     data-tour-price="@(tour.Price?.Adult ?? 0)"
+                                     data-tour-location="@(tour.Destination?.City ?? "Việt Nam")"
+                                     data-tour-url="@detailUrl"
+                                     data-tour-image="@(tour.Images.FirstOrDefault() ?? string.Empty)">
+                                <div class="relative h-56 overflow-hidden">
+                                    @if (tour.Images != null && tour.Images.Any())
+                                    {
+                                        <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center"><span class="material-symbols-outlined text-6xl text-primary/40">landscape</span></div>
+                                    }
+                                    <div class="absolute top-4 left-4 flex gap-2">
+                                        @if (tour.Price?.Discount > 0)
+                                        {
+                                            <div class="bg-red-500 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-lg">-@tour.Price.Discount%</div>
+                                        }
+                                        @if (tour.RemainingSpots > 0)
+                                        {
+                                            <div class="bg-emerald-500/90 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-lg">Còn @tour.RemainingSpots chỗ</div>
+                                        }
+                                    </div>
+                                    <div class="absolute right-4 top-4 flex gap-2">
+                                        <button type="button" class="wishlist-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm transition hover:scale-105" data-wishlist-toggle aria-label="Wishlist">
+                                            <span class="material-symbols-outlined text-[18px]">favorite</span>
+                                        </button>
+                                        <button type="button" class="compare-btn inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm transition hover:scale-105" data-compare-toggle aria-label="Compare">
+                                            <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2"><span class="material-symbols-outlined text-[14px] text-primary">location_on</span>@(tour.Destination?.City ?? "Việt Nam")</div>
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N {tour.Duration?.Nights}Đ")</span>
+                                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>@tour.MaxParticipants</span>
+                                        </div>
+                                        <div class="flex items-center gap-1"><span class="material-symbols-outlined text-amber-400 text-[16px]">star</span><span class="text-sm font-bold text-slate-700 dark:text-slate-300">@tour.Rating.ToString("0.0")</span></div>
+                                    </div>
+                                    <div class="flex items-end justify-between pt-4 border-t border-border-light dark:border-border-dark">
+                                        <div>
+                                            <p class="text-xs text-slate-400">Từ</p>
+                                            <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
+                                        </div>
+                                        <a href="@detailUrl" class="record-view flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">Chi tiết <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+
+                    @if (totalPages > 1)
+                    {
+                        var pagesToShow = new List<int>();
+                        pagesToShow.Add(1);
+                        for (int i = Math.Max(2, currentPage - 1); i <= Math.Min(totalPages - 1, currentPage + 1); i++) { pagesToShow.Add(i); }
+                        if (totalPages > 1) pagesToShow.Add(totalPages);
+                        pagesToShow = pagesToShow.Distinct().OrderBy(x => x).ToList();
+
+                        <div class="flex flex-col items-center gap-4 mt-12">
+                            <div class="flex flex-wrap items-center justify-center gap-1.5">
+                                <a asp-action="Index" asp-route-page="@(Math.Max(1, currentPage - 1))" asp-route-search="@currentSearch" asp-route-sort="@currentSort" asp-route-region="@currentRegion" asp-route-destination="@currentDestination" asp-route-minPrice="@currentMinPrice" asp-route-maxPrice="@currentMaxPrice" asp-route-departureMonth="@currentDepartureMonth" asp-route-maxDays="@currentMaxDays" asp-route-collection="@currentCollection" asp-route-availableOnly="@currentAvailableOnly" asp-route-promotionOnly="@currentPromotionOnly"
+                                   class="size-10 rounded-xl flex items-center justify-center text-sm transition-all @(currentPage == 1 ? "bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-300 dark:text-slate-600 pointer-events-none" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">
+                                    <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                                </a>
+                                @for (int idx = 0; idx < pagesToShow.Count; idx++)
+                                {
+                                    if (idx > 0 && pagesToShow[idx] - pagesToShow[idx - 1] > 1)
+                                    {
+                                        <span class="size-10 flex items-center justify-center text-xs text-slate-400">...</span>
+                                    }
+                                    var p = pagesToShow[idx];
+                                    <a asp-action="Index" asp-route-page="@p" asp-route-search="@currentSearch" asp-route-sort="@currentSort" asp-route-region="@currentRegion" asp-route-destination="@currentDestination" asp-route-minPrice="@currentMinPrice" asp-route-maxPrice="@currentMaxPrice" asp-route-departureMonth="@currentDepartureMonth" asp-route-maxDays="@currentMaxDays" asp-route-collection="@currentCollection" asp-route-availableOnly="@currentAvailableOnly" asp-route-promotionOnly="@currentPromotionOnly"
+                                       class="size-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all @(p == currentPage ? "bg-primary text-white shadow-lg shadow-primary/25" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">@p</a>
+                                }
+                                <a asp-action="Index" asp-route-page="@(Math.Min(totalPages, currentPage + 1))" asp-route-search="@currentSearch" asp-route-sort="@currentSort" asp-route-region="@currentRegion" asp-route-destination="@currentDestination" asp-route-minPrice="@currentMinPrice" asp-route-maxPrice="@currentMaxPrice" asp-route-departureMonth="@currentDepartureMonth" asp-route-maxDays="@currentMaxDays" asp-route-collection="@currentCollection" asp-route-availableOnly="@currentAvailableOnly" asp-route-promotionOnly="@currentPromotionOnly"
+                                   class="size-10 rounded-xl flex items-center justify-center text-sm transition-all @(currentPage == totalPages ? "bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-300 dark:text-slate-600 pointer-events-none" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">
+                                    <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                                </a>
+                            </div>
+                            <p class="text-xs text-slate-400 dark:text-slate-500">Trang @currentPage / @totalPages</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-20">
+                        <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">search_off</span>
+                        <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">@((emptyState?.Fields.GetFieldValue("title", "Không tìm thấy tour nào")) ?? "Không tìm thấy tour nào")</h3>
+                        <div class="text-slate-500 dark:text-slate-400 mb-6">@Html.Raw((emptyState?.Fields.GetFieldValue("description", "Hãy thử đổi bộ lọc hoặc quay lại toàn bộ danh sách tour.")) ?? "Hãy thử đổi bộ lọc hoặc quay lại toàn bộ danh sách tour.")</div>
+                        <a asp-action="Index" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all"><span class="material-symbols-outlined text-[18px]">refresh</span> Xem tất cả tour</a>
+                    </div>
+                }
             </div>
         </div>
 
-        @if (Model != null && Model.Any())
-        {
-            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
-                @foreach (var tour in Model)
-                {
-                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
-                       class="tour-card group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border-light dark:border-border-dark hover:-translate-y-1">
-                        <div class="relative h-56 overflow-hidden">
-                            @if (tour.Images != null && tour.Images.Any())
-                            {
-                                <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
-                            }
-                            else
-                            {
-                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-6xl text-primary/40">landscape</span>
-                                </div>
-                            }
-                            @if (tour.Price?.Discount > 0)
-                            {
-                                <div class="absolute top-4 left-4 bg-red-500 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-lg">-@tour.Price.Discount%</div>
-                            }
-                        </div>
-                        <div class="p-5">
-                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
-                                <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
-                                @(tour.Destination?.City ?? "Việt Nam")
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")</span>
-                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span>@tour.MaxParticipants</span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-amber-400 text-[16px]">star</span>
-                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">@tour.Rating.ToString("0.0")</span>
-                                </div>
-                            </div>
-                            <div class="flex items-end justify-between pt-4 border-t border-border-light dark:border-border-dark">
-                                <div>
-                                    <p class="text-xs text-slate-400">Từ</p>
-                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
-                                </div>
-                                <span class="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
-                                    Chi tiết <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                }
-            </div>
-
-            @if (totalPages > 1)
-            {
-                var pagesToShow = new List<int>();
-                pagesToShow.Add(1);
-                for (int i = Math.Max(2, currentPage - 1); i <= Math.Min(totalPages - 1, currentPage + 1); i++) { pagesToShow.Add(i); }
-                if (totalPages > 1) pagesToShow.Add(totalPages);
-                pagesToShow = pagesToShow.Distinct().OrderBy(x => x).ToList();
-
-                <div class="flex flex-col items-center gap-4 mt-12">
-                    <div class="flex flex-wrap items-center justify-center gap-1.5">
-                        <a asp-controller="PublicTours" asp-action="Index" asp-route-page="@(Math.Max(1, currentPage - 1))" asp-route-search="@currentSearch" asp-route-sort="@currentSort"
-                           class="size-10 rounded-xl flex items-center justify-center text-sm transition-all @(currentPage == 1 ? "bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-300 dark:text-slate-600 pointer-events-none" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">
-                            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                        </a>
-                        @for (int idx = 0; idx < pagesToShow.Count; idx++)
-                        {
-                            if (idx > 0 && pagesToShow[idx] - pagesToShow[idx - 1] > 1)
-                            {
-                                <span class="size-10 flex items-center justify-center text-xs text-slate-400">...</span>
-                            }
-                            var p = pagesToShow[idx];
-                            <a asp-controller="PublicTours" asp-action="Index" asp-route-page="@p" asp-route-search="@currentSearch" asp-route-sort="@currentSort"
-                               class="size-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all @(p == currentPage ? "bg-primary text-white shadow-lg shadow-primary/25" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">
-                                @p
-                            </a>
-                        }
-                        <a asp-controller="PublicTours" asp-action="Index" asp-route-page="@(Math.Min(totalPages, currentPage + 1))" asp-route-search="@currentSearch" asp-route-sort="@currentSort"
-                           class="size-10 rounded-xl flex items-center justify-center text-sm transition-all @(currentPage == totalPages ? "bg-surface-muted-light dark:bg-surface-elevated-dark text-slate-300 dark:text-slate-600 pointer-events-none" : "bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 ring-1 ring-border-light dark:ring-border-dark hover:bg-primary hover:text-white hover:ring-primary")">
-                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                        </a>
-                    </div>
-                    <p class="text-xs text-slate-400 dark:text-slate-500">Trang @currentPage / @totalPages</p>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="text-center py-20">
-                <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">search_off</span>
-                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">@((emptyState?.Fields.GetFieldValue("title", "Không tìm thấy tour nào")) ?? "Không tìm thấy tour nào")</h3>
-                <div class="text-slate-500 dark:text-slate-400 mb-6">
-                    @Html.Raw((emptyState?.Fields.GetFieldValue("description", "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán.")) ?? "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán.")
-                </div>
-                <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all">
-                    <span class="material-symbols-outlined text-[18px]">refresh</span> @((emptyState?.Fields.GetFieldValue("ctaText", "Xem tất cả tour")) ?? "Xem tất cả tour")
-                </a>
-            </div>
-        }
+        <div class="grid gap-6 lg:grid-cols-2 mt-12">
+            <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary">Wishlist</p>
+                <h2 class="public-section-title mt-2">Tour đã lưu</h2>
+                <div id="wishlist-shell" class="mt-5 grid gap-4"></div>
+            </section>
+            <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary">Recently Viewed</p>
+                <h2 class="public-section-title mt-2">Tour vừa xem</h2>
+                <div id="recently-viewed-shell" class="mt-5 grid gap-4"></div>
+            </section>
+        </div>
     </div>
 </section>
 
 @section Scripts {
 <script>
-    document.getElementById('sort-select').addEventListener('change', function() {
-        const url = new URL(window.location);
-        if (this.value) url.searchParams.set('sort', this.value);
-        else url.searchParams.delete('sort');
-        url.searchParams.delete('page');
-        window.location = url;
+(function () {
+    const STORAGE_KEYS = {
+        wishlist: 'hvtravel_wishlist',
+        compare: 'hvtravel_compare',
+        recent: 'hvtravel_recent'
+    };
+
+    const parseItems = (key) => {
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    };
+    const saveItems = (key, items) => localStorage.setItem(key, JSON.stringify(items.slice(0, 6)));
+    const toCardMarkup = (item) => `
+        <a href="${item.url}" class="rounded-2xl border border-border-light px-4 py-4 transition hover:border-primary dark:border-border-dark">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm font-black text-slate-900 dark:text-white">${item.name}</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">${item.location}</p>
+                </div>
+                <span class="text-sm font-black text-primary">${new Intl.NumberFormat('vi-VN').format(item.price)}₫</span>
+            </div>
+        </a>`;
+
+    const render = () => {
+        const wishlistShell = document.getElementById('wishlist-shell');
+        const recentShell = document.getElementById('recently-viewed-shell');
+        const wishlist = parseItems(STORAGE_KEYS.wishlist);
+        const recent = parseItems(STORAGE_KEYS.recent);
+        wishlistShell.innerHTML = wishlist.length ? wishlist.map(toCardMarkup).join('') : '<p class="text-sm text-slate-500 dark:text-slate-400">Chưa có tour nào trong wishlist.</p>';
+        recentShell.innerHTML = recent.length ? recent.map(toCardMarkup).join('') : '<p class="text-sm text-slate-500 dark:text-slate-400">Chưa có tour nào vừa xem.</p>';
+    };
+
+    const getTourData = (element) => {
+        const card = element.closest('[data-tour-id]');
+        return {
+            id: card.dataset.tourId,
+            name: card.dataset.tourName,
+            price: Number(card.dataset.tourPrice || 0),
+            location: card.dataset.tourLocation,
+            url: card.dataset.tourUrl,
+            image: card.dataset.tourImage
+        };
+    };
+
+    document.querySelectorAll('[data-wishlist-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const tour = getTourData(button);
+            const items = parseItems(STORAGE_KEYS.wishlist).filter((item) => item.id !== tour.id);
+            items.unshift(tour);
+            saveItems(STORAGE_KEYS.wishlist, items);
+            render();
+        });
     });
+
+    document.querySelectorAll('[data-compare-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const tour = getTourData(button);
+            const items = parseItems(STORAGE_KEYS.compare).filter((item) => item.id !== tour.id);
+            items.unshift(tour);
+            saveItems(STORAGE_KEYS.compare, items.slice(0, 3));
+            button.classList.toggle('bg-primary');
+            button.classList.toggle('text-white');
+        });
+    });
+
+    document.querySelectorAll('.record-view').forEach((link) => {
+        link.addEventListener('click', () => {
+            const tour = getTourData(link);
+            const items = parseItems(STORAGE_KEYS.recent).filter((item) => item.id !== tour.id);
+            items.unshift(tour);
+            saveItems(STORAGE_KEYS.recent, items);
+        });
+    });
+
+    render();
+})();
 </script>
 }
+
+

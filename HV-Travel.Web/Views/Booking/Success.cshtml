@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -21,6 +21,19 @@
 }
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
+
+<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-top-section-content is-left" data-animate="fade-up">
+            <span class="public-badge public-top-section-badge">
+                <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+                Bước 3 trong hành trình đặt tour
+            </span>
+            <h1 class="public-top-section-title text-white">Hoàn tất đặt tour thành công</h1>
+            <p class="public-top-section-lead">Thông tin booking đã được ghi nhận. Bạn có thể kiểm tra mã đơn, in xác nhận và quay lại trang chủ để tiếp tục khám phá thêm hành trình mới.</p>
+        </div>
+    </div>
+</section>
 
 <div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,3 +109,6 @@
     .animate-bounce-once { animation: bounceIn 0.6s ease-out; }
     @@keyframes bounceIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
 </style>
+
+
+

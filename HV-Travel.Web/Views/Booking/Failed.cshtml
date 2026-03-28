@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -23,6 +23,19 @@
 }
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
+
+<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-top-section-content is-left" data-animate="fade-up">
+            <span class="public-badge public-top-section-badge">
+                <span class="material-symbols-outlined text-[16px] text-primary">warning</span>
+                Cần hoàn tất bước thanh toán
+            </span>
+            <h1 class="public-top-section-title text-white">Booking vẫn đang chờ thanh toán</h1>
+            <p class="public-top-section-lead">Đơn đặt tour của bạn vẫn được giữ chỗ. Hãy thử lại thanh toán, chọn phương thức khác hoặc liên hệ đội ngũ HV Travel để được hỗ trợ ngay.</p>
+        </div>
+    </div>
+</section>
 
 <section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
     <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -68,3 +81,6 @@
         </div>
     </div>
 </section>
+
+
+

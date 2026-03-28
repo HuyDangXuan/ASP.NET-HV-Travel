@@ -1,0 +1,40 @@
+﻿@model List<HVTravel.Domain.Entities.Promotion>
+@{
+    ViewData["Title"] = "Promotions";
+}
+
+<div class="flex items-end justify-between gap-4 mb-8">
+    <div>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Promotions", IsCurrent = true }
+            }
+        })
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-3">Promotion Engine</h1>
+    </div>
+    <a asp-action="Create" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Tạo promotion</a>
+</div>
+
+<div class="grid gap-4 lg:grid-cols-2">
+    @foreach (var item in Model)
+    {
+        <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@item.Code</p>
+                    <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(item.Title) ? item.Code : item.Title)</h2>
+                </div>
+                <span class="text-3xl font-black text-primary">@item.DiscountPercentage.ToString("0")%</span>
+            </div>
+            <p class="mt-4 text-sm text-slate-500">@item.Description</p>
+            <div class="mt-5 flex items-center justify-between text-xs text-slate-400">
+                <span>@item.CampaignType</span>
+                <span>@item.ValidTo.ToString("dd/MM/yyyy")</span>
+            </div>
+            <a asp-action="Edit" asp-route-id="@item.Id" class="mt-5 inline-flex rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 dark:border-slate-700 dark:text-slate-200">Chỉnh sửa</a>
+        </article>
+    }
+</div>

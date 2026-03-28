@@ -1,0 +1,146 @@
+﻿@inject IPublicContentService ContentService
+@model HVTravel.Web.Models.BookingLookupViewModel
+@{
+    var sections = await ContentService.GetPageSectionsAsync("bookingLookup");
+    var hero = sections.GetSection("hero");
+    var lookupForm = sections.GetSection("lookupForm");
+    var readyState = sections.GetSection("readyState");
+    var showLookupForm = lookupForm?.IsEnabled != false;
+    var lookupGridClass = showLookupForm
+        ? "grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
+        : "grid gap-8";
+    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
+    {
+        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+        {
+            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
+            new() { Label = "Tra cứu booking", IsCurrent = true }
+        }
+    };
+
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành.")
+        ?? "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành.";
+}
+
+@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
+
+@if (hero?.IsEnabled != false)
+{
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-10 left-10 h-72 w-72 rounded-full bg-primary/25 blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-400/18 blur-3xl"></div>
+        </div>
+        <div class="public-top-section-shell public-page-hero-shell max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="public-top-section-content public-page-hero-content is-centered" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge">
+                    <span class="material-symbols-outlined text-[16px] text-primary">confirmation_number</span>
+                    @hero.Fields.GetFieldValue("badgeText", "Tra cứu đơn đặt tour")
+                </span>
+                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Tra cứu booking trong vài giây")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành."))
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 @lookupGridClass">
+        @if (showLookupForm)
+        {
+            <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">@lookupForm.Fields.GetFieldValue("title", "Thông tin tra cứu")</h2>
+                <div class="mb-6 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                    @Html.Raw(lookupForm.Fields.GetFieldValue("description", "Điền mã booking cùng email hoặc số điện thoại đã dùng khi đặt tour để kiểm tra nhanh trạng thái đơn."))
+                </div>
+                <form asp-action="Lookup" method="post" class="space-y-4">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="rounded-2xl bg-red-50 text-red-600 px-4 py-3 text-sm dark:bg-red-900/20 dark:text-red-300"></div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mã booking</label>
+                        <input name="bookingCode" value="@Model.QueryBookingCode" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Ví dụ: HV20260328001" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
+                        <input name="email" value="@Model.QueryEmail" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="email@example.com" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Hoặc số điện thoại</label>
+                        <input name="phone" value="@Model.QueryPhone" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="0901 234 567" />
+                    </div>
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
+                        <span class="material-symbols-outlined text-[18px]">search</span>
+                        @lookupForm.Fields.GetFieldValue("submitText", "Tra cứu booking")
+                    </button>
+                </form>
+            </div>
+        }
+
+        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm">
+            @if (Model.HasResult)
+            {
+                <div class="flex items-start justify-between gap-4 mb-6">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary mb-2">Kết quả booking</p>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.BookingCode</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">@Model.TourName</p>
+                    </div>
+                    <div class="rounded-2xl bg-primary/10 text-primary px-4 py-2 text-sm font-bold">@Model.PaymentStatus</div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
+                    <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Trạng thái đơn</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@Model.BookingStatus</p>
+                    </div>
+                    <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Ngày khởi hành</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@(Model.StartDate?.ToString("dd/MM/yyyy") ?? "Chưa xác định")</p>
+                    </div>
+                    <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Số hành khách</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@Model.ParticipantsCount</p>
+                    </div>
+                    <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Tổng tiền</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@Model.TotalAmount.ToString("N0")₫</p>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-border-light dark:border-border-dark px-5 py-5">
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Timeline xử lý</h3>
+                    @if (Model.History.Count > 0)
+                    {
+                        <div class="space-y-3">
+                            @foreach (var item in Model.History)
+                            {
+                                <div class="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">schedule</span>
+                                    <span>@item</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Booking chưa có mốc xử lý chi tiết.</p>
+                    }
+                </div>
+            }
+            else if (readyState?.IsEnabled != false)
+            {
+                <div class="h-full min-h-[320px] flex flex-col items-center justify-center text-center">
+                    <span class="material-symbols-outlined text-6xl text-primary/40 mb-4">travel_explore</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">@readyState.Fields.GetFieldValue("title", "Sẵn sàng tra cứu")</h2>
+                    <div class="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
+                        @Html.Raw(readyState.Fields.GetFieldValue("description", "Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái đơn và mốc xử lý mới nhất ngay tại đây."))
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+

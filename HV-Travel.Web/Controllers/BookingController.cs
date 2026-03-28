@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
+using HVTravel.Web.Services;
 
 namespace HVTravel.Web.Controllers;
 
@@ -9,14 +10,15 @@ public class BookingController : Controller
 {
     private readonly ITourRepository _tourRepository;
     private readonly IRepository<Booking> _bookingRepository;
+    private readonly BookingWorkflowService _bookingWorkflowService;
 
-    public BookingController(ITourRepository tourRepository, IRepository<Booking> bookingRepository)
+    public BookingController(ITourRepository tourRepository, IRepository<Booking> bookingRepository, BookingWorkflowService bookingWorkflowService)
     {
         _tourRepository = tourRepository;
         _bookingRepository = bookingRepository;
+        _bookingWorkflowService = bookingWorkflowService;
     }
 
-    // GET: /Booking/Create?tourId=xxx
     public async Task<IActionResult> Create(string tourId)
     {
         if (string.IsNullOrEmpty(tourId))
@@ -38,7 +40,6 @@ public class BookingController : Controller
         return View(vm);
     }
 
-    // POST: /Booking/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(BookingViewModel vm)
@@ -54,7 +55,6 @@ public class BookingController : Controller
             return View(vm);
         }
 
-        // Validate max participants
         if (vm.TotalParticipants > tour.RemainingSpots)
         {
             ModelState.AddModelError("", $"Tour này hiện chỉ còn {tour.RemainingSpots} chỗ trống. Vui lòng giảm số lượng hành khách.");
@@ -62,7 +62,6 @@ public class BookingController : Controller
             return View(vm);
         }
 
-        // Calculate total
         var adultPrice = tour.Price?.Adult ?? 0;
         var childPrice = tour.Price?.Child ?? 0;
         var infantPrice = tour.Price?.Infant ?? 0;
@@ -71,35 +70,14 @@ public class BookingController : Controller
         var subtotal = (adultPrice * vm.AdultCount) + (childPrice * vm.ChildCount) + (infantPrice * vm.InfantCount);
         var total = discount > 0 ? subtotal * (1 - (decimal)(discount / 100.0)) : subtotal;
 
-        // Initialize Passengers list
         var passengers = new List<Passenger>();
-        
-        // Add Adults
-        for (int i = 0; i < vm.AdultCount; i++)
-        {
-            passengers.Add(new Passenger 
-            { 
-                Type = "Adult", 
-                FullName = (i == 0) ? vm.ContactName : $"Người lớn {i + 1}" 
-            });
-        }
+        for (int i = 0; i < vm.AdultCount; i++) passengers.Add(new Passenger { Type = "Adult", FullName = i == 0 ? vm.ContactName : $"Người lớn {i + 1}" });
+        for (int i = 0; i < vm.ChildCount; i++) passengers.Add(new Passenger { Type = "Child", FullName = $"Trẻ em {i + 1}" });
+        for (int i = 0; i < vm.InfantCount; i++) passengers.Add(new Passenger { Type = "Infant", FullName = $"Em bé {i + 1}" });
 
-        // Add Children
-        for (int i = 0; i < vm.ChildCount; i++)
-        {
-            passengers.Add(new Passenger { Type = "Child", FullName = $"Trẻ em {i + 1}" });
-        }
-
-        // Add Infants
-        for (int i = 0; i < vm.InfantCount; i++)
-        {
-            passengers.Add(new Passenger { Type = "Infant", FullName = $"Em bé {i + 1}" });
-        }
-
-        // Create booking
         var booking = new Booking
         {
-            BookingCode = $"HV{DateTime.UtcNow:yyyyMMddHHmmss}{new Random().Next(100, 999)}",
+            BookingCode = $"HV{DateTime.UtcNow:yyyyMMddHHmmss}{Random.Shared.Next(100, 999)}",
             TourId = vm.TourId,
             TourSnapshot = new TourSnapshot
             {
@@ -115,25 +93,19 @@ public class BookingController : Controller
                 Phone = vm.ContactPhone
             },
             ParticipantsCount = vm.TotalParticipants,
-            Passengers = passengers, // Assign the generated list
+            Passengers = passengers,
             TotalAmount = total,
             Status = "Pending",
             PaymentStatus = "Unpaid",
             Notes = vm.SpecialRequests,
             BookingDate = DateTime.UtcNow,
-            HistoryLog = new List<BookingHistoryLog>
-            {
-                new BookingHistoryLog
-                {
-                    Action = "Tạo đơn đặt tour",
-                    Timestamp = DateTime.UtcNow,
-                    User = vm.ContactName,
-                    Note = $"Đặt {vm.AdultCount} người lớn, {vm.ChildCount} trẻ em, {vm.InfantCount} em bé"
-                }
-            }
+            PublicLookupEnabled = true,
+            HistoryLog = new List<BookingHistoryLog>(),
+            Events = new List<BookingEvent>()
         };
 
-        // ATOMIC UPDATE: Try to increment participants first
+        AddBookingEntry(booking, "booking", "Tạo đơn đặt tour", $"Đặt {vm.AdultCount} người lớn, {vm.ChildCount} trẻ em, {vm.InfantCount} em bé", vm.ContactName);
+
         var success = await _tourRepository.IncrementParticipantsAsync(vm.TourId, vm.TotalParticipants);
         if (!success)
         {
@@ -143,11 +115,9 @@ public class BookingController : Controller
         }
 
         await _bookingRepository.AddAsync(booking);
-
         return RedirectToAction("Payment", new { bookingId = booking.Id });
     }
 
-    // GET: /Booking/Payment?bookingId=xxx
     public async Task<IActionResult> Payment(string bookingId)
     {
         if (string.IsNullOrEmpty(bookingId))
@@ -157,14 +127,12 @@ public class BookingController : Controller
         if (booking == null) return NotFound();
 
         var tour = await _tourRepository.GetByIdAsync(booking.TourId);
-
         ViewData["Title"] = "Chọn Phương Thức Thanh Toán";
         ViewData["ActivePage"] = "Tours";
 
         return View(new BookingResultViewModel { Booking = booking, Tour = tour });
     }
 
-    // POST: /Booking/ProcessPayment
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ProcessPayment(string bookingId, string paymentMethod)
@@ -172,51 +140,116 @@ public class BookingController : Controller
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
         if (booking == null) return NotFound();
 
-        try
+        var actor = booking.ContactInfo?.Name ?? "Khách";
+        booking.PaymentTransactions ??= new List<PaymentTransaction>();
+        booking.Events ??= new List<BookingEvent>();
+        booking.HistoryLog ??= new List<BookingHistoryLog>();
+
+        switch (paymentMethod)
         {
-            var paymentMethodText = paymentMethod switch
-            {
-                "Cash" => "Tiền mặt",
-                "BankTransfer" => "Chuyển khoản ngân hàng",
-                "CreditCard" => "Thẻ tín dụng",
-                _ => paymentMethod
-            };
+            case "Cash":
+                booking.PaymentStatus = "Unpaid";
+                booking.Status = "Confirmed";
+                booking.ConfirmedAt ??= DateTime.UtcNow;
+                AddBookingEntry(booking, "payment", "Giữ chỗ thanh toán tiền mặt", "Booking đã được giữ chỗ, thanh toán tại quầy hoặc khi khởi hành.", actor);
+                await _bookingRepository.UpdateAsync(booking.Id, booking);
+                break;
+            case "BankTransfer":
+                booking.PaymentStatus = "Pending";
+                booking.Status = "PendingPayment";
+                booking.PaymentTransactions.Add(new PaymentTransaction
+                {
+                    Provider = "ManualTransfer",
+                    Method = "BankTransfer",
+                    TransactionId = $"BANK-{booking.BookingCode}-{DateTime.UtcNow:HHmmss}",
+                    Reference = booking.BookingCode,
+                    Amount = booking.TotalAmount,
+                    Status = "Pending",
+                    CreatedAt = DateTime.UtcNow,
+                    ProcessedAt = DateTime.UtcNow
+                });
+                AddBookingEntry(booking, "payment", "Chờ xác nhận chuyển khoản", "Khách đã chọn chuyển khoản và chờ tải minh chứng thanh toán.", actor);
+                await _bookingRepository.UpdateAsync(booking.Id, booking);
+                break;
+            default:
+                booking.PaymentStatus = "Pending";
+                booking.Status = "PendingPayment";
+                AddBookingEntry(booking, "payment", "Khởi tạo thanh toán online", "Hệ thống đã tạo phiên thanh toán online và đang chờ callback.", actor);
+                await _bookingRepository.UpdateAsync(booking.Id, booking);
 
-            booking.PaymentStatus = paymentMethod == "Cash" ? "Unpaid" : "Pending";
-            booking.Status = paymentMethod == "Cash" ? "Confirmed" : "Paid";
-            booking.HistoryLog ??= new List<BookingHistoryLog>();
-            booking.HistoryLog.Add(new BookingHistoryLog
-            {
-                Action = $"Chọn thanh toán: {paymentMethodText}",
-                Timestamp = DateTime.UtcNow,
-                User = booking.ContactInfo?.Name ?? "Khách",
-                Note = $"Phương thức: {paymentMethodText}"
-            });
-            booking.UpdatedAt = DateTime.UtcNow;
-
-            await _bookingRepository.UpdateAsync(booking.Id, booking);
-
-            return RedirectToAction("Success", new { bookingId = booking.Id });
+                await _bookingWorkflowService.ProcessGatewayCallbackAsync(new PaymentGatewayWebhookModel
+                {
+                    BookingCode = booking.BookingCode,
+                    TransactionId = $"TXN-{booking.BookingCode}-{DateTime.UtcNow:HHmmss}",
+                    Provider = "HVPay",
+                    Method = "CreditCard",
+                    Status = "SUCCESS",
+                    Amount = booking.TotalAmount,
+                    Reference = $"HVPAY-{booking.BookingCode}",
+                    Signature = "local-demo"
+                });
+                break;
         }
-        catch
-        {
-            return RedirectToAction("Failed", new { bookingId = booking.Id });
-        }
+
+        return RedirectToAction("Success", new { bookingId = booking.Id });
     }
 
-    // GET: /Booking/Success?bookingId=xxx
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadTransferProof(string bookingId, IFormFile? proofFile, string? note)
+    {
+        var booking = await _bookingRepository.GetByIdAsync(bookingId);
+        if (booking == null) return NotFound();
+
+        if (proofFile == null || proofFile.Length == 0)
+        {
+            TempData["PaymentError"] = "Vui lòng chọn file minh chứng chuyển khoản.";
+            return RedirectToAction(nameof(Payment), new { bookingId });
+        }
+
+        await using var memoryStream = new MemoryStream();
+        await proofFile.CopyToAsync(memoryStream);
+
+        booking.TransferProofFileName = proofFile.FileName;
+        booking.TransferProofContentType = proofFile.ContentType;
+        booking.TransferProofBase64 = Convert.ToBase64String(memoryStream.ToArray());
+        booking.PaymentStatus = "Pending";
+        booking.Status = "PendingPayment";
+        booking.UpdatedAt = DateTime.UtcNow;
+        AddBookingEntry(booking, "payment", "Đã tải minh chứng chuyển khoản", note ?? proofFile.FileName, booking.ContactInfo?.Name ?? "Khách");
+        await _bookingRepository.UpdateAsync(booking.Id, booking);
+
+        TempData["PaymentSuccess"] = "Đã tải minh chứng chuyển khoản. Bộ phận vận hành sẽ đối soát và cập nhật trạng thái.";
+        return RedirectToAction(nameof(Payment), new { bookingId });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Webhook([FromForm] PaymentGatewayWebhookModel model)
+    {
+        var handled = await _bookingWorkflowService.ProcessGatewayCallbackAsync(model);
+        if (!handled)
+        {
+            return NotFound();
+        }
+
+        return Ok(new { success = true, bookingCode = model.BookingCode, transactionId = model.TransactionId });
+    }
+
+    public IActionResult RetryPayment(string bookingId)
+    {
+        return RedirectToAction(nameof(Payment), new { bookingId });
+    }
+
     public async Task<IActionResult> Success(string bookingId)
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
         if (booking == null) return RedirectToAction("Index", "PublicTours");
 
         var tour = await _tourRepository.GetByIdAsync(booking.TourId);
-
         ViewData["Title"] = "Đặt Tour Thành Công";
         return View(new BookingResultViewModel { Booking = booking, Tour = tour });
     }
 
-    // GET: /Booking/Failed?bookingId=xxx
     public async Task<IActionResult> Failed(string bookingId)
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
@@ -231,14 +264,12 @@ public class BookingController : Controller
         });
     }
 
-    // GET: /Booking/Error
     public IActionResult Error()
     {
         ViewData["Title"] = "Lỗi Hệ Thống";
         return View();
     }
 
-    // GET: /Booking/Consultation
     public IActionResult Consultation()
     {
         ViewData["Title"] = "Tư Vấn Du Lịch";
@@ -246,7 +277,6 @@ public class BookingController : Controller
         return View(new ConsultationViewModel());
     }
 
-    // POST: /Booking/Consultation
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Consultation(ConsultationViewModel vm)
@@ -257,8 +287,30 @@ public class BookingController : Controller
             return View(vm);
         }
 
-        // TODO: Save to DB or send email notification
         TempData["ConsultationSuccess"] = true;
         return RedirectToAction("Consultation");
+    }
+
+    private static void AddBookingEntry(Booking booking, string type, string title, string note, string actor)
+    {
+        booking.Events ??= new List<BookingEvent>();
+        booking.HistoryLog ??= new List<BookingHistoryLog>();
+        booking.Events.Add(new BookingEvent
+        {
+            Type = type,
+            Title = title,
+            Description = note,
+            Actor = actor,
+            OccurredAt = DateTime.UtcNow,
+            VisibleToCustomer = true
+        });
+        booking.HistoryLog.Add(new BookingHistoryLog
+        {
+            Action = title,
+            Note = note,
+            User = actor,
+            Timestamp = DateTime.UtcNow
+        });
+        booking.UpdatedAt = DateTime.UtcNow;
     }
 }

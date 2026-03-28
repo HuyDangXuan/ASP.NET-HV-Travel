@@ -1,10 +1,9 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace HVTravel.Domain.Entities
 {
-
     [BsonIgnoreExtraElements]
     public class Customer
     {
@@ -31,7 +30,7 @@ namespace HVTravel.Domain.Entities
         [Phone]
         [BsonElement("phoneNumber")]
         public string PhoneNumber { get; set; } = string.Empty;
-        
+
         [BsonElement("avatarUrl")]
         public string AvatarUrl { get; set; }
 
@@ -43,7 +42,7 @@ namespace HVTravel.Domain.Entities
 
         [BsonElement("segment")]
         public string Segment { get; set; } = "Standard"; // VIP, New, Standard, ChurnRisk, Inactive
-        
+
         [BsonElement("status")]
         public string Status { get; set; } = "Active"; // Active, Banned
 
@@ -55,13 +54,13 @@ namespace HVTravel.Domain.Entities
 
         [BsonElement("stats")]
         public CustomerStats Stats { get; set; } = new CustomerStats();
-        
+
         [BsonElement("tags")]
         public List<string> Tags { get; set; } = new List<string>();
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        
+
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
@@ -71,10 +70,10 @@ namespace HVTravel.Domain.Entities
     {
         [BsonElement("street")]
         public string Street { get; set; }
-        
+
         [BsonElement("city")]
         public string City { get; set; }
-        
+
         [BsonElement("country")]
         public string Country { get; set; }
     }
@@ -82,17 +81,45 @@ namespace HVTravel.Domain.Entities
     [BsonIgnoreExtraElements]
     public class CustomerStats
     {
-        [BsonIgnore]
-        public decimal TotalSpending { get; set; }
-        
-        [BsonIgnore]
-        public int TotalOrders { get; set; }
-        
+        [BsonElement("lifetimeSpend")]
+        public decimal LifetimeSpend { get; set; }
+
+        [BsonElement("tripCount")]
+        public int TripCount { get; set; }
+
         [BsonElement("loyaltyPoints")]
         public int LoyaltyPoints { get; set; }
-        
+
+        [BsonElement("pendingPoints")]
+        public int PendingPoints { get; set; }
+
+        [BsonElement("tier")]
+        public string Tier { get; set; } = "Explorer";
+
+        [BsonElement("referralCode")]
+        public string ReferralCode { get; set; } = string.Empty;
+
+        [BsonElement("voucherBalance")]
+        public int VoucherBalance { get; set; }
+
         [BsonElement("lastActivity")]
         public DateTime LastActivity { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("lastCompletedTripAt")]
+        public DateTime? LastCompletedTripAt { get; set; }
+
+        [BsonIgnore]
+        public decimal TotalSpending
+        {
+            get => LifetimeSpend;
+            set => LifetimeSpend = value;
+        }
+
+        [BsonIgnore]
+        public int TotalOrders
+        {
+            get => TripCount;
+            set => TripCount = value;
+        }
     }
 }
-

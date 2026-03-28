@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 
 namespace HVTravel.Web.Services;
@@ -12,7 +12,12 @@ public static class PublicContentDefaults
         new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh/tầm nhìn, đội ngũ" },
         new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, giới thiệu biểu mẫu" },
         new() { Key = "publicTours", Label = "Tour", Description = "Hero, ô tìm kiếm, trạng thái rỗng" },
-        new() { Key = "booking", Label = "Đặt tour", Description = "Hero tư vấn, lợi ích, nội dung trạng thái" }
+        new() { Key = "destinations", Label = "Điểm đến", Description = "Hero, bộ sưu tập nổi bật, khám phá theo vùng" },
+        new() { Key = "promotions", Label = "Khuyến mãi", Description = "Hero, flash sale, voucher, deal theo mùa" },
+        new() { Key = "services", Label = "Dịch vụ", Description = "Hero, thẻ dịch vụ, form báo giá" },
+        new() { Key = "inspiration", Label = "Cẩm nang", Description = "Hero, bài nổi bật, danh sách bài mới" },
+        new() { Key = "booking", Label = "Đặt tour", Description = "Hero tư vấn, lợi ích, nội dung trạng thái" },
+        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu, trạng thái sẵn sàng" }
     };
 
     public static Dictionary<string, List<string>> Inventory => new()
@@ -22,7 +27,12 @@ public static class PublicContentDefaults
         ["about"] = new() { "hero", "story", "missionVision", "team" },
         ["contact"] = new() { "hero", "cards", "formIntro" },
         ["publicTours"] = new() { "indexHero", "emptyState" },
-        ["booking"] = new() { "consultationHero", "consultationBenefits", "statusCopy" }
+        ["destinations"] = new() { "hero", "collectionsIntro", "regionsIntro" },
+        ["promotions"] = new() { "hero", "flashSalesIntro", "voucherIntro", "seasonalDealsIntro" },
+        ["services"] = new() { "hero", "serviceCards", "quoteFormIntro" },
+        ["inspiration"] = new() { "hero", "featuredIntro", "latestIntro" },
+        ["booking"] = new() { "consultationHero", "consultationBenefits", "statusCopy" },
+        ["bookingLookup"] = new() { "hero", "lookupForm", "readyState" }
     };
 
     public static SiteSettings CreateSiteSettings()
@@ -208,6 +218,90 @@ public static class PublicContentDefaults
                 TextArea("description", "Mô tả", "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán."),
                 Text("ctaText", "Nút CTA", "Xem tất cả tour")
             }),
+            Section("destinations", "hero", "Hero điểm đến", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Destination Hub"),
+                Text("title", "Tiêu đề", "Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá."),
+                TextArea("description", "Mô tả", "Trang này hỗ trợ marketing mở landing theo vùng, theo nhu cầu và theo mức giá thay vì chỉ có danh sách tour phẳng.")
+            }),
+            Section("destinations", "collectionsIntro", "Mở đầu bộ sưu tập", 2, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Collections"),
+                Text("title", "Tiêu đề", "Bộ sưu tập nổi bật"),
+                TextArea("description", "Mô tả", "Nhóm các collection giúp marketing đẩy nhanh trang đích theo nhu cầu và mức ngân sách." )
+            }),
+            Section("destinations", "regionsIntro", "Mở đầu theo vùng", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Regions"),
+                Text("title", "Tiêu đề", "Khám phá theo vùng"),
+                TextArea("description", "Mô tả", "Trình bày điểm đến theo vùng để mở rộng landing page bán theo khu vực và nhóm thành phố nổi bật.")
+            }),
+            Section("promotions", "hero", "Hero khuyến mãi", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Promotion Center"),
+                Text("title", "Tiêu đề", "Flash sale, voucher campaign và deal landing page cho HV Travel."),
+                TextArea("description", "Mô tả", "Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment.")
+            }),
+            Section("promotions", "flashSalesIntro", "Mở đầu flash sale", 2, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Flash sale"),
+                Text("title", "Tiêu đề", "Khuyến mãi tạo urgency"),
+                TextArea("description", "Mô tả", "Khối ưu đãi có thời hạn ngắn để kéo chuyển đổi ngay trên mặt tiền B2C.")
+            }),
+            Section("promotions", "voucherIntro", "Mở đầu ví voucher", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Voucher campaigns"),
+                Text("title", "Tiêu đề", "Ví voucher"),
+                TextArea("description", "Mô tả", "Tập hợp voucher và campaign có thể tái sử dụng cho nhiều phân khúc khách hàng.")
+            }),
+            Section("promotions", "seasonalDealsIntro", "Mở đầu deal theo mùa", 4, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Seasonal deals"),
+                Text("title", "Tiêu đề", "Deal theo mùa"),
+                TextArea("description", "Mô tả", "Nội dung dành cho các chiến dịch theo mùa, lễ hội và khung thời gian bán hàng cao điểm.")
+            }),
+            Section("services", "hero", "Hero dịch vụ", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "HV Travel Services"),
+                Text("title", "Tiêu đề", "Báo giá vé, khách sạn, combo, visa trong một màn hình."),
+                TextArea("description", "Mô tả", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
+            }),
+            Section("services", "serviceCards", "Nội dung thẻ dịch vụ", 2, new List<ContentField>
+            {
+                Text("flightTitle", "Tiêu đề Vé máy bay", "Vé máy bay"),
+                TextArea("flightDescription", "Mô tả Vé máy bay", "Giữ chỗ nhanh, tối ưu lịch bay và baggage theo hành trình."),
+                Text("hotelTitle", "Tiêu đề Khách sạn", "Khách sạn"),
+                TextArea("hotelDescription", "Mô tả Khách sạn", "Từ city break đến resort gia đình với báo giá theo ngân sách."),
+                Text("comboTitle", "Tiêu đề Combo", "Combo"),
+                TextArea("comboDescription", "Mô tả Combo", "Gom vé + phòng + tour lẻ để khóa deal trọn gói."),
+                Text("visaTitle", "Tiêu đề Visa", "Visa"),
+                TextArea("visaDescription", "Mô tả Visa", "Checklist hồ sơ, timeline nộp và hỗ trợ tỷ lệ đậu tốt hơn.")
+            }),
+            Section("services", "quoteFormIntro", "Giới thiệu form báo giá", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Quick Brief"),
+                Text("title", "Tiêu đề", "Yêu cầu báo giá"),
+                TextArea("description", "Mô tả", "Lead được gắn SLA, phân tuyến admin và giữ lịch sử cho các đợt chăm sóc sau."),
+                Text("submitText", "Nút gửi", "Gửi yêu cầu báo giá")
+            }),
+            Section("inspiration", "hero", "Hero cẩm nang", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Content Hub"),
+                Text("title", "Tiêu đề", "Cẩm nang, visa tips, mùa lễ hội và những landing SEO có thể tự quản trị."),
+                TextArea("description", "Mô tả", "Khu vực nội dung giúp đội marketing làm hub cho bài viết nổi bật, nhóm chủ đề và bài mới nhất.")
+            }),
+            Section("inspiration", "featuredIntro", "Mở đầu bài nổi bật", 2, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Featured"),
+                Text("title", "Tiêu đề", "Bài viết nổi bật"),
+                TextArea("description", "Mô tả", "Khối bài nổi bật giúp kéo traffic vào nội dung chủ lực và landing SEO quan trọng.")
+            }),
+            Section("inspiration", "latestIntro", "Mở đầu bài mới", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Latest stories"),
+                Text("title", "Tiêu đề", "Bài viết mới nhất"),
+                TextArea("description", "Mô tả", "Danh sách bài mới hỗ trợ giữ nhịp xuất bản đều và mở rộng chiều sâu cho content hub.")
+            }),
             Section("booking", "consultationHero", "Hero tư vấn", 1, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Tư vấn chuyến đi theo cách của bạn"),
@@ -231,6 +325,23 @@ public static class PublicContentDefaults
                 TextArea("failedDescription", "Mô tả thất bại", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."),
                 Text("errorTitle", "Tiêu đề lỗi", "Đã xảy ra lỗi"),
                 TextArea("errorDescription", "Mô tả lỗi", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")
+            }),
+            Section("bookingLookup", "hero", "Hero tra cứu booking", 1, new List<ContentField>
+            {
+                Text("badgeText", "Badge", "Tự tra cứu đơn đặt tour"),
+                Text("title", "Tiêu đề", "Tra cứu booking trong vài giây"),
+                TextArea("description", "Mô tả", "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành.")
+            }),
+            Section("bookingLookup", "lookupForm", "Giới thiệu form tra cứu", 2, new List<ContentField>
+            {
+                Text("title", "Tiêu đề", "Thông tin tra cứu"),
+                TextArea("description", "Mô tả", "Điền mã booking cùng email hoặc số điện thoại đã dùng khi đặt tour để kiểm tra nhanh trạng thái đơn."),
+                Text("submitText", "Nút gửi", "Tra cứu booking")
+            }),
+            Section("bookingLookup", "readyState", "Trạng thái sẵn sàng", 3, new List<ContentField>
+            {
+                Text("title", "Tiêu đề", "Sẵn sàng tra cứu"),
+                TextArea("description", "Mô tả", "Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái đơn và mốc xử lý mới nhất ngay tại đây.")
             })
         };
     }

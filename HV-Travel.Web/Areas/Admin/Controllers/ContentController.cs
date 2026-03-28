@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 using HVTravel.Web.Security;
 using HVTravel.Web.Services;
@@ -318,3 +318,4 @@ public class ContentController : Controller
         };
     }
 }
+

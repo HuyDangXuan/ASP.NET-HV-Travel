@@ -1,4 +1,4 @@
-using HVTravel.Web.Models;
+﻿using HVTravel.Web.Models;
 
 namespace HVTravel.Web.Services;
 
@@ -19,7 +19,12 @@ public static class ContentAdminCatalog
         new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh, đội ngũ" },
         new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, mở đầu form" },
         new() { Key = "publicTours", Label = "Danh sách tour", Description = "Hero danh sách và trạng thái rỗng" },
-        new() { Key = "booking", Label = "Đặt tour", Description = "Tư vấn và các màn trạng thái booking" }
+        new() { Key = "destinations", Label = "Điểm đến", Description = "Hero, mở đầu bộ sưu tập và mở đầu theo vùng" },
+        new() { Key = "promotions", Label = "Khuyến mãi", Description = "Hero và các section flash sale, voucher, deal theo mùa" },
+        new() { Key = "services", Label = "Dịch vụ", Description = "Hero, thẻ dịch vụ và giới thiệu form báo giá" },
+        new() { Key = "inspiration", Label = "Cẩm nang", Description = "Hero, bài nổi bật và danh sách bài mới" },
+        new() { Key = "booking", Label = "Đặt tour", Description = "Tư vấn và các màn trạng thái booking" },
+        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu và trạng thái sẵn sàng" }
     };
 
     private static readonly IReadOnlyList<ContentDependencyNoteViewModel> ContactInfoDependency = new List<ContentDependencyNoteViewModel>
@@ -131,6 +136,47 @@ public static class ContentAdminCatalog
                 new ContentPreviewTarget { Controller = "PublicTours", Action = "Index" },
                 Section("indexHero", "Hero danh sách tour", "Tiêu đề, mô tả và placeholder tìm kiếm"),
                 Section("emptyState", "Trạng thái rỗng", "Thông điệp và CTA khi không có tour phù hợp")),
+            Editor(
+                "destinations",
+                "Điểm đến",
+                "Trang điểm đến",
+                "Quản lý hero, phần mở đầu bộ sưu tập nổi bật và phần mở đầu khám phá theo vùng.",
+                "3 section của trang điểm đến.",
+                new ContentPreviewTarget { Controller = "Destinations", Action = "Index" },
+                Section("hero", "Hero điểm đến", "Badge, tiêu đề và mô tả mở đầu của hub điểm đến"),
+                Section("collectionsIntro", "Mở đầu bộ sưu tập", "Tiêu đề và mô tả cho khu vực bộ sưu tập nổi bật"),
+                Section("regionsIntro", "Mở đầu theo vùng", "Tiêu đề và mô tả cho khu vực khám phá theo vùng")),
+            Editor(
+                "promotions",
+                "Khuyến mãi",
+                "Trang khuyến mãi",
+                "Quản lý hero landing, intro flash sale, ví voucher và deal theo mùa.",
+                "4 section của trang khuyến mãi.",
+                new ContentPreviewTarget { Controller = "Promotions", Action = "Index" },
+                Section("hero", "Hero khuyến mãi", "Badge, tiêu đề và mô tả hero của landing ưu đãi"),
+                Section("flashSalesIntro", "Mở đầu flash sale", "Tiêu đề và mô tả cho khối flash sale"),
+                Section("voucherIntro", "Mở đầu ví voucher", "Tiêu đề và mô tả cho khối voucher campaign"),
+                Section("seasonalDealsIntro", "Mở đầu deal theo mùa", "Tiêu đề và mô tả cho khối deal theo mùa")),
+            Editor(
+                "services",
+                "Dịch vụ",
+                "Trang dịch vụ lẻ",
+                "Quản lý hero, copy cho 4 thẻ dịch vụ và phần mở đầu form yêu cầu báo giá.",
+                "3 section của trang dịch vụ lẻ.",
+                new ContentPreviewTarget { Controller = "Services", Action = "Index" },
+                Section("hero", "Hero dịch vụ", "Badge, tiêu đề và mô tả mở đầu của trang dịch vụ"),
+                Section("serviceCards", "Nội dung thẻ dịch vụ", "Tiêu đề và mô tả cho 4 thẻ Vé máy bay, Khách sạn, Combo và Visa"),
+                Section("quoteFormIntro", "Giới thiệu form báo giá", "Tiêu đề, mô tả và nút gửi của form báo giá")),
+            Editor(
+                "inspiration",
+                "Cẩm nang",
+                "Hub cẩm nang",
+                "Quản lý hero hub nội dung, phần mở đầu bài nổi bật và danh sách bài mới.",
+                "3 section của hub cẩm nang.",
+                new ContentPreviewTarget { Controller = "Inspiration", Action = "Index" },
+                Section("hero", "Hero cẩm nang", "Badge, tiêu đề và mô tả mở đầu của hub cẩm nang"),
+                Section("featuredIntro", "Mở đầu bài nổi bật", "Tiêu đề và mô tả cho khu vực bài viết nổi bật"),
+                Section("latestIntro", "Mở đầu bài mới", "Tiêu đề và mô tả cho danh sách bài viết mới")),
             new()
             {
                 TabKey = "booking",
@@ -203,7 +249,17 @@ public static class ContentAdminCatalog
                 {
                     Section("statusCopy", "Thông điệp lỗi hệ thống", "Chỉ chỉnh copy cho màn lỗi hệ thống", false, "Field slice", "errorTitle", "errorDescription")
                 }
-            }
+            },
+            Editor(
+                "bookingLookup",
+                "Tra cứu booking",
+                "Trang tra cứu booking",
+                "Quản lý hero, phần giới thiệu form tra cứu và trạng thái sẵn sàng trước khi có kết quả.",
+                "3 section của trang tra cứu booking.",
+                new ContentPreviewTarget { Controller = "BookingLookup", Action = "Index" },
+                Section("hero", "Hero tra cứu booking", "Badge, tiêu đề và mô tả phần mở đầu"),
+                Section("lookupForm", "Giới thiệu form tra cứu", "Tiêu đề, mô tả và nút submit của form tra cứu"),
+                Section("readyState", "Trạng thái sẵn sàng", "Thông điệp hiển thị trước khi người dùng tra cứu booking"))
         };
     }
 

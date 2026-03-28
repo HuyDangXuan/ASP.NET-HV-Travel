@@ -1,0 +1,165 @@
+﻿@inject IPublicContentService ContentService
+@model HVTravel.Web.Models.ServicesHubViewModel
+@{
+    var request = Model.Request ?? new HVTravel.Web.Models.AncillaryLeadRequestViewModel();
+    var sections = await ContentService.GetPageSectionsAsync("services");
+    var hero = sections.GetSection("hero");
+    var serviceCards = sections.GetSection("serviceCards");
+    var quoteFormIntro = sections.GetSection("quoteFormIntro");
+    var showServiceCards = serviceCards?.IsEnabled != false;
+    var showQuoteForm = quoteFormIntro?.IsEnabled != false;
+    var servicesGridClass = showServiceCards && showQuoteForm
+        ? "grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
+        : "grid gap-8";
+
+    string ResolveServiceText(string serviceType, string fieldSuffix, string fallback)
+    {
+        var prefix = serviceType switch
+        {
+            "Flight" => "flight",
+            "Hotel" => "hotel",
+            "Combo" => "combo",
+            "Visa" => "visa",
+            _ => string.Empty
+        };
+
+        return string.IsNullOrWhiteSpace(prefix)
+            ? fallback
+            : serviceCards?.Fields.GetFieldValue($"{prefix}{fieldSuffix}", fallback) ?? fallback;
+    }
+
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
+        ?? "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.";
+}
+
+@if (hero?.IsEnabled != false)
+{
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute -top-10 right-10 h-72 w-72 rounded-full bg-sky-400/30 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl"></div>
+        </div>
+        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge">
+                    <span class="material-symbols-outlined text-[16px] text-primary">package_2</span>
+                    @hero.Fields.GetFieldValue("eyebrowText", "Hệ sinh thái dịch vụ")
+                </span>
+                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Báo giá vé, khách sạn, combo, visa trong một màn hình.")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý."))
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<section class="py-12 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (TempData["ServiceLeadSuccess"] != null)
+        {
+            <div class="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">Yêu cầu đã được ghi nhận. Đội tư vấn sẽ phản hồi trong SLA hiển thị ở admin.</div>
+        }
+
+        <div class="@servicesGridClass">
+            @if (showServiceCards)
+            {
+                <div class="space-y-6" data-animate="fade-in" data-stagger>
+                    @foreach (var card in Model.ServiceCards)
+                    {
+                        <article class="overflow-hidden rounded-[2rem] border border-border-light bg-surface-light shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                            <div class="bg-gradient-to-r @card.AccentClass px-6 py-6 text-white">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div>
+                                        <p class="text-xs font-bold uppercase tracking-[0.3em] text-white/70">@card.ServiceType</p>
+                                        <h2 class="mt-2 text-2xl font-black">@ResolveServiceText(card.ServiceType, "Title", card.Title)</h2>
+                                    </div>
+                                    <span class="material-symbols-outlined text-4xl text-white/80">@card.Icon</span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-5">
+                                <p class="text-sm leading-7 text-slate-600 dark:text-slate-300">@ResolveServiceText(card.ServiceType, "Description", card.Description)</p>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+
+            @if (showQuoteForm)
+            {
+                <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
+                    <div class="mb-6">
+                        <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">@quoteFormIntro.Fields.GetFieldValue("eyebrowText", "Quick Brief")</p>
+                        <h2 class="public-section-title mt-3">@quoteFormIntro.Fields.GetFieldValue("title", "Yêu cầu báo giá")</h2>
+                        <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                            @Html.Raw(quoteFormIntro.Fields.GetFieldValue("description", "Lead được gắn SLA, phân tuyến admin và giữ lịch sử cho các đợt chăm sóc sau."))
+                        </div>
+                    </div>
+
+                    <form asp-action="RequestQuote" method="post" enctype="multipart/form-data" class="space-y-4">
+                        @Html.AntiForgeryToken()
+                        <div>
+                            <label asp-for="Request.ServiceType" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Dịch vụ</label>
+                            <select asp-for="Request.ServiceType" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                                <option value="">Chọn dịch vụ</option>
+                                <option value="Flight">Vé máy bay</option>
+                                <option value="Hotel">Khách sạn</option>
+                                <option value="Combo">Combo</option>
+                                <option value="Visa">Visa</option>
+                            </select>
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label asp-for="Request.FullName" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Họ tên</label>
+                                <input asp-for="Request.FullName" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                            <div>
+                                <label asp-for="Request.Phone" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Số điện thoại</label>
+                                <input asp-for="Request.Phone" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                        </div>
+                        <div>
+                            <label asp-for="Request.Email" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Email</label>
+                            <input asp-for="Request.Email" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        </div>
+                        <div>
+                            <label asp-for="Request.Destination" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Điểm đến / quốc gia</label>
+                            <input asp-for="Request.Destination" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label asp-for="Request.DepartureDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày đi</label>
+                                <input asp-for="Request.DepartureDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                            <div>
+                                <label asp-for="Request.ReturnDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày về</label>
+                                <input asp-for="Request.ReturnDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label asp-for="Request.TravellersCount" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Số khách</label>
+                                <input asp-for="Request.TravellersCount" type="number" min="1" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                            <div>
+                                <label asp-for="Request.BudgetText" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngân sách</label>
+                                <input asp-for="Request.BudgetText" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                        </div>
+                        <div>
+                            <label asp-for="Request.RequestNote" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Brief</label>
+                            <textarea asp-for="Request.RequestNote" rows="4" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark"></textarea>
+                        </div>
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary-dark">
+                            <span class="material-symbols-outlined text-[18px]">send</span>
+                            @quoteFormIntro.Fields.GetFieldValue("submitText", "Gửi yêu cầu báo giá")
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+
+

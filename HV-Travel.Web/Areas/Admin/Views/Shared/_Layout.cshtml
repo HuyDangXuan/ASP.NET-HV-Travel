@@ -1,4 +1,4 @@
-@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     var requestedSection = (ViewData["AdminSection"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
     var currentController = (ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty).Trim().ToLowerInvariant();
@@ -16,6 +16,10 @@
             "messages" => "messages",
             "content" => "content",
             "users" => "users",
+            "serviceleads" => "serviceleads",
+            "promotions" => "promotions",
+            "reviews" => "reviews",
+            "contenthub" => "contenthub",
             _ => string.Empty
         };
 
@@ -406,7 +410,7 @@
                 </a>
                 <a class='@NavClass("bookings", withGroup: true)' asp-area="Admin" asp-controller="Bookings" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">confirmation_number</span>
-                    <span class="text-sm font-medium">Đơn đặt vé</span>
+                    <span class="text-sm font-medium">Đơn đặt tour</span>
                 </a>
                 <a class='@NavClass("payments", withGroup: true)' asp-controller="Payments" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
@@ -415,6 +419,22 @@
                 <a class='@NavClass("customers", withGroup: true)' asp-area="Admin" asp-controller="Customers" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
                     <span class="text-sm font-medium">Khách hàng</span>
+                </a>
+                <a class='@NavClass("serviceleads", withGroup: true)' asp-area="Admin" asp-controller="ServiceLeads" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">support_agent</span>
+                    <span class="text-sm font-medium">Lead dịch vụ</span>
+                </a>
+                <a class='@NavClass("promotions", withGroup: true)' asp-area="Admin" asp-controller="Promotions" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">local_activity</span>
+                    <span class="text-sm font-medium">Khuyến mãi</span>
+                </a>
+                <a class='@NavClass("reviews", withGroup: true)' asp-area="Admin" asp-controller="Reviews" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">star</span>
+                    <span class="text-sm font-medium">Đánh giá</span>
+                </a>
+                <a class='@NavClass("contenthub", withGroup: true)' asp-area="Admin" asp-controller="ContentHub" asp-action="Index">
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-transform">article</span>
+                    <span class="text-sm font-medium">Cẩm nang</span>
                 </a>
                 <a class='@NavClass("messages", withGroup: true)' asp-area="Admin" asp-controller="Messages" asp-action="Index">
                     <span class="material-symbols-outlined group-hover:scale-110 transition-transform">forum</span>
@@ -775,3 +795,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+

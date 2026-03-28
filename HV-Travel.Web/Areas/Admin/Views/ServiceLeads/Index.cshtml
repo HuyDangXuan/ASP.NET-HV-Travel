@@ -1,0 +1,61 @@
+﻿@model List<HVTravel.Domain.Entities.AncillaryLead>
+@{
+    ViewData["Title"] = "Service Leads";
+}
+
+<div class="flex items-end justify-between gap-4 mb-8">
+    <div>
+        @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
+        {
+            Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
+            {
+                new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+                new() { Label = "Service leads", IsCurrent = true }
+            }
+        })
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-3">Service Leads</h1>
+    </div>
+</div>
+
+<div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-xs uppercase tracking-wider text-slate-400">
+                    <th class="pb-4">Khách</th>
+                    <th class="pb-4">Dịch vụ</th>
+                    <th class="pb-4">Điểm đến</th>
+                    <th class="pb-4">SLA</th>
+                    <th class="pb-4">Cập nhật</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                @foreach (var lead in Model)
+                {
+                    <tr>
+                        <td class="py-4 pr-4">
+                            <p class="font-bold text-slate-900 dark:text-white">@lead.FullName</p>
+                            <p class="text-sm text-slate-500">@lead.Email • @lead.Phone</p>
+                        </td>
+                        <td class="py-4 pr-4">@lead.ServiceType</td>
+                        <td class="py-4 pr-4">@lead.Destination</td>
+                        <td class="py-4 pr-4">@lead.SlaDueAt.ToLocalTime().ToString("HH:mm dd/MM")</td>
+                        <td class="py-4">
+                            <form asp-action="UpdateStatus" method="post" class="flex flex-wrap items-center gap-2">
+                                <input type="hidden" name="id" value="@lead.Id" />
+                                <select name="status" class="rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700">
+                                    <option value="New" selected="@(lead.Status == "New")">New</option>
+                                    <option value="Qualified" selected="@(lead.Status == "Qualified")">Qualified</option>
+                                    <option value="Quoted" selected="@(lead.Status == "Quoted")">Quoted</option>
+                                    <option value="Won" selected="@(lead.Status == "Won")">Won</option>
+                                </select>
+                                <input name="assignedTo" value="@lead.AssignedTo" class="rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700" placeholder="Assignee" />
+                                <button type="submit" class="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white">Lưu</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

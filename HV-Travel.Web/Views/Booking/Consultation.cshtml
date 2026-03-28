@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @model HVTravel.Web.Models.ConsultationViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -16,16 +16,16 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="hero-gradient relative overflow-hidden">
+    <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
         <div class="absolute inset-0 opacity-15">
             <div class="absolute top-20 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
             <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
-            <h1 class="public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+        <div class="public-top-section-shell public-top-section-content is-centered max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
+            <h1 class="public-top-section-title public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
                 @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
             </h1>
-            <div class="public-body-copy text-lg text-slate-300 max-w-xl mx-auto">
+            <div class="public-top-section-lead public-body-copy text-lg text-slate-300 max-w-xl mx-auto">
                 @Html.Raw(hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn."))
             </div>
         </div>
@@ -176,3 +176,6 @@
         </div>
     </div>
 </section>
+
+
+
