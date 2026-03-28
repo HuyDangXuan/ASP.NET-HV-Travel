@@ -21,20 +21,23 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="hero-gradient relative overflow-hidden">
-        <div class="absolute inset-0 opacity-15">
-            <div class="absolute bottom-10 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute bottom-10 left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
+            <div class="absolute top-0 right-12 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative z-10 text-center" data-animate="fade-up">
-            <span class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
-                <span class="material-symbols-outlined text-primary text-[16px]">call</span>
-                @hero.Fields.GetFieldValue("badgeText", "Liên Hệ")
-            </span>
-            <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                @hero.Fields.GetFieldValue("title", "Chúng Tôi Luôn Sẵn Sàng Lắng Nghe")
-            </h1>
-            <div class="public-body-copy text-lg text-slate-300 max-w-2xl mx-auto">
-                @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
+        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="public-top-section-content public-page-hero-content is-centered" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge">
+                    <span class="material-symbols-outlined text-[16px] text-primary">call</span>
+                    @hero.Fields.GetFieldValue("badgeText", "Liên hệ HV Travel")
+                </span>
+                <h1 class="public-top-section-title public-hero-title text-white">
+                    @hero.Fields.GetFieldValue("title", "Chúng tôi luôn sẵn sàng lắng nghe")
+                </h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
+                </div>
             </div>
         </div>
     </section>
@@ -170,3 +173,5 @@
         </div>
     </div>
 </section>
+
+

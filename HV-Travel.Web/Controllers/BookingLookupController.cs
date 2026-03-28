@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ public class BookingLookupController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        ViewData["Title"] = "Tra c?u booking";
+        ViewData["Title"] = "Tra cứu booking";
         ViewData["ActivePage"] = "BookingLookup";
         return View(new BookingLookupViewModel());
     }
@@ -26,7 +26,7 @@ public class BookingLookupController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Lookup(string bookingCode, string email, string phone)
     {
-        ViewData["Title"] = "Tra c?u booking";
+        ViewData["Title"] = "Tra cứu booking";
         ViewData["ActivePage"] = "BookingLookup";
 
         var model = new BookingLookupViewModel
@@ -38,7 +38,7 @@ public class BookingLookupController : Controller
 
         if (string.IsNullOrWhiteSpace(model.QueryBookingCode) || (string.IsNullOrWhiteSpace(model.QueryEmail) && string.IsNullOrWhiteSpace(model.QueryPhone)))
         {
-            ModelState.AddModelError(string.Empty, "Vui l�ng nh?p m� booking v� email ho?c s? di?n tho?i d? tra c?u.");
+            ModelState.AddModelError(string.Empty, "Vui lòng nhập mã booking và email hoặc số điện thoại để tra cứu.");
             return View("Index", model);
         }
 
@@ -50,7 +50,7 @@ public class BookingLookupController : Controller
 
         if (booking == null)
         {
-            ModelState.AddModelError(string.Empty, "Kh�ng t�m th?y booking ph� h?p v?i th�ng tin b?n cung c?p.");
+            ModelState.AddModelError(string.Empty, "Không tìm thấy booking phù hợp với thông tin bạn cung cấp.");
             return View("Index", model);
         }
 
@@ -67,7 +67,7 @@ public class BookingLookupController : Controller
         model.BookingDate = booking.BookingDate;
         model.History = (booking.HistoryLog ?? new List<BookingHistoryLog>())
             .OrderByDescending(item => item.Timestamp)
-            .Select(item => $"{item.Timestamp:HH:mm dd/MM/yyyy} � {item.Action}")
+            .Select(item => $"{item.Timestamp:HH:mm dd/MM/yyyy} · {item.Action}")
             .ToList();
 
         return View("Index", model);

@@ -10,35 +10,35 @@
     var seoGroup = siteSettings.GetGroup("seo");
 
     var brandName = headerGroup?.Fields.GetFieldValue("brandName", "HV Travel") ?? "HV Travel";
-    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "KhÃ¡m phÃ¡ Viá»‡t Nam") ?? "KhÃ¡m phÃ¡ Viá»‡t Nam";
-    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang chá»§") ?? "Trang chá»§";
-    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour du lá»‹ch") ?? "Tour du lá»‹ch";
-    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Giá»›i thiá»‡u") ?? "Giá»›i thiá»‡u";
-    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "LiÃªn há»‡") ?? "LiÃªn há»‡";
-    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "ÄÄƒng kÃ½") ?? "ÄÄƒng kÃ½";
-    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "ÄÄƒng nháº­p") ?? "ÄÄƒng nháº­p";
-    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - KhÃ¡m phÃ¡ Viá»‡t Nam cÃ¹ng nhá»¯ng tour du lá»‹ch tuyá»‡t vá»i nháº¥t")
-        ?? "HV Travel - KhÃ¡m phÃ¡ Viá»‡t Nam cÃ¹ng nhá»¯ng tour du lá»‹ch tuyá»‡t vá»i nháº¥t";
+    var brandTagline = headerGroup?.Fields.GetFieldValue("brandTagline", "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam") ?? "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam";
+    var navHomeLabel = headerGroup?.Fields.GetFieldValue("navHomeLabel", "Trang ch\u1ee7") ?? "Trang ch\u1ee7";
+    var navToursLabel = headerGroup?.Fields.GetFieldValue("navToursLabel", "Tour du l\u1ecbch") ?? "Tour du l\u1ecbch";
+    var navAboutLabel = headerGroup?.Fields.GetFieldValue("navAboutLabel", "Gi\u1edbi thi\u1ec7u") ?? "Gi\u1edbi thi\u1ec7u";
+    var navContactLabel = headerGroup?.Fields.GetFieldValue("navContactLabel", "Li\u00ean h\u1ec7") ?? "Li\u00ean h\u1ec7";
+    var registerLabel = headerGroup?.Fields.GetFieldValue("registerLabel", "\u0110\u0103ng k\u00fd") ?? "\u0110\u0103ng k\u00fd";
+    var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "\u0110\u0103ng nh\u1eadp") ?? "\u0110\u0103ng nh\u1eadp";
+    var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam c\u00f9ng nh\u1eefng tour du l\u1ecbch tuy\u1ec7t v\u1eddi nh\u1ea5t")
+        ?? "HV Travel - Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam c\u00f9ng nh\u1eefng tour du l\u1ecbch tuy\u1ec7t v\u1eddi nh\u1ea5t";
 
     var footerBrandTitle = footerBrandGroup?.Fields.GetFieldValue("title", "HV Travel") ?? "HV Travel";
-    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "KhÃ¡m phÃ¡ Viá»‡t Nam") ?? "KhÃ¡m phÃ¡ Viá»‡t Nam";
-    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "KhÃ¡m phÃ¡ váº» Ä‘áº¹p Viá»‡t Nam vá»›i nhá»¯ng tour du lá»‹ch Ä‘Æ°á»£c thiáº¿t káº¿ riÃªng. Tráº£i nghiá»‡m vÄƒn hÃ³a, áº©m thá»±c vÃ  thiÃªn nhiÃªn tuyá»‡t vá»i.")
-        ?? "KhÃ¡m phÃ¡ váº» Ä‘áº¹p Viá»‡t Nam vá»›i nhá»¯ng tour du lá»‹ch Ä‘Æ°á»£c thiáº¿t káº¿ riÃªng. Tráº£i nghiá»‡m vÄƒn hÃ³a, áº©m thá»±c vÃ  thiÃªn nhiÃªn tuyá»‡t vá»i.";
+    var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam") ?? "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam";
+    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Kh\u00e1m ph\u00e1 v\u1ebb \u0111\u1eb9p Vi\u1ec7t Nam v\u1edbi nh\u1eefng tour du l\u1ecbch \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf ri\u00eang. Tr\u1ea3i nghi\u1ec7m v\u0103n h\u00f3a, \u1ea9m th\u1ef1c v\u00e0 thi\u00ean nhi\u00ean tuy\u1ec7t v\u1eddi.")
+        ?? "Kh\u00e1m ph\u00e1 v\u1ebb \u0111\u1eb9p Vi\u1ec7t Nam v\u1edbi nh\u1eefng tour du l\u1ecbch \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf ri\u00eang. Tr\u1ea3i nghi\u1ec7m v\u0103n h\u00f3a, \u1ea9m th\u1ef1c v\u00e0 thi\u00ean nhi\u00ean tuy\u1ec7t v\u1eddi.";
 
-    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "KhÃ¡m phÃ¡") ?? "KhÃ¡m phÃ¡";
-    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "Táº¥t cáº£ tour") ?? "Táº¥t cáº£ tour";
-    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour phá»• biáº¿n") ?? "Tour phá»• biáº¿n";
-    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "Äiá»ƒm Ä‘áº¿n hot") ?? "Äiá»ƒm Ä‘áº¿n hot";
-    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "Æ¯u Ä‘Ã£i Ä‘áº·c biá»‡t") ?? "Æ¯u Ä‘Ã£i Ä‘áº·c biá»‡t";
+    var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "Kh\u00e1m ph\u00e1") ?? "Kh\u00e1m ph\u00e1";
+    var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "T\u1ea5t c\u1ea3 tour") ?? "T\u1ea5t c\u1ea3 tour";
+    var popularToursLabel = footerExploreGroup?.Fields.GetFieldValue("popularToursLabel", "Tour ph\u1ed5 bi\u1ebfn") ?? "Tour ph\u1ed5 bi\u1ebfn";
+    var hotDestinationsLabel = footerExploreGroup?.Fields.GetFieldValue("hotDestinationsLabel", "\u0110i\u1ec3m \u0111\u1ebfn hot") ?? "\u0110i\u1ec3m \u0111\u1ebfn hot";
+    var specialOffersLabel = footerExploreGroup?.Fields.GetFieldValue("specialOffersLabel", "\u01afu \u0111\u00e3i \u0111\u1eb7c bi\u1ec7t") ?? "\u01afu \u0111\u00e3i \u0111\u1eb7c bi\u1ec7t";
 
-    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "CÃ´ng ty") ?? "CÃ´ng ty";
-    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Giá»›i thiá»‡u") ?? "Giá»›i thiá»‡u";
-    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "LiÃªn há»‡") ?? "LiÃªn há»‡";
-    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "ChÃ­nh sÃ¡ch báº£o máº­t") ?? "ChÃ­nh sÃ¡ch báº£o máº­t";
-    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Äiá»u khoáº£n sá»­ dá»¥ng") ?? "Äiá»u khoáº£n sá»­ dá»¥ng";
+    var footerCompanyTitle = footerCompanyGroup?.Fields.GetFieldValue("title", "C\u00f4ng ty") ?? "C\u00f4ng ty";
+    var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Gi\u1edbi thi\u1ec7u") ?? "Gi\u1edbi thi\u1ec7u";
+    var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "Li\u00ean h\u1ec7") ?? "Li\u00ean h\u1ec7";
+    var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "Ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt") ?? "Ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt";
+    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "\u0110i\u1ec1u kho\u1ea3n s\u1eed d\u1ee5ng") ?? "\u0110i\u1ec1u kho\u1ea3n s\u1eed d\u1ee5ng";
 
-    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "LiÃªn há»‡") ?? "LiÃªn há»‡";
-    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 ÄÆ°á»ng Nguyá»…n Huá»‡, Quáº­n 1, TP.HCM") ?? "123 ÄÆ°á»ng Nguyá»…n Huá»‡, Quáº­n 1, TP.HCM";
+    var contactTitle = contactGroup?.Fields.GetFieldValue("title", "Li\u00ean h\u1ec7") ?? "Li\u00ean h\u1ec7";
+    var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 \u0110\u01b0\u1eddng Nguy\u1ec5n Hu\u1ec7, Qu\u1eadn 1, TP.HCM") ?? "123 \u0110\u01b0\u1eddng Nguy\u1ec5n Hu\u1ec7, Qu\u1eadn 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
@@ -46,6 +46,86 @@
     var facebookUrl = socialGroup?.Fields.GetFieldValue("facebookUrl", "#") ?? "#";
     var instagramUrl = socialGroup?.Fields.GetFieldValue("instagramUrl", "#") ?? "#";
     var youtubeUrl = socialGroup?.Fields.GetFieldValue("youtubeUrl", "#") ?? "#";
+    var activePage = ViewData["ActivePage"]?.ToString() ?? string.Empty;
+    var destinationsLabel = "\u0110i\u1ec3m \u0111\u1ebfn";
+    var promotionsLabel = "\u01afu \u0111\u00e3i";
+    var inspirationLabel = "C\u1ea9m nang";
+    var servicesLabel = "D\u1ecbch v\u1ee5";
+    var bookingLookupLabel = "Tra c\u1ee9u booking";
+    var moreLabel = "Kh\u00e1m ph\u00e1 th\u00eam";
+    var openPortalLabel = "M\u1edf portal";
+    var customerFallbackLabel = "Kh\u00e1ch h\u00e0ng";
+    var customerCodeFallbackLabel = "Kh\u00e1ch h\u00e0ng HV Travel";
+    var logoutLabel = "\u0110\u0103ng xu\u1ea5t";
+    var allRightsReservedLabel = "B\u1ea3o l\u01b0u m\u1ecdi quy\u1ec1n.";
+    var sitemapLabel = "S\u01a1 \u0111\u1ed3 trang";
+
+    bool IsActive(string pageKey) => string.Equals(activePage, pageKey, System.StringComparison.OrdinalIgnoreCase);
+
+    var primaryNavItems = new[]
+    {
+        new { Controller = "Home", Action = "Index", Label = navHomeLabel, ActivePage = "Home", Icon = "home" },
+        new { Controller = "PublicTours", Action = "Index", Label = navToursLabel, ActivePage = "Tours", Icon = "map" },
+        new { Controller = "Destinations", Action = "Index", Label = destinationsLabel, ActivePage = "Destinations", Icon = "globe_asia" },
+        new { Controller = "Home", Action = "Contact", Label = navContactLabel, ActivePage = "Contact", Icon = "call" }
+    };
+
+    var secondaryNavItems = new[]
+    {
+        new { Controller = "Promotions", Action = "Index", Label = promotionsLabel, ActivePage = "Promotions", Icon = "local_activity" },
+        new { Controller = "Inspiration", Action = "Index", Label = inspirationLabel, ActivePage = "Inspiration", Icon = "article" },
+        new { Controller = "Services", Action = "Index", Label = servicesLabel, ActivePage = "Services", Icon = "package_2" },
+        new { Controller = "Home", Action = "About", Label = navAboutLabel, ActivePage = "About", Icon = "info" }
+    };
+
+    var mobileNavItems = new[]
+    {
+        new { Controller = "Home", Action = "Index", Label = navHomeLabel, ActivePage = "Home", Icon = "home" },
+        new { Controller = "PublicTours", Action = "Index", Label = navToursLabel, ActivePage = "Tours", Icon = "map" },
+        new { Controller = "Destinations", Action = "Index", Label = destinationsLabel, ActivePage = "Destinations", Icon = "globe_asia" },
+        new { Controller = "Promotions", Action = "Index", Label = promotionsLabel, ActivePage = "Promotions", Icon = "local_activity" },
+        new { Controller = "Inspiration", Action = "Index", Label = inspirationLabel, ActivePage = "Inspiration", Icon = "article" },
+        new { Controller = "Services", Action = "Index", Label = servicesLabel, ActivePage = "Services", Icon = "package_2" },
+        new { Controller = "Home", Action = "About", Label = navAboutLabel, ActivePage = "About", Icon = "info" },
+        new { Controller = "Home", Action = "Contact", Label = navContactLabel, ActivePage = "Contact", Icon = "call" }
+    };
+
+    var hasSecondaryActive = false;
+    foreach (var secondaryItem in secondaryNavItems)
+    {
+        if (IsActive(secondaryItem.ActivePage))
+        {
+            hasSecondaryActive = true;
+            break;
+        }
+    }
+
+        string DesktopNavLinkClass(string pageKey)
+    {
+        var stateClass = IsActive(pageKey)
+            ? "active border-primary/25 bg-gradient-to-r from-primary/15 via-cyan-400/10 to-transparent text-primary dark:border-primary/20 dark:bg-primary/12 dark:text-white"
+            : "text-slate-700 dark:text-slate-100 hover:border-primary/20 hover:bg-primary/8 hover:text-primary dark:hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:text-primary";
+
+        return $"public-nav-link inline-flex items-center rounded-full border border-transparent px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}";
+    }
+
+        string MoreToggleClass()
+    {
+        var stateClass = hasSecondaryActive
+            ? "border-primary/25 bg-gradient-to-r from-primary/15 via-cyan-400/10 to-transparent text-primary dark:border-primary/20 dark:bg-primary/12 dark:text-white"
+            : "text-slate-700 dark:text-slate-100 hover:border-primary/20 hover:bg-primary/8 hover:text-primary dark:hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:text-primary";
+
+        return $"public-nav-more-toggle inline-flex items-center gap-2 rounded-full border border-transparent px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}";
+    }
+
+        string MobileNavLinkClass(string pageKey)
+    {
+        var stateClass = IsActive(pageKey)
+            ? "bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary"
+            : "text-slate-700 dark:text-slate-100 hover:bg-primary/10 hover:text-primary dark:hover:text-primary";
+
+        return $"flex items-center gap-3 rounded-2xl px-4 py-3 text-[0.9rem] font-semibold transition-all {stateClass}";
+    }
 }
 <!DOCTYPE html>
 <html class="light" lang="vi">
@@ -149,169 +229,149 @@
 </head>
 <body class="public-page-shell bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
     <header class="public-site-header sticky top-0 z-50 bg-surface-light/82 dark:bg-surface-dark/82 backdrop-blur-xl border-b border-border-light/60 dark:border-border-dark/60 transition-all duration-300" id="site-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 sm:h-20">
-                <a asp-controller="Home" asp-action="Index" class="public-brand-lockup flex items-center gap-3 group">
-                    <div class="bg-gradient-to-br from-primary to-accent text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all group-hover:scale-105">
+        <div class="mx-auto max-w-7xl">
+            <div class="public-header-shell public-header-compact flex h-[3.9rem] items-center gap-3 sm:h-[4.4rem] xl:gap-5">
+                <a asp-controller="Home" asp-action="Index" class="public-brand-lockup flex min-w-0 shrink-0 items-center gap-2.5 group">
+                    <div class="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30 transition-all group-hover:scale-105 group-hover:shadow-primary/50">
                         <span class="material-symbols-outlined">flight_takeoff</span>
                     </div>
-                    <div>
-                        <h1 class="text-lg font-extrabold leading-none tracking-tight text-slate-900 dark:text-white">@brandName</h1>
-                        <p class="text-[10px] font-semibold text-primary tracking-widest uppercase">@brandTagline</p>
+                    <div class="min-w-0">
+                        <h1 class="public-brand-title truncate text-base font-extrabold leading-none tracking-tight text-slate-900 dark:text-white">@brandName</h1>
+                        <p class="public-brand-tagline truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">@brandTagline</p>
                     </div>
                 </a>
-                <nav class="hidden md:flex items-center gap-6 xl:gap-8">
-                    <a asp-controller="Home" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Home" ? "active text-primary dark:text-primary" : "")">
-                        @navHomeLabel
-                    </a>
-                    <a asp-controller="PublicTours" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Tours" ? "active text-primary dark:text-primary" : "")">
-                        @navToursLabel
-                    </a>
-                    <a asp-controller="Destinations" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Destinations" ? "active text-primary dark:text-primary" : "")">
-                        Điểm đến
-                    </a>
-                    <a asp-controller="Promotions" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Promotions" ? "active text-primary dark:text-primary" : "")">
-                        Ưu đãi
-                    </a>
-                    <a asp-controller="Inspiration" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Inspiration" ? "active text-primary dark:text-primary" : "")">
-                        Cẩm nang
-                    </a>
-                    <a asp-controller="Services" asp-action="Index" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Services" ? "active text-primary dark:text-primary" : "")">
-                        Dịch vụ
-                    </a>
-                    <a asp-controller="Home" asp-action="Contact" class="nav-link text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors @(ViewData["ActivePage"]?.ToString() == "Contact" ? "active text-primary dark:text-primary" : "")">
-                        @navContactLabel
-                    </a>
+
+                <nav class="public-primary-nav hidden xl:flex" aria-label="&#272;i&#7873;u h&#432;&#7899;ng ch&#237;nh">
+                    @foreach (var item in primaryNavItems)
+                    {
+                        <a asp-controller="@item.Controller" asp-action="@item.Action" class="@DesktopNavLinkClass(item.ActivePage)">@item.Label</a>
+                    }
+                    <div class="public-secondary-nav relative">
+                        <button id="public-nav-more-toggle" type="button" class="@MoreToggleClass()" aria-expanded="false" aria-controls="public-nav-more-panel">
+                            <span>@moreLabel</span>
+                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                        </button>
+                        <div id="public-nav-more-panel" class="public-secondary-nav-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl border border-border-light bg-white/95 p-3 shadow-2xl shadow-slate-200/40 backdrop-blur dark:border-border-dark dark:bg-surface-dark/95">
+                            <div class="space-y-1">
+                                @foreach (var item in secondaryNavItems)
+                                {
+                                    <a asp-controller="@item.Controller" asp-action="@item.Action" class="@MobileNavLinkClass(item.ActivePage)">
+                                        <span class="material-symbols-outlined text-[20px]">@item.Icon</span>
+                                        <span>@item.Label</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </nav>
 
-                <div class="public-nav-actions flex items-center gap-2 sm:gap-3">
-                    <button id="theme-toggle-public"
-                            class="group inline-flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-text-muted-dark hover:text-primary hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark transition-all font-medium"
-                            aria-label="Chuyá»ƒn cháº¿ Ä‘á»™ tá»‘i">
+                <div class="public-nav-actions ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-3">
+                    <button id="theme-toggle-public" class="group inline-flex size-9 items-center justify-center rounded-full font-medium text-slate-500 transition-all hover:bg-surface-muted-light hover:text-primary dark:text-text-muted-dark dark:hover:bg-surface-elevated-dark" aria-label="Chuy&#7875;n ch&#7871; &#273;&#7897; t&#7889;i">
                         <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
                         <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
-                    <div class="hidden sm:flex items-center gap-2">
+                    <div class="hidden xl:flex items-center gap-2 2xl:gap-3">
+                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-3.5 py-2 text-[0.86rem] font-bold text-slate-700 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-100">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                            <span>@bookingLookupLabel</span>
+                        </a>
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                         {
-                            var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
-                            customerName = string.IsNullOrWhiteSpace(customerName) ? "Khách hàng" : customerName.Trim();
-                            var customerInitial = customerName[0].ToString().ToUpperInvariant();
-                            <a asp-controller="BookingLookup" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-200">
-                                <span class="material-symbols-outlined text-[18px]">search</span>
-                                Tra cứu
-                            </a>
-                            <a asp-controller="CustomerPortal" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-sm font-bold text-primary transition-all hover:bg-primary/15 dark:bg-primary/15">
-                                <span class="material-symbols-outlined text-[18px]">account_circle</span>
-                                Portal
-                            </a>
-                            <div class="flex items-center gap-3 rounded-2xl border border-border-light/80 bg-surface-light/80 px-3 py-2 shadow-sm dark:border-border-dark dark:bg-surface-elevated-dark/85">
-                                <div class="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-sm font-extrabold text-white">
-                                    @customerInitial
+                            var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? customerFallbackLabel;
+                            customerName = string.IsNullOrWhiteSpace(customerName) ? customerFallbackLabel : customerName.Trim();
+                            var customerCode = User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel;
+                            var customerInitial = customerName.Substring(0, 1).ToUpperInvariant();
+                            <div class="public-account-menu relative">
+                                <button id="public-account-toggle" type="button" class="public-account-toggle inline-flex items-center gap-2.5 rounded-2xl border border-border-light/80 bg-surface-light/80 px-3 py-1.5 text-left shadow-sm transition-all hover:border-primary/40 dark:border-border-dark dark:bg-surface-elevated-dark/85" aria-expanded="false" aria-controls="public-account-panel">
+                                    <span class="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-extrabold text-white">@customerInitial</span>
+                                    <span class="min-w-0 hidden 2xl:block">
+                                        <span class="block truncate text-[0.83rem] font-bold text-slate-900 dark:text-white">@customerName</span>
+                                        <span class="block truncate text-xs text-slate-500 dark:text-slate-400">@customerCode</span>
+                                    </span>
+                                    <span class="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-300">expand_more</span>
+                                </button>
+                                <div id="public-account-panel" class="public-account-panel hidden absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl border border-border-light bg-white/95 p-4 shadow-2xl shadow-slate-200/40 backdrop-blur dark:border-border-dark dark:bg-surface-dark/95">
+                                    <div class="flex items-center gap-3 rounded-2xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
+                                        <span class="flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-base font-extrabold text-white">@customerInitial</span>
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
+                                            <p class="truncate text-xs text-slate-500 dark:text-slate-400">@customerCode</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 space-y-2">
+                                        <a asp-controller="CustomerPortal" asp-action="Index" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/10">
+                                            <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                                            <span>@openPortalLabel</span>
+                                        </a>
+                                        <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white">
+                                                <span class="material-symbols-outlined text-[20px]">logout</span>
+                                                <span>@logoutLabel</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="max-w-[160px]">
-                                    <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
-                                    <p class="truncate text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
-                                </div>
-                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[0.86rem] font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40 active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">login</span>
+                                @loginLabel
+                            </a>
+                        }
+                    </div>
+                    <button id="mobile-menu-btn" type="button" class="rounded-xl p-2 text-slate-500 transition-all hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
+                        <span class="material-symbols-outlined text-[24px]">menu</span>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="public-mobile-drawer hidden border-t border-border-light dark:border-border-dark xl:hidden">
+                <div class="py-4">
+                    <nav class="space-y-1" aria-label="&#272;i&#7873;u h&#432;&#7899;ng di &#273;&#7897;ng">
+                        @foreach (var item in mobileNavItems)
+                        {
+                            <a asp-controller="@item.Controller" asp-action="@item.Action" class="@MobileNavLinkClass(item.ActivePage)">
+                                <span class="material-symbols-outlined text-[20px]">@item.Icon</span>
+                                <span>@item.Label</span>
+                            </a>
+                        }
+                    </nav>
+                    <div class="mt-4 border-t border-border-light pt-4 dark:border-border-dark">
+                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link flex items-center justify-center gap-2 rounded-2xl border border-border-light bg-white/70 px-4 py-3 text-sm font-bold text-slate-700 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-100">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                            <span>@bookingLookupLabel</span>
+                        </a>
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+                        {
+                            var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? customerFallbackLabel;
+                            mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? customerFallbackLabel : mobileCustomerName.Trim();
+                            <div class="mt-3 rounded-3xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
+                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel)</p>
+                                <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-border-light px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10 dark:border-border-dark dark:hover:bg-primary/10">
+                                    <span class="material-symbols-outlined text-[18px]">account_circle</span>
+                                    <span>@openPortalLabel</span>
+                                </a>
+                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-2">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">
+                                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
                                         <span class="material-symbols-outlined text-[18px]">logout</span>
-                                        Đăng xuất
+                                        <span>@logoutLabel</span>
                                     </button>
                                 </form>
                             </div>
                         }
                         else
                         {
-                            <a asp-controller="BookingLookup" asp-action="Index" class="inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-4 py-2.5 text-sm font-bold text-slate-600 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-200">
-                                <span class="material-symbols-outlined text-[18px]">search</span>
-                                Tra cứu booking
-                            </a>
-                            <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95">
-                                @registerLabel
-                            </a>
-                            <a asp-controller="CustomerAuth" asp-action="Login" class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95 hover:-translate-y-0.5">
-                                <span class="material-symbols-outlined text-[18px]">login</span>
-                                @loginLabel
-                            </a>
+                            <div class="mt-3 grid grid-cols-2 gap-2">
+                                <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 rounded-2xl bg-surface-muted-light px-4 py-3 text-sm font-bold text-slate-600 transition-all dark:bg-surface-elevated-dark dark:text-slate-300">@registerLabel</a>
+                                <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all">@loginLabel</a>
+                            </div>
                         }
                     </div>
-
-                    <button id="mobile-menu-btn" class="md:hidden p-2.5 rounded-xl text-slate-500 hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark transition-all">
-                        <span class="material-symbols-outlined text-[24px]">menu</span>
-                    </button>
                 </div>
-            </div>
-
-            <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-border-light dark:border-border-dark mt-2">
-                <nav class="flex flex-col gap-1 pt-3">
-                    <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">home</span> @navHomeLabel
-                    </a>
-                    <a asp-controller="PublicTours" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">map</span> @navToursLabel
-                    </a>
-                    <a asp-controller="Destinations" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">globe_asia</span> Điểm đến
-                    </a>
-                    <a asp-controller="Promotions" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">local_activity</span> Ưu đãi
-                    </a>
-                    <a asp-controller="Inspiration" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">article</span> Cẩm nang
-                    </a>
-                    <a asp-controller="Services" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">package_2</span> Dịch vụ
-                    </a>
-                    <a asp-controller="BookingLookup" asp-action="Index" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">search</span> Tra cứu booking
-                    </a>
-                    <a asp-controller="Home" asp-action="About" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">info</span> @navAboutLabel
-                    </a>
-                    <a asp-controller="Home" asp-action="Contact" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
-                        <span class="material-symbols-outlined text-[20px]">call</span> @navContactLabel
-                    </a>
-
-                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
-                    {
-                        var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "KhÃ¡ch hÃ ng";
-                        mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? "KhÃ¡ch hÃ ng" : mobileCustomerName.Trim();
-                        <div class="px-4 py-3 border-t border-border-light dark:border-border-dark mt-2">
-                            <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">@(User.FindFirst("CustomerCode")?.Value ?? "Khách hàng HV Travel")</p>
-                                <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-xl border border-border-light px-4 py-3 text-sm font-bold text-primary dark:border-border-dark">
-                                    <span class="material-symbols-outlined text-[18px]">account_circle</span>
-                                    Mở portal
-                                </a>
-                                <a asp-controller="BookingLookup" asp-action="Index" class="mt-2 flex items-center justify-center gap-2 rounded-xl border border-border-light px-4 py-3 text-sm font-bold text-slate-600 dark:border-border-dark dark:text-slate-200">
-                                    <span class="material-symbols-outlined text-[18px]">search</span>
-                                    Tra cứu booking
-                                </a>
-                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-4">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
-                                        <span class="material-symbols-outlined text-[18px]">logout</span>
-                                        ÄÄƒng xuáº¥t
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="grid grid-cols-2 gap-2 px-4 py-3 sm:hidden border-t border-border-light dark:border-border-dark mt-2">
-                            <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-surface-muted-light dark:bg-surface-elevated-dark transition-all">
-                                @registerLabel
-                            </a>
-                            <a asp-controller="CustomerAuth" asp-action="Login" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold bg-primary text-white shadow-lg shadow-primary/20 transition-all">
-                                @loginLabel
-                            </a>
-                        </div>
-                    }
-                </nav>
             </div>
         </div>
     </header>
@@ -395,11 +455,11 @@
 
         <div class="border-t border-border-dark">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. Báº£o lÆ°u má»i quyá»n.</p>
+                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. @allRightsReservedLabel</p>
                 <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
                     <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">SÆ¡ Ä‘á»“ trang</a>
+                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@sitemapLabel</a>
                 </div>
             </div>
         </div>
@@ -422,10 +482,64 @@
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenuBtn && mobileMenu) {
             mobileMenuBtn.addEventListener('click', () => {
+                const willOpen = mobileMenu.classList.contains('hidden');
                 mobileMenu.classList.toggle('hidden');
+                mobileMenuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
             });
         }
 
+        const dropdownPairs = [
+            { toggleId: 'public-nav-more-toggle', panelId: 'public-nav-more-panel' },
+            { toggleId: 'public-account-toggle', panelId: 'public-account-panel' }
+        ];
+
+        function closeDropdowns(exceptPanelId) {
+            dropdownPairs.forEach(({ toggleId, panelId }) => {
+                if (exceptPanelId && panelId === exceptPanelId) {
+                    return;
+                }
+
+                const toggle = document.getElementById(toggleId);
+                const panel = document.getElementById(panelId);
+                if (!toggle || !panel) {
+                    return;
+                }
+
+                panel.classList.add('hidden');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        dropdownPairs.forEach(({ toggleId, panelId }) => {
+            const toggle = document.getElementById(toggleId);
+            const panel = document.getElementById(panelId);
+            if (!toggle || !panel) {
+                return;
+            }
+
+            toggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const shouldOpen = panel.classList.contains('hidden');
+                closeDropdowns(shouldOpen ? panelId : null);
+                panel.classList.toggle('hidden', !shouldOpen);
+                toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+            });
+
+            panel.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+        });
+
+        document.addEventListener('click', () => {
+            closeDropdowns();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDropdowns();
+            }
+        });
         const header = document.getElementById('site-header');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 10) {
@@ -452,6 +566,7 @@
     </script>
 </body>
 </html>
+
 
 
 

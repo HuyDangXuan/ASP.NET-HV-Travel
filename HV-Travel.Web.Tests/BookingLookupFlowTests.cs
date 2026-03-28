@@ -1,4 +1,4 @@
-using System.Reflection;
+ï»¿using System.Reflection;
 using HVTravel.Domain.Entities;
 using HV_Travel.Web.Tests.TestSupport;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ public class BookingLookupFlowTests
             {
                 Name = "Ha Noi - Ha Giang",
                 Code = "HG-01",
-                Duration = "4 ngày 3 dêm",
+                Duration = "4 ngÃ y 3 Ä‘Ãªm",
                 StartDate = new DateTime(2026, 4, 2)
             }
         });
@@ -67,7 +67,7 @@ public class BookingLookupFlowTests
             {
                 Name = "Da Nang Retreat",
                 Code = "DN-01",
-                Duration = "3 ngày 2 dêm",
+                Duration = "3 ngÃ y 2 Ä‘Ãªm",
                 StartDate = new DateTime(2026, 4, 12)
             }
         });
@@ -77,7 +77,7 @@ public class BookingLookupFlowTests
         var view = Assert.IsType<ViewResult>(result);
         var modelState = view.ViewData.ModelState[string.Empty];
         Assert.NotNull(modelState);
-        Assert.Contains(modelState!.Errors, error => error.ErrorMessage.Contains("Không tìm th?y", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(modelState!.Errors, error => error.ErrorMessage.Contains("KhÃ´ng tÃ¬m tháº¥y", StringComparison.OrdinalIgnoreCase));
     }
 
     private static Controller CreateController(params Booking[] bookings)

@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var sections = await ContentService.GetPageSectionsAsync("about");
     var hero = sections.GetSection("hero");
@@ -7,26 +7,30 @@
     var team = sections.GetSection("team");
 
     ViewData["Title"] = "Giới Thiệu";
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Tìm hiểu về HV Travel - Đơn vị du lịch hàng đầu Việt Nam");
+    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Tìm hiểu về HV Travel - Đơn vị du lịch hàng đầu Việt Nam")
+        ?? "Tìm hiểu về HV Travel - Đơn vị du lịch hàng đầu Việt Nam";
 }
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="hero-gradient relative overflow-hidden">
-        <div class="absolute inset-0 opacity-15">
-            <div class="absolute top-20 right-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 right-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
+            <div class="absolute bottom-0 left-10 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 relative z-10 text-center" data-animate="fade-up">
-            <span class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/10">
-                <span class="material-symbols-outlined text-primary text-[16px]">info</span>
-                @hero.Fields.GetFieldValue("badgeText", "Về Chúng Tôi")
-            </span>
-            <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-                @hero.Fields.GetFieldValue("titleLine1", "Câu Chuyện")
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "HV Travel")</span>
-            </h1>
-            <div class="public-body-copy text-lg text-slate-300 max-w-2xl mx-auto">
-                @Html.Raw(hero.Fields.GetFieldValue("description", "Đồng hành cùng bạn trên mọi hành trình khám phá vẻ đẹp Việt Nam"))
+        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="public-top-section-content public-page-hero-content is-centered" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge">
+                    <span class="material-symbols-outlined text-[16px] text-primary">info</span>
+                    @hero.Fields.GetFieldValue("badgeText", "Về chúng tôi")
+                </span>
+                <h1 class="public-top-section-title public-hero-title text-white">
+                    @hero.Fields.GetFieldValue("titleLine1", "Câu chuyện")
+                    <span class="public-top-section-highlight public-page-hero-highlight">@hero.Fields.GetFieldValue("titleHighlight", "HV Travel")</span>
+                </h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                    @Html.Raw(hero.Fields.GetFieldValue("description", "Đồng hành cùng bạn trên mọi hành trình khám phá vẻ đẹp Việt Nam"))
+                </div>
             </div>
         </div>
     </section>
@@ -41,7 +45,7 @@
                     <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-6 uppercase tracking-wider">
                         <span class="material-symbols-outlined text-[16px]">history</span> Câu chuyện của chúng tôi
                     </span>
-                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight">@story.Fields.GetFieldValue("title", "Hơn 10 Năm Kinh Nghiệm Trong Ngành Du Lịch")</h2>
+                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight">@story.Fields.GetFieldValue("title", "Hơn 10 năm kinh nghiệm trong ngành du lịch")</h2>
                     <div class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                         @Html.Raw(story.Fields.GetFieldValue("description1", "HV Travel được thành lập với niềm đam mê mang đến những trải nghiệm du lịch tuyệt vời nhất cho du khách."))
                     </div>
@@ -93,14 +97,14 @@
     <section class="py-20 bg-surface-light dark:bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14" data-animate="fade-up">
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@missionVision.Fields.GetFieldValue("title", "Sứ Mệnh & Tầm Nhìn")</h2>
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@missionVision.Fields.GetFieldValue("title", "Sứ mệnh & Tầm nhìn")</h2>
             </div>
             <div class="public-card-grid grid md:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
                 <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
                     <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                         <span class="material-symbols-outlined text-[28px]">flag</span>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("missionTitle", "Sứ Mệnh")</h3>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("missionTitle", "Sứ mệnh")</h3>
                     <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                         @Html.Raw(missionVision.Fields.GetFieldValue("missionText", "Mang đến những hành trình được cá nhân hóa, an toàn và giàu cảm xúc cho mỗi du khách."))
                     </div>
@@ -109,7 +113,7 @@
                     <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                         <span class="material-symbols-outlined text-[28px]">visibility</span>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("visionTitle", "Tầm Nhìn")</h3>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("visionTitle", "Tầm nhìn")</h3>
                     <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                         @Html.Raw(missionVision.Fields.GetFieldValue("visionText", "Trở thành thương hiệu du lịch được tin yêu hàng đầu cho những chuyến đi khám phá Việt Nam."))
                     </div>
@@ -118,7 +122,7 @@
                     <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                         <span class="material-symbols-outlined text-[28px]">favorite</span>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("valuesTitle", "Giá Trị Cốt Lõi")</h3>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">@missionVision.Fields.GetFieldValue("valuesTitle", "Giá trị cốt lõi")</h3>
                     <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                         @Html.Raw(missionVision.Fields.GetFieldValue("valuesText", "Tận tâm, minh bạch, sáng tạo và luôn lấy trải nghiệm khách hàng làm trung tâm."))
                     </div>
@@ -136,7 +140,7 @@
                 <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
                     <span class="material-symbols-outlined text-[16px]">groups</span> Đội ngũ
                 </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@team.Fields.GetFieldValue("title", "Những Con Người Đằng Sau HV Travel")</h2>
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@team.Fields.GetFieldValue("title", "Những con người đằng sau HV Travel")</h2>
                 <div class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
                     @Html.Raw(team.Fields.GetFieldValue("description", "Đội ngũ tạo nên các hành trình chỉn chu và giàu cảm hứng cho từng chuyến đi."))
                 </div>
@@ -145,10 +149,10 @@
                 @{
                     var teamMembers = new[]
                     {
-                        new { Name = team.Fields.GetFieldValue("member1Name", "Nguyen Hoang Vu"), Role = team.Fields.GetFieldValue("member1Role", "Nhà Sáng Lập"), Icon = "person" },
-                        new { Name = team.Fields.GetFieldValue("member2Name", "Le Minh Duc"), Role = team.Fields.GetFieldValue("member2Role", "Trưởng Phòng Tour"), Icon = "manage_accounts" },
-                        new { Name = team.Fields.GetFieldValue("member3Name", "Tran Khanh Linh"), Role = team.Fields.GetFieldValue("member3Role", "Chăm Sóc Khách Hàng"), Icon = "support_agent" },
-    new { Name = team.Fields.GetFieldValue("member4Name", "Phạm Gia Hùng"), Role = team.Fields.GetFieldValue("member4Role", "Điều Hành Tour"), Icon = "map" }
+                        new { Name = team.Fields.GetFieldValue("member1Name", "Nguyen Hoang Vu"), Role = team.Fields.GetFieldValue("member1Role", "Nhà sáng lập"), Icon = "person" },
+                        new { Name = team.Fields.GetFieldValue("member2Name", "Le Minh Duc"), Role = team.Fields.GetFieldValue("member2Role", "Trưởng phòng tour"), Icon = "manage_accounts" },
+                        new { Name = team.Fields.GetFieldValue("member3Name", "Tran Khanh Linh"), Role = team.Fields.GetFieldValue("member3Role", "Chăm sóc khách hàng"), Icon = "support_agent" },
+                        new { Name = team.Fields.GetFieldValue("member4Name", "Pham Gia Hung"), Role = team.Fields.GetFieldValue("member4Role", "Điều hành tour"), Icon = "map" }
                     };
                 }
                 @foreach (var member in teamMembers)
@@ -165,3 +169,4 @@
         </div>
     </section>
 }
+

@@ -1,4 +1,4 @@
-@model HVTravel.Web.Models.BookingViewModel
+﻿@model HVTravel.Web.Models.BookingViewModel
 @{
     var tour = Model.Tour;
     var adultPrice = tour.Price?.Adult ?? 0;
@@ -18,6 +18,19 @@
 }
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
+
+<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-top-section-content is-left" data-animate="fade-up">
+            <span class="public-badge public-top-section-badge">
+                <span class="material-symbols-outlined text-[16px] text-primary">shopping_bag</span>
+                Bước 1 trong hành trình đặt tour
+            </span>
+            <h1 class="public-top-section-title text-white">Đặt tour và xác nhận hành khách</h1>
+            <p class="public-top-section-lead">Kiểm tra thông tin chuyến đi cho @tour.Name, chọn ngày khởi hành phù hợp và hoàn tất hồ sơ liên hệ trước khi chuyển sang thanh toán.</p>
+        </div>
+    </div>
+</section>
 
 <!-- Stepper -->
 <div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
@@ -407,6 +420,9 @@
     updatePrice();
 </script>
 }
+
+
+
 
 
 
