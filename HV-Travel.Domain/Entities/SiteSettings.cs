@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HVTravel.Domain.Entities;
@@ -59,4 +59,7 @@ public class ContentField
 
     [BsonElement("placeholder")]
     public string Placeholder { get; set; } = string.Empty;
+
+    [BsonElement("style")]
+    public ContentTextStyle Style { get; set; } = ContentPresentationDefaults.CreateTextStyle();
 }

@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.ConsultationViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -16,16 +17,16 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
+    <section class="@($"public-top-section public-top-section--compact hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-15">
             <div class="absolute top-20 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
             <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
         </div>
-        <div class="public-top-section-shell public-top-section-content is-centered max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center" data-animate="fade-up">
-            <h1 class="public-top-section-title public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4">
+        <div class="@($"public-top-section-shell public-top-section-content is-centered max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
+            <h1 class="public-top-section-title public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">
                 @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
             </h1>
-            <div class="public-top-section-lead public-body-copy text-lg text-slate-300 max-w-xl mx-auto">
+            <div class="public-top-section-lead public-body-copy text-lg text-slate-300 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                 @Html.Raw(hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn."))
             </div>
         </div>
@@ -37,9 +38,9 @@
         <div class="public-card-grid grid lg:grid-cols-5 gap-10">
             @if (benefits?.IsEnabled != false)
             {
-                <div class="lg:col-span-2 space-y-6" data-animate="slide-left" data-stagger>
+                <div class="@($"lg:col-span-2 space-y-6 {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)" data-animate="slide-left" data-stagger>
                     <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark space-y-5">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "quickContactTitle")">
                             <span class="material-symbols-outlined text-primary">support_agent</span> @benefits.Fields.GetFieldValue("quickContactTitle", "Liên Hệ Nhanh")
                         </h3>
                         <a href="tel:@contactPhone" class="flex items-center gap-4 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl hover:bg-primary/5 transition-colors group">
@@ -72,7 +73,7 @@
                     </div>
 
                     <div class="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-primary/10 dark:to-blue-500/10 rounded-2xl p-6 border border-primary/10">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">@benefits.Fields.GetFieldValue("reasonsTitle", "Tại Sao Chọn HV Travel?")</h3>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "reasonsTitle")">@benefits.Fields.GetFieldValue("reasonsTitle", "Tại Sao Chọn HV Travel?")</h3>
                         <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
                             <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>10+ năm kinh nghiệm tổ chức tour</div>
                             <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Đội ngũ hướng dẫn viên chuyên nghiệp</div>
@@ -86,12 +87,12 @@
             <div class="lg:col-span-3" data-animate="slide-right">
                 @if (success)
                 {
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-10 border border-border-light dark:border-border-dark text-center">
+                    <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-10 border border-border-light dark:border-border-dark text-center {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)">
                         <div class="mx-auto size-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6">
                             <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
                         </div>
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">@benefits?.Fields.GetFieldValue("successTitle", "Gửi Yêu Cầu Thành Công!")</h2>
-                        <div class="text-slate-500 dark:text-slate-400 mb-6">
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "successTitle")">@benefits?.Fields.GetFieldValue("successTitle", "Gửi Yêu Cầu Thành Công!")</h2>
+                        <div class="text-slate-500 dark:text-slate-400 mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "successDescription")">
                             @Html.Raw(benefits?.Fields.GetFieldValue("successDescription", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất."))
                         </div>
                         <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
@@ -101,8 +102,8 @@
                 }
                 else
                 {
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark">
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                    <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "formTitle")">
                             <span class="material-symbols-outlined text-primary">edit_note</span> @benefits?.Fields.GetFieldValue("formTitle", "Gửi Yêu Cầu Tư Vấn")
                         </h2>
 
@@ -176,6 +177,3 @@
         </div>
     </div>
 </section>
-
-
-

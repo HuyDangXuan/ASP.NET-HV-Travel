@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
@@ -45,8 +46,8 @@
             </div>
         </div>
 
-        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
-        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-3">
+        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedTitle")">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
+        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedDescription")">
             @Html.Raw(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))
         </div>
 
@@ -81,6 +82,3 @@
         </div>
     </div>
 </section>
-
-
-

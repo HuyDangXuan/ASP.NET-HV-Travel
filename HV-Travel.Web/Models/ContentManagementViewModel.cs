@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 
 namespace HVTravel.Web.Models;
 
@@ -29,26 +29,6 @@ public class ContentManagementViewModel
     public List<string> CurrentBreadcrumb { get; set; } = new();
 
     public string CurrentScopeSummary { get; set; } = string.Empty;
-
-    public ContentPreviewTarget? PreviewTarget { get; set; }
-
-    public string? PreviewUrl { get; set; }
-
-    public string? PreviewUnavailableReason { get; set; }
-
-    public string PreviewSessionKey { get; set; } = string.Empty;
-
-    public string? LivePreviewUrl { get; set; }
-
-    public bool CanInlinePreview { get; set; }
-
-    public string? InlinePreviewUnavailableReason { get; set; }
-
-    public string LivePreviewModeLabel { get; set; } = string.Empty;
-
-    public string? PreviewDebugUrl { get; set; }
-
-    public bool PreviewDiagnosticsEnabled { get; set; }
 
     public List<ContentDependencyNoteViewModel> DependencyNotes { get; set; } = new();
 
@@ -88,15 +68,6 @@ public class ContentNavigationChipViewModel
     public string Url { get; set; } = string.Empty;
 
     public bool IsActive { get; set; }
-}
-
-public class ContentPreviewTarget
-{
-    public string Controller { get; set; } = string.Empty;
-
-    public string Action { get; set; } = string.Empty;
-
-    public Dictionary<string, string?> RouteValues { get; set; } = new();
 }
 
 public class ContentDependencyNoteViewModel
@@ -142,10 +113,6 @@ public class ContentAdminEditorDefinition
     public string ScopeSummary { get; set; } = string.Empty;
 
     public List<string> Breadcrumb { get; set; } = new();
-
-    public ContentPreviewTarget? PreviewTarget { get; set; }
-
-    public string? PreviewUnavailableReason { get; set; }
 
     public IReadOnlyList<ContentSubtabOption> Subtabs { get; set; } = Array.Empty<ContentSubtabOption>();
 

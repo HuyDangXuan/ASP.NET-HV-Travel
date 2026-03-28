@@ -829,3 +829,51 @@ body.public-page-shell .public-top-section--compact .public-auth-title {
   }
 }
 
+
+body.public-page-shell .cms-managed-section--bg {
+  background: var(--cms-section-bg);
+}
+
+body.public-page-shell .cms-text-left {
+  text-align: left;
+}
+
+body.public-page-shell .cms-text-center {
+  text-align: center;
+}
+
+body.public-page-shell .cms-text-right {
+  text-align: right;
+}
+
+body.public-page-shell .cms-text-left .public-action-stack,
+body.public-page-shell .cms-text-left .public-top-section-actions,
+body.public-page-shell .public-top-section-content.cms-text-left {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+body.public-page-shell .cms-text-center .public-action-stack,
+body.public-page-shell .cms-text-center .public-top-section-actions,
+body.public-page-shell .public-top-section-content.cms-text-center {
+  justify-content: center;
+  align-items: center;
+}
+
+body.public-page-shell .cms-text-right .public-action-stack,
+body.public-page-shell .cms-text-right .public-top-section-actions,
+body.public-page-shell .public-top-section-content.cms-text-right {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+body.public-page-shell .public-top-section-content.cms-text-right .public-top-section-lead,
+body.public-page-shell .public-top-section-content.cms-text-left .public-top-section-lead {
+  margin-inline: 0;
+}
+
+body.public-page-shell .public-top-section-content.is-right {
+  margin-left: auto;
+  text-align: right;
+  align-items: flex-end;
+}

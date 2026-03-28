@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HVTravel.Domain.Entities;
@@ -33,6 +33,9 @@ public class ContentSection
 
     [BsonElement("fields")]
     public List<ContentField> Fields { get; set; } = new();
+
+    [BsonElement("presentation")]
+    public ContentSectionPresentation Presentation { get; set; } = ContentPresentationDefaults.CreateSectionPresentation();
 
     [BsonElement("updatedAt")]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.ServicesHubViewModel
 @{
     var request = Model.Request ?? new HVTravel.Web.Models.AncillaryLeadRequestViewModel();
@@ -12,7 +13,7 @@
         ? "grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"
         : "grid gap-8";
 
-    string ResolveServiceText(string serviceType, string fieldSuffix, string fallback)
+    string ResolveServiceFieldKey(string serviceType, string fieldSuffix)
     {
         var prefix = serviceType switch
         {
@@ -24,8 +25,16 @@
         };
 
         return string.IsNullOrWhiteSpace(prefix)
+            ? string.Empty
+            : $"{prefix}{fieldSuffix}";
+    }
+
+    string ResolveServiceText(string serviceType, string fieldSuffix, string fallback)
+    {
+        var key = ResolveServiceFieldKey(serviceType, fieldSuffix);
+        return string.IsNullOrWhiteSpace(key)
             ? fallback
-            : serviceCards?.Fields.GetFieldValue($"{prefix}{fieldSuffix}", fallback) ?? fallback;
+            : serviceCards?.Fields.GetFieldValue(key, fallback) ?? fallback;
     }
 
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
@@ -34,19 +43,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute -top-10 right-10 h-72 w-72 rounded-full bg-sky-400/30 blur-3xl"></div>
             <div class="absolute bottom-0 left-0 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl"></div>
         </div>
         <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge">
+            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">package_2</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Hệ sinh thái dịch vụ")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Báo giá vé, khách sạn, combo, visa trong một màn hình.")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Báo giá vé, khách sạn, combo, visa trong một màn hình.")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý."))
                 </div>
             </div>
@@ -64,21 +73,23 @@
         <div class="@servicesGridClass">
             @if (showServiceCards)
             {
-                <div class="space-y-6" data-animate="fade-in" data-stagger>
+                <div class="space-y-6 @ContentPresentationViewHelper.GetSectionTextClass(serviceCards) @ContentPresentationViewHelper.GetSectionBackgroundClass(serviceCards)" style="@ContentPresentationViewHelper.GetSectionStyle(serviceCards)" data-animate="fade-in" data-stagger>
                     @foreach (var card in Model.ServiceCards)
                     {
+                        var titleKey = ResolveServiceFieldKey(card.ServiceType, "Title");
+                        var descriptionKey = ResolveServiceFieldKey(card.ServiceType, "Description");
                         <article class="overflow-hidden rounded-[2rem] border border-border-light bg-surface-light shadow-sm dark:border-border-dark dark:bg-surface-dark">
                             <div class="bg-gradient-to-r @card.AccentClass px-6 py-6 text-white">
                                 <div class="flex items-center justify-between gap-4">
                                     <div>
                                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-white/70">@card.ServiceType</p>
-                                        <h2 class="mt-2 text-2xl font-black">@ResolveServiceText(card.ServiceType, "Title", card.Title)</h2>
+                                        <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(serviceCards, titleKey)">@ResolveServiceText(card.ServiceType, "Title", card.Title)</h2>
                                     </div>
                                     <span class="material-symbols-outlined text-4xl text-white/80">@card.Icon</span>
                                 </div>
                             </div>
                             <div class="px-6 py-5">
-                                <p class="text-sm leading-7 text-slate-600 dark:text-slate-300">@ResolveServiceText(card.ServiceType, "Description", card.Description)</p>
+                                <p class="text-sm leading-7 text-slate-600 dark:text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(serviceCards, descriptionKey)">@ResolveServiceText(card.ServiceType, "Description", card.Description)</p>
                             </div>
                         </article>
                     }
@@ -87,11 +98,11 @@
 
             @if (showQuoteForm)
             {
-                <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
+                <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(quoteFormIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(quoteFormIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(quoteFormIntro)" data-animate="slide-right">
                     <div class="mb-6">
-                        <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary">@quoteFormIntro.Fields.GetFieldValue("eyebrowText", "Quick Brief")</p>
-                        <h2 class="public-section-title mt-3">@quoteFormIntro.Fields.GetFieldValue("title", "Yêu cầu báo giá")</h2>
-                        <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                        <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "eyebrowText")">@quoteFormIntro.Fields.GetFieldValue("eyebrowText", "Quick Brief")</p>
+                        <h2 class="public-section-title mt-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "title")">@quoteFormIntro.Fields.GetFieldValue("title", "Yêu cầu báo giá")</h2>
+                        <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "description")">
                             @Html.Raw(quoteFormIntro.Fields.GetFieldValue("description", "Lead được gắn SLA, phân tuyến admin và giữ lịch sử cho các đợt chăm sóc sau."))
                         </div>
                     </div>
@@ -160,6 +171,3 @@
         </div>
     </div>
 </section>
-
-
-

@@ -1,0 +1,95 @@
+﻿@using System.Globalization
+@using HVTravel.Web.Services
+@model HVTravel.Web.Models.ContentTextStyleEditorViewModel
+@{
+    var alignOptions = Model.IncludeJustify
+        ? new[]
+        {
+            new { Value = string.Empty, Label = "Mặc định" },
+            new { Value = "left", Label = "Trái" },
+            new { Value = "center", Label = "Giữa" },
+            new { Value = "right", Label = "Phải" },
+            new { Value = "justify", Label = "Đều hai bên" }
+        }
+        : new[]
+        {
+            new { Value = string.Empty, Label = "Mặc định" },
+            new { Value = "left", Label = "Trái" },
+            new { Value = "center", Label = "Giữa" },
+            new { Value = "right", Label = "Phải" }
+        };
+}
+<div class="rounded-2xl border border-slate-200/80 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/60">
+    <div class="mb-4">
+        <p class="text-sm font-bold text-slate-900 dark:text-white">@Model.Title</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">@Model.Description</p>
+        }
+    </div>
+    <div class="grid gap-4 xl:grid-cols-2">
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Căn lề</span>
+            <select name="@(Model.Prefix).Align" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                @foreach (var option in alignOptions)
+                {
+                    <option value="@option.Value" selected="@(string.Equals(Model.Style.Align, option.Value, StringComparison.OrdinalIgnoreCase))">@option.Label</option>
+                }
+            </select>
+        </label>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Font preset</span>
+            <select name="@(Model.Prefix).FontPreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.FontPreset)">Mặc định</option>
+                @foreach (var fontPreset in ContentPresentationSchema.FontPresets)
+                {
+                    <option value="@fontPreset" selected="@(string.Equals(Model.Style.FontPreset, fontPreset, StringComparison.OrdinalIgnoreCase))">@fontPreset</option>
+                }
+            </select>
+        </label>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200 xl:col-span-2">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Custom font-family</span>
+            <input type="text" name="@(Model.Prefix).CustomFontFamily" value="@Model.Style.CustomFontFamily" placeholder='Ví dụ: &quot;Be Vietnam Pro&quot;, sans-serif' class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+        </label>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Cỡ chữ</span>
+            <select name="@(Model.Prefix).SizePreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.SizePreset)">Mặc định</option>
+                @foreach (var sizePreset in ContentPresentationSchema.SizePresets.Where(value => !string.IsNullOrWhiteSpace(value)))
+                {
+                    <option value="@sizePreset" selected="@(string.Equals(Model.Style.SizePreset, sizePreset, StringComparison.OrdinalIgnoreCase))">@sizePreset</option>
+                }
+            </select>
+        </label>
+        <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_120px]">
+            <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Custom size</span>
+                <input type="number" step="0.1" min="0" name="@(Model.Prefix).CustomSizeValue" value="@(Model.Style.CustomSizeValue?.ToString(CultureInfo.InvariantCulture) ?? string.Empty)" placeholder="16" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+            </label>
+            <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Unit</span>
+                <select name="@(Model.Prefix).CustomSizeUnit" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                    <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.CustomSizeUnit)">Mặc định</option>
+                    @foreach (var unit in ContentPresentationSchema.SizeUnits)
+                    {
+                        <option value="@unit" selected="@(string.Equals(Model.Style.CustomSizeUnit, unit, StringComparison.OrdinalIgnoreCase))">@unit</option>
+                    }
+                </select>
+            </label>
+        </div>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Màu chữ</span>
+            <select name="@(Model.Prefix).ColorPreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                @foreach (var colorPreset in ContentPresentationSchema.ColorPresets)
+                {
+                    var label = string.IsNullOrWhiteSpace(colorPreset) ? "Mặc định" : colorPreset;
+                    <option value="@colorPreset" selected="@(string.Equals(Model.Style.ColorPreset, colorPreset, StringComparison.OrdinalIgnoreCase))">@label</option>
+                }
+            </select>
+        </label>
+        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Custom màu</span>
+            <input type="text" name="@(Model.Prefix).CustomColorHex" value="@Model.Style.CustomColorHex" placeholder="#0F172A" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm uppercase focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+        </label>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model List<Tour>
 @{
     var sections = await ContentService.GetPageSectionsAsync("home");
@@ -12,25 +13,26 @@
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "HV Travel - Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng cho bạn");
 }
 
-<section class="hero-gradient relative overflow-hidden">
+<section class="@($"hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
     <div class="absolute inset-0 opacity-20">
         <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse"></div>
         <div class="absolute bottom-10 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 relative z-10">
-        <div class="text-center max-w-4xl mx-auto" data-animate="fade-up">
+        <div class="@($"public-top-section-content is-centered max-w-4xl mx-auto {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
             @if (hero?.IsEnabled != false)
             {
-                <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10">
+                <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
                     @hero.Fields.GetFieldValue("badgeText", $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời")
                 </div>
                 <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
-                    @hero.Fields.GetFieldValue("titleLine1", "Khám Phá")
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
-                    <br />@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")
+                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@hero.Fields.GetFieldValue("titleLine1", "Khám Phá")</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
+                    <br />
+                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine2")">@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")</span>
                 </h1>
-                <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn."))
                 </div>
                 <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
@@ -48,12 +50,12 @@
 
         @if (stats?.IsEnabled != false)
         {
-            <div class="public-card-grid mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto" data-animate="fade-up" data-stagger data-delay="300">
+            <div class="@($"public-card-grid mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto {ContentPresentationViewHelper.GetSectionTextClass(stats)} {ContentPresentationViewHelper.GetSectionBackgroundClass(stats)}")" style="@ContentPresentationViewHelper.GetSectionStyle(stats)" data-animate="fade-up" data-stagger data-delay="300">
                 @for (var index = 1; index <= 4; index++)
                 {
                     <div class="text-center">
-                        <p class="text-3xl sm:text-4xl font-extrabold text-white">@stats.Fields.GetFieldValue($"stat{index}Number", "0")</p>
-                        <p class="text-sm text-slate-400 mt-1 font-medium">@stats.Fields.GetFieldValue($"stat{index}Label", $"Chỉ số {index}")</p>
+                        <p class="text-3xl sm:text-4xl font-extrabold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, $"stat{index}Number")">@stats.Fields.GetFieldValue($"stat{index}Number", "0")</p>
+                        <p class="text-sm text-slate-400 mt-1 font-medium" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, $"stat{index}Label")">@stats.Fields.GetFieldValue($"stat{index}Label", $"Chỉ số {index}")</p>
                     </div>
                 }
             </div>
@@ -65,12 +67,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if (featured?.IsEnabled != false)
         {
-            <div class="text-center mb-14" data-animate="fade-up">
-                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+            <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(featured)} {ContentPresentationViewHelper.GetSectionBackgroundClass(featured)}")" style="@ContentPresentationViewHelper.GetSectionStyle(featured)" data-animate="fade-up">
+                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "badgeText")">
                     <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Nổi Bật")
                 </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
-                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "title")">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
+                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "description")">
                     @Html.Raw(featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"))
                 </div>
             </div>
@@ -157,14 +159,14 @@
 
 @if (commitments?.IsEnabled != false)
 {
-    <section class="py-20 bg-surface-light dark:bg-surface-dark">
+    <section class="@($"py-20 bg-surface-light dark:bg-surface-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(commitments)}")" style="@ContentPresentationViewHelper.GetSectionStyle(commitments)">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-14" data-animate="fade-up">
-                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider">
+            <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(commitments)}")" data-animate="fade-up">
+                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(commitments, "eyebrow")">
                     <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
                 </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
-                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "title")">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
+                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "description")">
                     @Html.Raw(commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"))
                 </div>
             </div>
@@ -178,8 +180,8 @@
                         <div class="size-16 mx-auto mb-5 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
                             <span class="material-symbols-outlined text-[28px]">@icons[index - 1]</span>
                         </div>
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2">@commitments.Fields.GetFieldValue($"item{index}Title", $"Cam kết {index}")</h3>
-                        <div class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, $"item{index}Title")">@commitments.Fields.GetFieldValue($"item{index}Title", $"Cam kết {index}")</h3>
+                        <div class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, $"item{index}Description")">
                             @Html.Raw(commitments.Fields.GetFieldValue($"item{index}Description", "Nội dung sẽ được cập nhật trong CMS."))
                         </div>
                     </div>
@@ -191,13 +193,13 @@
 
 @if (finalCta?.IsEnabled != false)
 {
-    <section class="py-20 hero-gradient relative overflow-hidden">
+    <section class="@($"py-20 hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(finalCta)}")" style="@ContentPresentationViewHelper.GetSectionStyle(finalCta)">
         <div class="absolute inset-0 opacity-15">
             <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
         </div>
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" data-animate="scale-in">
-            <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
-            <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto">
+        <div class="@($"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 {ContentPresentationViewHelper.GetSectionTextClass(finalCta)}")" data-animate="scale-in">
+            <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "title")">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
+            <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "description")">
                 @Html.Raw(finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."))
             </div>
             <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
