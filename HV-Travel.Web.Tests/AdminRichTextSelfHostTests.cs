@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace HV_Travel.Web.Tests;
 
 public class AdminRichTextSelfHostTests
@@ -21,7 +23,9 @@ public class AdminRichTextSelfHostTests
         Assert.Contains("block_formats: '\\u0110o\\u1ea1n v\\u0103n=p; Ti\\u00eau \\u0111\\u1ec1 2=h2; Ti\\u00eau \\u0111\\u1ec1 3=h3; Ti\\u00eau \\u0111\\u1ec1 4=h4'", content);
         Assert.DoesNotContain("Äoáº¡n", content);
         Assert.Contains("plugins: 'autolink link lists table code preview searchreplace visualblocks wordcount autoresize'", content);
-        Assert.Contains("toolbar: 'undo redo | blocks | bold italic underline strikethrough | bullist numlist | alignleft aligncenter alignright | blockquote table link | removeformat code preview'", content);
+        Assert.Contains("toolbar: 'undo redo | blocks | fontfamily fontsizeinput | bold italic underline strikethrough | forecolor backcolor | bullist numlist | alignleft aligncenter alignright alignjustify | blockquote table link | removeformat code preview'", content);
+        Assert.Contains("font_size_input_default_unit: 'px'", content);
+        Assert.DoesNotContain("fontfamily fontsize |", content);
     }
 
     private static string GetRepoPath(string relativePath)

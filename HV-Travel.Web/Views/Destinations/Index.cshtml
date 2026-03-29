@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.DestinationHubViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("destinations");
@@ -12,19 +13,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute left-0 top-20 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
             <div class="absolute right-10 bottom-0 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"></div>
         </div>
         <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge">
+            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">globe_asia</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Điểm đến nổi bật")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá.")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá.")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Trang này hỗ trợ marketing mở landing theo vùng, theo nhu cầu và theo mức giá thay vì chỉ có danh sách tour phẳng."))
                 </div>
             </div>
@@ -36,10 +37,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         @if (collectionsIntro?.IsEnabled != false)
         {
-            <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-primary">@collectionsIntro.Fields.GetFieldValue("eyebrowText", "Collections")</p>
-                <h2 class="public-section-title mt-2">@collectionsIntro.Fields.GetFieldValue("title", "Bộ sưu tập nổi bật")</h2>
-                <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400">
+            <div class="@($"{ContentPresentationViewHelper.GetSectionBackgroundClass(collectionsIntro)} {ContentPresentationViewHelper.GetSectionTextClass(collectionsIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(collectionsIntro)">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "eyebrowText")">@collectionsIntro.Fields.GetFieldValue("eyebrowText", "Collections")</p>
+                <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "title")">@collectionsIntro.Fields.GetFieldValue("title", "Bộ sưu tập nổi bật")</h2>
+                <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "description")">
                     @Html.Raw(collectionsIntro.Fields.GetFieldValue("description", "Nhóm các collection giúp marketing đẩy nhanh trang đích theo nhu cầu và mức ngân sách."))
                 </div>
                 <div class="mt-6 grid gap-6 lg:grid-cols-2">
@@ -69,10 +70,10 @@
 
         @if (regionsIntro?.IsEnabled != false)
         {
-            <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-primary">@regionsIntro.Fields.GetFieldValue("eyebrowText", "Regions")</p>
-                <h2 class="public-section-title mt-2">@regionsIntro.Fields.GetFieldValue("title", "Khám phá theo vùng")</h2>
-                <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400">
+            <div class="@($"{ContentPresentationViewHelper.GetSectionBackgroundClass(regionsIntro)} {ContentPresentationViewHelper.GetSectionTextClass(regionsIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(regionsIntro)">
+                <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "eyebrowText")">@regionsIntro.Fields.GetFieldValue("eyebrowText", "Regions")</p>
+                <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "title")">@regionsIntro.Fields.GetFieldValue("title", "Khám phá theo vùng")</h2>
+                <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "description")">
                     @Html.Raw(regionsIntro.Fields.GetFieldValue("description", "Trình bày điểm đến theo vùng để mở rộng landing page bán theo khu vực và nhóm thành phố nổi bật."))
                 </div>
                 <div class="mt-6 space-y-8">
@@ -110,6 +111,3 @@
         }
     </div>
 </section>
-
-
-

@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
     var siteSettings = await ContentService.GetSiteSettingsAsync();
@@ -45,8 +46,8 @@
             </div>
         </div>
 
-        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
-        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-2">
+        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "errorTitle")">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
+        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "errorDescription")">
             @Html.Raw(statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau."))
         </div>
         <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
@@ -74,6 +75,3 @@
         </div>
     </div>
 </section>
-
-
-

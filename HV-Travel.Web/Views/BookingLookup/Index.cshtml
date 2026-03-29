@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.BookingLookupViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("bookingLookup");
@@ -26,19 +27,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute top-10 left-10 h-72 w-72 rounded-full bg-primary/25 blur-3xl"></div>
             <div class="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-400/18 blur-3xl"></div>
         </div>
         <div class="public-top-section-shell public-page-hero-shell max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge">
+            <div class="public-top-section-content public-page-hero-content is-centered @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">confirmation_number</span>
                     @hero.Fields.GetFieldValue("badgeText", "Tra cứu đơn đặt tour")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Tra cứu booking trong vài giây")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Tra cứu booking trong vài giây")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành."))
                 </div>
             </div>
@@ -50,9 +51,9 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 @lookupGridClass">
         @if (showLookupForm)
         {
-            <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm">
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">@lookupForm.Fields.GetFieldValue("title", "Thông tin tra cứu")</h2>
-                <div class="mb-6 text-sm leading-7 text-slate-500 dark:text-slate-400">
+            <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm @ContentPresentationViewHelper.GetSectionTextClass(lookupForm) @ContentPresentationViewHelper.GetSectionBackgroundClass(lookupForm)" style="@ContentPresentationViewHelper.GetSectionStyle(lookupForm)">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(lookupForm, "title")">@lookupForm.Fields.GetFieldValue("title", "Thông tin tra cứu")</h2>
+                <div class="mb-6 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(lookupForm, "description")">
                     @Html.Raw(lookupForm.Fields.GetFieldValue("description", "Điền mã booking cùng email hoặc số điện thoại đã dùng khi đặt tour để kiểm tra nhanh trạng thái đơn."))
                 </div>
                 <form asp-action="Lookup" method="post" class="space-y-4">
@@ -78,7 +79,7 @@
             </div>
         }
 
-        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm">
+        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 sm:p-8 border border-border-light dark:border-border-dark shadow-sm @ContentPresentationViewHelper.GetSectionTextClass(readyState) @ContentPresentationViewHelper.GetSectionBackgroundClass(readyState)" style="@ContentPresentationViewHelper.GetSectionStyle(readyState)">
             @if (Model.HasResult)
             {
                 <div class="flex items-start justify-between gap-4 mb-6">
@@ -133,8 +134,8 @@
             {
                 <div class="h-full min-h-[320px] flex flex-col items-center justify-center text-center">
                     <span class="material-symbols-outlined text-6xl text-primary/40 mb-4">travel_explore</span>
-                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">@readyState.Fields.GetFieldValue("title", "Sẵn sàng tra cứu")</h2>
-                    <div class="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(readyState, "title")">@readyState.Fields.GetFieldValue("title", "Sẵn sàng tra cứu")</h2>
+                    <div class="text-sm text-slate-500 dark:text-slate-400 max-w-sm" style="@ContentPresentationViewHelper.GetFieldTextStyle(readyState, "description")">
                         @Html.Raw(readyState.Fields.GetFieldValue("description", "Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái đơn và mốc xử lý mới nhất ngay tại đây."))
                     </div>
                 </div>
@@ -142,5 +143,3 @@
         </div>
     </div>
 </section>
-
-

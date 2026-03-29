@@ -63,6 +63,63 @@ public class PublicResponsiveMarkupTests
         Assert.Contains("public-brand-title", content);
         Assert.Contains("public-nav-utility-link", content);
         Assert.Contains("public-nav-action-cta", content);
+        Assert.Contains("public-header-control", content);
+        Assert.Contains("public-header-panel", content);
+        Assert.Contains("public-header-icon-button", content);
+        Assert.Contains("public-mobile-nav-link", content);
+    }
+
+    [Fact]
+    public void PublicHeader_DefinesDedicatedDarkModeHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains(".public-header-shell", content);
+        Assert.Contains(".public-header-panel", content);
+        Assert.Contains(".public-header-control", content);
+        Assert.Contains(".public-header-icon-button", content);
+        Assert.Contains(".public-mobile-nav-link", content);
+        Assert.Contains("body.public-page-shell.dark .public-header-panel", content);
+        Assert.Contains("body.public-page-shell.dark .public-header-control", content);
+        Assert.Contains("body.public-page-shell.dark .public-mobile-nav-link", content);
+    }
+
+    [Fact]
+    public void PublicHeader_UsesUniformSolidDarkSurfacesInDarkMode()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains("html.dark body.public-page-shell .public-site-header", content);
+        Assert.Contains("html.dark body.public-page-shell .public-header-control", content);
+        Assert.Contains("html.dark body.public-page-shell .public-header-panel", content);
+        Assert.Contains("html.dark body.public-page-shell .public-mobile-drawer", content);
+        Assert.Contains("background: rgba(7, 17, 27, 0.96);", content);
+        Assert.Contains("background: rgba(13, 27, 42, 0.96);", content);
+        Assert.Contains("background: rgba(13, 27, 42, 0.98);", content);
+        Assert.Contains("background: rgba(11, 92, 115, 0.18);", content);
+    }
+
+    [Fact]
+    public void PublicHeader_RemovesDividerLinesInDarkMode()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains("border-bottom: none;", content);
+        Assert.Contains("border-top: none;", content);
+    }
+
+    [Fact]
+    public void PublicHeader_RemovesShadowArtifactsInDarkMode()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+        var layout = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Shared\_LayoutPublic.cshtml"));
+
+        Assert.Contains("html.dark body.public-page-shell .public-site-header::before", content);
+        Assert.Contains("display: none;", content);
+        Assert.Contains("box-shadow: none;", content);
+        Assert.Contains("const syncHeaderScrollState = () =>", layout);
+        Assert.Contains("header.classList.add('shadow-lg', 'shadow-slate-200/20');", layout);
+        Assert.DoesNotContain("header.classList.add('shadow-lg', 'shadow-slate-200/20', 'dark:shadow-slate-900/30');", layout);
     }
 
     [Fact]

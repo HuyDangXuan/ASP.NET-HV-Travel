@@ -59,8 +59,8 @@ public static class ContentAdminCatalog
             : null;
 
         return Editors.FirstOrDefault(editor =>
-                   string.Equals(editor.TabKey, normalizedTab, StringComparison.OrdinalIgnoreCase) &&
-                   string.Equals(editor.SubtabKey ?? string.Empty, normalizedSubtab ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                   string.Equals(editor.TabKey, normalizedTab, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(editor.SubtabKey ?? string.Empty, normalizedSubtab ?? string.Empty, StringComparison.OrdinalIgnoreCase))
                ?? Editors.First(editor => editor.TabKey == "site");
     }
 
@@ -83,8 +83,7 @@ public static class ContentAdminCatalog
                 Title = "Cấu hình toàn site",
                 Description = "Quản lý các nhóm nội dung dùng chung như header, footer, thông tin liên hệ và SEO mặc định.",
                 ScopeSummary = "7 nhóm site-wide đang dùng trên toàn bộ public site.",
-                Breadcrumb = new List<string> { "Nội dung website", "Toàn site" },
-                PreviewTarget = new ContentPreviewTarget { Controller = "Home", Action = "Index" }
+                Breadcrumb = new List<string> { "Nội dung website", "Toàn site" }
             },
             Editor(
                 "home",
@@ -92,7 +91,6 @@ public static class ContentAdminCatalog
                 "Trang chủ",
                 "Quản lý nội dung hiển thị trên trang chủ theo từng section lớn của trang.",
                 "5 section chính của trang chủ.",
-                new ContentPreviewTarget { Controller = "Home", Action = "Index" },
                 Section("hero", "Hero trang chủ", "Tiêu đề chính, mô tả và CTA đầu trang"),
                 Section("stats", "Chỉ số marketing", "Các số liệu nổi bật bên dưới hero"),
                 Section("featuredToursIntro", "Giới thiệu tour nổi bật", "Tiêu đề và mô tả khối tour nổi bật"),
@@ -104,7 +102,6 @@ public static class ContentAdminCatalog
                 "Trang giới thiệu",
                 "Quản lý các khối nội dung kể câu chuyện thương hiệu, sứ mệnh và đội ngũ.",
                 "4 section chính của trang giới thiệu.",
-                new ContentPreviewTarget { Controller = "Home", Action = "About" },
                 Section("hero", "Hero giới thiệu", "Tiêu đề mở đầu và mô tả trang giới thiệu"),
                 Section("story", "Câu chuyện thương hiệu", "Nội dung phần hành trình hình thành"),
                 Section("missionVision", "Sứ mệnh và tầm nhìn", "Thông điệp định hướng của thương hiệu"),
@@ -118,7 +115,6 @@ public static class ContentAdminCatalog
                 Description = "Quản lý hero, tiêu đề thẻ liên hệ và phần giới thiệu form trên trang liên hệ.",
                 ScopeSummary = "3 section của trang liên hệ và 1 phụ thuộc site-wide.",
                 Breadcrumb = new List<string> { "Nội dung website", "Liên hệ" },
-                PreviewTarget = new ContentPreviewTarget { Controller = "Home", Action = "Contact" },
                 DependencyNotes = ContactInfoDependency,
                 Sections = new List<ContentAdminSectionDefinition>
                 {
@@ -133,7 +129,6 @@ public static class ContentAdminCatalog
                 "Trang danh sách tour",
                 "Quản lý phần mở đầu của trang danh sách tour và trạng thái rỗng khi không có kết quả.",
                 "2 section dành cho trang danh sách tour.",
-                new ContentPreviewTarget { Controller = "PublicTours", Action = "Index" },
                 Section("indexHero", "Hero danh sách tour", "Tiêu đề, mô tả và placeholder tìm kiếm"),
                 Section("emptyState", "Trạng thái rỗng", "Thông điệp và CTA khi không có tour phù hợp")),
             Editor(
@@ -142,7 +137,6 @@ public static class ContentAdminCatalog
                 "Trang điểm đến",
                 "Quản lý hero, phần mở đầu bộ sưu tập nổi bật và phần mở đầu khám phá theo vùng.",
                 "3 section của trang điểm đến.",
-                new ContentPreviewTarget { Controller = "Destinations", Action = "Index" },
                 Section("hero", "Hero điểm đến", "Badge, tiêu đề và mô tả mở đầu của hub điểm đến"),
                 Section("collectionsIntro", "Mở đầu bộ sưu tập", "Tiêu đề và mô tả cho khu vực bộ sưu tập nổi bật"),
                 Section("regionsIntro", "Mở đầu theo vùng", "Tiêu đề và mô tả cho khu vực khám phá theo vùng")),
@@ -152,7 +146,6 @@ public static class ContentAdminCatalog
                 "Trang khuyến mãi",
                 "Quản lý hero landing, intro flash sale, ví voucher và deal theo mùa.",
                 "4 section của trang khuyến mãi.",
-                new ContentPreviewTarget { Controller = "Promotions", Action = "Index" },
                 Section("hero", "Hero khuyến mãi", "Badge, tiêu đề và mô tả hero của landing ưu đãi"),
                 Section("flashSalesIntro", "Mở đầu flash sale", "Tiêu đề và mô tả cho khối flash sale"),
                 Section("voucherIntro", "Mở đầu ví voucher", "Tiêu đề và mô tả cho khối voucher campaign"),
@@ -163,7 +156,6 @@ public static class ContentAdminCatalog
                 "Trang dịch vụ lẻ",
                 "Quản lý hero, copy cho 4 thẻ dịch vụ và phần mở đầu form yêu cầu báo giá.",
                 "3 section của trang dịch vụ lẻ.",
-                new ContentPreviewTarget { Controller = "Services", Action = "Index" },
                 Section("hero", "Hero dịch vụ", "Badge, tiêu đề và mô tả mở đầu của trang dịch vụ"),
                 Section("serviceCards", "Nội dung thẻ dịch vụ", "Tiêu đề và mô tả cho 4 thẻ Vé máy bay, Khách sạn, Combo và Visa"),
                 Section("quoteFormIntro", "Giới thiệu form báo giá", "Tiêu đề, mô tả và nút gửi của form báo giá")),
@@ -173,7 +165,6 @@ public static class ContentAdminCatalog
                 "Hub cẩm nang",
                 "Quản lý hero hub nội dung, phần mở đầu bài nổi bật và danh sách bài mới.",
                 "3 section của hub cẩm nang.",
-                new ContentPreviewTarget { Controller = "Inspiration", Action = "Index" },
                 Section("hero", "Hero cẩm nang", "Badge, tiêu đề và mô tả mở đầu của hub cẩm nang"),
                 Section("featuredIntro", "Mở đầu bài nổi bật", "Tiêu đề và mô tả cho khu vực bài viết nổi bật"),
                 Section("latestIntro", "Mở đầu bài mới", "Tiêu đề và mô tả cho danh sách bài viết mới")),
@@ -187,7 +178,6 @@ public static class ContentAdminCatalog
                 Description = "Quản lý nội dung cho màn tư vấn chuyến đi và form gửi yêu cầu.",
                 ScopeSummary = "2 section của màn tư vấn và 1 phụ thuộc site-wide.",
                 Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Tư vấn" },
-                PreviewTarget = new ContentPreviewTarget { Controller = "Booking", Action = "Consultation" },
                 Subtabs = BookingSubtabs,
                 DependencyNotes = ContactInfoDependency,
                 Sections = new List<ContentAdminSectionDefinition>
@@ -206,7 +196,6 @@ public static class ContentAdminCatalog
                 Description = "Chỉnh thông điệp hiển thị khi người dùng hoàn tất đặt tour thành công.",
                 ScopeSummary = "1 khối copy dùng chung cho màn thành công.",
                 Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Thành công" },
-                PreviewUnavailableReason = "Màn này cần một booking thực tế để preview trực tiếp.",
                 Subtabs = BookingSubtabs,
                 DependencyNotes = ContactInfoDependency,
                 Sections = new List<ContentAdminSectionDefinition>
@@ -224,7 +213,6 @@ public static class ContentAdminCatalog
                 Description = "Chỉnh thông điệp cho màn thanh toán thất bại mà không ảnh hưởng trạng thái khác.",
                 ScopeSummary = "1 khối copy dùng chung cho màn thất bại.",
                 Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Thất bại" },
-                PreviewUnavailableReason = "Màn này cần một booking thực tế để preview trực tiếp.",
                 Subtabs = BookingSubtabs,
                 DependencyNotes = ContactInfoDependency,
                 Sections = new List<ContentAdminSectionDefinition>
@@ -242,7 +230,6 @@ public static class ContentAdminCatalog
                 Description = "Chỉnh thông điệp xuất hiện khi có lỗi hệ thống trong luồng đặt tour.",
                 ScopeSummary = "1 khối copy dùng chung cho màn lỗi hệ thống.",
                 Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Lỗi hệ thống" },
-                PreviewTarget = new ContentPreviewTarget { Controller = "Booking", Action = "Error" },
                 Subtabs = BookingSubtabs,
                 DependencyNotes = ContactInfoDependency,
                 Sections = new List<ContentAdminSectionDefinition>
@@ -256,7 +243,6 @@ public static class ContentAdminCatalog
                 "Trang tra cứu booking",
                 "Quản lý hero, phần giới thiệu form tra cứu và trạng thái sẵn sàng trước khi có kết quả.",
                 "3 section của trang tra cứu booking.",
-                new ContentPreviewTarget { Controller = "BookingLookup", Action = "Index" },
                 Section("hero", "Hero tra cứu booking", "Badge, tiêu đề và mô tả phần mở đầu"),
                 Section("lookupForm", "Giới thiệu form tra cứu", "Tiêu đề, mô tả và nút submit của form tra cứu"),
                 Section("readyState", "Trạng thái sẵn sàng", "Thông điệp hiển thị trước khi người dùng tra cứu booking"))
@@ -269,7 +255,6 @@ public static class ContentAdminCatalog
         string title,
         string description,
         string scopeSummary,
-        ContentPreviewTarget previewTarget,
         params ContentAdminSectionDefinition[] sections)
     {
         return new ContentAdminEditorDefinition
@@ -281,7 +266,6 @@ public static class ContentAdminCatalog
             Description = description,
             ScopeSummary = scopeSummary,
             Breadcrumb = new List<string> { "Nội dung website", navigationLabel },
-            PreviewTarget = previewTarget,
             Sections = sections
         };
     }

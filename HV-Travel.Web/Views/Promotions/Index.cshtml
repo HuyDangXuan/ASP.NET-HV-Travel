@@ -1,4 +1,5 @@
 ﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.PromotionsIndexViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("promotions");
@@ -13,19 +14,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden">
+    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute left-12 top-0 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl"></div>
             <div class="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-rose-500/20 blur-3xl"></div>
         </div>
         <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge">
+            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">local_activity</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Ưu đãi theo chiến dịch")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white">@hero.Fields.GetFieldValue("title", "Flash sale, voucher campaign và deal landing page cho HV Travel.")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy">
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Flash sale, voucher campaign và deal landing page cho HV Travel.")</h1>
+                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment."))
                     @if (!string.IsNullOrWhiteSpace(Model.CustomerSegment))
                     {
@@ -41,12 +42,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         @if (flashSalesIntro?.IsEnabled != false)
         {
-            <div>
+            <div class="@($"{ContentPresentationViewHelper.GetSectionBackgroundClass(flashSalesIntro)} {ContentPresentationViewHelper.GetSectionTextClass(flashSalesIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(flashSalesIntro)">
                 <div class="flex items-end justify-between gap-4">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.3em] text-primary">@flashSalesIntro.Fields.GetFieldValue("eyebrowText", "Flash sale")</p>
-                        <h2 class="public-section-title mt-2">@flashSalesIntro.Fields.GetFieldValue("title", "Khuyến mãi tạo urgency")</h2>
-                        <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400">
+                        <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(flashSalesIntro, "eyebrowText")">@flashSalesIntro.Fields.GetFieldValue("eyebrowText", "Flash sale")</p>
+                        <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(flashSalesIntro, "title")">@flashSalesIntro.Fields.GetFieldValue("title", "Khuyến mãi tạo urgency")</h2>
+                        <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(flashSalesIntro, "description")">
                             @Html.Raw(flashSalesIntro.Fields.GetFieldValue("description", "Khối ưu đãi có thời hạn ngắn để kéo chuyển đổi ngay trên mặt tiền B2C."))
                         </div>
                     </div>
@@ -83,10 +84,10 @@
         <div class="grid gap-8 lg:grid-cols-2">
             @if (voucherIntro?.IsEnabled != false)
             {
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <p class="text-xs uppercase tracking-[0.3em] text-primary">@voucherIntro.Fields.GetFieldValue("eyebrowText", "Voucher campaigns")</p>
-                    <h2 class="public-section-title mt-2">@voucherIntro.Fields.GetFieldValue("title", "Ví voucher")</h2>
-                    <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(voucherIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(voucherIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(voucherIntro)">
+                    <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "eyebrowText")">@voucherIntro.Fields.GetFieldValue("eyebrowText", "Voucher campaigns")</p>
+                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "title")">@voucherIntro.Fields.GetFieldValue("title", "Ví voucher")</h2>
+                    <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "description")">
                         @Html.Raw(voucherIntro.Fields.GetFieldValue("description", "Tập hợp voucher và campaign có thể tái sử dụng cho nhiều phân khúc khách hàng."))
                     </div>
                     <div class="mt-5 space-y-4">
@@ -108,10 +109,10 @@
             }
             @if (seasonalDealsIntro?.IsEnabled != false)
             {
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <p class="text-xs uppercase tracking-[0.3em] text-primary">@seasonalDealsIntro.Fields.GetFieldValue("eyebrowText", "Seasonal deals")</p>
-                    <h2 class="public-section-title mt-2">@seasonalDealsIntro.Fields.GetFieldValue("title", "Deal theo mùa")</h2>
-                    <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(seasonalDealsIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(seasonalDealsIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(seasonalDealsIntro)">
+                    <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(seasonalDealsIntro, "eyebrowText")">@seasonalDealsIntro.Fields.GetFieldValue("eyebrowText", "Seasonal deals")</p>
+                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(seasonalDealsIntro, "title")">@seasonalDealsIntro.Fields.GetFieldValue("title", "Deal theo mùa")</h2>
+                    <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(seasonalDealsIntro, "description")">
                         @Html.Raw(seasonalDealsIntro.Fields.GetFieldValue("description", "Nội dung dành cho các chiến dịch theo mùa, lễ hội và khung thời gian bán hàng cao điểm."))
                     </div>
                     <div class="mt-5 space-y-4">
@@ -129,6 +130,3 @@
         </div>
     </div>
 </section>
-
-
-

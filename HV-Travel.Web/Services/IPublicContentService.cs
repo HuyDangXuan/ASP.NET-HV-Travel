@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 
 namespace HVTravel.Web.Services;
@@ -20,17 +20,6 @@ public interface IPublicContentService
     Task SaveSiteSettingsAsync(SiteSettings siteSettings);
 
     Task SaveSectionsAsync(IEnumerable<ContentSection> sections, string tab, string? subtab);
-
-    Task<ContentPreviewSnapshot> BuildPreviewSnapshotAsync(
-        string tab,
-        string? subtab,
-        string previewToken,
-        SiteSettings? siteSettings,
-        IEnumerable<ContentSection>? sections);
-
-    Task<string> StorePreviewSnapshotAsync(ContentPreviewSnapshot snapshot);
-
-    Task<ContentPreviewSnapshot?> GetPreviewSnapshotAsync(string previewToken);
 
     void InvalidateCache();
 }

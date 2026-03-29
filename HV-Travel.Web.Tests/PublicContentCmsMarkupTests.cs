@@ -1,4 +1,4 @@
-﻿namespace HV_Travel.Web.Tests;
+namespace HV_Travel.Web.Tests;
 
 public class PublicContentCmsMarkupTests
 {
@@ -44,6 +44,43 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("lookupForm", bookingLookup);
         Assert.Contains("readyState", bookingLookup);
         Assert.Contains("Model.HasResult", bookingLookup);
+    }
+
+    [Fact]
+    public void CmsManagedPublicViews_Use_ContentPresentationViewHelper_Hooks()
+    {
+        var sectionManagedViews = new[]
+        {
+            @"HV-Travel.Web\Views\Home\Index.cshtml",
+            @"HV-Travel.Web\Views\Home\About.cshtml",
+            @"HV-Travel.Web\Views\Home\Contact.cshtml",
+            @"HV-Travel.Web\Views\PublicTours\Index.cshtml",
+            @"HV-Travel.Web\Views\Destinations\Index.cshtml",
+            @"HV-Travel.Web\Views\Promotions\Index.cshtml",
+            @"HV-Travel.Web\Views\Services\Index.cshtml",
+            @"HV-Travel.Web\Views\Inspiration\Index.cshtml",
+            @"HV-Travel.Web\Views\Booking\Consultation.cshtml",
+            @"HV-Travel.Web\Views\BookingLookup\Index.cshtml"
+        };
+
+        foreach (var view in sectionManagedViews)
+        {
+            AssertContains(view, "ContentPresentationViewHelper");
+            AssertContains(view, "GetFieldTextStyle(");
+        }
+
+        var fieldSliceViews = new[]
+        {
+            @"HV-Travel.Web\Views\Booking\Success.cshtml",
+            @"HV-Travel.Web\Views\Booking\Failed.cshtml",
+            @"HV-Travel.Web\Views\Booking\Error.cshtml"
+        };
+
+        foreach (var view in fieldSliceViews)
+        {
+            AssertContains(view, "ContentPresentationViewHelper");
+            AssertContains(view, "GetFieldTextStyle(");
+        }
     }
 
     [Fact]
