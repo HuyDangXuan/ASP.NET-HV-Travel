@@ -103,32 +103,32 @@
         string DesktopNavLinkClass(string pageKey)
     {
         var stateClass = IsActive(pageKey)
-            ? "active border-primary/25 bg-gradient-to-r from-primary/15 via-cyan-400/10 to-transparent text-primary dark:border-primary/20 dark:bg-primary/12 dark:text-white"
-            : "text-slate-700 dark:text-slate-100 hover:border-primary/20 hover:bg-primary/8 hover:text-primary dark:hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:text-primary";
+            ? "is-active"
+            : string.Empty;
 
-        return $"public-nav-link inline-flex items-center rounded-full border border-transparent px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}";
+        return $"public-nav-link public-header-control inline-flex items-center rounded-full border px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}".Trim();
     }
 
         string MoreToggleClass()
     {
         var stateClass = hasSecondaryActive
-            ? "border-primary/25 bg-gradient-to-r from-primary/15 via-cyan-400/10 to-transparent text-primary dark:border-primary/20 dark:bg-primary/12 dark:text-white"
-            : "text-slate-700 dark:text-slate-100 hover:border-primary/20 hover:bg-primary/8 hover:text-primary dark:hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:text-primary";
+            ? "is-active"
+            : string.Empty;
 
-        return $"public-nav-more-toggle inline-flex items-center gap-2 rounded-full border border-transparent px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}";
+        return $"public-nav-more-toggle public-header-control inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}".Trim();
     }
 
         string MobileNavLinkClass(string pageKey)
     {
         var stateClass = IsActive(pageKey)
-            ? "bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary"
-            : "text-slate-700 dark:text-slate-100 hover:bg-primary/10 hover:text-primary dark:hover:text-primary";
+            ? "is-active"
+            : string.Empty;
 
-        return $"flex items-center gap-3 rounded-2xl px-4 py-3 text-[0.9rem] font-semibold transition-all {stateClass}";
+        return $"public-mobile-nav-link flex items-center gap-3 rounded-2xl px-4 py-3 text-[0.9rem] font-semibold transition-all {stateClass}".Trim();
     }
 }
 <!DOCTYPE html>
-<html class="light" lang="vi">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -222,13 +222,15 @@
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
         } else {
             document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
         }
     </script>
 </head>
 <body class="public-page-shell bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
-    <header class="public-site-header sticky top-0 z-50 bg-surface-light/82 dark:bg-surface-dark/82 backdrop-blur-xl border-b border-border-light/60 dark:border-border-dark/60 transition-all duration-300" id="site-header">
+    <header class="public-site-header sticky top-0 z-50 backdrop-blur-xl transition-all duration-300" id="site-header">
         <div class="mx-auto max-w-7xl">
             <div class="public-header-shell public-header-compact flex h-[3.9rem] items-center gap-3 sm:h-[4.4rem] xl:gap-5">
                 <a asp-controller="Home" asp-action="Index" class="public-brand-lockup flex min-w-0 shrink-0 items-center gap-2.5 group">
@@ -236,7 +238,7 @@
                         <span class="material-symbols-outlined">flight_takeoff</span>
                     </div>
                     <div class="min-w-0">
-                        <h1 class="public-brand-title truncate text-base font-extrabold leading-none tracking-tight text-slate-900 dark:text-white">@brandName</h1>
+                        <h1 class="public-brand-title truncate text-base font-extrabold leading-none tracking-tight">@brandName</h1>
                         <p class="public-brand-tagline truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">@brandTagline</p>
                     </div>
                 </a>
@@ -251,7 +253,7 @@
                             <span>@moreLabel</span>
                             <span class="material-symbols-outlined text-[18px]">expand_more</span>
                         </button>
-                        <div id="public-nav-more-panel" class="public-secondary-nav-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl border border-border-light bg-white/95 p-3 shadow-2xl shadow-slate-200/40 backdrop-blur dark:border-border-dark dark:bg-surface-dark/95">
+                        <div id="public-nav-more-panel" class="public-secondary-nav-panel public-header-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl p-3 backdrop-blur">
                             <div class="space-y-1">
                                 @foreach (var item in secondaryNavItems)
                                 {
@@ -266,12 +268,12 @@
                 </nav>
 
                 <div class="public-nav-actions ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-3">
-                    <button id="theme-toggle-public" class="group inline-flex size-9 items-center justify-center rounded-full font-medium text-slate-500 transition-all hover:bg-surface-muted-light hover:text-primary dark:text-text-muted-dark dark:hover:bg-surface-elevated-dark" aria-label="Chuy&#7875;n ch&#7871; &#273;&#7897; t&#7889;i">
+                    <button id="theme-toggle-public" class="public-header-icon-button public-header-control group inline-flex size-9 items-center justify-center rounded-full font-medium transition-all" aria-label="Chuy&#7875;n ch&#7871; &#273;&#7897; t&#7889;i">
                         <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
                         <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
                     <div class="hidden xl:flex items-center gap-2 2xl:gap-3">
-                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link inline-flex items-center gap-2 rounded-xl border border-border-light bg-white/70 px-3.5 py-2 text-[0.86rem] font-bold text-slate-700 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-100">
+                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[0.86rem] font-bold transition-all">
                             <span class="material-symbols-outlined text-[18px]">search</span>
                             <span>@bookingLookupLabel</span>
                         </a>
@@ -282,7 +284,7 @@
                             var customerCode = User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel;
                             var customerInitial = customerName.Substring(0, 1).ToUpperInvariant();
                             <div class="public-account-menu relative">
-                                <button id="public-account-toggle" type="button" class="public-account-toggle inline-flex items-center gap-2.5 rounded-2xl border border-border-light/80 bg-surface-light/80 px-3 py-1.5 text-left shadow-sm transition-all hover:border-primary/40 dark:border-border-dark dark:bg-surface-elevated-dark/85" aria-expanded="false" aria-controls="public-account-panel">
+                                <button id="public-account-toggle" type="button" class="public-account-toggle public-header-control inline-flex items-center gap-2.5 rounded-2xl border px-3 py-1.5 text-left transition-all" aria-expanded="false" aria-controls="public-account-panel">
                                     <span class="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-extrabold text-white">@customerInitial</span>
                                     <span class="min-w-0 hidden 2xl:block">
                                         <span class="block truncate text-[0.83rem] font-bold text-slate-900 dark:text-white">@customerName</span>
@@ -290,7 +292,7 @@
                                     </span>
                                     <span class="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-300">expand_more</span>
                                 </button>
-                                <div id="public-account-panel" class="public-account-panel hidden absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl border border-border-light bg-white/95 p-4 shadow-2xl shadow-slate-200/40 backdrop-blur dark:border-border-dark dark:bg-surface-dark/95">
+                                <div id="public-account-panel" class="public-account-panel public-header-panel hidden absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl p-4 backdrop-blur">
                                     <div class="flex items-center gap-3 rounded-2xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
                                         <span class="flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-base font-extrabold text-white">@customerInitial</span>
                                         <div class="min-w-0">
@@ -322,12 +324,12 @@
                             </a>
                         }
                     </div>
-                    <button id="mobile-menu-btn" type="button" class="rounded-xl p-2 text-slate-500 transition-all hover:bg-surface-muted-light dark:hover:bg-surface-elevated-dark xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
+                    <button id="mobile-menu-btn" type="button" class="public-header-icon-button public-header-control rounded-xl p-2 transition-all xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
                         <span class="material-symbols-outlined text-[24px]">menu</span>
                     </button>
                 </div>
             </div>
-            <div id="mobile-menu" class="public-mobile-drawer hidden border-t border-border-light dark:border-border-dark xl:hidden">
+            <div id="mobile-menu" class="public-mobile-drawer hidden xl:hidden">
                 <div class="py-4">
                     <nav class="space-y-1" aria-label="&#272;i&#7873;u h&#432;&#7899;ng di &#273;&#7897;ng">
                         @foreach (var item in mobileNavItems)
@@ -339,7 +341,7 @@
                         }
                     </nav>
                     <div class="mt-4 border-t border-border-light pt-4 dark:border-border-dark">
-                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link flex items-center justify-center gap-2 rounded-2xl border border-border-light bg-white/70 px-4 py-3 text-sm font-bold text-slate-700 transition-all hover:border-primary hover:text-primary dark:border-border-dark dark:bg-surface-elevated-dark/80 dark:text-slate-100">
+                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold transition-all">
                             <span class="material-symbols-outlined text-[18px]">search</span>
                             <span>@bookingLookupLabel</span>
                         </a>
@@ -541,13 +543,18 @@
             }
         });
         const header = document.getElementById('site-header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 10) {
-                header.classList.add('shadow-lg', 'shadow-slate-200/20', 'dark:shadow-slate-900/30');
+        const syncHeaderScrollState = () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (window.scrollY > 10 && !isDarkMode) {
+                header.classList.add('shadow-lg', 'shadow-slate-200/20');
             } else {
                 header.classList.remove('shadow-lg', 'shadow-slate-200/20', 'dark:shadow-slate-900/30');
             }
-        });
+        };
+
+        window.addEventListener('scroll', syncHeaderScrollState);
+        window.addEventListener('themechange', syncHeaderScrollState);
+        syncHeaderScrollState();
 
         (function() {
             const els = document.querySelectorAll('[data-animate], [data-stagger]');
@@ -566,14 +573,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
