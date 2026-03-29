@@ -647,6 +647,7 @@ body.public-page-shell .public-chat-onboarding {
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
 }
 
+html.dark body.public-page-shell .public-chat-onboarding,
 body.public-page-shell .dark .public-chat-onboarding,
 body.public-page-shell.dark .public-chat-onboarding {
   background:
@@ -666,6 +667,317 @@ body.public-page-shell .public-chat-bubble {
 
 body.public-page-shell .public-chat-metadata {
   font-size: clamp(0.67rem, 0.64rem + 0.08vw, 0.75rem);
+}
+
+body.public-page-shell .public-chat-panel {
+  border-color: rgba(215, 229, 238, 0.82);
+  background: rgba(248, 250, 252, 0.98);
+  box-shadow: 0 28px 70px rgba(8, 23, 38, 0.22);
+}
+
+body.public-page-shell .public-chat-header {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  background: linear-gradient(180deg, rgba(7, 17, 27, 0.98), rgba(13, 27, 42, 0.96));
+  color: #f8fbff;
+}
+
+body.public-page-shell .public-chat-eyebrow {
+  color: rgba(125, 211, 252, 0.84);
+}
+
+body.public-page-shell .public-chat-close-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fbff;
+}
+
+body.public-page-shell .public-chat-close-button:hover,
+body.public-page-shell .public-chat-close-button:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+body.public-page-shell .public-chat-chip {
+  border: 1px solid rgba(14, 165, 233, 0.16);
+  background: rgba(14, 165, 233, 0.06);
+  color: #0284c7;
+}
+
+body.public-page-shell .public-chat-heading {
+  color: #0f172a;
+}
+
+body.public-page-shell .public-chat-copy,
+body.public-page-shell .public-chat-field-label,
+body.public-page-shell .public-chat-hint,
+body.public-page-shell .public-chat-timestamp,
+body.public-page-shell .public-chat-metadata.is-staff {
+  color: #64748b;
+}
+
+body.public-page-shell .public-chat-profile-card {
+  border: 1px solid rgba(215, 229, 238, 0.9);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 20px 48px rgba(8, 23, 38, 0.08);
+}
+
+body.public-page-shell .public-chat-input,
+body.public-page-shell .public-chat-input-shell {
+  color: #0f172a;
+}
+
+body.public-page-shell .public-chat-input {
+  border: 1px solid rgba(215, 229, 238, 0.92);
+  background: rgba(248, 250, 252, 0.96);
+  box-shadow: 0 8px 20px rgba(8, 23, 38, 0.05);
+}
+
+body.public-page-shell .public-chat-input::placeholder {
+  color: #94a3b8;
+}
+
+body.public-page-shell .public-chat-status-box {
+  border: 1px solid rgba(215, 229, 238, 0.92);
+}
+
+body.public-page-shell .public-chat-status-box.is-neutral {
+  background: rgba(248, 250, 252, 0.92);
+  color: #475569;
+}
+
+body.public-page-shell .public-chat-status-box.is-success {
+  border-color: rgba(16, 185, 129, 0.28);
+  background: rgba(236, 253, 245, 0.96);
+  color: #047857;
+}
+
+body.public-page-shell .public-chat-status-box.is-error {
+  border-color: rgba(239, 68, 68, 0.24);
+  background: rgba(254, 242, 242, 0.96);
+  color: #b91c1c;
+}
+
+body.public-page-shell .public-chat-thread-surface {
+  background: linear-gradient(180deg, rgba(241, 245, 249, 0.9), rgba(248, 250, 252, 0.96));
+}
+
+body.public-page-shell .public-chat-composer {
+  border-top: 1px solid rgba(226, 232, 240, 0.92);
+  background: rgba(248, 250, 252, 0.98);
+}
+
+body.public-page-shell .public-chat-input-shell {
+  border: 1px solid rgba(215, 229, 238, 0.92);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(8, 23, 38, 0.08);
+}
+
+body.public-page-shell .public-chat-bubble {
+  box-shadow: 0 12px 30px rgba(8, 23, 38, 0.08);
+}
+
+body.public-page-shell .public-chat-bubble.is-empty,
+body.public-page-shell .public-chat-bubble.is-staff {
+  border: 1px solid rgba(215, 229, 238, 0.92);
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+}
+
+body.public-page-shell .public-chat-bubble.is-empty {
+  border-style: dashed;
+  color: #64748b;
+}
+
+body.public-page-shell .public-chat-bubble.is-system {
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(255, 247, 237, 0.96);
+  color: #92400e;
+}
+
+body.public-page-shell .public-chat-bubble.is-customer {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 52%, #22d3ee 100%);
+  color: #ffffff;
+}
+
+body.public-page-shell .public-chat-metadata.is-customer {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+body.public-page-shell .public-chat-metadata.is-system {
+  color: #d97706;
+}
+
+body.public-page-shell .public-chat-toggle {
+  background: linear-gradient(135deg, rgba(7, 17, 27, 0.98), rgba(13, 27, 42, 0.94));
+  color: #f8fbff;
+  box-shadow: 0 24px 48px rgba(8, 23, 38, 0.24);
+}
+
+body.public-page-shell .public-chat-toggle-icon {
+  background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+  color: #ffffff;
+  box-shadow: 0 16px 34px rgba(14, 165, 233, 0.28);
+}
+
+html.dark body.public-page-shell .public-chat-panel,
+body.public-page-shell.dark .public-chat-panel {
+  border-color: rgba(31, 51, 71, 0.98);
+  background: rgba(7, 17, 27, 0.98);
+  box-shadow: 0 34px 80px rgba(0, 0, 0, 0.42);
+}
+
+html.dark body.public-page-shell .public-chat-header,
+body.public-page-shell.dark .public-chat-header {
+  border-bottom-color: rgba(31, 51, 71, 0.96);
+  background: rgba(4, 12, 24, 0.98);
+}
+
+html.dark body.public-page-shell .public-chat-eyebrow,
+body.public-page-shell.dark .public-chat-eyebrow {
+  color: rgba(103, 232, 249, 0.82);
+}
+
+html.dark body.public-page-shell .public-chat-close-button,
+body.public-page-shell.dark .public-chat-close-button {
+  background: rgba(13, 27, 42, 0.94);
+  color: #f8fbff;
+}
+
+html.dark body.public-page-shell .public-chat-close-button:hover,
+html.dark body.public-page-shell .public-chat-close-button:focus-visible,
+body.public-page-shell.dark .public-chat-close-button:hover,
+body.public-page-shell.dark .public-chat-close-button:focus-visible {
+  background: rgba(11, 92, 115, 0.22);
+}
+
+html.dark body.public-page-shell .public-chat-chip,
+body.public-page-shell.dark .public-chat-chip {
+  border-color: rgba(20, 184, 212, 0.28);
+  background: rgba(11, 92, 115, 0.16);
+  color: #67e8f9;
+}
+
+html.dark body.public-page-shell .public-chat-heading,
+body.public-page-shell.dark .public-chat-heading {
+  color: #f8fbff;
+}
+
+html.dark body.public-page-shell .public-chat-copy,
+html.dark body.public-page-shell .public-chat-field-label,
+html.dark body.public-page-shell .public-chat-hint,
+html.dark body.public-page-shell .public-chat-timestamp,
+html.dark body.public-page-shell .public-chat-metadata.is-staff,
+body.public-page-shell.dark .public-chat-copy,
+body.public-page-shell.dark .public-chat-field-label,
+body.public-page-shell.dark .public-chat-hint,
+body.public-page-shell.dark .public-chat-timestamp,
+body.public-page-shell.dark .public-chat-metadata.is-staff {
+  color: #8aa0b5;
+}
+
+html.dark body.public-page-shell .public-chat-profile-card,
+body.public-page-shell.dark .public-chat-profile-card {
+  border: 1px solid rgba(31, 51, 71, 0.98);
+  background: rgba(13, 27, 42, 0.96);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.24);
+}
+
+html.dark body.public-page-shell .public-chat-input,
+html.dark body.public-page-shell .public-chat-input-shell,
+body.public-page-shell.dark .public-chat-input,
+body.public-page-shell.dark .public-chat-input-shell {
+  color: #f8fbff;
+}
+
+html.dark body.public-page-shell .public-chat-input,
+body.public-page-shell.dark .public-chat-input {
+  border-color: rgba(31, 51, 71, 0.98);
+  background: rgba(7, 17, 27, 0.94);
+  box-shadow: none;
+}
+
+html.dark body.public-page-shell .public-chat-input::placeholder,
+body.public-page-shell.dark .public-chat-input::placeholder {
+  color: #6b8298;
+}
+
+html.dark body.public-page-shell .public-chat-status-box,
+body.public-page-shell.dark .public-chat-status-box {
+  border-color: rgba(31, 51, 71, 0.98);
+}
+
+html.dark body.public-page-shell .public-chat-status-box.is-neutral,
+body.public-page-shell.dark .public-chat-status-box.is-neutral {
+  background: rgba(7, 17, 27, 0.92);
+  color: #c3d3df;
+}
+
+html.dark body.public-page-shell .public-chat-status-box.is-success,
+body.public-page-shell.dark .public-chat-status-box.is-success {
+  border-color: rgba(16, 185, 129, 0.26);
+  background: rgba(6, 78, 59, 0.26);
+  color: #86efac;
+}
+
+html.dark body.public-page-shell .public-chat-status-box.is-error,
+body.public-page-shell.dark .public-chat-status-box.is-error {
+  border-color: rgba(239, 68, 68, 0.28);
+  background: rgba(127, 29, 29, 0.24);
+  color: #fca5a5;
+}
+
+html.dark body.public-page-shell .public-chat-thread-surface,
+body.public-page-shell.dark .public-chat-thread-surface {
+  background: linear-gradient(180deg, rgba(4, 12, 24, 0.98), rgba(7, 17, 27, 0.98));
+}
+
+html.dark body.public-page-shell .public-chat-composer,
+body.public-page-shell.dark .public-chat-composer {
+  border-top-color: rgba(31, 51, 71, 0.96);
+  background: rgba(7, 17, 27, 0.98);
+}
+
+html.dark body.public-page-shell .public-chat-input-shell,
+body.public-page-shell.dark .public-chat-input-shell {
+  border: 1px solid rgba(31, 51, 71, 0.98);
+  background: rgba(13, 27, 42, 0.96);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
+}
+
+html.dark body.public-page-shell .public-chat-bubble.is-empty,
+html.dark body.public-page-shell .public-chat-bubble.is-staff,
+body.public-page-shell.dark .public-chat-bubble.is-empty,
+body.public-page-shell.dark .public-chat-bubble.is-staff {
+  border-color: rgba(31, 51, 71, 0.98);
+  background: rgba(13, 27, 42, 0.96);
+  color: #f8fbff;
+}
+
+html.dark body.public-page-shell .public-chat-bubble.is-empty,
+body.public-page-shell.dark .public-chat-bubble.is-empty {
+  color: #a8bac8;
+}
+
+html.dark body.public-page-shell .public-chat-bubble.is-system,
+body.public-page-shell.dark .public-chat-bubble.is-system {
+  border-color: rgba(245, 158, 11, 0.24);
+  background: rgba(120, 53, 15, 0.22);
+  color: #fcd34d;
+}
+
+html.dark body.public-page-shell .public-chat-metadata.is-system,
+body.public-page-shell.dark .public-chat-metadata.is-system {
+  color: rgba(252, 211, 77, 0.86);
+}
+
+html.dark body.public-page-shell .public-chat-toggle,
+body.public-page-shell.dark .public-chat-toggle {
+  background: linear-gradient(135deg, rgba(13, 27, 42, 0.98), rgba(11, 92, 115, 0.9));
+  color: #f8fbff;
+}
+
+html.dark body.public-page-shell .public-chat-toggle-icon,
+body.public-page-shell.dark .public-chat-toggle-icon {
+  background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+  color: #ffffff;
 }
 
 @media (max-width: 640px) {
@@ -1070,3 +1382,6 @@ body.public-page-shell .public-top-section-content.is-right {
   text-align: right;
   align-items: flex-end;
 }
+
+
+
