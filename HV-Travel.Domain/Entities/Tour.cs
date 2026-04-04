@@ -1,11 +1,11 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace HVTravel.Domain.Entities
 {
     [BsonIgnoreExtraElements]
-    public class Tour
+    public partial class Tour
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -92,7 +92,7 @@ namespace HVTravel.Domain.Entities
     }
 
     [BsonIgnoreExtraElements]
-    public class TourPrice
+    public partial class TourPrice
     {
         [BsonElement("adult")]
         public decimal Adult { get; set; }
@@ -111,7 +111,7 @@ namespace HVTravel.Domain.Entities
     }
 
     [BsonIgnoreExtraElements]
-    public class TourDuration
+    public partial class TourDuration
     {
         [BsonElement("days")]
         public int Days { get; set; }
@@ -139,3 +139,4 @@ namespace HVTravel.Domain.Entities
         public List<string> Activities { get; set; } = new List<string>();
     }
 }
+

@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --theme-scrollbar-thumb: #9cc8d6;
   --theme-scrollbar-thumb-hover: #5faac2;
   --theme-glass-bg: rgba(255, 255, 255, 0.86);
@@ -1385,3 +1385,834 @@ body.public-page-shell .public-top-section-content.is-right {
 
 
 
+body.public-page-shell .public-tour-card-grid {
+  align-items: stretch;
+}
+
+body.public-page-shell .public-tour-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(215, 229, 238, 0.95);
+  border-radius: 1.9rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 252, 0.96));
+  box-shadow: 0 18px 40px rgba(8, 23, 38, 0.08);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+body.public-page-shell .public-tour-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14, 165, 233, 0.22);
+  box-shadow: 0 22px 42px rgba(8, 23, 38, 0.12);
+}
+
+body.public-page-shell .tour-card-media {
+  position: relative;
+  aspect-ratio: 1 / 0.78;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(2, 132, 199, 0.08));
+}
+
+body.public-page-shell .tour-card-media img {
+  transition: transform 320ms ease;
+}
+
+body.public-page-shell .public-tour-card:hover .tour-card-media img {
+  transform: scale(1.03);
+}
+
+body.public-page-shell .tour-card-media-placeholder {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  color: rgba(2, 132, 199, 0.42);
+  position: absolute;
+  inset: 0;
+}
+
+body.public-page-shell .tour-card-media-top {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.9rem;
+  pointer-events: none;
+}
+
+body.public-page-shell .tour-card-badge-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  pointer-events: auto;
+}
+
+body.public-page-shell .tour-card-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
+}
+
+body.public-page-shell .tour-card-badge--sale {
+  background: rgba(255, 255, 255, 0.94);
+  color: #dc2626;
+}
+
+body.public-page-shell .tour-card-badge--warning {
+  background: rgba(255, 251, 235, 0.96);
+  color: #b45309;
+}
+
+body.public-page-shell .tour-card-badge--info {
+  background: rgba(239, 246, 255, 0.96);
+  color: #0369a1;
+}
+
+body.public-page-shell .tour-card-badge--neutral {
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+}
+
+body.public-page-shell .tour-card-heart {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  box-shadow: 0 18px 28px rgba(15, 23, 42, 0.2);
+  transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+body.public-page-shell .tour-card-heart:hover,
+body.public-page-shell .tour-card-heart:focus-visible {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+body.public-page-shell .tour-card-heart.is-active {
+  background: rgba(255, 255, 255, 0.96);
+  color: #dc2626;
+}
+
+body.public-page-shell .tour-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 0.95rem 0.95rem;
+}
+
+body.public-page-shell .tour-card-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.15rem;
+  line-height: 1.26;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+body.public-page-shell .tour-card-meta {
+  display: grid;
+  gap: 0.55rem;
+}
+
+body.public-page-shell .tour-card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: #0f172a;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+body.public-page-shell .tour-card-meta-row span:last-child {
+  min-width: 0;
+}
+
+body.public-page-shell .tour-card-meta-row .material-symbols-outlined {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  color: #475569;
+}
+
+body.public-page-shell .tour-card-meta-split {
+  display: flex;
+  justify-content: space-between;
+}
+
+body.public-page-shell .tour-card-remaining {
+  align-items: flex-start;
+}
+
+body.public-page-shell .tour-card-remaining strong {
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+body.public-page-shell .tour-card-pricing {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+body.public-page-shell .tour-card-price-label {
+  margin: 0 0 0.05rem;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+body.public-page-shell .tour-card-original-price {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+body.public-page-shell .tour-card-current-price {
+  margin: 0.05rem 0 0;
+  color: var(--color-primary, #0ea5e9);
+  font-size: clamp(1.05rem, 0.95rem + 0.45vw, 1.55rem);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+body.public-page-shell .tour-card-booking {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  border-radius: 1rem;
+  padding: 0.8rem 1rem;
+  color: var(--color-primary, #0ea5e9);
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: rgba(14, 165, 233, 0.08);
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+body.public-page-shell .tour-card-booking:hover,
+body.public-page-shell .tour-card-booking:focus-visible {
+  background: var(--color-primary, #0ea5e9);
+  color: #fff;
+  border-color: var(--color-primary, #0ea5e9);
+  transform: translateY(-1px);
+}
+
+html.dark body.public-page-shell .public-tour-card,
+body.public-page-shell.dark .public-tour-card {
+  border-color: rgba(31, 51, 71, 0.96);
+  background: linear-gradient(180deg, rgba(13, 27, 42, 0.98), rgba(19, 38, 58, 0.96));
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.28);
+}
+
+html.dark body.public-page-shell .tour-card-title,
+body.public-page-shell.dark .tour-card-title,
+html.dark body.public-page-shell .tour-card-meta-row,
+body.public-page-shell.dark .tour-card-meta-row {
+  color: #f8fafc;
+}
+
+html.dark body.public-page-shell .tour-card-meta-row .material-symbols-outlined,
+body.public-page-shell.dark .tour-card-meta-row .material-symbols-outlined {
+  color: #cbd5e1;
+}
+
+html.dark body.public-page-shell .tour-card-price-label,
+body.public-page-shell.dark .tour-card-price-label,
+html.dark body.public-page-shell .tour-card-original-price,
+body.public-page-shell.dark .tour-card-original-price {
+  color: #cbd5e1;
+}
+
+html.dark body.public-page-shell .tour-card-heart,
+body.public-page-shell.dark .tour-card-heart {
+  border-color: rgba(148, 163, 184, 0.36);
+  background: rgba(13, 27, 42, 0.38);
+}
+
+html.dark body.public-page-shell .tour-card-heart.is-active,
+body.public-page-shell.dark .tour-card-heart.is-active {
+  background: rgba(255, 255, 255, 0.94);
+  color: #dc2626;
+}
+
+html.dark body.public-page-shell .tour-card-booking,
+body.public-page-shell.dark .tour-card-booking {
+  background: rgba(14, 165, 233, 0.12);
+}
+
+@media (max-width: 767.98px) {
+  body.public-page-shell .tour-card-title {
+    font-size: 1.3rem;
+  }
+
+  body.public-page-shell .tour-card-meta-split {
+    grid-template-columns: 1fr;
+  }
+
+  body.public-page-shell .tour-card-pricing {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.public-page-shell .tour-card-booking {
+    width: 100%;
+  }
+}
+
+body.public-page-shell .tour-card-media .is-hidden {
+  display: none;
+}
+
+body.public-page-shell .tour-card-media .record-view {
+  position: relative;
+}
+
+body.public-page-shell .tour-card-title,
+body.public-page-shell .tour-card-meta-row,
+body.public-page-shell .tour-card-price-label,
+body.public-page-shell .tour-card-original-price,
+body.public-page-shell .tour-card-current-price,
+body.public-page-shell .tour-card-booking {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+body.public-page-shell .tour-card-current-price,
+body.public-page-shell .tour-card-original-price {
+  white-space: nowrap;
+}
+
+body.public-page-shell .tour-card-remaining span:last-child {
+  white-space: normal;
+}
+
+body.public-page-shell .tour-card-booking {
+  white-space: normal;
+}
+
+@media (min-width: 1280px) {
+  body.public-page-shell .public-tour-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.public-page-shell .public-tour-card {
+    max-width: 24rem;
+  }
+
+  body.public-page-shell .tour-card-title {
+    font-size: 1.05rem;
+  }
+
+  body.public-page-shell .tour-card-current-price {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1679.98px) {
+  body.public-page-shell .public-tour-card-grid {
+    justify-items: start;
+  }
+}
+
+@media (min-width: 1680px) {
+  body.public-page-shell .public-tour-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  body.public-page-shell .public-tour-card {
+    max-width: none;
+  }
+
+  body.public-page-shell .tour-card-meta-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+body.public-page-shell .public-filter-form {
+  display: grid;
+  gap: clamp(0.9rem, 0.7rem + 0.45vw, 1.25rem);
+}
+
+body.public-page-shell .public-filter-heading {
+  display: grid;
+  gap: clamp(0.3rem, 0.24rem + 0.12vw, 0.45rem);
+  padding-inline: 0.25rem;
+}
+
+body.public-page-shell .public-filter-heading-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.4rem, 1.05rem + 0.72vw, 1.8rem);
+  font-weight: 800;
+  /* letter-spacing: clamp(0.08em, 0.04em + 0.1vw, 0.14em); */
+  line-height: 1.08;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+body.public-page-shell .public-filter-shell {
+  display: grid;
+  gap: clamp(0.9rem, 0.68rem + 0.42vw, 1.2rem);
+  padding: clamp(1rem, 0.8rem + 0.55vw, 1.35rem);
+  border: 1px solid rgb(203 213 225 / 0.9);
+  border-radius: clamp(1.55rem, 1.2rem + 0.75vw, 2rem);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(248 250 252 / 0.98));
+  box-shadow: 0 22px 50px rgb(15 23 42 / 0.08);
+}
+
+body.public-page-shell .public-filter-section {
+  display: grid;
+  gap: clamp(0.8rem, 0.68rem + 0.25vw, 0.98rem);
+}
+
+body.public-page-shell .public-filter-section + .public-filter-section {
+  padding-top: 0.1rem;
+}
+
+body.public-page-shell .public-filter-section--compact {
+  gap: clamp(0.75rem, 0.64rem + 0.22vw, 0.9rem);
+}
+
+body.public-page-shell .public-filter-grid {
+  display: grid;
+  gap: clamp(0.8rem, 0.68rem + 0.24vw, 0.95rem);
+}
+
+body.public-page-shell .public-filter-row {
+  display: grid;
+  gap: clamp(0.72rem, 0.55rem + 0.26vw, 0.9rem);
+}
+
+body.public-page-shell .public-filter-row--pair {
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+body.public-page-shell .public-filter-field {
+  display: grid;
+  gap: clamp(0.45rem, 0.35rem + 0.16vw, 0.55rem);
+  min-width: 0;
+  align-content: start;
+}
+
+body.public-page-shell .public-filter-label {
+  margin: 0;
+  min-width: 0;
+  padding-inline: 0.1rem;
+  color: #94a3b8;
+  font-size: clamp(0.72rem, 0.64rem + 0.12vw, 0.82rem);
+  font-weight: 800;
+  letter-spacing: clamp(0.15em, 0.1em + 0.12vw, 0.24em);
+  line-height: 1.35;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+body.public-page-shell .public-filter-control {
+  width: 100%;
+  min-width: 0;
+  min-height: clamp(3.1rem, 2.92rem + 0.35vw, 3.55rem);
+  padding: clamp(0.72rem, 0.66rem + 0.16vw, 0.82rem) clamp(0.88rem, 0.7rem + 0.24vw, 1rem);
+  border: 1px solid rgb(203 213 225 / 0.95);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgb(255 255 255), rgb(248 250 252));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.92), 0 14px 30px rgb(15 23 42 / 0.06);
+  color: #0f172a;
+  font-size: clamp(0.96rem, 0.88rem + 0.15vw, 1.05rem);
+  font-weight: 600;
+  line-height: 1.25;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+body.public-page-shell input.public-filter-control::placeholder {
+  color: #94a3b8;
+}
+
+body.public-page-shell .public-filter-control:focus {
+  outline: none;
+  border-color: rgb(14 165 233 / 0.7);
+  box-shadow: 0 0 0 3px rgb(14 165 233 / 0.14);
+}
+
+body.public-page-shell .public-custom-select,
+body.public-page-shell .public-filter-field > .public-filter-control,
+body.public-page-shell .public-filter-field > .public-filter-summary,
+body.public-page-shell .public-filter-field > .public-filter-checkboxes {
+  width: 100%;
+  min-width: 0;
+}
+
+body.public-page-shell .public-custom-select {
+  position: relative;
+}
+
+body.public-page-shell .public-custom-select-shell {
+  display: none;
+}
+
+body.public-page-shell .public-custom-select.is-enhanced .public-native-select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.public-page-shell .public-custom-select.is-enhanced .public-custom-select-shell {
+  display: block;
+}
+
+body.public-page-shell .public-custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.55rem, 0.42rem + 0.18vw, 0.75rem);
+  min-height: clamp(3.1rem, 2.92rem + 0.35vw, 3.55rem);
+  width: 100%;
+  min-width: 0;
+  padding: clamp(0.72rem, 0.66rem + 0.16vw, 0.82rem) clamp(0.88rem, 0.7rem + 0.24vw, 1rem);
+  border: 1px solid rgb(203 213 225 / 0.95);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgb(255 255 255), rgb(248 250 252));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 14px 30px rgb(15 23 42 / 0.06);
+  transition: all 0.2s ease;
+}
+
+body.public-page-shell .public-custom-select-trigger:hover,
+body.public-page-shell .public-custom-select.is-open .public-custom-select-trigger {
+  border-color: rgb(14 165 233 / 0.6);
+  box-shadow: 0 0 0 3px rgb(14 165 233 / 0.12), 0 16px 32px rgb(15 23 42 / 0.1);
+}
+
+body.public-page-shell .public-custom-select-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+body.public-page-shell .public-custom-select .selected-label {
+  color: #0f172a;
+  min-width: 0;
+  font-size: clamp(0.96rem, 0.88rem + 0.15vw, 1.05rem);
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.public-page-shell .public-custom-select .arrow-icon {
+  color: #64748b;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+body.public-page-shell .public-custom-select-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.65rem);
+  display: none;
+  padding: 0.5rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 1.25rem;
+  background: rgb(255 255 255 / 0.97);
+  box-shadow: 0 24px 60px rgb(15 23 42 / 0.16);
+  backdrop-filter: blur(14px);
+  z-index: 20;
+}
+
+body.public-page-shell .public-custom-select-menu.visible {
+  display: block;
+}
+
+body.public-page-shell .public-custom-select-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+body.public-page-shell .public-custom-select-option:hover {
+  background: rgb(248 250 252);
+  color: var(--color-primary, #0ea5e9);
+  transform: translateX(2px);
+}
+
+body.public-page-shell .public-custom-select-option.selected {
+  background: linear-gradient(135deg, rgb(14 165 233 / 0.16), rgb(56 189 248 / 0.08));
+  color: var(--color-primary, #0ea5e9);
+}
+
+body.public-page-shell .public-custom-select-option-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+body.public-page-shell .public-custom-select-option-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 9999px;
+  background: rgb(148 163 184);
+  flex-shrink: 0;
+}
+
+body.public-page-shell .public-custom-select-option.selected .public-custom-select-option-dot {
+  background: currentColor;
+  box-shadow: 0 0 0 4px rgb(14 165 233 / 0.12);
+}
+
+body.public-page-shell .public-filter-checkboxes {
+  display: grid;
+  gap: clamp(0.7rem, 0.58rem + 0.22vw, 0.85rem);
+  margin-top: 0.1rem;
+}
+
+body.public-page-shell .public-filter-checkboxes label {
+  min-width: 0;
+  font-size: clamp(0.92rem, 0.84rem + 0.12vw, 0.98rem);
+  line-height: 1.5;
+}
+
+body.public-page-shell .public-filter-summary {
+  display: grid;
+  gap: 0.3rem;
+}
+
+body.public-page-shell .public-filter-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(0.65rem, 0.52rem + 0.2vw, 0.8rem);
+  align-items: center;
+}
+
+body.public-page-shell .public-filter-actions .bg-primary,
+body.public-page-shell .public-filter-reset {
+  min-width: 0;
+  font-size: clamp(0.94rem, 0.86rem + 0.12vw, 1rem);
+  line-height: 1.2;
+}
+
+body.public-page-shell .public-filter-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(3.1rem, 2.92rem + 0.35vw, 3.55rem);
+}
+
+html.dark body.public-page-shell .public-filter-heading-title,
+body.public-page-shell.dark .public-filter-heading-title {
+  color: #f8fafc;
+}
+
+html.dark body.public-page-shell .public-filter-heading-copy,
+body.public-page-shell.dark .public-filter-heading-copy {
+  color: #94a3b8;
+}
+
+html.dark body.public-page-shell .public-filter-shell,
+body.public-page-shell.dark .public-filter-shell {
+  border-color: rgb(51 65 85);
+  background: linear-gradient(180deg, rgb(15 23 42 / 0.96), rgb(15 23 42 / 0.92));
+  box-shadow: 0 24px 54px rgb(2 6 23 / 0.34);
+}
+
+html.dark body.public-page-shell .public-filter-label,
+body.public-page-shell.dark .public-filter-label {
+  color: #94a3b8;
+}
+
+html.dark body.public-page-shell .public-filter-control,
+body.public-page-shell.dark .public-filter-control,
+html.dark body.public-page-shell .public-custom-select-trigger,
+body.public-page-shell.dark .public-custom-select-trigger {
+  border-color: rgb(51 65 85);
+  background: linear-gradient(135deg, rgb(15 23 42), rgb(15 23 42 / 0.94));
+  color: #f8fafc;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 18px 40px rgb(2 6 23 / 0.28);
+}
+
+html.dark body.public-page-shell .public-custom-select .selected-label,
+body.public-page-shell.dark .public-custom-select .selected-label,
+html.dark body.public-page-shell .public-filter-control,
+body.public-page-shell.dark .public-filter-control {
+  color: #f8fafc;
+}
+
+html.dark body.public-page-shell input.public-filter-control::placeholder,
+body.public-page-shell.dark input.public-filter-control::placeholder {
+  color: #64748b;
+}
+
+html.dark body.public-page-shell .public-custom-select .arrow-icon,
+body.public-page-shell.dark .public-custom-select .arrow-icon {
+  color: #94a3b8;
+}
+
+html.dark body.public-page-shell .public-custom-select-menu,
+body.public-page-shell.dark .public-custom-select-menu {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.97);
+  box-shadow: 0 24px 60px rgb(2 6 23 / 0.5);
+}
+
+html.dark body.public-page-shell .public-custom-select-option,
+body.public-page-shell.dark .public-custom-select-option {
+  color: #cbd5e1;
+}
+
+html.dark body.public-page-shell .public-custom-select-option:hover,
+body.public-page-shell.dark .public-custom-select-option:hover {
+  background: rgb(30 41 59 / 0.8);
+}
+
+html.dark body.public-page-shell .public-custom-select-option-dot,
+body.public-page-shell.dark .public-custom-select-option-dot {
+  background: rgb(100 116 139);
+}
+
+@media (max-width: 1199.98px) {
+  body.public-page-shell .public-filter-heading-title {
+    font-size: clamp(1.35rem, 1.12rem + 0.55vw, 1.7rem);
+    letter-spacing: clamp(0.06em, 0.04em + 0.04vw, 0.1em);
+  }
+
+  body.public-page-shell .public-filter-heading-copy {
+    font-size: 0.94rem;
+  }
+
+  body.public-page-shell .public-filter-shell {
+    padding: 1.05rem;
+  }
+
+  body.public-page-shell .public-filter-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767.98px) {
+  body.public-page-shell .public-filter-form {
+    gap: 0.85rem;
+  }
+
+  body.public-page-shell .public-filter-heading-title {
+    font-size: 1.18rem;
+    letter-spacing: 0.08em;
+    line-height: 1.12;
+  }
+
+  body.public-page-shell .public-filter-heading-copy {
+    font-size: 0.88rem;
+    line-height: 1.48;
+  }
+
+  body.public-page-shell .public-filter-shell {
+    gap: 0.85rem;
+    padding: 0.95rem;
+    border-radius: 1.6rem;
+  }
+
+  body.public-page-shell .public-filter-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.17em;
+  }
+
+  body.public-page-shell .public-filter-control,
+  body.public-page-shell .public-custom-select-trigger,
+  body.public-page-shell .public-custom-select .selected-label,
+  body.public-page-shell .public-filter-checkboxes label,
+  body.public-page-shell .public-filter-actions .bg-primary,
+  body.public-page-shell .public-filter-reset {
+    font-size: 0.92rem;
+  }
+
+  body.public-page-shell .public-filter-control,
+  body.public-page-shell .public-custom-select-trigger,
+  body.public-page-shell .public-filter-reset {
+    min-height: 3rem;
+    padding-inline: 0.85rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body.public-page-shell .public-filter-heading-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+  }
+
+  body.public-page-shell .public-filter-heading-copy {
+    font-size: 0.83rem;
+  }
+
+  body.public-page-shell .public-filter-shell {
+    padding: 0.88rem;
+    border-radius: 1.45rem;
+  }
+
+  body.public-page-shell .public-filter-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+  }
+
+  body.public-page-shell .public-filter-control,
+  body.public-page-shell .public-custom-select-trigger,
+  body.public-page-shell .public-custom-select .selected-label,
+  body.public-page-shell .public-filter-checkboxes label,
+  body.public-page-shell .public-filter-actions .bg-primary,
+  body.public-page-shell .public-filter-reset {
+    font-size: 0.88rem;
+  }
+}
+
+@media (max-width: 389.98px) {
+  body.public-page-shell .public-filter-shell {
+    padding: 0.82rem;
+    border-radius: 1.35rem;
+  }
+
+  body.public-page-shell .public-filter-label {
+    letter-spacing: 0.12em;
+  }
+
+  body.public-page-shell .public-filter-control,
+  body.public-page-shell .public-custom-select-trigger,
+  body.public-page-shell .public-filter-reset {
+    padding-inline: 0.78rem;
+  }
+}

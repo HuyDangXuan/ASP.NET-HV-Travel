@@ -1,0 +1,4 @@
+=== SEED ERROR ===
+[System.FormatException] An error occurred while deserializing the PublishedAt property of class HVTravel.Domain.Entities.TravelArticle: Cannot deserialize a 'DateTime' from BsonType 'Null'.
+[System.FormatException] Cannot deserialize a 'DateTime' from BsonType 'Null'.
+=== END SEED ERROR ===

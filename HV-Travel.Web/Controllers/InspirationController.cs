@@ -1,6 +1,7 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
+using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Controllers;
@@ -25,11 +26,18 @@ public class InspirationController : Controller
             .ThenByDescending(article => article.PublishedAt)
             .ToList();
 
+        articles.ForEach(article => PublicTextSanitizer.NormalizeArticleForDisplay(article));
+
         return View(new ContentHubIndexViewModel
         {
             FeaturedArticle = articles.FirstOrDefault(),
             LatestArticles = articles.Skip(1).Take(9).ToList(),
-            Categories = articles.Select(article => article.Category).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(value => value).ToList()
+            Categories = articles
+                .Select(article => article.Category)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(value => value)
+                .ToList()
         });
     }
 
@@ -40,6 +48,8 @@ public class InspirationController : Controller
         {
             return NotFound();
         }
+
+        article = PublicTextSanitizer.NormalizeArticleForDisplay(article);
 
         ViewData["Title"] = article.Title;
         ViewData["ActivePage"] = "Inspiration";

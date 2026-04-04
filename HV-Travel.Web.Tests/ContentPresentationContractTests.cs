@@ -1,4 +1,4 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Domain.Entities;
 using HVTravel.Web.Services;
 using HV_Travel.Web.Tests.TestSupport;
 using Microsoft.AspNetCore.Http;
@@ -112,6 +112,61 @@ public class ContentPresentationContractTests
         Assert.NotNull(fieldStyleProperty.GetValue(loadedFirstField));
     }
 
+    [Fact]
+    public async Task PublicContentService_NormalizesMojibakeStoredSectionValues_WhenLoadingPublicPage()
+    {
+        var storedHeroSection = Assert.Single(PublicContentDefaults.CreateSectionsForPage("inspiration").Where(section => section.SectionKey == "hero"));
+        storedHeroSection.Title = ToMojibake("Hero cẩm nang");
+        storedHeroSection.Description = ToMojibake("Khu vực nội dung giúp đội marketing làm hub cho bài viết nổi bật.");
+
+        var titleField = Assert.Single(storedHeroSection.Fields.Where(field => field.Key == "title"));
+        titleField.Value = ToMojibake("Cẩm nang, visa tips, mùa lễ hội và những landing SEO có thể tự quản trị.");
+
+        var siteSettingsRepository = new InMemoryRepository<SiteSettings>();
+        var contentSectionRepository = new InMemoryRepository<ContentSection>(new[] { storedHeroSection });
+        using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        var service = new PublicContentService(
+            siteSettingsRepository,
+            contentSectionRepository,
+            memoryCache,
+            new HttpContextAccessor());
+
+        var sections = await service.GetPageSectionsAsync("inspiration");
+        var heroSection = Assert.IsType<ContentSection>(sections["hero"]);
+        var loadedTitleField = Assert.Single(heroSection.Fields.Where(field => field.Key == "title"));
+
+        Assert.Equal("Hero cẩm nang", heroSection.Title);
+        Assert.Equal("Khu vực nội dung giúp đội marketing làm hub cho bài viết nổi bật.", heroSection.Description);
+        Assert.Equal("Cẩm nang, visa tips, mùa lễ hội và những landing SEO có thể tự quản trị.", loadedTitleField.Value);
+    }
+
+    [Fact]
+    public async Task PublicContentService_NormalizesMojibakeStoredSiteSettings_WhenLoadingSettings()
+    {
+        var storedSiteSettings = PublicContentDefaults.CreateSiteSettings();
+        var headerGroup = Assert.Single(storedSiteSettings.Groups.Where(group => group.GroupKey == "header"));
+        headerGroup.Title = ToMojibake("Header");
+        var navToursField = Assert.Single(headerGroup.Fields.Where(field => field.Key == "navToursLabel"));
+        navToursField.Value = ToMojibake("Tour du lịch");
+        navToursField.Label = ToMojibake("Nhãn tour");
+
+        var siteSettingsRepository = new InMemoryRepository<SiteSettings>(new[] { storedSiteSettings });
+        var contentSectionRepository = new InMemoryRepository<ContentSection>();
+        using var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        var service = new PublicContentService(
+            siteSettingsRepository,
+            contentSectionRepository,
+            memoryCache,
+            new HttpContextAccessor());
+
+        var settings = await service.GetSiteSettingsAsync();
+        var loadedHeaderGroup = Assert.Single(settings.Groups.Where(group => group.GroupKey == "header"));
+        var loadedNavToursField = Assert.Single(loadedHeaderGroup.Fields.Where(field => field.Key == "navToursLabel"));
+
+        Assert.Equal("Header", loadedHeaderGroup.Title);
+        Assert.Equal("Nhãn tour", loadedNavToursField.Label);
+        Assert.Equal("Tour du lịch", loadedNavToursField.Value);
+    }
     private static void AssertTextStyleContract(Type? type)
     {
         Assert.NotNull(type);
@@ -188,6 +243,13 @@ public class ContentPresentationContractTests
         }
 
         return current;
+    }
+
+    private static string ToMojibake(string value)
+    {
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(value);
+        return System.Text.Encoding.GetEncoding(1252).GetString(bytes);
     }
 }
 

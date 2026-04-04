@@ -1,4 +1,5 @@
-﻿using HVTravel.Domain.Entities;
+using System.Text;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using Microsoft.AspNetCore.Http;
@@ -8,11 +9,21 @@ namespace HVTravel.Web.Services;
 
 public class PublicContentService : IPublicContentService
 {
+    private static readonly string[] MojibakeMarkers =
+    {
+        "Ã", "Â", "Ä", "Æ", "áº", "á»", "â€™", "â€œ", "â€", "�"
+    };
+
     private const string SiteSettingsCacheKey = "public-content-site-settings";
     private readonly IRepository<SiteSettings> _siteSettingsRepository;
     private readonly IRepository<ContentSection> _contentSectionRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
+
+    static PublicContentService()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    }
 
     public PublicContentService(
         IRepository<SiteSettings> siteSettingsRepository,
@@ -86,8 +97,14 @@ public class PublicContentService : IPublicContentService
 
         foreach (var group in siteSettings.Groups)
         {
+            group.Title = NormalizeText(group.Title);
+            group.Description = NormalizeText(group.Description);
+
             foreach (var field in group.Fields)
             {
+                field.Value = NormalizeText(field.Value);
+                field.Label = NormalizeText(field.Label);
+                field.Placeholder = NormalizeText(field.Placeholder);
                 ContentPresentationDefaults.EnsureField(field);
                 field.Style = ContentPresentationSchema.SanitizeTextStyle(field.Style);
             }
@@ -176,8 +193,10 @@ public class PublicContentService : IPublicContentService
                 continue;
             }
 
-            group.Title = string.IsNullOrWhiteSpace(storedGroup.Title) ? group.Title : storedGroup.Title;
-            group.Description = string.IsNullOrWhiteSpace(storedGroup.Description) ? group.Description : storedGroup.Description;
+            var normalizedGroupTitle = NormalizeText(storedGroup.Title);
+            var normalizedGroupDescription = NormalizeText(storedGroup.Description);
+            group.Title = string.IsNullOrWhiteSpace(normalizedGroupTitle) ? group.Title : normalizedGroupTitle;
+            group.Description = string.IsNullOrWhiteSpace(normalizedGroupDescription) ? group.Description : normalizedGroupDescription;
             group.IsEnabled = storedGroup.IsEnabled;
             group.DisplayOrder = storedGroup.DisplayOrder;
 
@@ -189,9 +208,13 @@ public class PublicContentService : IPublicContentService
                     continue;
                 }
 
-                field.Value = string.IsNullOrWhiteSpace(storedField.Value) ? field.Value : storedField.Value;
-                field.Label = string.IsNullOrWhiteSpace(storedField.Label) ? field.Label : storedField.Label;
+                var normalizedFieldValue = NormalizeText(storedField.Value);
+                var normalizedFieldLabel = NormalizeText(storedField.Label);
+                var normalizedPlaceholder = NormalizeText(storedField.Placeholder);
+                field.Value = string.IsNullOrWhiteSpace(normalizedFieldValue) ? field.Value : normalizedFieldValue;
+                field.Label = string.IsNullOrWhiteSpace(normalizedFieldLabel) ? field.Label : normalizedFieldLabel;
                 field.FieldType = string.IsNullOrWhiteSpace(storedField.FieldType) ? field.FieldType : storedField.FieldType;
+                field.Placeholder = string.IsNullOrWhiteSpace(normalizedPlaceholder) ? field.Placeholder : normalizedPlaceholder;
                 field.Style = ContentPresentationSchema.SanitizeTextStyle(storedField.Style);
             }
         }
@@ -209,8 +232,10 @@ public class PublicContentService : IPublicContentService
         }
 
         merged.Id = stored.Id;
-        merged.Title = string.IsNullOrWhiteSpace(stored.Title) ? merged.Title : stored.Title;
-        merged.Description = string.IsNullOrWhiteSpace(stored.Description) ? merged.Description : stored.Description;
+        var normalizedSectionTitle = NormalizeText(stored.Title);
+        var normalizedSectionDescription = NormalizeText(stored.Description);
+        merged.Title = string.IsNullOrWhiteSpace(normalizedSectionTitle) ? merged.Title : normalizedSectionTitle;
+        merged.Description = string.IsNullOrWhiteSpace(normalizedSectionDescription) ? merged.Description : normalizedSectionDescription;
         merged.IsEnabled = stored.IsEnabled;
         merged.IsPublished = stored.IsPublished;
         merged.DisplayOrder = stored.DisplayOrder;
@@ -225,9 +250,13 @@ public class PublicContentService : IPublicContentService
                 continue;
             }
 
-            field.Value = string.IsNullOrWhiteSpace(storedField.Value) ? field.Value : storedField.Value;
-            field.Label = string.IsNullOrWhiteSpace(storedField.Label) ? field.Label : storedField.Label;
+            var normalizedFieldValue = NormalizeText(storedField.Value);
+            var normalizedFieldLabel = NormalizeText(storedField.Label);
+            var normalizedPlaceholder = NormalizeText(storedField.Placeholder);
+            field.Value = string.IsNullOrWhiteSpace(normalizedFieldValue) ? field.Value : normalizedFieldValue;
+            field.Label = string.IsNullOrWhiteSpace(normalizedFieldLabel) ? field.Label : normalizedFieldLabel;
             field.FieldType = string.IsNullOrWhiteSpace(storedField.FieldType) ? field.FieldType : storedField.FieldType;
+            field.Placeholder = string.IsNullOrWhiteSpace(normalizedPlaceholder) ? field.Placeholder : normalizedPlaceholder;
             field.Style = ContentPresentationDefaults.CloneTextStyle(storedField.Style);
         }
 
@@ -242,8 +271,8 @@ public class PublicContentService : IPublicContentService
 
         if (definition.AllowSectionSettings)
         {
-            target.Title = posted.Title;
-            target.Description = posted.Description;
+            target.Title = NormalizeText(posted.Title);
+            target.Description = NormalizeText(posted.Description);
             target.IsEnabled = posted.IsEnabled;
             target.IsPublished = posted.IsPublished;
             target.DisplayOrder = posted.DisplayOrder;
@@ -270,10 +299,12 @@ public class PublicContentService : IPublicContentService
                 continue;
             }
 
-            targetField.Value = postedField.Value;
-            targetField.Label = string.IsNullOrWhiteSpace(postedField.Label) ? targetField.Label : postedField.Label;
+            var normalizedPostedLabel = NormalizeText(postedField.Label);
+            var normalizedPostedPlaceholder = NormalizeText(postedField.Placeholder);
+            targetField.Value = NormalizeText(postedField.Value);
+            targetField.Label = string.IsNullOrWhiteSpace(normalizedPostedLabel) ? targetField.Label : normalizedPostedLabel;
             targetField.FieldType = string.IsNullOrWhiteSpace(postedField.FieldType) ? targetField.FieldType : postedField.FieldType;
-            targetField.Placeholder = string.IsNullOrWhiteSpace(postedField.Placeholder) ? targetField.Placeholder : postedField.Placeholder;
+            targetField.Placeholder = string.IsNullOrWhiteSpace(normalizedPostedPlaceholder) ? targetField.Placeholder : normalizedPostedPlaceholder;
             targetField.Style = ContentPresentationDefaults.CloneTextStyle(postedField.Style);
         }
     }
@@ -294,8 +325,8 @@ public class PublicContentService : IPublicContentService
         return new SiteSettingsGroup
         {
             GroupKey = source.GroupKey,
-            Title = source.Title,
-            Description = source.Description,
+            Title = NormalizeText(source.Title),
+            Description = NormalizeText(source.Description),
             IsEnabled = source.IsEnabled,
             DisplayOrder = source.DisplayOrder,
             Fields = source.Fields.Select(CloneField).ToList()
@@ -309,8 +340,8 @@ public class PublicContentService : IPublicContentService
             Id = source.Id,
             PageKey = source.PageKey,
             SectionKey = source.SectionKey,
-            Title = source.Title,
-            Description = source.Description,
+            Title = NormalizeText(source.Title),
+            Description = NormalizeText(source.Description),
             IsEnabled = source.IsEnabled,
             IsPublished = source.IsPublished,
             DisplayOrder = source.DisplayOrder,
@@ -328,14 +359,71 @@ public class PublicContentService : IPublicContentService
         var clone = new ContentField
         {
             Key = source.Key,
-            Label = source.Label,
+            Label = NormalizeText(source.Label),
             FieldType = source.FieldType,
-            Value = source.Value,
-            Placeholder = source.Placeholder,
+            Value = NormalizeText(source.Value),
+            Placeholder = NormalizeText(source.Placeholder),
             Style = ContentPresentationDefaults.CloneTextStyle(source.Style)
         };
 
         ContentPresentationDefaults.EnsureField(clone);
         return clone;
+    }
+
+    private static string NormalizeText(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value ?? string.Empty;
+        }
+
+        if (!LooksLikeMojibake(value))
+        {
+            return value;
+        }
+
+        try
+        {
+            var repaired = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(value));
+            return ScoreCandidate(repaired) >= ScoreCandidate(value) ? repaired : value;
+        }
+        catch (ArgumentException)
+        {
+            return value;
+        }
+    }
+
+    private static bool LooksLikeMojibake(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return false;
+        }
+
+        foreach (var marker in MojibakeMarkers ?? Array.Empty<string>())
+        {
+            if (!string.IsNullOrEmpty(marker) && value.Contains(marker, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static int ScoreCandidate(string value)
+    {
+        const string vietnameseChars = "ăâđêôơưáàảãạắằẳẵặấầẩẫậéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵĂÂĐÊÔƠƯÁÀẢÃẠẮẰẲẴẶẤẦẨẪẬÉÈẺẼẸẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌỐỒỔỖỘỚỜỞỠỢÚÙỦŨỤỨỪỬỮỰÝỲỶỸỴ";
+        var suspiciousPenalty = 0;
+        foreach (var marker in MojibakeMarkers ?? Array.Empty<string>())
+        {
+            if (!string.IsNullOrEmpty(marker) && value.Contains(marker, StringComparison.Ordinal))
+            {
+                suspiciousPenalty += 10;
+            }
+        }
+
+        var vietnameseBonus = value.Count(character => vietnameseChars.Contains(character));
+        return vietnameseBonus - suspiciousPenalty;
     }
 }

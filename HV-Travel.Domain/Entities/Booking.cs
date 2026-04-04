@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace HVTravel.Domain.Entities
 {
     [BsonIgnoreExtraElements]
-    public class Booking
+    public partial class Booking
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -158,7 +158,7 @@ namespace HVTravel.Domain.Entities
     }
 
     [BsonIgnoreExtraElements]
-    public class BookingHistoryLog
+    public partial class BookingHistoryLog
     {
         [BsonElement("action")]
         public string Action { get; set; }
@@ -174,7 +174,7 @@ namespace HVTravel.Domain.Entities
     }
 
     [BsonIgnoreExtraElements]
-    public class BookingEvent
+    public partial class BookingEvent
     {
         [BsonElement("type")]
         public string Type { get; set; } = string.Empty;
@@ -251,3 +251,4 @@ namespace HVTravel.Domain.Entities
         public string ResolutionNote { get; set; } = string.Empty;
     }
 }
+

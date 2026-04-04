@@ -1,4 +1,4 @@
-﻿namespace HV_Travel.Web.Tests;
+namespace HV_Travel.Web.Tests;
 
 public class PublicResponsiveMarkupTests
 {
@@ -230,7 +230,41 @@ public class PublicResponsiveMarkupTests
         Assert.Contains("public-chat-status", content);
         Assert.Contains("public-chat-composer", content);
     }
+    [Fact]
+    public void PublicTheme_DefinesDedicatedTourCardHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
 
+        Assert.Contains(".public-tour-card", content);
+        Assert.Contains(".public-tour-card-grid", content);
+        Assert.Contains(".tour-card-media", content);
+        Assert.Contains(".tour-card-heart", content);
+        Assert.Contains(".tour-card-pricing", content);
+        Assert.Contains(".tour-card-booking", content);
+        Assert.Contains(".public-filter-form", content);
+        Assert.Contains(".public-filter-heading", content);
+        Assert.Contains(".public-filter-shell", content);
+        Assert.Contains(".public-filter-section", content);
+        Assert.Contains(".public-filter-actions", content);
+        Assert.Contains(".public-filter-grid", content);
+        Assert.Contains(".public-filter-row", content);
+        Assert.Contains(".public-filter-field", content);
+        Assert.Contains(".public-filter-control", content);
+        Assert.Contains(".public-custom-select", content);
+        Assert.Contains(".public-custom-select-trigger", content);
+        Assert.Contains(".public-custom-select .selected-label", content);
+        Assert.Contains(".public-custom-select-menu", content);
+        Assert.Contains("font-size: clamp(", content);
+        Assert.Contains("min-height: clamp(", content);
+        Assert.Contains("overflow-wrap: normal;", content);
+        Assert.Contains("word-break: keep-all;", content);
+        Assert.Contains("@media (max-width: 1199.98px)", content);
+        Assert.Contains("grid-template-columns: 1fr;", content);
+        Assert.Contains("@media (min-width: 1280px)", content);
+        Assert.Contains("grid-template-columns: repeat(2, minmax(0, 1fr));", content);
+        Assert.Contains("@media (min-width: 1680px)", content);
+        Assert.Contains("grid-template-columns: repeat(3, minmax(0, 1fr));", content);
+    }
     private static void AssertContains(string relativePath, string expectedContent)
     {
         var content = File.ReadAllText(GetRepoPath(relativePath));
@@ -243,4 +277,7 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
+
+
 

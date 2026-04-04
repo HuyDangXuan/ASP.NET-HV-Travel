@@ -1,0 +1,159 @@
+﻿@using System
+@using System.Linq
+@using HVTravel.Domain.Entities
+@model Tour
+@{
+    var tour = Model;
+    var departures = tour.EffectiveDepartures.Where(item => item.StartDate >= DateTime.UtcNow.Date).OrderBy(item => item.StartDate).ToList();
+    if (!departures.Any())
+    {
+        departures = tour.EffectiveDepartures.OrderBy(item => item.StartDate).ToList();
+    }
+
+    var featuredDeparture = departures.FirstOrDefault() ?? tour.ResolveDeparture(null);
+    var startingPrice = featuredDeparture?.AdultPrice > 0m ? featuredDeparture.AdultPrice : tour.Price?.Adult ?? 0m;
+    var remainingCapacity = featuredDeparture?.RemainingCapacity ?? tour.RemainingSpots;
+    var discountPercent = featuredDeparture?.DiscountPercentage ?? (decimal)(tour.Price?.Discount ?? 0d);
+    var hasDiscount = discountPercent > 0m && discountPercent < 100m && startingPrice > 0m;
+    var originalPrice = hasDiscount
+        ? Math.Round(startingPrice / (1m - (discountPercent / 100m)), 0, MidpointRounding.AwayFromZero)
+        : 0m;
+
+    if (originalPrice <= startingPrice)
+    {
+        hasDiscount = false;
+        originalPrice = 0m;
+    }
+
+    var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
+    var detailUrl = Url.Action("Details", "PublicTours", new { id = detailId }) ?? "#";
+    var bookingUrl = Url.Action("Create", "Booking", new { tourId = tour.Id }) ?? detailUrl;
+    var coverImage = tour.Images.FirstOrDefault();
+    var locationText = string.Join(", ", new[] { tour.Destination?.City, tour.Destination?.Region }.Where(part => !string.IsNullOrWhiteSpace(part)));
+    if (string.IsNullOrWhiteSpace(locationText))
+    {
+        locationText = "Việt Nam";
+    }
+
+    var durationLabel = tour.Duration?.Days > 0 && tour.Duration?.Nights >= 0
+        ? $"{tour.Duration.Days}N{tour.Duration.Nights}Đ"
+        : null;
+
+    var isInstantConfirmation = string.Equals(featuredDeparture?.ConfirmationType ?? tour.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase);
+    var lowAvailability = remainingCapacity is > 0 and <= 5;
+}
+@* Compact duration label format example: 4N3Đ *@
+
+<article class="public-tour-card"
+         data-tour-id="@tour.Id"
+         data-tour-name="@tour.Name"
+         data-tour-price="@startingPrice"
+         data-tour-location="@locationText"
+         data-tour-url="@detailUrl"
+         data-tour-image="@(coverImage ?? string.Empty)">
+    <div class="tour-card-media">
+        <a href="@detailUrl" class="record-view block h-full w-full overflow-hidden" aria-label="Xem chi tiết tour @tour.Name">
+            @if (!string.IsNullOrWhiteSpace(coverImage))
+            {
+                <img src="@coverImage"
+                     alt="@tour.Name"
+                     class="h-full w-full object-cover"
+                     data-tour-image-fallback
+                     onerror="this.classList.add('is-hidden'); this.nextElementSibling?.classList.remove('is-hidden');" />
+                <div class="tour-card-media-placeholder is-hidden" aria-hidden="true">
+                    <span class="material-symbols-outlined text-[68px]">landscape</span>
+                </div>
+            }
+            else
+            {
+                <div class="tour-card-media-placeholder" aria-hidden="true">
+                    <span class="material-symbols-outlined text-[68px]">landscape</span>
+                </div>
+            }
+        </a>
+
+        <div class="tour-card-media-top">
+            <div class="tour-card-badge-stack">
+                @if (hasDiscount)
+                {
+                    <span class="tour-card-badge tour-card-badge--sale">Giảm @discountPercent.ToString("0")%</span>
+                }
+                else if (lowAvailability)
+                {
+                    <span class="tour-card-badge tour-card-badge--warning">Còn ít chỗ</span>
+                }
+                else if (tour.CancellationPolicy?.IsFreeCancellation == true)
+                {
+                    <span class="tour-card-badge tour-card-badge--info">Hủy miễn phí</span>
+                }
+                else if (isInstantConfirmation)
+                {
+                    <span class="tour-card-badge tour-card-badge--neutral">Xác nhận nhanh</span>
+                }
+            </div>
+
+            <button type="button"
+                    class="tour-card-heart"
+                    data-tour-wishlist-toggle
+                    aria-pressed="false"
+                    aria-label="Lưu tour @tour.Name">
+                <span class="material-symbols-outlined" data-tour-heart-icon>favorite_border</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="tour-card-body">
+        <a href="@detailUrl" class="record-view block" aria-label="Xem chi tiết tour @tour.Name">
+            <h3 class="tour-card-title line-clamp-2">@tour.Name</h3>
+        </a>
+
+        <div class="tour-card-meta">
+            @if (!string.IsNullOrWhiteSpace(tour.Code))
+            {
+                <div class="tour-card-meta-row tour-card-code">
+                    <span class="material-symbols-outlined">confirmation_number</span>
+                    <span>@tour.Code</span>
+                </div>
+            }
+
+            @if (featuredDeparture != null)
+            {
+                <div class="tour-card-meta-row tour-card-departure">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <span>Ngày khởi hành: @featuredDeparture.StartDate.ToString("dd/MM/yyyy")</span>
+                </div>
+            }
+
+            <div class="tour-card-meta-split">
+                @if (!string.IsNullOrWhiteSpace(durationLabel))
+                {
+                    <div class="tour-card-meta-row tour-card-duration">
+                        <span class="material-symbols-outlined">schedule</span>
+                        <span>@durationLabel</span>
+                    </div>
+                }
+
+                @if (remainingCapacity >= 0)
+                {
+                    <div class="tour-card-meta-row tour-card-remaining">
+                        <span class="material-symbols-outlined">group</span>
+                        <span>Số chỗ còn: <strong>@remainingCapacity</strong></span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="tour-card-pricing">
+            <div>
+                <p class="tour-card-price-label">Giá từ:</p>
+                @if (hasDiscount)
+                {
+                    <p class="tour-card-original-price">@originalPrice.ToString("N0") ₫</p>
+                }
+                <p class="tour-card-current-price">@startingPrice.ToString("N0") ₫</p>
+            </div>
+
+            <a href="@bookingUrl" class="tour-card-booking">Đặt ngay</a>
+        </div>
+    </div>
+</article>

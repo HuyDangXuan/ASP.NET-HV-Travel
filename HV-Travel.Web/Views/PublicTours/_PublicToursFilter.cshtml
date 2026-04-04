@@ -1,0 +1,315 @@
+@using System.Linq
+@using HVTravel.Domain.Models
+@model List<Tour>
+@{
+    var currentSearch = ViewData["CurrentSearch"]?.ToString();
+    var currentSort = ViewData["CurrentSort"]?.ToString();
+    var currentCollection = ViewData["CurrentCollection"]?.ToString();
+    var currentRegion = ViewData["CurrentRegion"]?.ToString();
+    var currentDestination = ViewData["CurrentDestination"]?.ToString();
+    var currentMinPrice = ViewData["CurrentMinPrice"]?.ToString();
+    var currentMaxPrice = ViewData["CurrentMaxPrice"]?.ToString();
+    var currentDepartureMonth = ViewData["CurrentDepartureMonth"]?.ToString();
+    var currentMaxDays = ViewData["CurrentMaxDays"]?.ToString();
+    var currentAvailableOnly = (bool)(ViewData["CurrentAvailableOnly"] ?? false);
+    var currentPromotionOnly = (bool)(ViewData["CurrentPromotionOnly"] ?? false);
+    var currentTravellers = (int)(ViewData["CurrentTravellers"] ?? 0);
+    var currentConfirmationType = ViewData["CurrentConfirmationType"]?.ToString();
+    var currentCancellationType = ViewData["CurrentCancellationType"]?.ToString();
+    var regionFacets = ViewData["RegionFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
+    var destinationFacets = ViewData["DestinationFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
+    var confirmationFacets = ViewData["ConfirmationTypeFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
+    var cancellationFacets = ViewData["CancellationTypeFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
+
+    string ResolveFacetLabel(IReadOnlyList<TourFacetOption> facets, string? value)
+        => string.IsNullOrWhiteSpace(value) ? "Tất cả" : facets.FirstOrDefault(facet => facet.Value == value)?.Value ?? value;
+
+    var regionLabel = ResolveFacetLabel(regionFacets, currentRegion);
+    var destinationLabel = ResolveFacetLabel(destinationFacets, currentDestination);
+    var confirmationLabel = ResolveFacetLabel(confirmationFacets, currentConfirmationType);
+    var cancellationLabel = ResolveFacetLabel(cancellationFacets, currentCancellationType);
+    var departureMonthLabel = string.IsNullOrWhiteSpace(currentDepartureMonth) ? "Tất cả" : $"Tháng {currentDepartureMonth}";
+    var sortLabel = currentSort switch
+    {
+        "best_value" => "Giá tốt nhất",
+        "price_asc" => "Giá thấp đến cao",
+        "price_desc" => "Giá cao đến thấp",
+        "departure" => "Khởi hành gần nhất",
+        _ => "Đánh giá cao"
+    };
+}
+
+<form asp-action="Index" method="get" class="public-filter-form">
+    <input type="hidden" name="search" value="@currentSearch" />
+    <input type="hidden" name="collection" value="@currentCollection" />
+
+    <div class="public-filter-heading">
+        <p class="public-filter-heading-title">Bộ lọc tìm kiếm</p>
+    </div>
+
+    <div class="public-filter-shell">
+        <div class="public-filter-section">
+            <div class="public-filter-grid">
+                <div class="public-filter-row">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="region-select">Khu vực</label>
+                        <div class="public-custom-select" data-public-select-id="region">
+                            <select id="region-select" name="region" class="public-filter-control public-native-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var facet in regionFacets)
+                                {
+                                    <option value="@facet.Value" selected="@(currentRegion == facet.Value)">@facet.Value (@facet.Count)</option>
+                                }
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('region')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@regionLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentRegion) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('region', '', 'Tất cả')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tất cả</span></span>
+                                    </button>
+                                    @foreach (var facet in regionFacets)
+                                    {
+                                        <button type="button" class="public-custom-select-option @(currentRegion == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('region', '@facet.Value', '@facet.Value (@facet.Count)')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@facet.Value (@facet.Count)</span></span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="public-filter-row">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="destination-select">Điểm đến</label>
+                        <div class="public-custom-select" data-public-select-id="destination">
+                            <select id="destination-select" name="destination" class="public-filter-control public-native-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var facet in destinationFacets)
+                                {
+                                    <option value="@facet.Value" selected="@(currentDestination == facet.Value)">@facet.Value (@facet.Count)</option>
+                                }
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('destination')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@destinationLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentDestination) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('destination', '', 'Tất cả')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tất cả</span></span>
+                                    </button>
+                                    @foreach (var facet in destinationFacets)
+                                    {
+                                        <button type="button" class="public-custom-select-option @(currentDestination == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('destination', '@facet.Value', '@facet.Value (@facet.Count)')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@facet.Value (@facet.Count)</span></span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="public-filter-section">
+            <div class="public-filter-grid">
+                <div class="public-filter-row public-filter-row--pair">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="min-price">Giá từ</label>
+                        <input id="min-price" name="minPrice" value="@currentMinPrice" placeholder="2.000.000" class="public-filter-control" />
+                    </div>
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="max-price">Giá đến</label>
+                        <input id="max-price" name="maxPrice" value="@currentMaxPrice" placeholder="15.000.000" class="public-filter-control" />
+                    </div>
+                </div>
+
+                <div class="public-filter-row public-filter-row--pair">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="departure-month-select">Tháng khởi hành</label>
+                        <div class="public-custom-select" data-public-select-id="departureMonth">
+                            <select id="departure-month-select" name="departureMonth" class="public-filter-control public-native-select">
+                                <option value="">Tất cả</option>
+                                @for (var month = 1; month <= 12; month++)
+                                {
+                                    <option value="@month" selected="@(currentDepartureMonth == month.ToString())">Tháng @month</option>
+                                }
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('departureMonth')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@departureMonthLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentDepartureMonth) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('departureMonth', '', 'Tất cả')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tất cả</span></span>
+                                    </button>
+                                    @for (var month = 1; month <= 12; month++)
+                                    {
+                                        <button type="button" class="public-custom-select-option @(currentDepartureMonth == month.ToString() ? "selected" : string.Empty)" data-value="@month" onclick="selectPublicCustomOption('departureMonth', '@month', 'Tháng @month')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tháng @month</span></span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="max-days">Tối đa ngày</label>
+                        <input id="max-days" name="maxDays" value="@currentMaxDays" placeholder="7" class="public-filter-control" />
+                    </div>
+                </div>
+
+                <div class="public-filter-row public-filter-row--pair">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="travellers">Số khách</label>
+                        <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="2" class="public-filter-control" />
+                    </div>
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="sort-select">Sắp xếp</label>
+                        <div class="public-custom-select" data-public-select-id="sort">
+                            <select id="sort-select" name="sort" class="public-filter-control public-native-select">
+                                <option value="rating" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating")">Đánh giá cao</option>
+                                <option value="best_value" selected="@(currentSort == "best_value")">Giá tốt nhất</option>
+                                <option value="price_asc" selected="@(currentSort == "price_asc")">Giá thấp đến cao</option>
+                                <option value="price_desc" selected="@(currentSort == "price_desc")">Giá cao đến thấp</option>
+                                <option value="departure" selected="@(currentSort == "departure")">Khởi hành gần nhất</option>
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('sort')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@sortLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @((string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating") ? "selected" : string.Empty)" data-value="rating" onclick="selectPublicCustomOption('sort', 'rating', 'Đánh giá cao')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Đánh giá cao</span></span>
+                                    </button>
+                                    <button type="button" class="public-custom-select-option @(currentSort == "best_value" ? "selected" : string.Empty)" data-value="best_value" onclick="selectPublicCustomOption('sort', 'best_value', 'Giá tốt nhất')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Giá tốt nhất</span></span>
+                                    </button>
+                                    <button type="button" class="public-custom-select-option @(currentSort == "price_asc" ? "selected" : string.Empty)" data-value="price_asc" onclick="selectPublicCustomOption('sort', 'price_asc', 'Giá thấp đến cao')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Giá thấp đến cao</span></span>
+                                    </button>
+                                    <button type="button" class="public-custom-select-option @(currentSort == "price_desc" ? "selected" : string.Empty)" data-value="price_desc" onclick="selectPublicCustomOption('sort', 'price_desc', 'Giá cao đến thấp')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Giá cao đến thấp</span></span>
+                                    </button>
+                                    <button type="button" class="public-custom-select-option @(currentSort == "departure" ? "selected" : string.Empty)" data-value="departure" onclick="selectPublicCustomOption('sort', 'departure', 'Khởi hành gần nhất')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Khởi hành gần nhất</span></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="public-filter-section">
+            <div class="public-filter-grid">
+                <div class="public-filter-row">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="confirmation-type-select">Xác nhận</label>
+                        <div class="public-custom-select" data-public-select-id="confirmationType">
+                            <select id="confirmation-type-select" name="confirmationType" class="public-filter-control public-native-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var facet in confirmationFacets)
+                                {
+                                    <option value="@facet.Value" selected="@(currentConfirmationType == facet.Value)">@facet.Value (@facet.Count)</option>
+                                }
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('confirmationType')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@confirmationLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentConfirmationType) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('confirmationType', '', 'Tất cả')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tất cả</span></span>
+                                    </button>
+                                    @foreach (var facet in confirmationFacets)
+                                    {
+                                        <button type="button" class="public-custom-select-option @(currentConfirmationType == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('confirmationType', '@facet.Value', '@facet.Value (@facet.Count)')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@facet.Value (@facet.Count)</span></span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="public-filter-row">
+                    <div class="public-filter-field">
+                        <label class="public-filter-label" for="cancellation-type-select">Hủy / hoàn</label>
+                        <div class="public-custom-select" data-public-select-id="cancellationType">
+                            <select id="cancellation-type-select" name="cancellationType" class="public-filter-control public-native-select">
+                                <option value="">Tất cả</option>
+                                @foreach (var facet in cancellationFacets)
+                                {
+                                    <option value="@facet.Value" selected="@(currentCancellationType == facet.Value)">@facet.Value (@facet.Count)</option>
+                                }
+                            </select>
+                            <div class="public-custom-select-shell">
+                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('cancellationType')">
+                                    <span class="public-custom-select-meta">
+                                        <span class="selected-label">@cancellationLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                </button>
+                                <div class="public-custom-select-menu">
+                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentCancellationType) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('cancellationType', '', 'Tất cả')">
+                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Tất cả</span></span>
+                                    </button>
+                                    @foreach (var facet in cancellationFacets)
+                                    {
+                                        <button type="button" class="public-custom-select-option @(currentCancellationType == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('cancellationType', '@facet.Value', '@facet.Value (@facet.Count)')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@facet.Value (@facet.Count)</span></span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="public-filter-section public-filter-section--compact">
+            <div class="public-filter-checkboxes rounded-2xl bg-surface-muted-light p-4 dark:bg-surface-elevated-dark">
+                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" name="availableOnly" value="true" checked="@currentAvailableOnly" class="rounded border-border-light dark:border-border-dark" />
+                    Chỉ hiển thị tour còn chỗ
+                </label>
+                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" name="promotionOnly" value="true" checked="@currentPromotionOnly" class="rounded border-border-light dark:border-border-dark" />
+                    Chỉ hiển thị tour có khuyến mãi
+                </label>
+            </div>
+
+            <div class="public-filter-summary rounded-2xl border border-dashed border-border-light p-4 text-xs text-slate-500 dark:border-border-dark dark:text-slate-400" data-facet-source="RegionFacets" data-confirmation-source="ConfirmationTypeFacets">
+                <div>Khu vực đang có: @regionFacets.Count lựa chọn</div>
+                <div>Kiểu xác nhận: @confirmationFacets.Count lựa chọn</div>
+            </div>
+
+            <div class="public-filter-actions">
+                <button type="submit" class="flex-1 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Áp dụng</button>
+                <a asp-action="Index" class="public-filter-reset rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-600 dark:border-border-dark dark:text-slate-300">Reset</a>
+            </div>
+        </div>
+    </div>
+</form>

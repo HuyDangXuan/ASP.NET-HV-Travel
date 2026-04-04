@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using HVTravel.Domain.Interfaces;
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
 using HVTravel.Domain.Entities;
+using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using HVTravel.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Controllers;
 
@@ -11,33 +13,98 @@ public class BookingController : Controller
     private readonly ITourRepository _tourRepository;
     private readonly IRepository<Booking> _bookingRepository;
     private readonly BookingWorkflowService _bookingWorkflowService;
+    private readonly ICheckoutService _checkoutService;
+    private readonly IPricingService _pricingService;
+    private readonly IRepository<CheckoutSession> _checkoutSessionRepository;
 
-    public BookingController(ITourRepository tourRepository, IRepository<Booking> bookingRepository, BookingWorkflowService bookingWorkflowService)
+    public BookingController(
+        ITourRepository tourRepository,
+        IRepository<Booking> bookingRepository,
+        BookingWorkflowService bookingWorkflowService,
+        ICheckoutService checkoutService,
+        IPricingService pricingService,
+        IRepository<CheckoutSession> checkoutSessionRepository)
     {
         _tourRepository = tourRepository;
         _bookingRepository = bookingRepository;
         _bookingWorkflowService = bookingWorkflowService;
+        _checkoutService = checkoutService;
+        _pricingService = pricingService;
+        _checkoutSessionRepository = checkoutSessionRepository;
     }
+
+    public IRepository<Booking> Bookings => _bookingRepository;
 
     public async Task<IActionResult> Create(string tourId)
     {
         if (string.IsNullOrEmpty(tourId))
+        {
             return RedirectToAction("Index", "PublicTours");
+        }
 
         var tour = await _tourRepository.GetByIdAsync(tourId);
         if (tour == null)
+        {
             return NotFound();
+        }
+
+        tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
 
         ViewData["Title"] = $"Đặt Tour - {tour.Name}";
         ViewData["ActivePage"] = "Tours";
 
+        var suggestedDeparture = tour.ResolveDeparture(null);
         var vm = new BookingViewModel
         {
             TourId = tourId,
-            Tour = tour
+            Tour = tour,
+            DepartureId = suggestedDeparture?.Id ?? string.Empty,
+            SelectedStartDate = suggestedDeparture?.StartDate
         };
 
         return View(vm);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Quote(
+        string tourId,
+        string? departureId,
+        int adultCount = 1,
+        int childCount = 0,
+        int infantCount = 0,
+        string? couponCode = null,
+        string? paymentPlanType = "Full")
+    {
+        if (string.IsNullOrWhiteSpace(tourId))
+        {
+            return Json(new QuotePreviewResponse
+            {
+                IsAvailable = false,
+                ErrorMessage = "Không tìm thấy tour để xem báo giá."
+            });
+        }
+
+        var tour = await _tourRepository.GetByIdAsync(tourId);
+        if (tour == null)
+        {
+            return Json(new QuotePreviewResponse
+            {
+                IsAvailable = false,
+                ErrorMessage = "Không tìm thấy tour để xem báo giá."
+            });
+        }
+
+        var response = await BuildQuotePreviewAsync(
+            tour,
+            departureId,
+            null,
+            adultCount,
+            childCount,
+            infantCount,
+            couponCode,
+            paymentPlanType);
+
+        return Json(response);
     }
 
     [HttpPost]
@@ -45,92 +112,116 @@ public class BookingController : Controller
     public async Task<IActionResult> Create(BookingViewModel vm)
     {
         var tour = await _tourRepository.GetByIdAsync(vm.TourId);
-        if (tour == null) return NotFound();
+        if (tour == null)
+        {
+            return NotFound();
+        }
 
+        tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
         vm.Tour = tour;
+        if (vm.SelectedStartDate == null)
+        {
+            vm.SelectedStartDate = tour.ResolveDeparture(vm.DepartureId)?.StartDate;
+        }
+
+        tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+
+        ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+        ViewData["ActivePage"] = "Tours";
 
         if (!ModelState.IsValid)
         {
-            ViewData["Title"] = $"Đặt Tour - {tour.Name}";
             return View(vm);
         }
 
-        if (vm.TotalParticipants > tour.RemainingSpots)
+        var preview = await BuildQuotePreviewAsync(
+            tour,
+            vm.DepartureId,
+            vm.SelectedStartDate,
+            vm.AdultCount,
+            vm.ChildCount,
+            vm.InfantCount,
+            vm.CouponCode,
+            vm.PaymentPlanType);
+
+        if (!preview.IsAvailable)
         {
-            ModelState.AddModelError("", $"Tour này hiện chỉ còn {tour.RemainingSpots} chỗ trống. Vui lòng giảm số lượng hành khách.");
-            ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+            ModelState.AddModelError(string.Empty, preview.ErrorMessage);
             return View(vm);
         }
 
-        var adultPrice = tour.Price?.Adult ?? 0;
-        var childPrice = tour.Price?.Child ?? 0;
-        var infantPrice = tour.Price?.Infant ?? 0;
-        var discount = tour.Price?.Discount ?? 0;
-
-        var subtotal = (adultPrice * vm.AdultCount) + (childPrice * vm.ChildCount) + (infantPrice * vm.InfantCount);
-        var total = discount > 0 ? subtotal * (1 - (decimal)(discount / 100.0)) : subtotal;
-
-        var passengers = new List<Passenger>();
-        for (int i = 0; i < vm.AdultCount; i++) passengers.Add(new Passenger { Type = "Adult", FullName = i == 0 ? vm.ContactName : $"Người lớn {i + 1}" });
-        for (int i = 0; i < vm.ChildCount; i++) passengers.Add(new Passenger { Type = "Child", FullName = $"Trẻ em {i + 1}" });
-        for (int i = 0; i < vm.InfantCount; i++) passengers.Add(new Passenger { Type = "Infant", FullName = $"Em bé {i + 1}" });
-
-        var booking = new Booking
+        if (!string.IsNullOrWhiteSpace(vm.CouponCode) && string.IsNullOrWhiteSpace(preview.AppliedCouponCode))
         {
-            BookingCode = $"HV{DateTime.UtcNow:yyyyMMddHHmmss}{Random.Shared.Next(100, 999)}",
-            TourId = vm.TourId,
-            TourSnapshot = new TourSnapshot
+            ModelState.AddModelError(nameof(vm.CouponCode), preview.ErrorMessage);
+            return View(vm);
+        }
+
+        try
+        {
+            var checkout = await _checkoutService.CreateCheckoutAsync(new CreateCheckoutRequest
             {
-                Code = tour.Code,
-                Name = tour.Name,
-                StartDate = vm.SelectedStartDate ?? (tour.StartDates?.FirstOrDefault() ?? DateTime.UtcNow),
-                Duration = tour.Duration?.Text ?? $"{tour.Duration?.Days} ngày {tour.Duration?.Nights} đêm"
-            },
-            ContactInfo = new ContactInfo
-            {
-                Name = vm.ContactName,
-                Email = vm.ContactEmail,
-                Phone = vm.ContactPhone
-            },
-            ParticipantsCount = vm.TotalParticipants,
-            Passengers = passengers,
-            TotalAmount = total,
-            Status = "Pending",
-            PaymentStatus = "Unpaid",
-            Notes = vm.SpecialRequests,
-            BookingDate = DateTime.UtcNow,
-            PublicLookupEnabled = true,
-            HistoryLog = new List<BookingHistoryLog>(),
-            Events = new List<BookingEvent>()
-        };
+                TourId = vm.TourId,
+                DepartureId = vm.DepartureId,
+                SelectedStartDate = vm.SelectedStartDate,
+                ContactName = vm.ContactName,
+                ContactEmail = vm.ContactEmail,
+                ContactPhone = vm.ContactPhone,
+                AdultCount = vm.AdultCount,
+                ChildCount = vm.ChildCount,
+                InfantCount = vm.InfantCount,
+                CouponCode = vm.CouponCode,
+                PaymentPlanType = vm.PaymentPlanType,
+                SpecialRequests = vm.SpecialRequests
+            });
 
-        AddBookingEntry(booking, "booking", "Tạo đơn đặt tour", $"Đặt {vm.AdultCount} người lớn, {vm.ChildCount} trẻ em, {vm.InfantCount} em bé", vm.ContactName);
-
-        var success = await _tourRepository.IncrementParticipantsAsync(vm.TourId, vm.TotalParticipants);
-        if (!success)
+            return RedirectToAction("Payment", new { bookingId = checkout.Booking.Id });
+        }
+        catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError("", "Rất tiếc, tour đã vừa hết chỗ trống khi bạn đang thực hiện đặt. Vui lòng thử lại với số lượng ít hơn hoặc chọn tour khác.");
-            ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+            ModelState.AddModelError(string.Empty, ex.Message);
             return View(vm);
         }
-
-        await _bookingRepository.AddAsync(booking);
-        return RedirectToAction("Payment", new { bookingId = booking.Id });
     }
 
     public async Task<IActionResult> Payment(string bookingId)
     {
         if (string.IsNullOrEmpty(bookingId))
+        {
             return RedirectToAction("Index", "PublicTours");
+        }
 
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null) return NotFound();
+        if (booking == null)
+        {
+            return NotFound();
+        }
 
         var tour = await _tourRepository.GetByIdAsync(booking.TourId);
+        booking = PublicTextSanitizer.NormalizeBookingForDisplay(booking);
+        if (tour != null)
+        {
+            tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+        }
         ViewData["Title"] = "Chọn Phương Thức Thanh Toán";
         ViewData["ActivePage"] = "Tours";
 
         return View(new BookingResultViewModel { Booking = booking, Tour = tour });
+    }
+
+    public async Task<IActionResult> Resume(string checkoutSessionId)
+    {
+        if (string.IsNullOrWhiteSpace(checkoutSessionId))
+        {
+            return RedirectToAction("Index", "PublicTours");
+        }
+
+        var session = await _checkoutSessionRepository.GetByIdAsync(checkoutSessionId);
+        if (session == null || string.IsNullOrWhiteSpace(session.BookingId))
+        {
+            return RedirectToAction("Index", "PublicTours");
+        }
+
+        return RedirectToAction(nameof(Payment), new { bookingId = session.BookingId });
     }
 
     [HttpPost]
@@ -138,12 +229,16 @@ public class BookingController : Controller
     public async Task<IActionResult> ProcessPayment(string bookingId, string paymentMethod)
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null) return NotFound();
+        if (booking == null)
+        {
+            return NotFound();
+        }
 
         var actor = booking.ContactInfo?.Name ?? "Khách";
         booking.PaymentTransactions ??= new List<PaymentTransaction>();
         booking.Events ??= new List<BookingEvent>();
         booking.HistoryLog ??= new List<BookingHistoryLog>();
+        booking.PaymentSessions ??= new List<PaymentSession>();
 
         switch (paymentMethod)
         {
@@ -154,6 +249,7 @@ public class BookingController : Controller
                 AddBookingEntry(booking, "payment", "Giữ chỗ thanh toán tiền mặt", "Booking đã được giữ chỗ, thanh toán tại quầy hoặc khi khởi hành.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
                 break;
+
             case "BankTransfer":
                 booking.PaymentStatus = "Pending";
                 booking.Status = "PendingPayment";
@@ -163,7 +259,7 @@ public class BookingController : Controller
                     Method = "BankTransfer",
                     TransactionId = $"BANK-{booking.BookingCode}-{DateTime.UtcNow:HHmmss}",
                     Reference = booking.BookingCode,
-                    Amount = booking.TotalAmount,
+                    Amount = booking.PaymentPlan?.AmountDueNow > 0m ? booking.PaymentPlan.AmountDueNow : booking.TotalAmount,
                     Status = "Pending",
                     CreatedAt = DateTime.UtcNow,
                     ProcessedAt = DateTime.UtcNow
@@ -171,9 +267,18 @@ public class BookingController : Controller
                 AddBookingEntry(booking, "payment", "Chờ xác nhận chuyển khoản", "Khách đã chọn chuyển khoản và chờ tải minh chứng thanh toán.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
                 break;
+
             default:
                 booking.PaymentStatus = "Pending";
                 booking.Status = "PendingPayment";
+                var pendingSession = booking.PaymentSessions.FirstOrDefault(session => string.Equals(session.Status, "Pending", StringComparison.OrdinalIgnoreCase));
+                if (pendingSession != null)
+                {
+                    pendingSession.Reference = $"HVPAY-{booking.BookingCode}";
+                    pendingSession.Provider = "HVPay";
+                    pendingSession.UpdatedAt = DateTime.UtcNow;
+                }
+
                 AddBookingEntry(booking, "payment", "Khởi tạo thanh toán online", "Hệ thống đã tạo phiên thanh toán online và đang chờ callback.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
 
@@ -184,7 +289,7 @@ public class BookingController : Controller
                     Provider = "HVPay",
                     Method = "CreditCard",
                     Status = "SUCCESS",
-                    Amount = booking.TotalAmount,
+                    Amount = booking.PaymentPlan?.AmountDueNow > 0m ? booking.PaymentPlan.AmountDueNow : booking.TotalAmount,
                     Reference = $"HVPAY-{booking.BookingCode}",
                     Signature = "local-demo"
                 });
@@ -199,7 +304,10 @@ public class BookingController : Controller
     public async Task<IActionResult> UploadTransferProof(string bookingId, IFormFile? proofFile, string? note)
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null) return NotFound();
+        if (booking == null)
+        {
+            return NotFound();
+        }
 
         if (proofFile == null || proofFile.Length == 0)
         {
@@ -235,17 +343,30 @@ public class BookingController : Controller
         return Ok(new { success = true, bookingCode = model.BookingCode, transactionId = model.TransactionId });
     }
 
-    public IActionResult RetryPayment(string bookingId)
+    public IActionResult RetryPayment(string bookingId, string? checkoutSessionId = null)
     {
+        if (!string.IsNullOrWhiteSpace(checkoutSessionId))
+        {
+            return RedirectToAction(nameof(Resume), new { checkoutSessionId });
+        }
+
         return RedirectToAction(nameof(Payment), new { bookingId });
     }
 
     public async Task<IActionResult> Success(string bookingId)
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
-        if (booking == null) return RedirectToAction("Index", "PublicTours");
+        if (booking == null)
+        {
+            return RedirectToAction("Index", "PublicTours");
+        }
 
         var tour = await _tourRepository.GetByIdAsync(booking.TourId);
+        booking = PublicTextSanitizer.NormalizeBookingForDisplay(booking);
+        if (tour != null)
+        {
+            tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+        }
         ViewData["Title"] = "Đặt Tour Thành Công";
         return View(new BookingResultViewModel { Booking = booking, Tour = tour });
     }
@@ -254,6 +375,14 @@ public class BookingController : Controller
     {
         var booking = await _bookingRepository.GetByIdAsync(bookingId);
         var tour = booking != null ? await _tourRepository.GetByIdAsync(booking.TourId) : null;
+        if (booking != null)
+        {
+            booking = PublicTextSanitizer.NormalizeBookingForDisplay(booking);
+        }
+        if (tour != null)
+        {
+            tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+        }
         ViewData["Title"] = "Thanh Toán Thất Bại";
 
         return View(new BookingResultViewModel
@@ -289,6 +418,108 @@ public class BookingController : Controller
 
         TempData["ConsultationSuccess"] = true;
         return RedirectToAction("Consultation");
+    }
+
+    private async Task<QuotePreviewResponse> BuildQuotePreviewAsync(
+        Tour tour,
+        string? departureId,
+        DateTime? selectedStartDate,
+        int adultCount,
+        int childCount,
+        int infantCount,
+        string? couponCode,
+        string? paymentPlanType)
+    {
+        adultCount = Math.Max(1, adultCount);
+        childCount = Math.Max(0, childCount);
+        infantCount = Math.Max(0, infantCount);
+        var travellerCount = adultCount + childCount + infantCount;
+
+        try
+        {
+            var quote = await _pricingService.BuildQuoteAsync(new PricingQuoteRequest
+            {
+                Tour = tour,
+                DepartureId = departureId,
+                SelectedStartDate = selectedStartDate,
+                AdultCount = adultCount,
+                ChildCount = childCount,
+                InfantCount = infantCount,
+                CouponCode = couponCode,
+                PaymentPlanType = paymentPlanType ?? "Full"
+            });
+
+            var remainingCapacity = quote.SelectedDeparture?.RemainingCapacity ?? 0;
+            var isAvailable = travellerCount > 0 && remainingCapacity >= travellerCount;
+            var errorMessage = string.Empty;
+
+            if (!isAvailable)
+            {
+                errorMessage = "Đợt khởi hành đã chọn không còn đủ chỗ cho số lượng khách này.";
+            }
+            else if (!string.IsNullOrWhiteSpace(couponCode) && string.IsNullOrWhiteSpace(quote.AppliedCouponCode))
+            {
+                errorMessage = "Mã giảm giá không hợp lệ, đã hết hạn hoặc chưa đủ điều kiện áp dụng.";
+            }
+
+            return new QuotePreviewResponse
+            {
+                Subtotal = quote.Breakdown.Subtotal,
+                DiscountTotal = quote.Breakdown.DiscountTotal,
+                GrandTotal = quote.Breakdown.GrandTotal,
+                AmountDueNow = quote.PaymentPlan.AmountDueNow,
+                BalanceDue = quote.PaymentPlan.BalanceDue,
+                AppliedCouponCode = quote.AppliedCouponCode,
+                RemainingCapacity = remainingCapacity,
+                Badges = quote.Badges,
+                IsAvailable = isAvailable,
+                ErrorMessage = errorMessage
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            var departure = tour.ResolveDeparture(departureId, selectedStartDate);
+            return new QuotePreviewResponse
+            {
+                RemainingCapacity = departure?.RemainingCapacity ?? 0,
+                Badges = BuildBadges(tour, departure, false),
+                IsAvailable = false,
+                ErrorMessage = ex.Message
+            };
+        }
+    }
+
+    private static IReadOnlyList<string> BuildBadges(Tour tour, TourDeparture? departure, bool hasDeal)
+    {
+        var badges = new List<string>();
+
+        var confirmation = departure?.ConfirmationType;
+        if (string.IsNullOrWhiteSpace(confirmation))
+        {
+            confirmation = tour.ConfirmationType;
+        }
+
+        if (!string.IsNullOrWhiteSpace(confirmation))
+        {
+            badges.Add(confirmation);
+        }
+
+        if (tour.CancellationPolicy?.IsFreeCancellation == true)
+        {
+            badges.Add("FreeCancellation");
+        }
+
+        if (departure?.RemainingCapacity is > 0 and <= 5)
+        {
+            badges.Add("LowAvailability");
+        }
+
+        if (hasDeal)
+        {
+            badges.Add("Deal");
+        }
+
+        return badges.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
     }
 
     private static void AddBookingEntry(Booking booking, string type, string title, string note, string actor)
