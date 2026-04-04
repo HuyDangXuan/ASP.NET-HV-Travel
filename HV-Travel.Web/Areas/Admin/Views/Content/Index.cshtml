@@ -147,9 +147,27 @@
                                 <span class="rounded-full bg-slate-100 px-3 py-1 font-mono text-slate-500 dark:bg-slate-700 dark:text-slate-300">@group.GroupKey</span>
                             </div>
                             <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(280px,0.62fr)]">
-                                <div class="space-y-3">
-                                    <input asp-for="SiteSettings.Groups[i].Title" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xl font-extrabold text-slate-900 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
-                                    <textarea asp-for="SiteSettings.Groups[i].Description" rows="3" class="w-full min-h-[120px] resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300" data-rich-editor="true" data-editor-height="180"></textarea>
+                                <div class="space-y-4">
+                                    <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <label class="text-sm font-bold text-slate-900 dark:text-white">Tiêu đề group</label>
+                                            <label class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <input asp-for="SiteSettings.Groups[i].IsTitleEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                                Hiển thị text này
+                                            </label>
+                                        </div>
+                                        <input asp-for="SiteSettings.Groups[i].Title" class="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xl font-extrabold text-slate-900 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
+                                    </div>
+                                    <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <label class="text-sm font-bold text-slate-900 dark:text-white">Mô tả group</label>
+                                            <label class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <input asp-for="SiteSettings.Groups[i].IsDescriptionEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                                Hiển thị text này
+                                            </label>
+                                        </div>
+                                        <textarea asp-for="SiteSettings.Groups[i].Description" rows="3" class="mt-3 w-full min-h-[120px] resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300" data-rich-editor="true" data-editor-height="180"></textarea>
+                                    </div>
                                 </div>
                                 <div class="grid gap-3 sm:grid-cols-2">
                                     <label class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
@@ -174,6 +192,17 @@
                                     <input asp-for="SiteSettings.Groups[i].Fields[j].FieldType" type="hidden" />
                                     <input asp-for="SiteSettings.Groups[i].Fields[j].Placeholder" type="hidden" />
                                     <input asp-for="SiteSettings.Groups[i].Fields[j].Label" type="hidden" />
+                                    @if (ContentPresentationSchema.SupportsFieldVisibilityToggle(field))
+                                    {
+                                        <label class="mb-3 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                            <input asp-for="SiteSettings.Groups[i].Fields[j].IsEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                            Hiển thị text này
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="SiteSettings.Groups[i].Fields[j].IsEnabled" type="hidden" />
+                                    }
                                     <div class="flex items-start justify-between gap-3">
                                         <label class="text-sm font-bold text-slate-900 dark:text-white">@field.Label</label>
                                         <span class="rounded-full bg-white px-3 py-1 text-[11px] font-mono text-slate-400 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">@field.Key</span>
@@ -257,11 +286,23 @@
                             {
                                 <div class="grid gap-4 xl:grid-cols-2">
                                     <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40">
-                                        <label class="text-sm font-bold text-slate-900 dark:text-white">Tiêu đề section</label>
+                                        <div class="flex items-center justify-between gap-3">
+                                            <label class="text-sm font-bold text-slate-900 dark:text-white">Tiêu đề section</label>
+                                            <label class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <input asp-for="Sections[i].IsTitleEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                                Hiển thị text này
+                                            </label>
+                                        </div>
                                         <input asp-for="Sections[i].Title" class="mt-3 h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-semibold focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white" />
                                     </div>
                                     <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40 xl:col-span-2">
-                                        <label class="text-sm font-bold text-slate-900 dark:text-white">Mô tả section</label>
+                                        <div class="flex items-center justify-between gap-3">
+                                            <label class="text-sm font-bold text-slate-900 dark:text-white">Mô tả section</label>
+                                            <label class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <input asp-for="Sections[i].IsDescriptionEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                                Hiển thị text này
+                                            </label>
+                                        </div>
                                         <textarea asp-for="Sections[i].Description" rows="3" class="mt-3 min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300" data-rich-editor="true" data-editor-height="180"></textarea>
                                     </div>
                                 </div>
@@ -328,56 +369,77 @@
                             }
                         </div>
 
-                        <div class="mt-6 grid gap-4 lg:grid-cols-2">
-                            @for (var j = 0; j < contentSection.Fields.Count; j++)
+                        @if (contentSection.SectionKey == "carousel")
+                        {
+                            @await Html.PartialAsync("_HomeCarouselSectionEditor", contentSection, new ViewDataDictionary(ViewData)
                             {
-                                var field = contentSection.Fields[j];
-                                var isWideField = field.FieldType == "textarea";
-                                var supportsStyle = ContentPresentationSchema.SupportsFieldStyle(field);
-                                var buttonLikeField = ContentPresentationSchema.IsButtonLikeField(field);
-                                <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40 @(isWideField ? "lg:col-span-2" : string.Empty)">
-                                    <input asp-for="Sections[i].Fields[j].Key" type="hidden" />
-                                    <input asp-for="Sections[i].Fields[j].Label" type="hidden" />
-                                    <input asp-for="Sections[i].Fields[j].FieldType" type="hidden" />
-                                    <input asp-for="Sections[i].Fields[j].Placeholder" type="hidden" />
-                                    <div class="flex items-start justify-between gap-3">
-                                        <label class="text-sm font-bold text-slate-900 dark:text-white">@field.Label</label>
-                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-mono text-slate-400 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">@field.Key</span>
-                                    </div>
-                                    @if (field.FieldType == "textarea")
-                                    {
-                                        <textarea asp-for="Sections[i].Fields[j].Value" rows="5" class="mt-3 w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" data-rich-editor="true" data-editor-height="240"></textarea>
-                                    }
-                                    else
-                                    {
-                                        <input asp-for="Sections[i].Fields[j].Value" type="text" class="mt-3 h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
-                                    }
-
-                                    @if (supportsStyle && !buttonLikeField)
-                                    {
-                                        <details class="mt-4 rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/50">
-                                            <summary class="cursor-pointer list-none text-sm font-bold text-slate-900 dark:text-white">Style field</summary>
-                                            <div class="mt-4">
-                                                @await Html.PartialAsync("_ContentTextStyleEditor", new ContentTextStyleEditorViewModel
-                                                {
-                                                    Prefix = $"Sections[{i}].Fields[{j}].Style",
-                                                    Title = field.Label,
-                                                    Description = "Override style cho field này. Nếu để mặc định, public site sẽ dùng section role default hoặc theme hiện có.",
-                                                    IncludeJustify = true,
-                                                    Style = field.Style ?? ContentPresentationDefaults.CreateTextStyle()
-                                                })
-                                            </div>
-                                        </details>
-                                    }
-                                    else if (buttonLikeField)
-                                    {
-                                        <div class="mt-4 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-xs leading-relaxed text-slate-500 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
-                                            Field này là label cho CTA hoặc nút hành động. Nội dung vẫn chỉnh được, nhưng visual của button sẽ giữ theo design system hiện tại.
+                                ["SectionIndex"] = i
+                            })
+                        }
+                        else
+                        {
+                            <div class="mt-6 grid gap-4 lg:grid-cols-2">
+                                @for (var j = 0; j < contentSection.Fields.Count; j++)
+                                {
+                                    var field = contentSection.Fields[j];
+                                    var isWideField = field.FieldType == "textarea";
+                                    var supportsStyle = ContentPresentationSchema.SupportsFieldStyle(field);
+                                    var buttonLikeField = ContentPresentationSchema.IsButtonLikeField(field);
+                                    <div class="rounded-3xl border border-slate-100 bg-slate-50/50 p-5 dark:border-slate-700 dark:bg-slate-900/40 @(isWideField ? "lg:col-span-2" : string.Empty)">
+                                        <input asp-for="Sections[i].Fields[j].Key" type="hidden" />
+                                        <input asp-for="Sections[i].Fields[j].Label" type="hidden" />
+                                        <input asp-for="Sections[i].Fields[j].FieldType" type="hidden" />
+                                        <input asp-for="Sections[i].Fields[j].Placeholder" type="hidden" />
+                                        @if (ContentPresentationSchema.SupportsFieldVisibilityToggle(field))
+                                        {
+                                            <label class="mb-3 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <input asp-for="Sections[i].Fields[j].IsEnabled" class="rounded border-slate-300 text-primary focus:ring-primary" />
+                                                Hiển thị text này
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="Sections[i].Fields[j].IsEnabled" type="hidden" />
+                                        }
+                                        <div class="flex items-start justify-between gap-3">
+                                            <label class="text-sm font-bold text-slate-900 dark:text-white">@field.Label</label>
+                                            <span class="rounded-full bg-white px-3 py-1 text-[11px] font-mono text-slate-400 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">@field.Key</span>
                                         </div>
-                                    }
-                                </div>
-                            }
-                        </div>
+                                        @if (field.FieldType == "textarea")
+                                        {
+                                            <textarea asp-for="Sections[i].Fields[j].Value" rows="5" class="mt-3 w-full rounded-2xl border-slate-200 bg-white px-4 py-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" data-rich-editor="true" data-editor-height="240"></textarea>
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="Sections[i].Fields[j].Value" type="text" class="mt-3 h-12 w-full rounded-2xl border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900" />
+                                        }
+
+                                        @if (supportsStyle && !buttonLikeField)
+                                        {
+                                            <details class="mt-4 rounded-2xl border border-slate-200 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/50">
+                                                <summary class="cursor-pointer list-none text-sm font-bold text-slate-900 dark:text-white">Style field</summary>
+                                                <div class="mt-4">
+                                                    @await Html.PartialAsync("_ContentTextStyleEditor", new ContentTextStyleEditorViewModel
+                                                    {
+                                                        Prefix = $"Sections[{i}].Fields[{j}].Style",
+                                                        Title = field.Label,
+                                                        Description = "Override style cho field này. Nếu để mặc định, public site sẽ dùng section role default hoặc theme hiện có.",
+                                                        IncludeJustify = true,
+                                                        Style = field.Style ?? ContentPresentationDefaults.CreateTextStyle()
+                                                    })
+                                                </div>
+                                            </details>
+                                        }
+                                        else if (buttonLikeField)
+                                        {
+                                            <div class="mt-4 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-xs leading-relaxed text-slate-500 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
+                                                Field này là label cho CTA hoặc nút hành động. Nội dung vẫn chỉnh được, nhưng visual của button sẽ giữ theo design system hiện tại.
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 }
 
@@ -391,3 +453,90 @@
         }
     </section>
 </div>
+@section Scripts {
+    <script>
+        (function () {
+            const editors = document.querySelectorAll('[data-home-carousel-editor]');
+            if (!editors.length) {
+                return;
+            }
+
+            const updateSlide = (slide) => {
+                const sourceSelect = slide.querySelector('[data-source-select]');
+                const imageInput = slide.querySelector('[data-image-input]');
+                const previewImage = slide.querySelector('[data-preview-image]');
+                const previewEmpty = slide.querySelector('[data-preview-empty]');
+                const imageUrl = imageInput && imageInput.value ? imageInput.value.trim() : '';
+
+                slide.dataset.sourceType = sourceSelect && sourceSelect.value ? sourceSelect.value : 'external';
+
+                if (previewImage) {
+                    previewImage.src = imageUrl;
+                    previewImage.classList.toggle('hidden', !imageUrl);
+                }
+
+                if (previewEmpty) {
+                    previewEmpty.classList.toggle('hidden', !!imageUrl);
+                }
+            };
+
+            editors.forEach((editor) => {
+                editor.querySelectorAll('[data-home-carousel-slide]').forEach((slide) => {
+                    const sourceSelect = slide.querySelector('[data-source-select]');
+                    const imageInput = slide.querySelector('[data-image-input]');
+                    const uploadButton = slide.querySelector('[data-upload-button]');
+                    const libraryButton = slide.querySelector('[data-library-button]');
+                    const clearButton = slide.querySelector('[data-clear-image-button]');
+
+                    const refresh = () => updateSlide(slide);
+
+                    sourceSelect?.addEventListener('change', refresh);
+                    imageInput?.addEventListener('input', refresh);
+
+                    uploadButton?.addEventListener('click', () => {
+                        if (!imageInput || typeof window.openCloudinaryWidget !== 'function') {
+                            return;
+                        }
+
+                        window.openCloudinaryWidget({ multiple: false, folder: 'HV-Travel ASP.NET/home-carousel' }, (url) => {
+                            imageInput.value = url;
+                            if (sourceSelect) {
+                                sourceSelect.value = 'cloudinary';
+                            }
+                            refresh();
+                        });
+                    });
+
+                    libraryButton?.addEventListener('click', () => {
+                        if (!imageInput || typeof window.openCloudinaryAssetBrowser !== 'function') {
+                            return;
+                        }
+
+                        window.openCloudinaryAssetBrowser({ multiple: false, folder: 'HV-Travel ASP.NET/home-carousel' }, (url) => {
+                            imageInput.value = url;
+                            if (sourceSelect) {
+                                sourceSelect.value = 'cloudinary';
+                            }
+                            refresh();
+                        });
+                    });
+
+                    clearButton?.addEventListener('click', () => {
+                        if (!imageInput) {
+                            return;
+                        }
+
+                        imageInput.value = '';
+                        refresh();
+                    });
+
+                    refresh();
+                });
+            });
+        })();
+    </script>
+}
+
+
+
+

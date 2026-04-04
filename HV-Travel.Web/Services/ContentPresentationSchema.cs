@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using HVTravel.Domain.Entities;
 
@@ -111,6 +111,33 @@ public static partial class ContentPresentationSchema
         return true;
     }
 
+    public static bool SupportsFieldVisibilityToggle(ContentField field)
+    {
+        if (field == null || string.IsNullOrWhiteSpace(field.Key))
+        {
+            return false;
+        }
+
+        if (field.Key.EndsWith("ImageUrl", StringComparison.OrdinalIgnoreCase)
+            || field.Key.EndsWith("LinkUrl", StringComparison.OrdinalIgnoreCase)
+            || field.Key.EndsWith("SourceType", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(field.Key, "mapEmbedUrl", StringComparison.OrdinalIgnoreCase)
+            || field.Key.EndsWith("facebookUrl", StringComparison.OrdinalIgnoreCase)
+            || field.Key.EndsWith("instagramUrl", StringComparison.OrdinalIgnoreCase)
+            || field.Key.EndsWith("youtubeUrl", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (string.Equals(field.FieldType, "text", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(field.FieldType, "textarea", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return string.Equals(field.FieldType, "url", StringComparison.OrdinalIgnoreCase)
+            && string.Equals(field.Key, "email", StringComparison.OrdinalIgnoreCase);
+    }
     public static bool IsButtonLikeField(ContentField field)
     {
         if (field == null || string.IsNullOrWhiteSpace(field.Key))
@@ -171,4 +198,5 @@ public static partial class ContentPresentationSchema
     [GeneratedRegex("^[A-Za-z0-9\"' ,.-]{0,120}$", RegexOptions.Compiled)]
     private static partial Regex FontFamilyPattern();
 }
+
 

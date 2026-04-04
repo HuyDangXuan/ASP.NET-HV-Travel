@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HVTravel.Domain.Entities;
@@ -33,7 +33,16 @@ public class SiteSettingsGroup
     public string Description { get; set; } = string.Empty;
 
     [BsonElement("isEnabled")]
+    [BsonDefaultValue(true)]
     public bool IsEnabled { get; set; } = true;
+
+    [BsonElement("isTitleEnabled")]
+    [BsonDefaultValue(true)]
+    public bool IsTitleEnabled { get; set; } = true;
+
+    [BsonElement("isDescriptionEnabled")]
+    [BsonDefaultValue(true)]
+    public bool IsDescriptionEnabled { get; set; } = true;
 
     [BsonElement("displayOrder")]
     public int DisplayOrder { get; set; }
@@ -59,6 +68,10 @@ public class ContentField
 
     [BsonElement("placeholder")]
     public string Placeholder { get; set; } = string.Empty;
+
+    [BsonElement("isEnabled")]
+    [BsonDefaultValue(true)]
+    public bool IsEnabled { get; set; } = true;
 
     [BsonElement("style")]
     public ContentTextStyle Style { get; set; } = ContentPresentationDefaults.CreateTextStyle();

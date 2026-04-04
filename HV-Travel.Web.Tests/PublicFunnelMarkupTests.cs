@@ -1,4 +1,4 @@
-namespace HV_Travel.Web.Tests;
+﻿namespace HV_Travel.Web.Tests;
 
 public class PublicFunnelMarkupTests
 {
@@ -12,12 +12,22 @@ public class PublicFunnelMarkupTests
         Assert.Contains("name=\"travellers\"", filterPartial);
         Assert.Contains("name=\"confirmationType\"", filterPartial);
         Assert.Contains("name=\"cancellationType\"", filterPartial);
+        Assert.Contains("availableOnlyLabelText", filterPartial);
+        Assert.Contains("promotionOnlyLabelText", filterPartial);
+        Assert.Contains("applyButtonText", filterPartial);
+        Assert.Contains("resetButtonText", filterPartial);
         Assert.Contains("best_value", filterPartial);
         Assert.Contains("RegionFacets", content);
         Assert.Contains("ConfirmationTypeFacets", content);
         Assert.Contains("asp-route-travellers", content);
         Assert.Contains("asp-route-confirmationType", content);
         Assert.Contains("asp-route-cancellationType", content);
+        Assert.Contains("collectionChips", content);
+        Assert.Contains("resultsPanel", content);
+        Assert.Contains("[\"FilterPanel\"] = filterPanel", content);
+        Assert.Contains("data-empty-text=\"@wishlistEmptyText\"", content);
+        Assert.Contains("data-empty-text=\"@recentEmptyText\"", content);
+        Assert.Contains("emptyStateCtaText", content);
         Assert.Contains("public-filter-form", filterPartial);
         Assert.Contains("public-filter-heading", filterPartial);
         Assert.Contains("public-filter-shell", filterPartial);
@@ -33,6 +43,10 @@ public class PublicFunnelMarkupTests
         Assert.Contains("name=\"sort\"", filterPartial);
         Assert.Contains("name=\"confirmationType\"", filterPartial);
         Assert.Contains("name=\"cancellationType\"", filterPartial);
+        Assert.Contains("availableOnlyLabelText", filterPartial);
+        Assert.Contains("promotionOnlyLabelText", filterPartial);
+        Assert.Contains("applyButtonText", filterPartial);
+        Assert.Contains("resetButtonText", filterPartial);
         Assert.Contains("PartialAsync(\"_TourCard\"", content);
         Assert.Contains("lg:grid-cols-[360px_minmax(0,1fr)]", content);
         Assert.Contains("items-start", content);
@@ -53,6 +67,25 @@ public class PublicFunnelMarkupTests
     }
 
     [Fact]
+    public void SharedTourCardHosts_UseSharedPartialAndSharedCardScript()
+    {
+        var home = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Home\Index.cshtml"));
+        var publicTours = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\PublicTours\Index.cshtml"));
+        var sharedCardScript = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\js\public-tour-card.js"));
+
+        Assert.Contains("PartialAsync(\"~/Views/PublicTours/_TourCard.cshtml\"", home);
+        Assert.Contains("public-tour-card-grid", home);
+        Assert.Contains("~/js/public-tour-card.js", home);
+        Assert.DoesNotContain("class=\"tour-card group", home);
+
+        Assert.Contains("~/js/public-tour-card.js", publicTours);
+        Assert.Contains("hvtravel_wishlist", sharedCardScript);
+        Assert.Contains("record-view", sharedCardScript);
+        Assert.Contains("wishlist-shell", sharedCardScript);
+        Assert.Contains("data-tour-wishlist-toggle", sharedCardScript);
+    }
+
+    [Fact]
     public void PublicTourCardPartial_ExposesSampleDrivenCommerceMarkup()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\PublicTours\_TourCard.cshtml"));
@@ -68,10 +101,10 @@ public class PublicFunnelMarkupTests
         Assert.Contains("tour-card-original-price", content);
         Assert.Contains("data-tour-image-fallback", content);
         Assert.Contains("onerror=", content);
-        Assert.Contains("ÃƒÆ’Ã¢â‚¬Å¾Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¡Ãƒâ€šÃ‚ÂºÃƒâ€šÃ‚Â·t ngay", content);
-        Assert.Contains("4N3ÃƒÆ’Ã¢â‚¬Å¾Ãƒâ€šÃ‚Â", content);
-        Assert.DoesNotContain("KhÃƒÆ’Ã‚Â¡Ãƒâ€šÃ‚Â»Ãƒâ€¦Ã‚Â¸i hÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â nh:", content);
-        Assert.DoesNotContain("GiÃƒÆ’Ã‚Â¡Ãƒâ€šÃ‚Â»Ãƒâ€šÃ‚Â chÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³t", content);
+        Assert.Contains("Đặt ngay", content);
+        Assert.Contains("4N3Đ", content);
+        Assert.DoesNotContain("meetingPoint", content);
+        Assert.DoesNotContain("countdown", content);
     }
 
     [Fact]
@@ -130,12 +163,11 @@ public class PublicFunnelMarkupTests
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\PublicTours\Details.cshtml"));
 
-        Assert.Contains("Trang chÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§", content);
-        Assert.Contains("Tour du lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¹ch", content);
-        Assert.Contains("CÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²n ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­t chÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â", content);
-        Assert.Contains("ViÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¡t Nam", content);
-        Assert.Contains("ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âªm", content);
-        Assert.Contains("ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡nh giÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡", content);
+        Assert.DoesNotContain("Trang ch???", content);
+        Assert.DoesNotContain("Tour du l???ch", content);
+        Assert.DoesNotContain("X??c nh???n t???c th??", content);
+        Assert.DoesNotContain("Gi?? t???", content);
+        Assert.DoesNotContain("L???ch tr??nh chi ti???t", content);
     }
 
     [Fact]
@@ -143,12 +175,9 @@ public class PublicFunnelMarkupTests
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Models\BookingViewModel.cs"));
 
-        Assert.Contains("Vui lÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ng nhÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­p hÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âªn", content);
-        Assert.Contains("Vui lÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ng nhÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­p email", content);
-        Assert.Contains("Email khÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´ng hÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£p lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¡", content);
-        Assert.Contains("Vui lÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ng nhÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­p sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œ ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¡n thoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡i", content);
-        Assert.Contains("SÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œ ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¹Ã…â€œiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¡n thoÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡i khÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´ng hÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£p lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¡", content);
-        Assert.Contains("CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§n ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­t nhÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥t 1 ngÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âi lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Âºn", content);
+        Assert.DoesNotContain("Vui l??ng nh???p", content);
+        Assert.DoesNotContain("kh??ng h???p l???", content);
+        Assert.DoesNotContain("C???n ??t nh???t 1 ng?????i l???n", content);
     }
 
     [Fact]
@@ -156,7 +185,8 @@ public class PublicFunnelMarkupTests
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Controllers\PublicToursController.cs"));
 
-        Assert.Contains("Tour Du LÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â»ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¹ch", content);
+        Assert.DoesNotContain("Tour Du L???ch", content);
+        Assert.Contains("ViewData[\"Title\"]", content);
     }
     private static string GetRepoPath(string relativePath)
     {
@@ -164,5 +194,8 @@ public class PublicFunnelMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
+
+
 
 

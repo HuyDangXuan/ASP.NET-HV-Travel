@@ -60,7 +60,7 @@ public class EncodingRegressionTests
             "Trang Chủ",
             "Khám Phá",
             "Hành Trình Được Yêu Thích Nhất",
-            "{tour.Duration?.Days}N{tour.Duration?.Nights}Đ"
+            "~/Views/PublicTours/_TourCard.cshtml"
         },
         [@"HV-Travel.Web\Views\Home\About.cshtml"] = new[]
         {
@@ -194,3 +194,4 @@ public class EncodingRegressionTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+

@@ -64,4 +64,25 @@ public class ContentAdminCatalogCoverageTests
 
         Assert.Equal(expectedSectionKeys, sections.Select(section => section.SectionKey).ToArray());
     }
+
+    [Fact]
+    public void HomeCarousel_SourceContracts_Are_Defined_In_ContentFiles()
+    {
+        var defaults = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Services\PublicContentDefaults.cs"));
+        var catalog = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Services\ContentAdminCatalog.cs"));
+
+        Assert.Contains("[\"home\"] = new() { \"hero\", \"carousel\", \"stats\", \"featuredToursIntro\", \"commitments\", \"finalCta\" }", defaults);
+        Assert.Contains("Section(\"home\", \"carousel\", \"Carousel trang chủ\", 2, new List<ContentField>", defaults);
+        Assert.Contains("Text(\"slide1SourceType\", \"Nguồn ảnh slide 1\", \"external\")", defaults);
+        Assert.Contains("Url(\"slide5ImageUrl\", \"Ảnh slide 5\", \"https://picsum.photos/id/1039/1600/900\")", defaults);
+        Assert.Contains("Url(\"slide5LinkUrl\", \"Link slide 5\", \"/Inspiration\")", defaults);
+        Assert.Contains("\"6 section chính của trang chủ.\"", catalog);
+        Assert.Contains("Section(\"carousel\", \"Carousel trang chủ\", \"5 slide ảnh marketing nằm ngay dưới hero\")", catalog);
+    }
+
+    private static string GetRepoPath(string relativePath)
+    {
+        var repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
+        return Path.Combine(repoRoot, relativePath);
+    }
 }

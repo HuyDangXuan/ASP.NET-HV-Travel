@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --theme-scrollbar-thumb: #9cc8d6;
   --theme-scrollbar-thumb-hover: #5faac2;
   --theme-glass-bg: rgba(255, 255, 255, 0.86);
@@ -2215,4 +2215,160 @@ body.public-page-shell.dark .public-custom-select-option-dot {
   body.public-page-shell .public-filter-reset {
     padding-inline: 0.78rem;
   }
+}
+
+body.public-page-shell .home-carousel-section {
+  position: relative;
+  margin-top: 0;
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+body.public-page-shell .home-carousel-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: clamp(1.75rem, 4vw, 2.75rem);
+  border: 1px solid rgba(191, 219, 254, 0.65);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(232, 243, 250, 0.82));
+  box-shadow: 0 32px 80px rgba(8, 23, 38, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body.public-page-shell .home-carousel {
+  position: relative;
+}
+
+body.public-page-shell .home-carousel-viewport {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+body.public-page-shell .home-carousel-track {
+  display: flex;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+body.public-page-shell .home-carousel-slide {
+  position: relative;
+  flex: 0 0 100%;
+  display: block;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+body.public-page-shell .home-carousel-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 17, 27, 0.06), rgba(7, 17, 27, 0.22));
+}
+
+body.public-page-shell .home-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.01);
+}
+
+body.public-page-shell .home-carousel-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(8, 23, 38, 0.24);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transform: translateY(-50%);
+  transition: background-color 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+body.public-page-shell .home-carousel-nav:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: translateY(-50%) scale(1.03);
+}
+
+body.public-page-shell .home-carousel-nav--prev {
+  left: clamp(0.8rem, 2vw, 1.25rem);
+}
+
+body.public-page-shell .home-carousel-nav--next {
+  right: clamp(0.8rem, 2vw, 1.25rem);
+}
+
+body.public-page-shell .home-carousel-dots {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.8rem, 2vw, 1.2rem);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transform: translateX(-50%);
+}
+
+body.public-page-shell .home-carousel-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.34);
+  transition: transform 180ms ease, background-color 180ms ease, width 180ms ease;
+}
+
+body.public-page-shell .home-carousel-dot.is-active {
+  width: 2rem;
+  background: #ffffff;
+}
+
+body.public-page-shell .home-carousel-nav:focus-visible,
+body.public-page-shell .home-carousel-dot:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.94);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767.98px) {
+  body.public-page-shell .home-carousel-section {
+    margin-top: 0;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+
+  body.public-page-shell .home-carousel-shell {
+    border-radius: 1.5rem;
+  }
+
+  body.public-page-shell .home-carousel-nav {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  body.public-page-shell .home-carousel-dots {
+    gap: 0.45rem;
+  }
+}
+
+
+
+.public-badge:empty,
+.public-top-section-badge:empty,
+.public-page-hero-badge:empty,
+.public-section-title:empty,
+.public-top-section-title:empty,
+.public-hero-title:empty,
+.public-body-copy:empty,
+.public-top-section-lead:empty,
+.public-page-hero-copy:empty {
+    display: none;
 }

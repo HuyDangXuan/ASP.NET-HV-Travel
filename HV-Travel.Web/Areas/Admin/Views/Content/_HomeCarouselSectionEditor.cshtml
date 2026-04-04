@@ -1,0 +1,101 @@
+﻿@using HVTravel.Domain.Entities
+@model ContentSection
+@{
+    var sectionIndex = (int)(ViewData["SectionIndex"] ?? 0);
+
+    static string InputName(int sectionIndex, int fieldIndex) => $"Sections[{sectionIndex}].Fields[{fieldIndex}].Value";
+    static string HiddenName(int sectionIndex, int fieldIndex, string propertyName) => $"Sections[{sectionIndex}].Fields[{fieldIndex}].{propertyName}";
+    int FindFieldIndex(string key) => Model.Fields.FindIndex(field => string.Equals(field.Key, key, StringComparison.OrdinalIgnoreCase));
+    ContentField Field(string key) => Model.Fields[FindFieldIndex(key)];
+}
+
+<div class="space-y-5" data-home-carousel-editor>
+    @for (var fieldIndex = 0; fieldIndex < Model.Fields.Count; fieldIndex++)
+    {
+        var hiddenField = Model.Fields[fieldIndex];
+        <input type="hidden" name="@HiddenName(sectionIndex, fieldIndex, "Key")" value="@hiddenField.Key" />
+        <input type="hidden" name="@HiddenName(sectionIndex, fieldIndex, "Label")" value="@hiddenField.Label" />
+        <input type="hidden" name="@HiddenName(sectionIndex, fieldIndex, "FieldType")" value="@hiddenField.FieldType" />
+        <input type="hidden" name="@HiddenName(sectionIndex, fieldIndex, "Placeholder")" value="@hiddenField.Placeholder" />
+    }
+
+    <div class="rounded-3xl border border-sky-200 bg-sky-50/70 px-5 py-4 text-sm leading-relaxed text-sky-800 dark:border-sky-900/30 dark:bg-sky-900/10 dark:text-sky-200">
+        Slide không có ảnh sẽ tự bị ẩn ở trang chủ. Mỗi slide dùng 1 ảnh và 1 link đích, có thể chọn Cloudinary hoặc dán link trực tiếp.
+    </div>
+
+    <div class="grid gap-5 xl:grid-cols-2">
+        @for (var slideNumber = 1; slideNumber <= 5; slideNumber++)
+        {
+            var sourceTypeKey = $"slide{slideNumber}SourceType";
+            var imageKey = $"slide{slideNumber}ImageUrl";
+            var linkKey = $"slide{slideNumber}LinkUrl";
+            var sourceIndex = FindFieldIndex(sourceTypeKey);
+            var imageIndex = FindFieldIndex(imageKey);
+            var linkIndex = FindFieldIndex(linkKey);
+            var sourceField = Field(sourceTypeKey);
+            var imageField = Field(imageKey);
+            var linkField = Field(linkKey);
+            var sourceType = string.IsNullOrWhiteSpace(sourceField.Value) ? "external" : sourceField.Value;
+            var hasImage = !string.IsNullOrWhiteSpace(imageField.Value);
+
+            <article class="rounded-[2rem] border border-slate-200 bg-slate-50/70 p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/40" data-home-carousel-slide>
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-primary">Slide @slideNumber</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Ảnh cover marketing dùng cho carousel ngay dưới hero.</p>
+                    </div>
+                    <span class="rounded-full bg-white px-3 py-1 text-[11px] font-mono text-slate-400 ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">home.carousel.@slideNumber</span>
+                </div>
+
+                <div class="mt-4 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950/60">
+                    <div class="aspect-[16/9] bg-slate-100 dark:bg-slate-900">
+                        <img src="@(hasImage ? imageField.Value : string.Empty)" alt="Slide @slideNumber preview" class="h-full w-full object-cover @(hasImage ? string.Empty : "hidden")" data-preview-image />
+                        <div class="flex h-full items-center justify-center px-6 text-center text-sm font-semibold text-slate-400 @(hasImage ? "hidden" : string.Empty)" data-preview-empty>
+                            Chưa có ảnh cho slide này.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 grid gap-4">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                        <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Nguồn ảnh</span>
+                        <select name="@InputName(sectionIndex, sourceIndex)" class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" data-source-select>
+                            <option value="external" selected="@(string.Equals(sourceType, "external", StringComparison.OrdinalIgnoreCase))">Link trực tiếp</option>
+                            <option value="cloudinary" selected="@(string.Equals(sourceType, "cloudinary", StringComparison.OrdinalIgnoreCase))">Cloudinary</option>
+                        </select>
+                    </label>
+
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                        <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">URL ảnh</span>
+                        <input type="url" name="@InputName(sectionIndex, imageIndex)" value="@imageField.Value" placeholder="https://example.com/banner.jpg" class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" data-image-input />
+                    </label>
+
+                    <div>
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                            <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Link đích</span>
+                            <input type="text" name="@InputName(sectionIndex, linkIndex)" value="@linkField.Value" placeholder="/PublicTours, /Destinations hoặc https://example.com" class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
+                        </label>
+                        <p class="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Link nội bộ bắt đầu bằng / hoặc URL đầy đủ https:// đều hợp lệ.</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                    <button type="button" class="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:bg-primary-dark" data-upload-button>
+                        <span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+                        Tải ảnh lên
+                    </button>
+                    <button type="button" class="inline-flex items-center gap-2 rounded-2xl border border-sky-200 px-4 py-2.5 text-sm font-bold text-sky-700 transition hover:bg-sky-50 dark:border-sky-800 dark:text-sky-300" data-library-button>
+                        <span class="material-symbols-outlined text-[18px]">photo_library</span>
+                        Chọn từ Cloudinary
+                    </button>
+                    <button type="button" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-clear-image-button>
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                        Xóa ảnh
+                    </button>
+                </div>
+            </article>
+        }
+    </div>
+</div>
+
+

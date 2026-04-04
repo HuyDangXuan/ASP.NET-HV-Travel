@@ -13,6 +13,32 @@
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
     var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
+    var hotlineLabel = benefits?.Fields.GetVisibleFieldValue("hotlineLabel", "Hotline") ?? "Hotline";
+    var contactEmailLabel = benefits?.Fields.GetVisibleFieldValue("contactEmailLabel", "Email") ?? "Email";
+    var businessHoursTitle = benefits?.Fields.GetVisibleFieldValue("businessHoursTitle", "Giờ Làm Việc") ?? "Giờ Làm Việc";
+    var supportScheduleLabel = benefits?.Fields.GetVisibleFieldValue("supportScheduleLabel", "Lịch hỗ trợ") ?? "Lịch hỗ trợ";
+    var fullNameLabel = benefits?.Fields.GetVisibleFieldValue("fullNameLabel", "Họ Và Tên") ?? "Họ Và Tên";
+    var fullNamePlaceholder = benefits?.Fields.GetVisibleFieldValue("fullNamePlaceholder", "Nguyễn Văn A") ?? "Nguyễn Văn A";
+    var phoneLabel = benefits?.Fields.GetVisibleFieldValue("phoneLabel", "Số Điện Thoại") ?? "Số Điện Thoại";
+    var phonePlaceholder = benefits?.Fields.GetVisibleFieldValue("phonePlaceholder", "0901 234 567") ?? "0901 234 567";
+    var formEmailLabel = benefits?.Fields.GetVisibleFieldValue("formEmailLabel", "Email") ?? "Email";
+    var emailPlaceholder = benefits?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@example.com") ?? "email@example.com";
+    var tourInterestLabel = benefits?.Fields.GetVisibleFieldValue("tourInterestLabel", "Tour Quan Tâm") ?? "Tour Quan Tâm";
+    var tourInterestPlaceholder = benefits?.Fields.GetVisibleFieldValue("tourInterestPlaceholder", "VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc...") ?? "VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc...";
+    var preferredContactTimeLabel = benefits?.Fields.GetVisibleFieldValue("preferredContactTimeLabel", "Thời Gian Liên Hệ Mong Muốn") ?? "Thời Gian Liên Hệ Mong Muốn";
+    var preferredMorningLabel = benefits?.Fields.GetVisibleFieldValue("preferredMorningLabel", "Sáng (8-12h)") ?? "Sáng (8-12h)";
+    var preferredAfternoonLabel = benefits?.Fields.GetVisibleFieldValue("preferredAfternoonLabel", "Chiều (13-17h)") ?? "Chiều (13-17h)";
+    var preferredEveningLabel = benefits?.Fields.GetVisibleFieldValue("preferredEveningLabel", "Tối (18-21h)") ?? "Tối (18-21h)";
+    var messageLabel = benefits?.Fields.GetVisibleFieldValue("messageLabel", "Nội Dung Yêu Cầu") ?? "Nội Dung Yêu Cầu";
+    var messagePlaceholder = benefits?.Fields.GetVisibleFieldValue("messagePlaceholder", "Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn...") ?? "Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn...";
+    var responseSlaText = benefits?.Fields.GetVisibleFieldValue("responseSlaText", "Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc") ?? "Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc";
+    var reasonTexts = new[]
+    {
+        benefits?.Fields.GetVisibleFieldValue("reason1Text", "10+ năm kinh nghiệm tổ chức tour") ?? "10+ năm kinh nghiệm tổ chức tour",
+        benefits?.Fields.GetVisibleFieldValue("reason2Text", "Đội ngũ hướng dẫn viên chuyên nghiệp") ?? "Đội ngũ hướng dẫn viên chuyên nghiệp",
+        benefits?.Fields.GetVisibleFieldValue("reason3Text", "Tư vấn miễn phí, không ràng buộc") ?? "Tư vấn miễn phí, không ràng buộc",
+        benefits?.Fields.GetVisibleFieldValue("reason4Text", "Cam kết giá tốt nhất thị trường") ?? "Cam kết giá tốt nhất thị trường"
+    }.Where(text => !string.IsNullOrWhiteSpace(text)).ToArray();
 }
 
 @if (hero?.IsEnabled != false)
@@ -48,7 +74,7 @@
                                 <span class="material-symbols-outlined">call</span>
                             </div>
                             <div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Hotline</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">@hotlineLabel</p>
                                 <p class="text-base font-bold text-slate-900 dark:text-white">@contactPhone</p>
                             </div>
                         </a>
@@ -57,7 +83,7 @@
                                 <span class="material-symbols-outlined">mail</span>
                             </div>
                             <div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Email</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">@contactEmailLabel</p>
                                 <p class="text-base font-bold text-slate-900 dark:text-white">@contactEmail</p>
                             </div>
                         </a>
@@ -65,20 +91,20 @@
 
                     <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">schedule</span> Giờ Làm Việc
+                            <span class="material-symbols-outlined text-primary">schedule</span> @businessHoursTitle
                         </h3>
                         <div class="space-y-2.5 text-sm">
-                            <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Lịch hỗ trợ</span><span class="font-bold text-slate-900 dark:text-white">@businessHours</span></div>
+                            <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">@supportScheduleLabel</span><span class="font-bold text-slate-900 dark:text-white">@businessHours</span></div>
                         </div>
                     </div>
 
                     <div class="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-primary/10 dark:to-blue-500/10 rounded-2xl p-6 border border-primary/10">
                         <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "reasonsTitle")">@benefits.Fields.GetFieldValue("reasonsTitle", "Tại Sao Chọn HV Travel?")</h3>
                         <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>10+ năm kinh nghiệm tổ chức tour</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Đội ngũ hướng dẫn viên chuyên nghiệp</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Tư vấn miễn phí, không ràng buộc</div>
-                            <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>Cam kết giá tốt nhất thị trường</div>
+                            @foreach (var reasonText in reasonTexts)
+                            {
+                                <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>@reasonText</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -112,55 +138,55 @@
                             <div class="space-y-5">
                                 <div class="grid sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ Và Tên <span class="text-red-500">*</span></label>
-                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@fullNameLabel <span class="text-red-500">*</span></label>
+                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@fullNamePlaceholder" />
                                         <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
-                                        <input asp-for="Phone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
+                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@phoneLabel <span class="text-red-500">*</span></label>
+                                        <input asp-for="Phone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@phonePlaceholder" />
                                         <span asp-validation-for="Phone" class="text-xs text-red-500 mt-1"></span>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
-                                    <input asp-for="Email" type="email" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@formEmailLabel</label>
+                                    <input asp-for="Email" type="email" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@emailPlaceholder" />
                                     <span asp-validation-for="Email" class="text-xs text-red-500 mt-1"></span>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour Quan Tâm</label>
-                                    <input asp-for="TourInterest" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="VD: Tour Da Nang 3N2D, Tour Phu Quoc..." />
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@tourInterestLabel</label>
+                                    <input asp-for="TourInterest" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@tourInterestPlaceholder" />
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời Gian Liên Hệ Mong Muốn</label>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@preferredContactTimeLabel</label>
                                     <div class="flex flex-wrap gap-2">
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Sáng (8-12h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="@preferredMorningLabel" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Sáng (8-12h)
+                                                @preferredMorningLabel
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Chiều (13-17h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="@preferredAfternoonLabel" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Chiều (13-17h)
+                                                @preferredAfternoonLabel
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="Tối (18-21h)" class="peer hidden" />
+                                            <input type="radio" name="PreferredContactTime" value="@preferredEveningLabel" class="peer hidden" />
                                             <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                Tối (18-21h)
+                                                @preferredEveningLabel
                                             </div>
                                         </label>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nội Dung Yêu Cầu <span class="text-red-500">*</span></label>
-                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn..."></textarea>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@messageLabel <span class="text-red-500">*</span></label>
+                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="@messagePlaceholder"></textarea>
                                     <span asp-validation-for="Message" class="text-xs text-red-500 mt-1"></span>
                                 </div>
 
@@ -168,7 +194,7 @@
                                     <span class="material-symbols-outlined text-[18px]">send</span>
                                     @benefits?.Fields.GetFieldValue("submitText", "Gửi Yêu Cầu")
                                 </button>
-                                <p class="text-[11px] text-slate-400 text-center">Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc</p>
+                                <p class="text-[11px] text-slate-400 text-center">@responseSlaText</p>
                             </div>
                         </form>
                     </div>
@@ -177,3 +203,5 @@
         </div>
     </div>
 </section>
+
+

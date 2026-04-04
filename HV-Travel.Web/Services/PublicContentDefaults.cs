@@ -23,10 +23,10 @@ public static class PublicContentDefaults
     public static Dictionary<string, List<string>> Inventory => new()
     {
         ["site"] = new() { "header", "footerBrand", "footerExplore", "footerCompany", "contactInfo", "socialLinks", "seo" },
-        ["home"] = new() { "hero", "stats", "featuredToursIntro", "commitments", "finalCta" },
+        ["home"] = new() { "hero", "carousel", "stats", "featuredToursIntro", "commitments", "finalCta" },
         ["about"] = new() { "hero", "story", "missionVision", "team" },
         ["contact"] = new() { "hero", "cards", "formIntro" },
-        ["publicTours"] = new() { "indexHero", "emptyState" },
+        ["publicTours"] = new() { "indexHero", "collectionChips", "filterPanel", "resultsPanel", "emptyState" },
         ["destinations"] = new() { "hero", "collectionsIntro", "regionsIntro" },
         ["promotions"] = new() { "hero", "flashSalesIntro", "voucherIntro", "seasonalDealsIntro" },
         ["services"] = new() { "hero", "serviceCards", "quoteFormIntro" },
@@ -48,8 +48,18 @@ public static class PublicContentDefaults
                     Text("brandTagline", "Khẩu hiệu", "Khám phá Việt Nam"),
                     Text("navHomeLabel", "Nhãn trang chủ", "Trang chủ"),
                     Text("navToursLabel", "Nhãn tour", "Tour du lịch"),
+                    Text("navDestinationsLabel", "Nhãn điểm đến", "Điểm đến"),
+                    Text("navPromotionsLabel", "Nhãn khuyến mãi", "Ưu đãi"),
+                    Text("navInspirationLabel", "Nhãn cẩm nang", "Cẩm nang"),
+                    Text("navServicesLabel", "Nhãn dịch vụ", "Dịch vụ"),
                     Text("navAboutLabel", "Nhãn giới thiệu", "Giới thiệu"),
                     Text("navContactLabel", "Nhãn liên hệ", "Liên hệ"),
+                    Text("bookingLookupLabel", "Nhãn tra cứu booking", "Tra cứu booking"),
+                    Text("moreLabel", "Nhãn khám phá thêm", "Khám phá thêm"),
+                    Text("openPortalLabel", "Nhãn mở portal", "Mở portal"),
+                    Text("customerFallbackLabel", "Tên khách hàng mặc định", "Khách hàng"),
+                    Text("customerCodeFallbackLabel", "Mã khách hàng mặc định", "Khách hàng HV Travel"),
+                    Text("logoutLabel", "Nhãn đăng xuất", "Đăng xuất"),
                     Text("registerLabel", "Nút đăng ký", "Đăng ký"),
                     Text("loginLabel", "Nút đăng nhập", "Đăng nhập")
                 }),
@@ -57,7 +67,8 @@ public static class PublicContentDefaults
                 {
                     Text("title", "Tiêu đề", "HV Travel"),
                     Text("tagline", "Khẩu hiệu", "Khám phá Việt Nam"),
-                    TextArea("description", "Mô tả footer", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.")
+                    TextArea("description", "Mô tả footer", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời."),
+                    Text("allRightsReservedLabel", "Nhãn bảo lưu bản quyền", "Bảo lưu mọi quyền.")
                 }),
                 Group("footerExplore", "Footer khám phá", 3, new List<ContentField>
                 {
@@ -73,7 +84,8 @@ public static class PublicContentDefaults
                     Text("aboutLabel", "Link giới thiệu", "Giới thiệu"),
                     Text("contactLabel", "Link liên hệ", "Liên hệ"),
                     Text("privacyLabel", "Link chính sách", "Chính sách bảo mật"),
-                    Text("termsLabel", "Link điều khoản", "Điều khoản sử dụng")
+                    Text("termsLabel", "Link điều khoản", "Điều khoản sử dụng"),
+                    Text("sitemapLabel", "Link sơ đồ trang", "Sơ đồ trang")
                 }),
                 Group("contactInfo", "Thông tin liên hệ", 5, new List<ContentField>
                 {
@@ -112,7 +124,25 @@ public static class PublicContentDefaults
                 Text("primaryCtaText", "CTA chính", "Khám phá ngay"),
                 Text("secondaryCtaText", "CTA phụ", "Liên hệ tư vấn")
             }),
-            Section("home", "stats", "Chỉ số marketing trang chủ", 2, new List<ContentField>
+            Section("home", "carousel", "Carousel trang chủ", 2, new List<ContentField>
+            {
+                Text("slide1SourceType", "Nguồn ảnh slide 1", "external"),
+                Url("slide1ImageUrl", "Ảnh slide 1", "https://picsum.photos/id/1015/1600/900"),
+                Url("slide1LinkUrl", "Link slide 1", "/PublicTours"),
+                Text("slide2SourceType", "Nguồn ảnh slide 2", "external"),
+                Url("slide2ImageUrl", "Ảnh slide 2", "https://picsum.photos/id/1016/1600/900"),
+                Url("slide2LinkUrl", "Link slide 2", "/Destinations"),
+                Text("slide3SourceType", "Nguồn ảnh slide 3", "external"),
+                Url("slide3ImageUrl", "Ảnh slide 3", "https://picsum.photos/id/1018/1600/900"),
+                Url("slide3LinkUrl", "Link slide 3", "/Promotions"),
+                Text("slide4SourceType", "Nguồn ảnh slide 4", "external"),
+                Url("slide4ImageUrl", "Ảnh slide 4", "https://picsum.photos/id/1020/1600/900"),
+                Url("slide4LinkUrl", "Link slide 4", "/Services"),
+                Text("slide5SourceType", "Nguồn ảnh slide 5", "external"),
+                Url("slide5ImageUrl", "Ảnh slide 5", "https://picsum.photos/id/1039/1600/900"),
+                Url("slide5LinkUrl", "Link slide 5", "/Inspiration")
+            }),
+            Section("home", "stats", "Chỉ số marketing trang chủ", 3, new List<ContentField>
             {
                 Text("stat1Number", "Số liệu 1", "500+"),
                 Text("stat1Label", "Nhãn 1", "Tour đã tổ chức"),
@@ -123,15 +153,17 @@ public static class PublicContentDefaults
                 Text("stat4Number", "Số liệu 4", "4.9*"),
                 Text("stat4Label", "Nhãn 4", "Đánh giá TB")
             }),
-            Section("home", "featuredToursIntro", "Giới thiệu tour nổi bật trang chủ", 3, new List<ContentField>
+            Section("home", "featuredToursIntro", "Giới thiệu tour nổi bật trang chủ", 4, new List<ContentField>
             {
                 Text("badgeText", "Badge", "Tour nổi bật"),
                 Text("title", "Tiêu đề", "Hành trình được yêu thích nhất"),
                 TextArea("description", "Mô tả", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"),
-                Text("viewAllText", "Nút xem tất cả", "Xem tất cả tour")
+                Text("viewAllText", "Nút xem tất cả", "Xem tất cả tour"),
+                Text("emptyStateText", "Thông báo khi chưa có tour", "Chưa có tour nào. Vui lòng quay lại sau.")
             }),
-            Section("home", "commitments", "Cam kết trang chủ", 4, new List<ContentField>
+            Section("home", "commitments", "Cam kết trang chủ", 5, new List<ContentField>
             {
+                Text("eyebrowText", "Eyebrow", "Tại sao chọn chúng tôi"),
                 Text("title", "Tiêu đề", "Cam kết chất lượng"),
                 TextArea("description", "Mô tả", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"),
                 Text("item1Title", "Cam kết 1", "An toàn tuyệt đối"),
@@ -143,7 +175,7 @@ public static class PublicContentDefaults
                 Text("item4Title", "Cam kết 4", "Giá tốt nhất"),
                 TextArea("item4Description", "Mô tả 4", "Mức giá minh bạch, tối ưu ngân sách và phù hợp nhiều nhóm khách.")
             }),
-            Section("home", "finalCta", "CTA cuối trang chủ", 5, new List<ContentField>
+            Section("home", "finalCta", "CTA cuối trang chủ", 6, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Sẵn sàng cho hành trình tiếp theo?"),
                 TextArea("description", "Mô tả", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."),
@@ -207,12 +239,65 @@ public static class PublicContentDefaults
             }),
             Section("publicTours", "indexHero", "Hero danh sách tour", 1, new List<ContentField>
             {
+                Text("badgeText", "Badge", "Tour tuyển chọn"),
                 Text("titleLine1", "Tiêu đề dòng 1", "Tour"),
                 Text("titleHighlight", "Tiêu đề nhấn", "du lịch"),
                 TextArea("description", "Mô tả", "Khám phá những hành trình nổi bật khắp Việt Nam với lịch trình được tuyển chọn kỹ lưỡng."),
-                Text("searchPlaceholder", "Placeholder tìm kiếm", "Tìm điểm đến, từ khóa, thành phố...")
+                Text("searchPlaceholder", "Placeholder tìm kiếm", "Tìm điểm đến, từ khóa, thành phố..."),
+                Text("searchButtonText", "Nút tìm kiếm", "Tìm kiếm")
             }),
-            Section("publicTours", "emptyState", "Trạng thái rỗng danh sách tour", 2, new List<ContentField>
+            Section("publicTours", "collectionChips", "Chip bộ sưu tập tour", 2, new List<ContentField>
+            {
+                Text("domesticLabel", "Chip trong nước", "Trong nước"),
+                Text("premiumLabel", "Chip premium", "Premium"),
+                Text("familyLabel", "Chip gia đình", "Gia đình"),
+                Text("coupleLabel", "Chip cặp đôi", "Cặp đôi"),
+                Text("seasonalLabel", "Chip mùa lễ hội", "Mùa lễ hội"),
+                Text("dealLabel", "Chip săn deal", "Săn deal")
+            }),
+            Section("publicTours", "filterPanel", "Nhãn bộ lọc tour", 3, new List<ContentField>
+            {
+                Text("headingTitle", "Tiêu đề bộ lọc", "Bộ lọc tìm kiếm"),
+                Text("regionLabel", "Nhãn khu vực", "Khu vực"),
+                Text("destinationLabel", "Nhãn điểm đến", "Điểm đến"),
+                Text("allOptionLabel", "Nhãn tất cả", "Tất cả"),
+                Text("minPriceLabel", "Nhãn giá từ", "Giá từ"),
+                Text("minPricePlaceholder", "Placeholder giá từ", "2.000.000"),
+                Text("maxPriceLabel", "Nhãn giá đến", "Giá đến"),
+                Text("maxPricePlaceholder", "Placeholder giá đến", "15.000.000"),
+                Text("departureMonthLabel", "Nhãn tháng khởi hành", "Tháng khởi hành"),
+                Text("departureMonthPrefix", "Tiền tố tháng", "Tháng"),
+                Text("maxDaysLabel", "Nhãn tối đa ngày", "Tối đa ngày"),
+                Text("maxDaysPlaceholder", "Placeholder tối đa ngày", "7"),
+                Text("travellersLabel", "Nhãn số khách", "Số khách"),
+                Text("travellersPlaceholder", "Placeholder số khách", "2"),
+                Text("sortLabel", "Nhãn sắp xếp", "Sắp xếp"),
+                Text("sortRatingLabel", "Sắp xếp đánh giá", "Đánh giá cao"),
+                Text("sortBestValueLabel", "Sắp xếp giá tốt", "Giá tốt nhất"),
+                Text("sortPriceAscLabel", "Sắp xếp giá tăng", "Giá thấp đến cao"),
+                Text("sortPriceDescLabel", "Sắp xếp giá giảm", "Giá cao đến thấp"),
+                Text("sortDepartureLabel", "Sắp xếp khởi hành", "Khởi hành gần nhất"),
+                Text("confirmationLabel", "Nhãn xác nhận", "Xác nhận"),
+                Text("cancellationLabel", "Nhãn hủy hoàn", "Hủy / hoàn"),
+                Text("availableOnlyLabel", "Lọc còn chỗ", "Chỉ hiển thị tour còn chỗ"),
+                Text("promotionOnlyLabel", "Lọc khuyến mãi", "Chỉ hiển thị tour có khuyến mãi"),
+                Text("summaryRegionFormat", "Tóm tắt khu vực", "Khu vực đang có: {0} lựa chọn"),
+                Text("summaryConfirmationFormat", "Tóm tắt xác nhận", "Kiểu xác nhận: {0} lựa chọn"),
+                Text("applyButtonText", "Nút áp dụng", "Áp dụng"),
+                Text("resetButtonText", "Nút reset", "Reset")
+            }),
+            Section("publicTours", "resultsPanel", "Nhãn kết quả danh sách tour", 4, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow kết quả", "Discovery"),
+                Text("titleFormat", "Định dạng tiêu đề kết quả", "{0} tour phù hợp"),
+                Text("wishlistEyebrow", "Eyebrow wishlist", "Wishlist"),
+                Text("wishlistTitle", "Tiêu đề wishlist", "Tour đã lưu"),
+                Text("wishlistEmptyText", "Thông báo wishlist rỗng", "Chưa có tour nào trong wishlist."),
+                Text("recentEyebrow", "Eyebrow vừa xem", "Recently viewed"),
+                Text("recentTitle", "Tiêu đề vừa xem", "Tour vừa xem"),
+                Text("recentEmptyText", "Thông báo vừa xem rỗng", "Chưa có tour nào vừa xem.")
+            }),
+            Section("publicTours", "emptyState", "Trạng thái rỗng danh sách tour", 5, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Không tìm thấy tour nào"),
                 TextArea("description", "Mô tả", "Hãy thử đổi từ khóa hoặc quay lại toàn bộ danh sách tour đang mở bán."),
@@ -310,9 +395,32 @@ public static class PublicContentDefaults
             Section("booking", "consultationBenefits", "Lợi ích tư vấn", 2, new List<ContentField>
             {
                 Text("quickContactTitle", "Tiêu đề liên hệ nhanh", "Liên hệ nhanh"),
+                Text("hotlineLabel", "Nhãn hotline", "Hotline"),
+                Text("contactEmailLabel", "Nhãn email liên hệ", "Email"),
+                Text("businessHoursTitle", "Tiêu đề giờ làm việc", "Giờ làm việc"),
+                Text("supportScheduleLabel", "Nhãn lịch hỗ trợ", "Lịch hỗ trợ"),
                 Text("reasonsTitle", "Tiêu đề lý do chọn", "Tại sao chọn HV Travel?"),
+                Text("reason1Text", "Lý do 1", "10+ năm kinh nghiệm tổ chức tour"),
+                Text("reason2Text", "Lý do 2", "Đội ngũ hướng dẫn viên chuyên nghiệp"),
+                Text("reason3Text", "Lý do 3", "Tư vấn miễn phí, không ràng buộc"),
+                Text("reason4Text", "Lý do 4", "Cam kết giá tốt nhất thị trường"),
                 Text("formTitle", "Tiêu đề form", "Gửi yêu cầu tư vấn"),
+                Text("fullNameLabel", "Nhãn họ và tên", "Họ và tên"),
+                Text("fullNamePlaceholder", "Placeholder họ và tên", "Nguyễn Văn A"),
+                Text("phoneLabel", "Nhãn số điện thoại", "Số điện thoại"),
+                Text("phonePlaceholder", "Placeholder số điện thoại", "0901 234 567"),
+                Text("formEmailLabel", "Nhãn email form", "Email"),
+                Text("emailPlaceholder", "Placeholder email", "email@example.com"),
+                Text("tourInterestLabel", "Nhãn tour quan tâm", "Tour quan tâm"),
+                Text("tourInterestPlaceholder", "Placeholder tour quan tâm", "VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc..."),
+                Text("preferredContactTimeLabel", "Nhãn thời gian liên hệ", "Thời gian liên hệ mong muốn"),
+                Text("preferredMorningLabel", "Nhãn liên hệ buổi sáng", "Sáng (8-12h)"),
+                Text("preferredAfternoonLabel", "Nhãn liên hệ buổi chiều", "Chiều (13-17h)"),
+                Text("preferredEveningLabel", "Nhãn liên hệ buổi tối", "Tối (18-21h)"),
+                Text("messageLabel", "Nhãn nội dung yêu cầu", "Nội dung yêu cầu"),
+                Text("messagePlaceholder", "Placeholder nội dung yêu cầu", "Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn..."),
                 Text("submitText", "Nút gửi", "Gửi yêu cầu"),
+                Text("responseSlaText", "Thông báo thời gian phản hồi", "Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc"),
                 Text("successTitle", "Tiêu đề thành công", "Gửi yêu cầu thành công!"),
                 TextArea("successDescription", "Mô tả thành công", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất."),
                 Text("exploreToursText", "Nút khám phá tour", "Khám phá tour")
@@ -336,12 +444,26 @@ public static class PublicContentDefaults
             {
                 Text("title", "Tiêu đề", "Thông tin tra cứu"),
                 TextArea("description", "Mô tả", "Điền mã booking cùng email hoặc số điện thoại đã dùng khi đặt tour để kiểm tra nhanh trạng thái đơn."),
+                Text("bookingCodeLabel", "Nhãn mã booking", "Mã booking"),
+                Text("bookingCodePlaceholder", "Placeholder mã booking", "Ví dụ: HV20260328001"),
+                Text("emailLabel", "Nhãn email", "Email"),
+                Text("emailPlaceholder", "Placeholder email", "email@example.com"),
+                Text("phoneLabel", "Nhãn số điện thoại", "Hoặc số điện thoại"),
+                Text("phonePlaceholder", "Placeholder số điện thoại", "0901 234 567"),
                 Text("submitText", "Nút gửi", "Tra cứu booking")
             }),
             Section("bookingLookup", "readyState", "Trạng thái sẵn sàng", 3, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Sẵn sàng tra cứu"),
-                TextArea("description", "Mô tả", "Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái đơn và mốc xử lý mới nhất ngay tại đây.")
+                TextArea("description", "Mô tả", "Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái đơn và mốc xử lý mới nhất ngay tại đây."),
+                Text("resultEyebrowText", "Eyebrow kết quả", "Kết quả booking"),
+                Text("bookingStatusLabel", "Nhãn trạng thái đơn", "Trạng thái đơn"),
+                Text("startDateLabel", "Nhãn ngày khởi hành", "Ngày khởi hành"),
+                Text("startDateFallback", "Fallback ngày khởi hành", "Chưa xác định"),
+                Text("participantsCountLabel", "Nhãn số hành khách", "Số hành khách"),
+                Text("totalAmountLabel", "Nhãn tổng tiền", "Tổng tiền"),
+                Text("timelineTitle", "Tiêu đề timeline", "Timeline xử lý"),
+                Text("timelineEmptyText", "Thông báo timeline rỗng", "Booking chưa có mốc xử lý chi tiết.")
             })
         };
     }
@@ -394,3 +516,5 @@ public static class PublicContentDefaults
         return new ContentField { Key = key, Label = label, Value = value, FieldType = "url" };
     }
 }
+
+

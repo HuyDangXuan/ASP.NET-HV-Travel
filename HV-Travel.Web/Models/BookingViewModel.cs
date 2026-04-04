@@ -12,18 +12,18 @@ public class BookingViewModel
     public string DepartureId { get; set; } = string.Empty;
     public DateTime? SelectedStartDate { get; set; }
 
-    [Required(ErrorMessage = "Vui lòng nhập họ tên")]
+    [Required(ErrorMessage = "Vui l?ng nh?p h? t?n")]
     public string ContactName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui lòng nhập email")]
-    [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+    [Required(ErrorMessage = "Vui l?ng nh?p email")]
+    [EmailAddress(ErrorMessage = "Email kh?ng h?p l?")]
     public string ContactEmail { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
-    [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+    [Required(ErrorMessage = "Vui l?ng nh?p s? ?i?n tho?i")]
+    [Phone(ErrorMessage = "S? ?i?n tho?i kh?ng h?p l?")]
     public string ContactPhone { get; set; } = string.Empty;
 
-    [Range(1, 50, ErrorMessage = "Cần ít nhất 1 người lớn")]
+    [Range(1, 50, ErrorMessage = "C?n ?t nh?t 1 ng??i l?n")]
     public int AdultCount { get; set; } = 1;
 
     [Range(0, 50)]
@@ -49,19 +49,19 @@ public class BookingResultViewModel
 
 public class ConsultationViewModel
 {
-    [Required(ErrorMessage = "Vui lòng nhập họ tên")]
+    [Required(ErrorMessage = "Vui l?ng nh?p h? t?n")]
     public string FullName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
-    [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+    [Required(ErrorMessage = "Vui l?ng nh?p s? ?i?n tho?i")]
+    [Phone(ErrorMessage = "S? ?i?n tho?i kh?ng h?p l?")]
     public string Phone { get; set; } = string.Empty;
 
-    [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+    [EmailAddress(ErrorMessage = "Email kh?ng h?p l?")]
     public string Email { get; set; } = string.Empty;
 
     public string TourInterest { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui lòng nhập nội dung")]
+    [Required(ErrorMessage = "Vui l?ng nh?p n?i dung")]
     public string Message { get; set; } = string.Empty;
 
     public string PreferredContactTime { get; set; } = string.Empty;

@@ -4,10 +4,34 @@
 @{
     var sections = await ContentService.GetPageSectionsAsync("home");
     var hero = sections.GetSection("hero");
+    var carousel = sections.GetSection("carousel");
     var stats = sections.GetSection("stats");
     var featured = sections.GetSection("featuredToursIntro");
     var commitments = sections.GetSection("commitments");
     var finalCta = sections.GetSection("finalCta");
+
+    var heroBadgeText = hero?.Fields.GetVisibleFieldValue("badgeText", $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời") ?? $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời";
+    var heroTitleLine1 = hero?.Fields.GetVisibleFieldValue("titleLine1", "Khám Phá") ?? "Khám Phá";
+    var heroTitleHighlight = hero?.Fields.GetVisibleFieldValue("titleHighlight", "Việt Nam") ?? "Việt Nam";
+    var heroTitleLine2 = hero?.Fields.GetVisibleFieldValue("titleLine2", "Theo Cách Của Bạn") ?? "Theo Cách Của Bạn";
+    var heroDescription = hero?.Fields.GetVisibleFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn.") ?? "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn.";
+    var heroPrimaryCtaText = hero?.Fields.GetVisibleFieldValue("primaryCtaText", "Khám Phá Ngay") ?? "Khám Phá Ngay";
+    var heroSecondaryCtaText = hero?.Fields.GetVisibleFieldValue("secondaryCtaText", "Liên Hệ Tư Vấn") ?? "Liên Hệ Tư Vấn";
+
+    var featuredBadgeText = featured?.Fields.GetVisibleFieldValue("badgeText", "Tour Nổi Bật") ?? "Tour Nổi Bật";
+    var featuredTitle = featured?.Fields.GetVisibleFieldValue("title", "Hành Trình Được Yêu Thích Nhất") ?? "Hành Trình Được Yêu Thích Nhất";
+    var featuredDescription = featured?.Fields.GetVisibleFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách") ?? "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách";
+    var featuredViewAllText = featured?.Fields.GetVisibleFieldValue("viewAllText", "Xem Tất Cả Tour") ?? "Xem Tất Cả Tour";
+    var featuredEmptyStateText = featured?.Fields.GetVisibleFieldValue("emptyStateText", "Chưa có tour nào. Vui lòng quay lại sau.") ?? "Chưa có tour nào. Vui lòng quay lại sau.";
+
+    var commitmentsEyebrowText = commitments?.Fields.GetVisibleFieldValue("eyebrowText", "Tại Sao Chọn Chúng Tôi") ?? "Tại Sao Chọn Chúng Tôi";
+    var commitmentsTitle = commitments?.Fields.GetVisibleFieldValue("title", "Cam Kết Chất Lượng") ?? "Cam Kết Chất Lượng";
+    var commitmentsDescription = commitments?.Fields.GetVisibleFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình") ?? "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình";
+
+    var finalCtaTitle = finalCta?.Fields.GetVisibleFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?") ?? "Sẵn Sàng Cho Hành Trình Tiếp Theo?";
+    var finalCtaDescription = finalCta?.Fields.GetVisibleFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng.") ?? "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng.";
+    var finalCtaPrimaryText = finalCta?.Fields.GetVisibleFieldValue("primaryCtaText", "Liên Hệ Ngay") ?? "Liên Hệ Ngay";
+    var finalCtaSecondaryText = finalCta?.Fields.GetVisibleFieldValue("secondaryCtaText", "Khám Phá Tour") ?? "Khám Phá Tour";
 
     ViewData["Title"] = "Trang Chủ";
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "HV Travel - Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng cho bạn");
@@ -22,29 +46,59 @@
         <div class="@($"public-top-section-content is-centered max-w-4xl mx-auto {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
             @if (hero?.IsEnabled != false)
             {
-                <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
-                    <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
-                    @hero.Fields.GetFieldValue("badgeText", $"Khám phá hơn {(Model?.Count ?? 0)}+ điểm đến tuyệt vời")
-                </div>
-                <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
-                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@hero.Fields.GetFieldValue("titleLine1", "Khám Phá")</span>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@hero.Fields.GetFieldValue("titleHighlight", "Việt Nam")</span>
-                    <br />
-                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine2")">@hero.Fields.GetFieldValue("titleLine2", "Theo Cách Của Bạn")</span>
-                </h1>
-                <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                    @Html.Raw(hero.Fields.GetFieldValue("description", "Những hành trình được thiết kế riêng, trải nghiệm văn hóa độc đáo và phong cảnh thiên nhiên tuyệt đẹp đang chờ đón bạn."))
-                </div>
-                <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
-                    <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
-                        <span class="material-symbols-outlined">explore</span>
-                        @hero.Fields.GetFieldValue("primaryCtaText", "Khám Phá Ngay")
-                    </a>
-                    <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
-                        <span class="material-symbols-outlined">call</span>
-                        @hero.Fields.GetFieldValue("secondaryCtaText", "Liên Hệ Tư Vấn")
-                    </a>
-                </div>
+                @if (!string.IsNullOrWhiteSpace(heroBadgeText))
+                {
+                    <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+                        <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
+                        @heroBadgeText
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(heroTitleLine1) || !string.IsNullOrWhiteSpace(heroTitleHighlight) || !string.IsNullOrWhiteSpace(heroTitleLine2))
+                {
+                    <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                        @if (!string.IsNullOrWhiteSpace(heroTitleLine1))
+                        {
+                            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@heroTitleLine1</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(heroTitleHighlight))
+                        {
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-soft" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@heroTitleHighlight</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(heroTitleLine2))
+                        {
+                            <br />
+                            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine2")">@heroTitleLine2</span>
+                        }
+                    </h1>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(heroDescription))
+                {
+                    <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                        @Html.Raw(heroDescription)
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(heroPrimaryCtaText) || !string.IsNullOrWhiteSpace(heroSecondaryCtaText))
+                {
+                    <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
+                        @if (!string.IsNullOrWhiteSpace(heroPrimaryCtaText))
+                        {
+                            <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
+                                <span class="material-symbols-outlined">explore</span>
+                                @heroPrimaryCtaText
+                            </a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(heroSecondaryCtaText))
+                        {
+                            <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
+                                <span class="material-symbols-outlined">call</span>
+                                @heroSecondaryCtaText
+                            </a>
+                        }
+                    </div>
+                }
             }
         </div>
 
@@ -63,95 +117,59 @@
     </div>
 </section>
 
+@if (carousel?.IsEnabled != false)
+{
+    @await Html.PartialAsync("_HomeCarousel", carousel)
+}
+
 <section class="py-20 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         @if (featured?.IsEnabled != false)
         {
             <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(featured)} {ContentPresentationViewHelper.GetSectionBackgroundClass(featured)}")" style="@ContentPresentationViewHelper.GetSectionStyle(featured)" data-animate="fade-up">
-                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "badgeText")">
-                    <span class="material-symbols-outlined text-[16px]">star</span> @featured.Fields.GetFieldValue("badgeText", "Tour Nổi Bật")
-                </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "title")">@featured.Fields.GetFieldValue("title", "Hành Trình Được Yêu Thích Nhất")</h2>
-                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "description")">
-                    @Html.Raw(featured.Fields.GetFieldValue("description", "Những tour du lịch hàng đầu được đánh giá cao bởi hàng ngàn du khách"))
-                </div>
+                @if (!string.IsNullOrWhiteSpace(featuredBadgeText))
+                {
+                    <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "badgeText")">
+                        <span class="material-symbols-outlined text-[16px]">star</span> @featuredBadgeText
+                    </span>
+                }
+                @if (!string.IsNullOrWhiteSpace(featuredTitle))
+                {
+                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "title")">@featuredTitle</h2>
+                }
+                @if (!string.IsNullOrWhiteSpace(featuredDescription))
+                {
+                    <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "description")">
+                        @Html.Raw(featuredDescription)
+                    </div>
+                }
             </div>
         }
 
         @if (Model != null && Model.Any())
         {
-            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+            <div class="public-card-grid public-tour-card-grid grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
                 @foreach (var tour in Model)
                 {
-                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
-                       class="tour-card group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 border border-border-light dark:border-border-dark hover:-translate-y-1">
-                        <div class="relative h-56 overflow-hidden">
-                            @if (tour.Images != null && tour.Images.Any())
-                            {
-                                <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
-                            }
-                            else
-                            {
-                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-6xl text-primary/40">landscape</span>
-                                </div>
-                            }
-                            @if (tour.Price?.Discount > 0)
-                            {
-                                <div class="absolute top-4 left-4 bg-red-500 text-white text-[11px] font-bold px-3 py-1 rounded-lg shadow-lg">
-                                    -@tour.Price.Discount%
-                                </div>
-                            }
-                        </div>
-                        <div class="p-5">
-                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
-                                <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
-                                @(tour.Destination?.City ?? "Việt Nam")@(tour.Destination?.Region != null ? $", {tour.Destination.Region}" : "")
-                            </div>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">@tour.Name</h3>
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                        @(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[14px]">group</span>
-                                        @tour.MaxParticipants người
-                                    </span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-amber-400 text-[16px]">star</span>
-                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">@tour.Rating.ToString("0.0")</span>
-                                </div>
-                            </div>
-                            <div class="flex items-end justify-between pt-4 border-t border-border-light dark:border-border-dark">
-                                <div>
-                                    <p class="text-xs text-slate-400">Từ</p>
-                                    <p class="text-xl font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</p>
-                                </div>
-                                <span class="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
-                                    Xem chi tiết
-                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
+                    @await Html.PartialAsync("~/Views/PublicTours/_TourCard.cshtml", tour)
                 }
             </div>
 
-            <div class="text-center mt-12">
-                <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 hover:text-primary px-8 py-3.5 rounded-xl text-sm font-bold shadow-sm ring-1 ring-border-light dark:ring-border-dark hover:ring-primary/30 hover:shadow-lg transition-all">
-                    @(featured?.Fields.GetFieldValue("viewAllText", "Xem Tất Cả Tour") ?? "Xem Tất Cả Tour")
-                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </a>
-            </div>
+            @if (!string.IsNullOrWhiteSpace(featuredViewAllText))
+            {
+                <div class="text-center mt-12">
+                    <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 hover:text-primary px-8 py-3.5 rounded-xl text-sm font-bold shadow-sm ring-1 ring-border-light dark:ring-border-dark hover:ring-primary/30 hover:shadow-lg transition-all">
+                        @featuredViewAllText
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    </a>
+                </div>
+            }
         }
         else
         {
             <div class="text-center py-16">
                 <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600 mb-4">travel_explore</span>
-                <p class="text-slate-500 dark:text-slate-400">Chưa có tour nào. Vui lòng quay lại sau.</p>
+                <p class="text-slate-500 dark:text-slate-400">@featuredEmptyStateText</p>
             </div>
         }
     </div>
@@ -162,13 +180,22 @@
     <section class="@($"py-20 bg-surface-light dark:bg-surface-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(commitments)}")" style="@ContentPresentationViewHelper.GetSectionStyle(commitments)">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(commitments)}")" data-animate="fade-up">
-                <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(commitments, "eyebrow")">
-                    <span class="material-symbols-outlined text-[16px]">verified</span> Tại Sao Chọn Chúng Tôi
-                </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "title")">@commitments.Fields.GetFieldValue("title", "Cam Kết Chất Lượng")</h2>
-                <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "description")">
-                    @Html.Raw(commitments.Fields.GetFieldValue("description", "Dịch vụ chuyên nghiệp, lịch trình chỉn chu và trải nghiệm đáng nhớ trong từng hành trình"))
-                </div>
+                @if (!string.IsNullOrWhiteSpace(commitmentsEyebrowText))
+                {
+                    <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(commitments, "eyebrow")">
+                        <span class="material-symbols-outlined text-[16px]">verified</span> @commitmentsEyebrowText
+                    </span>
+                }
+                @if (!string.IsNullOrWhiteSpace(commitmentsTitle))
+                {
+                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "title")">@commitmentsTitle</h2>
+                }
+                @if (!string.IsNullOrWhiteSpace(commitmentsDescription))
+                {
+                    <div class="text-slate-500 dark:text-slate-400 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "description")">
+                        @Html.Raw(commitmentsDescription)
+                    </div>
+                }
             </div>
             <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
                 @{
@@ -198,21 +225,41 @@
             <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
         </div>
         <div class="@($"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 {ContentPresentationViewHelper.GetSectionTextClass(finalCta)}")" data-animate="scale-in">
-            <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "title")">@finalCta.Fields.GetFieldValue("title", "Sẵn Sàng Cho Hành Trình Tiếp Theo?")</h2>
-            <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "description")">
-                @Html.Raw(finalCta.Fields.GetFieldValue("description", "Hãy để HV Travel đồng hành cùng bạn trong chuyến đi tiếp theo với lịch trình được thiết kế riêng."))
-            </div>
-            <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
-                <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
-                    <span class="material-symbols-outlined">mail</span>
-                    @finalCta.Fields.GetFieldValue("primaryCtaText", "Liên Hệ Ngay")
-                </a>
-                <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
-                    <span class="material-symbols-outlined">explore</span>
-                    @finalCta.Fields.GetFieldValue("secondaryCtaText", "Khám Phá Tour")
-                </a>
-            </div>
+            @if (!string.IsNullOrWhiteSpace(finalCtaTitle))
+            {
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "title")">@finalCtaTitle</h2>
+            }
+            @if (!string.IsNullOrWhiteSpace(finalCtaDescription))
+            {
+                <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "description")">
+                    @Html.Raw(finalCtaDescription)
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(finalCtaPrimaryText) || !string.IsNullOrWhiteSpace(finalCtaSecondaryText))
+            {
+                <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
+                    @if (!string.IsNullOrWhiteSpace(finalCtaPrimaryText))
+                    {
+                        <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
+                            <span class="material-symbols-outlined">mail</span>
+                            @finalCtaPrimaryText
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(finalCtaSecondaryText))
+                    {
+                        <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-2xl text-base font-bold border border-white/20 transition-all active:scale-95 hover:-translate-y-0.5">
+                            <span class="material-symbols-outlined">explore</span>
+                            @finalCtaSecondaryText
+                        </a>
+                    }
+                </div>
+            }
         </div>
     </section>
 }
+@section Scripts {
+<script src="~/js/home-carousel.js" asp-append-version="true"></script>
+<script src="~/js/public-tour-card.js" asp-append-version="true"></script>
+}
+
 

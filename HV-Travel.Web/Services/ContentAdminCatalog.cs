@@ -14,11 +14,11 @@ public static class ContentAdminCatalog
 
     private static readonly IReadOnlyList<ContentTabOption> Tabs = new List<ContentTabOption>
     {
-        new() { Key = "site", Label = "Toàn site", Description = "Header, footer, thương hiệu, liên hệ, SEO" },
+        new() { Key = "site", Label = "Toàn site", Description = "Header, footer, điều hướng, tiện ích tài khoản, liên hệ, SEO" },
         new() { Key = "home", Label = "Trang chủ", Description = "Hero, chỉ số, tour nổi bật, cam kết, CTA" },
         new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh, đội ngũ" },
         new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, mở đầu form" },
-        new() { Key = "publicTours", Label = "Danh sách tour", Description = "Hero danh sách và trạng thái rỗng" },
+        new() { Key = "publicTours", Label = "Danh sách tour", Description = "Hero, chip bộ sưu tập, bộ lọc, kết quả và trạng thái rỗng" },
         new() { Key = "destinations", Label = "Điểm đến", Description = "Hero, mở đầu bộ sưu tập và mở đầu theo vùng" },
         new() { Key = "promotions", Label = "Khuyến mãi", Description = "Hero và các section flash sale, voucher, deal theo mùa" },
         new() { Key = "services", Label = "Dịch vụ", Description = "Hero, thẻ dịch vụ và giới thiệu form báo giá" },
@@ -90,8 +90,9 @@ public static class ContentAdminCatalog
                 "Trang chủ",
                 "Trang chủ",
                 "Quản lý nội dung hiển thị trên trang chủ theo từng section lớn của trang.",
-                "5 section chính của trang chủ.",
+                "6 section chính của trang chủ.",
                 Section("hero", "Hero trang chủ", "Tiêu đề chính, mô tả và CTA đầu trang"),
+                Section("carousel", "Carousel trang chủ", "5 slide ảnh marketing nằm ngay dưới hero"),
                 Section("stats", "Chỉ số marketing", "Các số liệu nổi bật bên dưới hero"),
                 Section("featuredToursIntro", "Giới thiệu tour nổi bật", "Tiêu đề và mô tả khối tour nổi bật"),
                 Section("commitments", "Cam kết chất lượng", "Các điểm mạnh và thông điệp cam kết"),
@@ -127,9 +128,12 @@ public static class ContentAdminCatalog
                 "publicTours",
                 "Danh sách tour",
                 "Trang danh sách tour",
-                "Quản lý phần mở đầu của trang danh sách tour và trạng thái rỗng khi không có kết quả.",
-                "2 section dành cho trang danh sách tour.",
-                Section("indexHero", "Hero danh sách tour", "Tiêu đề, mô tả và placeholder tìm kiếm"),
+                "Quản lý hero, chip bộ sưu tập, nhãn bộ lọc, phần kết quả và trạng thái rỗng của trang danh sách tour.",
+                "5 section dành cho trang danh sách tour.",
+                Section("indexHero", "Hero danh sách tour", "Badge, tiêu đề, mô tả và cụm tìm kiếm"),
+                Section("collectionChips", "Chip bộ sưu tập", "Nhãn các chip collection nằm trên danh sách tour"),
+                Section("filterPanel", "Nhãn bộ lọc", "Toàn bộ label, option và CTA của cột bộ lọc"),
+                Section("resultsPanel", "Nhãn phần kết quả", "Eyebrow, tiêu đề kết quả, wishlist và recently viewed"),
                 Section("emptyState", "Trạng thái rỗng", "Thông điệp và CTA khi không có tour phù hợp")),
             Editor(
                 "destinations",
@@ -289,3 +293,6 @@ public static class ContentAdminCatalog
         };
     }
 }
+
+
+

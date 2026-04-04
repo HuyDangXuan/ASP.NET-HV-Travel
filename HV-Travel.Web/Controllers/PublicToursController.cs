@@ -33,7 +33,7 @@ public class PublicToursController : Controller
         int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
-        ViewData["Title"] = "Tour Du Lịch";
+        ViewData["Title"] = "Tour Du L?ch";
 
         var result = await _tourRepository.SearchAsync(new TourSearchRequest
         {
