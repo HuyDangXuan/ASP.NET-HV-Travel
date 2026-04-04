@@ -1,6 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using HVTravel.Application.Services;
 using HVTravel.Application.Interfaces;
+using HVTravel.Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HVTravel.Application
 {
@@ -11,6 +11,14 @@ namespace HVTravel.Application
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITourService, TourService>();
             services.AddScoped<IDashboardService, DashboardService>();
+
+            services.AddScoped<ITourSearchService, TourSearchService>();
+            services.AddScoped<IPromotionEngine, PromotionEngine>();
+            services.AddScoped<IPricingService, PricingService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<ICheckoutService, CheckoutService>();
+            services.AddScoped<IAnalyticsTracker, NoopAnalyticsTracker>();
+
             return services;
         }
     }

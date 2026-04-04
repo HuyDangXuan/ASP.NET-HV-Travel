@@ -1,6 +1,7 @@
-﻿@model Tour
+@using System.Text.Json
+@using HVTravel.Web.Services
+@model Tour
 @{
-    ViewData["Description"] = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 160);
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
     var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
     {
@@ -11,19 +12,63 @@
             new() { Label = Model.Name, IsCurrent = true }
         }
     };
+
+    var departures = ((Model.Departures != null && Model.Departures.Any()) ? Model.Departures : Model.EffectiveDepartures).OrderBy(item => item.StartDate).ToList();
+    var featuredDeparture = departures.FirstOrDefault();
+    var startingPrice = departures.Any()
+        ? departures.Min(item => item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m)
+        : Model.Price?.Adult ?? 0m;
+    var headlineDescription = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 180);
+    var canonicalPath = Model.Seo?.CanonicalPath;
+    var structuredData = JsonSerializer.Serialize(new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "Product",
+        ["name"] = Model.Name,
+        ["description"] = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 180),
+        ["image"] = Model.Images,
+        ["brand"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "Brand",
+            ["name"] = "HV Travel"
+        },
+        ["aggregateRating"] = new Dictionary<string, object?>
+        {
+            ["@type"] = "AggregateRating",
+            ["ratingValue"] = Model.Rating,
+            ["reviewCount"] = Model.ReviewCount
+        },
+        ["offers"] = departures.Select(item => new Dictionary<string, object?>
+        {
+            ["@type"] = "Offer",
+            ["price"] = item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m,
+            ["priceCurrency"] = Model.Price?.Currency ?? "VND",
+            ["availability"] = item.RemainingCapacity > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+            ["validFrom"] = item.StartDate.ToString("yyyy-MM-dd")
+        }).ToList()
+    });
 }
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
+<script type="application/ld+json">@Html.Raw(structuredData)</script>
+
 <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-top-section-content is-left" data-animate="fade-up">
-            <span class="public-badge public-top-section-badge">
-                <span class="material-symbols-outlined text-[16px] text-primary">travel_explore</span>
-                Hành trình nổi bật
-            </span>
-            <h1 class="public-top-section-title text-white">@Model.Name</h1>
-            <p class="public-top-section-lead">@(RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 180))</p>
+            <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-white/80">
+                <span class="rounded-full bg-white/12 px-4 py-2 backdrop-blur">@(string.Equals(Model.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận")</span>
+                @if (Model.CancellationPolicy?.IsFreeCancellation == true)
+                {
+                    <span class="rounded-full bg-emerald-400/20 px-4 py-2 text-emerald-100">Hủy miễn phí</span>
+                }
+                @if (featuredDeparture?.RemainingCapacity is > 0 and <= 5)
+                {
+                    <span class="rounded-full bg-amber-300/20 px-4 py-2 text-amber-50">Còn ít chỗ</span>
+                }
+            </div>
+            <h1 class="public-top-section-title mt-5 text-white">@Model.Name</h1>
+            <p class="public-top-section-lead">@headlineDescription</p>
             <div class="public-top-section-meta">
                 <span><span class="material-symbols-outlined text-[16px] text-primary">location_on</span>@(Model.Destination?.City ?? "Việt Nam")@(Model.Destination?.Country != null ? $", {Model.Destination.Country}" : string.Empty)</span>
                 <span><span class="material-symbols-outlined text-[16px] text-primary">schedule</span>@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ngày {Model.Duration?.Nights} đêm")</span>
@@ -33,259 +78,278 @@
     </div>
 </section>
 
-<section class="py-10 bg-background-light dark:bg-background-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-3 gap-10">
-            <div class="lg:col-span-2 space-y-8">
-                <div class="rounded-2xl overflow-hidden" data-animate="fade-in">
+<section class="bg-background-light py-10 dark:bg-background-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
+            <div class="space-y-8">
+                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="fade-in">
                     @if (Model.Images != null && Model.Images.Any())
                     {
-                        <div class="relative">
-                            <img id="main-image" src="@Model.Images.First()" alt="@Model.Name" class="w-full h-[400px] sm:h-[500px] object-cover" />
-                            @if (Model.Price?.Discount > 0)
-                            {
-                                <div class="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-lg">Giảm @Model.Price.Discount%</div>
-                            }
-                        </div>
-                        @if (Model.Images.Count > 1)
-                        {
-                            <div class="flex gap-2 mt-3 overflow-x-auto pb-2">
-                                @foreach (var img in Model.Images)
+                        <div class="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+                            <img src="@Model.Images.First()" alt="@Model.Name" class="h-[320px] w-full rounded-[1.5rem] object-cover sm:h-[420px]" />
+                            <div class="grid grid-cols-2 gap-4">
+                                @foreach (var image in Model.Images.Skip(1).Take(4))
                                 {
-                                    <button onclick="document.getElementById('main-image').src='@img'" class="shrink-0 w-24 h-16 rounded-xl overflow-hidden ring-2 ring-transparent hover:ring-primary transition-all focus:ring-primary">
-                                        <img src="@img" alt="" class="w-full h-full object-cover" />
-                                    </button>
+                                    <img src="@image" alt="@Model.Name" class="h-36 w-full rounded-[1.25rem] object-cover sm:h-[198px]" />
                                 }
                             </div>
-                        }
+                        </div>
                     }
                     else
                     {
-                        <div class="w-full h-[400px] bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center rounded-2xl">
-                            <span class="material-symbols-outlined text-[100px] text-primary/30">landscape</span>
+                        <div class="flex h-[320px] items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary/15 to-sky-500/20 sm:h-[420px]">
+                            <span class="material-symbols-outlined text-[96px] text-primary/30">landscape</span>
                         </div>
                     }
-                </div>
+                </section>
 
-                <div data-animate="fade-up">
-                    <h2 class="public-section-title text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-4">Tổng quan hành trình</h2>
-                    <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">location_on</span>@(Model.Destination?.City ?? "Việt Nam")@(Model.Destination?.Country != null ? $", {Model.Destination.Country}" : "")</span>
-                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">schedule</span>@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ngày {Model.Duration?.Nights} đêm")</span>
-                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-primary text-[18px]">group</span>Tối đa @Model.MaxParticipants người</span>
-                        <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-amber-400 text-[18px]">star</span><strong class="text-slate-700 dark:text-slate-300">@Model.Rating.ToString("0.0")</strong> (@Model.ReviewCount đánh giá)</span>
+                <section class="grid gap-6 sm:grid-cols-3" data-animate="fade-up" data-stagger>
+                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Giá từ</p>
+                        <p class="mt-3 text-3xl font-extrabold text-primary">@startingPrice.ToString("N0")₫</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Giá theo departure gần nhất còn mở bán.</p>
                     </div>
-                </div>
-
-                <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark" data-animate="fade-up">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">description</span> Mô tả
-                    </h2>
-                    <div class="public-rich-text prose dark:prose-invert prose-sm max-w-none text-slate-600 dark:text-slate-400 leading-relaxed">
-                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
+                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Điểm hẹn</p>
+                        <p class="mt-3 text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? "Cập nhật khi xác nhận booking" : Model.MeetingPoint)</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Thông tin check-in và hướng dẫn gặp đoàn rõ ràng trước giờ khởi hành.</p>
                     </div>
-                </div>
+                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Tin cậy</p>
+                        <p class="mt-3 text-base font-bold text-slate-900 dark:text-white">verified booking reviews</p>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@Model.ReviewCount đánh giá đã được đối soát từ hành trình thực tế.</p>
+                    </div>
+                </section>
 
-                @if (Model.Schedule != null && Model.Schedule.Any())
+                @if (Model.Highlights != null && Model.Highlights.Any())
                 {
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark" data-animate="fade-up">
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">event_note</span> Lịch trình
-                        </h2>
-                        <div class="space-y-6">
-                            @foreach (var item in Model.Schedule)
+                    <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Highlights</p>
+                                <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Điểm nổi bật của hành trình</h2>
+                            </div>
+                            <span class="rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary">Tour bán tốt</span>
+                        </div>
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                            @foreach (var highlight in Model.Highlights)
                             {
-                                <div class="flex gap-4">
-                                    <div class="shrink-0">
-                                        <div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-sm font-extrabold">
-                                            Ngày @(item.Day)
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 pb-6 border-b border-border-light dark:border-border-dark last:border-0 last:pb-0">
-                                        <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2">@item.Title</h4>
-                                        @if (!string.IsNullOrEmpty(item.Description))
-                                        {
-                                            <div class="public-rich-text prose prose-sm max-w-none text-slate-600 dark:prose-invert dark:text-slate-400 mb-3">
-                                                @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
-                                            </div>
-                                        }
-                                        @if (item.Activities != null && item.Activities.Any())
-                                        {
-                                            <div class="flex flex-wrap gap-2">
-                                                @foreach (var activity in item.Activities)
-                                                {
-                                                    <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium px-3 py-1.5 rounded-lg">
-                                                        <span class="material-symbols-outlined text-[12px] text-primary">check_circle</span>@activity
-                                                    </span>
-                                                }
-                                            </div>
-                                        }
-                                    </div>
+                                <div class="rounded-[1.5rem] bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                                    <span class="material-symbols-outlined mr-2 align-middle text-[18px] text-primary">check_circle</span>@highlight
                                 </div>
                             }
                         </div>
-                    </div>
+                    </section>
                 }
+
+                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Tổng quan</p>
+                            <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Tổng quan hành trình</h2>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(canonicalPath))
+                        {
+                            <span class="rounded-full border border-border-light px-4 py-2 text-xs font-semibold text-slate-500 dark:border-border-dark dark:text-slate-400">Canonical ready</span>
+                        }
+                    </div>
+                    <div class="public-rich-text prose prose-sm mt-6 max-w-none text-slate-600 dark:prose-invert dark:text-slate-300">
+                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
+                    </div>
+                </section>
 
                 @if ((Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any()) || (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any()))
                 {
-                    <div class="grid sm:grid-cols-2 gap-6" data-animate="fade-up" data-stagger>
+                    <section class="grid gap-6 sm:grid-cols-2" data-animate="fade-up" data-stagger>
                         @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
                         {
-                            <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-emerald-500">check_circle</span> Bao gồm
-                                </h3>
-                                <ul class="space-y-2.5">
-                                    @foreach (var inc in Model.GeneratedInclusions)
+                            <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
+                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-emerald-500">Bao gồm</p>
+                                <ul class="mt-5 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                                    @foreach (var item in Model.GeneratedInclusions)
                                     {
-                                        <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-emerald-500 text-[16px] mt-0.5 shrink-0">done</span>@inc
-                                        </li>
+                                        <li><span class="material-symbols-outlined mr-2 align-middle text-[18px] text-emerald-500">done</span>@item</li>
                                     }
                                 </ul>
                             </div>
                         }
                         @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
                         {
-                            <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-red-500">cancel</span> Không bao gồm
-                                </h3>
-                                <ul class="space-y-2.5">
-                                    @foreach (var exc in Model.GeneratedExclusions)
+                            <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
+                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-rose-500">Không bao gồm</p>
+                                <ul class="mt-5 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                                    @foreach (var item in Model.GeneratedExclusions)
                                     {
-                                        <li class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5 shrink-0">close</span>@exc
-                                        </li>
+                                        <li><span class="material-symbols-outlined mr-2 align-middle text-[18px] text-rose-500">close</span>@item</li>
                                     }
                                 </ul>
                             </div>
                         }
-                    </div>
+                    </section>
                 }
+
+                @if (Model.Schedule != null && Model.Schedule.Any())
+                {
+                    <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Lịch trình</p>
+                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Lịch trình chi tiết</h2>
+                        <div class="mt-6 space-y-5">
+                            @foreach (var item in Model.Schedule)
+                            {
+                                <article class="rounded-[1.5rem] border border-border-light p-5 dark:border-border-dark">
+                                    <div class="flex gap-4">
+                                        <div class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 font-extrabold text-primary">@item.Day</div>
+                                        <div class="min-w-0">
+                                            <h3 class="text-base font-bold text-slate-900 dark:text-white">@item.Title</h3>
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <div class="public-rich-text prose prose-sm mt-3 max-w-none text-slate-600 dark:prose-invert dark:text-slate-300">
+                                                    @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
+                                                </div>
+                                            }
+                                            @if (item.Activities != null && item.Activities.Any())
+                                            {
+                                                <div class="mt-4 flex flex-wrap gap-2">
+                                                    @foreach (var activity in item.Activities)
+                                                    {
+                                                        <span class="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">@activity</span>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </section>
+                }
+
+                <section class="grid gap-6 lg:grid-cols-2" data-animate="fade-up">
+                    <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Cancellation</p>
+                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Chính sách hủy và hoàn</h2>
+                        <div class="mt-5 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
+                            <p class="text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? "Liên hệ tư vấn để kiểm tra chính sách theo từng departure." : Model.CancellationPolicy.Summary)</p>
+                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                                @if (Model.CancellationPolicy?.IsFreeCancellation == true)
+                                {
+                                    <text>Miễn phí hủy trước @Model.CancellationPolicy.FreeCancellationBeforeHours giờ.</text>
+                                }
+                                else
+                                {
+                                    <text>Điều kiện hủy và hoàn tiền được áp dụng theo quy định của tour và từng lịch khởi hành.</text>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Meeting point</p>
+                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Điểm đón và hướng dẫn check-in</h2>
+                        <div class="mt-5 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
+                            <p class="text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận." : Model.MeetingPoint)</p>
+                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Thông tin hotline, giờ có mặt và hướng dẫn check-in sẽ được cập nhật rõ trong booking timeline.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Price calendar</p>
+                            <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Lịch khởi hành và chỗ trống</h2>
+                        </div>
+                        <span class="rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary">@departures.Count đợt khởi hành</span>
+                    </div>
+                    <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-border-light dark:border-border-dark">
+                        <div class="grid grid-cols-[1.2fr_1fr_1fr_0.9fr] bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                            <span>Departure</span>
+                            <span>Người lớn</span>
+                            <span>Chính sách</span>
+                            <span class="text-right">Số chỗ</span>
+                        </div>
+                        <div class="divide-y divide-border-light dark:divide-border-dark">
+                            @foreach (var departure in departures)
+                            {
+                                var seatTone = departure.RemainingCapacity <= 5 ? "text-amber-500" : "text-emerald-500";
+                                <div class="grid grid-cols-[1.2fr_1fr_1fr_0.9fr] items-center px-4 py-4 text-sm text-slate-700 dark:text-slate-200">
+                                    <div>
+                                        <p class="font-bold text-slate-900 dark:text-white">@departure.StartDate.ToString("dd/MM/yyyy")</p>
+                                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận")</p>
+                                    </div>
+                                    <div class="font-bold text-primary">@((departure.AdultPrice > 0m ? departure.AdultPrice : Model.Price?.Adult ?? 0m).ToString("N0"))₫</div>
+                                    <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">@(Model.CancellationPolicy?.IsFreeCancellation == true ? "Hủy miễn phí" : "Theo điều kiện tour")</div>
+                                    <div class="text-right text-xs font-bold @seatTone">@departure.RemainingCapacity còn lại</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div class="lg:col-span-1">
-                <div class="public-detail-sidebar space-y-6" data-animate="slide-right">
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark shadow-sm">
-                        <div class="text-center mb-6">
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-1">Giá từ</p>
-                            <p class="text-4xl font-extrabold text-primary">@(Model.Price?.Adult.ToString("N0"))₫</p>
-                            <p class="text-xs text-slate-400 mt-1">/ người lớn</p>
-                        </div>
-                        <div class="space-y-3 mb-6">
-                            @if (Model.Price != null)
-                            {
-                                <div class="flex justify-between items-center py-2 border-b border-border-light dark:border-border-dark">
-                                    <span class="text-sm text-slate-600 dark:text-slate-400">Người lớn</span>
-                                    <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Adult.ToString("N0")₫</span>
-                                </div>
-                                @if (Model.Price.Child > 0)
-                                {
-                                    <div class="flex justify-between items-center py-2 border-b border-border-light dark:border-border-dark">
-                                        <span class="text-sm text-slate-600 dark:text-slate-400">Trẻ em</span>
-                                        <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Child.ToString("N0")₫</span>
-                                    </div>
-                                }
-                                @if (Model.Price.Infant > 0)
-                                {
-                                    <div class="flex justify-between items-center py-2 border-b border-border-light dark:border-border-dark">
-                                        <span class="text-sm text-slate-600 dark:text-slate-400">Em bé</span>
-                                        <span class="text-sm font-bold text-slate-900 dark:text-white">@Model.Price.Infant.ToString("N0")₫</span>
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                            Đặt tour ngay
-                        </a>
-                        <a href="tel:+842838229999" class="w-full flex items-center justify-center gap-2 mt-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 py-3.5 rounded-xl text-sm font-bold transition-all">
-                            <span class="material-symbols-outlined text-[18px]">call</span>
-                            Gọi tư vấn
-                        </a>
+            <aside class="public-detail-sidebar space-y-6 lg:sticky lg:top-24">
+                <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
+                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Sẵn sàng đặt tour</p>
+                    <p class="mt-3 text-4xl font-extrabold text-slate-900 dark:text-white">@startingPrice.ToString("N0")₫</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Mức giá tốt nhất theo departure hiện có.</p>
+                    <div class="mt-5 space-y-3 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
+                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Xác nhận</span><span class="font-bold text-slate-900 dark:text-white">@Model.ConfirmationType</span></div>
+                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Đánh giá</span><span class="font-bold text-slate-900 dark:text-white">@Model.Rating.ToString("0.0") / 5</span></div>
+                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Departure gần nhất</span><span class="font-bold text-slate-900 dark:text-white">@(featuredDeparture?.StartDate.ToString("dd/MM") ?? "TBD")</span></div>
                     </div>
+                    <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] bg-primary px-5 py-4 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark">
+                        <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                        Đặt tour ngay
+                    </a>
+                    <a href="tel:+842838229999" class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border border-border-light px-5 py-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-dark dark:text-slate-200 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-[18px]">call</span>
+                        Gọi tư vấn
+                    </a>
+                </div>
 
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark shadow-sm">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Thông tin nhanh</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[20px]">code</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-400">Mã tour</p>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.Code ?? "Chưa có")</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[20px]">schedule</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-400">Thời gian</p>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ngày {Model.Duration?.Nights} đêm")</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-[20px]">group</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-400">Còn chỗ</p>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">@(Model.MaxParticipants - Model.CurrentParticipants) / @Model.MaxParticipants</p>
-                                </div>
-                            </div>
-                            @if (Model.StartDates != null && Model.StartDates.Any())
-                            {
-                                <div class="flex items-center gap-3">
-                                    <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                                        <span class="material-symbols-outlined text-[20px]">event</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-slate-400">Khởi hành</p>
-                                        <p class="text-sm font-bold text-slate-900 dark:text-white">@Model.StartDates.First().ToString("dd/MM/yyyy")</p>
-                                    </div>
-                                </div>
-                            }
+                <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
+                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Khối tin cậy</p>
+                    <div class="mt-5 space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                        <div class="rounded-[1.5rem] bg-slate-50 p-4 dark:bg-slate-800">
+                            <p class="font-bold text-slate-900 dark:text-white">Hỗ trợ sau booking</p>
+                            <p class="mt-2">Portal khách hàng, payment timeline và tra cứu booking đã sẵn sàng sau checkout.</p>
+                        </div>
+                        <div class="rounded-[1.5rem] bg-slate-50 p-4 dark:bg-slate-800">
+                            <p class="font-bold text-slate-900 dark:text-white">Voucher và hóa đơn</p>
+                            <p class="mt-2">Sau khi thanh toán, booking có thể mở rộng sang voucher, invoice và trạng thái fulfillment theo policy.</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
     </div>
 </section>
 
 @if (relatedTours.Any())
 {
-    <section class="py-16 bg-surface-light dark:bg-surface-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-8" data-animate="fade-up">Tour tương tự</h2>
-            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
+    <section class="bg-surface-light py-16 dark:bg-surface-dark">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white" data-animate="fade-up">Tour liên quan</h2>
+            <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4" data-animate="fade-in" data-stagger>
                 @foreach (var tour in relatedTours)
                 {
-                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id"
-                       class="tour-card group bg-slate-50 dark:bg-slate-800 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-primary/10 transition-all duration-500 border border-border-light dark:border-border-dark hover:-translate-y-1">
-                        <div class="relative h-48 overflow-hidden">
+                    var relatedPrice = tour.EffectiveDepartures.FirstOrDefault()?.AdultPrice ?? 0m;
+                    if (relatedPrice <= 0m)
+                    {
+                        relatedPrice = tour.Price?.Adult ?? 0m;
+                    }
+                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@(string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug)" class="overflow-hidden rounded-[1.75rem] border border-border-light bg-white transition-all hover:-translate-y-1 hover:shadow-xl dark:border-border-dark dark:bg-slate-900">
+                        <div class="h-48 bg-slate-100 dark:bg-slate-800">
                             @if (tour.Images != null && tour.Images.Any())
                             {
-                                <img src="@tour.Images.First()" alt="@tour.Name" class="tour-card-img w-full h-full object-cover transition-transform duration-700" />
-                            }
-                            else
-                            {
-                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-5xl text-primary/40">landscape</span>
-                                </div>
+                                <img src="@tour.Images.First()" alt="@tour.Name" class="h-full w-full object-cover" />
                             }
                         </div>
                         <div class="p-5">
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-1 group-hover:text-primary transition-colors">@tour.Name</h3>
-                            <div class="flex justify-between items-center">
-                                <span class="text-lg font-extrabold text-primary">@(tour.Price?.Adult.ToString("N0"))₫</span>
-                                <span class="flex items-center gap-1 text-xs font-bold text-primary">
-                                    Xem <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
-                                </span>
+                            <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">@(tour.Destination?.City ?? "HV Travel")</p>
+                            <h3 class="mt-2 text-base font-bold text-slate-900 dark:text-white">@tour.Name</h3>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-lg font-extrabold text-primary">@relatedPrice.ToString("N0")₫</span>
+                                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">@tour.Rating.ToString("0.0") ★</span>
                             </div>
                         </div>
                     </a>
@@ -294,8 +358,3 @@
         </div>
     </section>
 }
-
-
-
-
-

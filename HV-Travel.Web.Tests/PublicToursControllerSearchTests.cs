@@ -10,7 +10,7 @@ public class PublicToursControllerSearchTests
     [Fact]
     public async Task Index_SearchMatchesPlainTextWhenDescriptionContainsHtmlEntities()
     {
-        var repository = new InMemoryRepository<Tour>(
+        var repository = new InMemoryTourRepository(
         [
             new Tour
             {
@@ -39,7 +39,7 @@ public class PublicToursControllerSearchTests
     public async Task Index_FiltersByRegionMonthAvailabilityAndPromotion()
     {
         var nextMonth = DateTime.UtcNow.AddMonths(1);
-        var repository = new InMemoryRepository<Tour>(
+        var repository = new InMemoryTourRepository(
         [
             new Tour
             {
@@ -108,5 +108,95 @@ public class PublicToursControllerSearchTests
         var model = Assert.IsAssignableFrom<List<Tour>>(view.Model);
         var tour = Assert.Single(model);
         Assert.Equal("tour-deal-north", tour.Id);
+    }
+
+    [Fact]
+    public async Task Index_FiltersByTravellersConfirmationAndFreeCancellationUsingDepartureInventory()
+    {
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var repository = new InMemoryTourRepository(
+        [
+            new Tour
+            {
+                Id = "tour-commerce-ready",
+                Name = "Tokyo Premium",
+                Description = "Có xác nhận nhanh",
+                ShortDescription = "Ưu tiên gia đình",
+                Status = "Active",
+                Destination = new Destination { City = "Tokyo", Country = "Japan", Region = "North" },
+                Price = new TourPrice { Adult = 12000000m, Discount = 0 },
+                Duration = new TourDuration { Days = 5, Nights = 4, Text = "5 ngày 4 đêm" },
+                ConfirmationType = "Instant",
+                CancellationPolicy = new TourCancellationPolicy { Summary = "Miễn phí trước 72 giờ", IsFreeCancellation = true, FreeCancellationBeforeHours = 72 },
+                Departures =
+                [
+                    new TourDeparture
+                    {
+                        Id = "dep-match",
+                        StartDate = new DateTime(nextMonth.Year, nextMonth.Month, 20),
+                        AdultPrice = 11800000m,
+                        ChildPrice = 8200000m,
+                        Capacity = 16,
+                        BookedCount = 8,
+                        ConfirmationType = "Instant",
+                        DiscountPercentage = 5m
+                    }
+                ],
+                Rating = 4.9
+            },
+            new Tour
+            {
+                Id = "tour-slow-confirm",
+                Name = "Osaka Saver",
+                Description = "Xác nhận chậm",
+                ShortDescription = "OTA pending",
+                Status = "Active",
+                Destination = new Destination { City = "Osaka", Country = "Japan", Region = "North" },
+                Price = new TourPrice { Adult = 9900000m, Discount = 0 },
+                Duration = new TourDuration { Days = 5, Nights = 4, Text = "5 ngày 4 đêm" },
+                ConfirmationType = "Request",
+                CancellationPolicy = new TourCancellationPolicy { Summary = "Không miễn phí", IsFreeCancellation = false },
+                Departures =
+                [
+                    new TourDeparture
+                    {
+                        Id = "dep-miss",
+                        StartDate = new DateTime(nextMonth.Year, nextMonth.Month, 22),
+                        AdultPrice = 9900000m,
+                        Capacity = 16,
+                        BookedCount = 2,
+                        ConfirmationType = "Request"
+                    }
+                ],
+                Rating = 4.7
+            }
+        ]);
+
+        var controller = new PublicToursController(repository);
+
+        var result = await controller.Index(
+            search: null,
+            sort: "best_value",
+            region: "North",
+            destination: null,
+            minPrice: null,
+            maxPrice: null,
+            departureMonth: nextMonth.Month,
+            maxDays: 6,
+            collection: null,
+            availableOnly: true,
+            promotionOnly: false,
+            travellers: 4,
+            confirmationType: "Instant",
+            cancellationType: "FreeCancellation",
+            page: 1);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsAssignableFrom<List<Tour>>(view.Model);
+        var tour = Assert.Single(model);
+        Assert.Equal("tour-commerce-ready", tour.Id);
+        Assert.Equal(4, Assert.IsType<int>(controller.ViewData["CurrentTravellers"]));
+        Assert.Equal("Instant", controller.ViewData["CurrentConfirmationType"]);
+        Assert.Equal("FreeCancellation", controller.ViewData["CurrentCancellationType"]);
     }
 }

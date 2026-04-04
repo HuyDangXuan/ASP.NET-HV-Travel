@@ -1,17 +1,30 @@
-﻿@model HVTravel.Web.Models.BookingViewModel
+@using HVTravel.Domain.Entities
+@using HVTravel.Web.Services
+@model HVTravel.Web.Models.BookingViewModel
 @{
-    var tour = Model.Tour;
-    var adultPrice = tour.Price?.Adult ?? 0;
-    var childPrice = tour.Price?.Child ?? 0;
-    var infantPrice = tour.Price?.Infant ?? 0;
-    var discount = tour.Price?.Discount ?? 0;
+    var tour = Model.Tour ?? new Tour();
+    var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
+    var visibleDepartures = tour.EffectiveDepartures.Where(item => item.StartDate >= DateTime.UtcNow.Date).OrderBy(item => item.StartDate).ToList();
+    if (!visibleDepartures.Any())
+    {
+        visibleDepartures = tour.EffectiveDepartures.OrderBy(item => item.StartDate).ToList();
+    }
+    var selectedDeparture = tour.ResolveDeparture(Model.DepartureId, Model.SelectedStartDate) ?? visibleDepartures.FirstOrDefault();
+    var adultPrice = selectedDeparture?.AdultPrice > 0m ? selectedDeparture.AdultPrice : tour.Price?.Adult ?? 0m;
+    var childPrice = selectedDeparture?.ChildPrice > 0m ? selectedDeparture.ChildPrice : tour.Price?.Child ?? 0m;
+    var infantPrice = selectedDeparture?.InfantPrice > 0m ? selectedDeparture.InfantPrice : tour.Price?.Infant ?? 0m;
+    var subtotal = (adultPrice * Model.AdultCount) + (childPrice * Model.ChildCount) + (infantPrice * Model.InfantCount);
+    var amountDueNow = string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase)
+        ? Math.Round(subtotal * 0.30m, 0, MidpointRounding.AwayFromZero)
+        : subtotal;
+    var balanceDue = Math.Max(0m, subtotal - amountDueNow);
     var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
     {
         Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
         {
             new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
             new() { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") },
-            new() { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = tour.Id }) },
+            new() { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = detailId }) },
             new() { Label = "Đặt tour", IsCurrent = true }
         }
     };
@@ -20,410 +33,280 @@
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-top-section-content is-left" data-animate="fade-up">
             <span class="public-badge public-top-section-badge">
                 <span class="material-symbols-outlined text-[16px] text-primary">shopping_bag</span>
                 Bước 1 trong hành trình đặt tour
             </span>
             <h1 class="public-top-section-title text-white">Đặt tour và xác nhận hành khách</h1>
-            <p class="public-top-section-lead">Kiểm tra thông tin chuyến đi cho @tour.Name, chọn ngày khởi hành phù hợp và hoàn tất hồ sơ liên hệ trước khi chuyển sang thanh toán.</p>
+            <p class="public-top-section-lead">Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán.</p>
         </div>
     </div>
 </section>
 
-<!-- Stepper -->
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="border-b border-border-light bg-surface-light py-6 dark:border-border-dark dark:bg-surface-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-stepper flex items-center justify-center gap-0" data-animate="fade-in">
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30">1</div>
-                <span class="text-sm font-bold text-primary hidden sm:inline">Thông tin</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-lg shadow-primary/30">1</div>
+                <span class="hidden text-sm font-bold text-primary sm:inline">Thông tin</span>
             </div>
-            <div class="public-stepper-divider w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="public-stepper-divider mx-2 h-0.5 w-12 bg-slate-200 dark:bg-slate-700 sm:w-20"></div>
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">2</div>
-                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Thanh toán</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-400 dark:bg-slate-700">2</div>
+                <span class="hidden text-sm font-medium text-slate-400 sm:inline">Thanh toán</span>
             </div>
-            <div class="public-stepper-divider w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="public-stepper-divider mx-2 h-0.5 w-12 bg-slate-200 dark:bg-slate-700 sm:w-20"></div>
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">3</div>
-                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Hoàn tất</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-400 dark:bg-slate-700">3</div>
+                <span class="hidden text-sm font-medium text-slate-400 sm:inline">Hoàn tất</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Main -->
-<section class="py-10 bg-background-light dark:bg-background-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <form asp-action="Create" method="post" id="booking-form">
+<section class="bg-background-light py-10 dark:bg-background-dark">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
+        <form asp-action="Create" method="post" id="booking-form" class="space-y-6">
             @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="TourId" />
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div asp-validation-summary="All" id="validation-summary-errors" class="hidden mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium"></div>
-            }
+            <input asp-for="TourId" type="hidden" />
+            <input asp-for="SelectedStartDate" type="hidden" />
 
-            <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-                <!-- Main Form -->
-                <div class="w-full space-y-6" data-animate="fade-up" data-stagger>
-                    <!-- Tour Summary Card -->
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-5 border border-border-light dark:border-border-dark flex flex-col gap-4 sm:flex-row">
-                        @if (tour.Images != null && tour.Images.Any())
-                        {
-                            <img src="@tour.Images.First()" alt="@tour.Name" class="w-28 h-20 rounded-xl object-cover shrink-0" />
-                        }
-                        <div class="min-w-0">
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate">@tour.Name</h2>
-                            <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">schedule</span>@(tour.Duration?.Text ?? $"{tour.Duration?.Days}N{tour.Duration?.Nights}Đ")</span>
-                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">location_on</span>@(tour.Destination?.City ?? "Việt Nam")</span>
-                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-amber-400 text-[14px]">star</span>@tour.Rating.ToString("0.0")</span>
-                            </div>
-                        </div>
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Tour snapshot</p>
+                        <h2 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">@tour.Name</h2>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text ?? "Liên hệ tư vấn")</p>
                     </div>
+                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="text-sm font-bold text-primary">Xem chi tiết</a>
+                </div>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-300"></div>
+                }
+            </div>
 
-                    <!-- Tour Details (Readonly) -->
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">info</span> Thông tin Tour
-                        </h3>
-                        <div class="grid grid-cols-1 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mã tour</label>
-                                <input value="@tour.Code" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
-                            </div>
-
-
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tên tour</label>
-                                <input value="@tour.Name" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Điểm đến</label>
-                                <input value="@(tour.Destination?.City ?? "Chưa có")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
-                            </div>
-                             <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Thời lượng</label>
-                                <input value="@(tour.Duration?.Text ?? $"{tour.Duration?.Days} ngày {tour.Duration?.Nights} đêm")" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 outline-none cursor-not-allowed" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô tả ngắn</label>
-                                <div class="public-rich-text w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[50px]">
-                                    @Html.Raw(HVTravel.Web.Services.RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription))
-                                </div>
-                            </div>
-                             <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mô tả chi tiết</label>
-                                <div class="public-rich-text w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 min-h-[80px] prose prose-sm max-w-none dark:prose-invert">
-                                    @Html.Raw(HVTravel.Web.Services.RichTextContentFormatter.ToTrustedHtml(tour.Description))
-                                </div>
-                            </div>
-                            <!-- Hidden Id field just in case user meant visible but not bound -->
-                             <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tour ID</label>
-                                <input value="@tour.Id" readonly class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm text-slate-500 dark:text-slate-400 font-mono outline-none cursor-not-allowed" />
-                            </div>
-                        </div>
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <div class="mb-5 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    <h3 class="text-xl font-black text-slate-900 dark:text-white">Thông tin tour</h3>
+                </div>
+                <div class="grid gap-4">
+                    <div class="public-rich-text rounded-2xl bg-surface-muted-light px-4 py-4 text-sm text-slate-600 dark:bg-surface-elevated-dark dark:text-slate-300">
+                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription))
                     </div>
-
-                    <!-- Contact Info -->
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">person</span> Thông tin Liên Hệ
-                        </h3>
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <div class="sm:col-span-2">
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Họ và tên <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Nguyễn Văn A" />
-                                <span asp-validation-for="ContactName" class="text-xs text-red-500 mt-1"></span>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactEmail" type="email" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="email@example.com" />
-                                <span asp-validation-for="ContactEmail" class="text-xs text-red-500 mt-1"></span>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Số Điện Thoại <span class="text-red-500">*</span></label>
-                                <input asp-for="ContactPhone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="0901 234 567" />
-                                <span asp-validation-for="ContactPhone" class="text-xs text-red-500 mt-1"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Departure Date -->
-                    @if (tour.StartDates != null && tour.StartDates.Any())
-                    {
-                        <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary">event</span> Ngày khởi hành
-                            </h3>
-                            <div class="flex flex-wrap gap-3">
-                                @foreach (var date in tour.StartDates.Where(d => d > DateTime.UtcNow).OrderBy(d => d))
-                                {
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="SelectedStartDate" value="@date.ToString("yyyy-MM-dd")" class="peer hidden" />
-                                        <div class="px-5 py-3 rounded-xl border-2 border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 transition-all text-center hover:border-primary/50">
-                                            <p class="text-lg font-bold text-slate-900 dark:text-white">@date.ToString("dd")</p>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">@date.ToString("MMM yyyy")</p>
-                                        </div>
-                                    </label>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Passengers -->
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">group</span> Số Lượng Hành Khách
-                            <span id="spots-left-badge" class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all">
-                                Còn @tour.RemainingSpots chỗ
-                            </span>
-                        </h3>
-                        <div class="space-y-4">
-                            <!-- Adult -->
-                            <div class="flex flex-col gap-3 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Người lớn</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">Từ 12 tuổi · @adultPrice.ToString("N0")₫/người</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('AdultCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">remove</span>
-                                    </button>
-                                    <input asp-for="AdultCount" id="AdultCount" type="number" min="1" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('AdultCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">add</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Child -->
-                            <div class="flex flex-col gap-3 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Trẻ em</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">2 – 11 tuổi · @childPrice.ToString("N0")₫/người</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('ChildCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">remove</span>
-                                    </button>
-                                    <input asp-for="ChildCount" id="ChildCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('ChildCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">add</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <!-- Infant -->
-                            <div class="flex flex-col gap-3 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Em bé</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">Dưới 2 tuổi · @infantPrice.ToString("N0")₫/người</p>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <button type="button" onclick="adjustCount('InfantCount', -1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">remove</span>
-                                    </button>
-                                    <input asp-for="InfantCount" id="InfantCount" type="number" min="0" max="@tour.RemainingSpots" readonly class="w-12 text-center text-sm font-bold text-slate-900 dark:text-white bg-transparent outline-none appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                    <button type="button" onclick="adjustCount('InfantCount', 1)" class="size-9 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">add</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Special Requests -->
-                    <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">edit_note</span> Yêu cầu đặc biệt
-                        </h3>
-                        <textarea asp-for="SpecialRequests" rows="3" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="VD: Phòng view biển, ăn chay, xe đón sân bay..."></textarea>
+                    <div class="public-rich-text rounded-2xl bg-surface-muted-light px-4 py-4 text-sm text-slate-600 dark:bg-surface-elevated-dark dark:text-slate-300">
+                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.Description))
                     </div>
                 </div>
+            </div>
 
-                <!-- Price Summary -->
-                <div class="w-full">
-                    <div class="public-summary-card" data-animate="slide-right">
-                        <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark shadow-sm">
-                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5">Chi tiết giá</h3>
-                            <div class="space-y-3 text-sm">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-slate-600 dark:text-slate-400">Người lớn × <span id="adult-display">1</span></span>
-                                    <span id="adult-total" class="font-bold text-slate-900 dark:text-white">@adultPrice.ToString("N0")₫</span>
-                                </div>
-                                <div class="flex justify-between items-center" id="child-row" style="display:none">
-                                    <span class="text-slate-600 dark:text-slate-400">Trẻ em × <span id="child-display">0</span></span>
-                                    <span id="child-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
-                                </div>
-                                <div class="flex justify-between items-center" id="infant-row" style="display:none">
-                                    <span class="text-slate-600 dark:text-slate-400">Em bé × <span id="infant-display">0</span></span>
-                                    <span id="infant-total" class="font-bold text-slate-900 dark:text-white">0₫</span>
-                                </div>
-                                @if (discount > 0)
-                                {
-                                    <div class="flex justify-between items-center text-green-600">
-                                        <span>Giảm giá (@discount%)</span>
-                                        <span id="discount-amount" class="font-bold">-0₫</span>
-                                    </div>
-                                }
-                                <div class="border-t border-border-light dark:border-border-dark pt-3 mt-3">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
-                                        <span id="grand-total" class="text-xl font-extrabold text-primary">@adultPrice.ToString("N0")₫</span>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Departure</p>
+                        <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Chọn đợt khởi hành</h3>
+                    </div>
+                    <span id="remaining-capacity" class="rounded-full bg-primary/10 px-3 py-2 text-xs font-bold text-primary">@(selectedDeparture?.RemainingCapacity ?? 0) chỗ</span>
+                </div>
 
-                            <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
-                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                                Tiếp Tục Thanh toán
-                            </button>
-                            <p class="text-[11px] text-slate-400 text-center mt-3">Bạn chưa bị tính phí ở bước này</p>
+                @if (visibleDepartures.Any())
+                {
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @foreach (var departure in tour.EffectiveDepartures.Where(item => visibleDepartures.Any(match => match.Id == item.Id)))
+                        {
+                            var isSelected = string.Equals(Model.DepartureId, departure.Id, StringComparison.Ordinal) || (string.IsNullOrWhiteSpace(Model.DepartureId) && selectedDeparture?.Id == departure.Id);
+                            <label class="cursor-pointer rounded-2xl border border-border-light p-4 transition hover:border-primary dark:border-border-dark">
+                                <input asp-for="DepartureId" type="radio" value="@departure.Id" checked="@isSelected" class="departure-choice sr-only" data-start-date="@departure.StartDate.ToString("yyyy-MM-dd")" data-remaining-capacity="@departure.RemainingCapacity" data-confirmation="@departure.ConfirmationType" />
+                                <div class="space-y-3">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-base font-black text-slate-900 dark:text-white">@departure.StartDate.ToString("dd/MM/yyyy")</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận") • cutoff @departure.CutoffHours giờ</p>
+                                        </div>
+                                        <span class="rounded-full bg-surface-muted-light px-3 py-1 text-xs font-bold text-slate-600 dark:bg-surface-elevated-dark dark:text-slate-300">@departure.RemainingCapacity chỗ</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                        <div>
+                                            <span class="block">Người lớn</span>
+                                            <span class="font-bold text-slate-900 dark:text-white">@departure.AdultPrice.ToString("N0")₫</span>
+                                        </div>
+                                        <div>
+                                            <span class="block">Trẻ em</span>
+                                            <span class="font-bold text-slate-900 dark:text-white">@departure.ChildPrice.ToString("N0")₫</span>
+                                        </div>
+                                        <div>
+                                            <span class="block">Em bé</span>
+                                            <span class="font-bold text-slate-900 dark:text-white">@departure.InfantPrice.ToString("N0")₫</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">@(tour.CancellationPolicy?.IsFreeCancellation == true ? $"Hủy miễn phí trước {tour.CancellationPolicy.FreeCancellationBeforeHours} giờ." : "Chính sách hủy áp dụng theo điều kiện của tour.")</p>
+                                </div>
+                            </label>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Tour này hiện chưa có lịch khởi hành khả dụng.</p>
+                }
+            </div>
+
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Traveller</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Thông tin liên hệ và số khách</h3>
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold">Họ và tên</label>
+                        <input asp-for="ContactName" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="Nguyễn Văn A" />
+                        <span asp-validation-for="ContactName" class="mt-1 block text-xs text-rose-500"></span>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Email</label>
+                        <input asp-for="ContactEmail" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="email@example.com" />
+                        <span asp-validation-for="ContactEmail" class="mt-1 block text-xs text-rose-500"></span>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Số điện thoại</label>
+                        <input asp-for="ContactPhone" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="0901 234 567" />
+                        <span asp-validation-for="ContactPhone" class="mt-1 block text-xs text-rose-500"></span>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Người lớn</label>
+                        <input asp-for="AdultCount" type="number" min="1" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Trẻ em</label>
+                        <input asp-for="ChildCount" type="number" min="0" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Em bé</label>
+                        <input asp-for="InfantCount" type="number" min="0" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="mb-2 block text-sm font-semibold">Yêu cầu đặc biệt</label>
+                        <textarea asp-for="SpecialRequests" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="Ví dụ: ăn chay, ghế gần cửa sổ, hỗ trợ xe đón..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Pricing controls</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Coupon và kế hoạch thanh toán</h3>
+                <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Coupon</label>
+                        <input asp-for="CouponCode" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="WELCOME10" />
+                        <span asp-validation-for="CouponCode" class="mt-1 block text-xs text-rose-500"></span>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Payment plan</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm font-semibold dark:border-border-dark">
+                                <input asp-for="PaymentPlanType" type="radio" value="Full" class="mr-2" /> Full
+                            </label>
+                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm font-semibold dark:border-border-dark">
+                                <input asp-for="PaymentPlanType" type="radio" value="Deposit" class="mr-2" /> Deposit
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
+
+        <aside class="space-y-6">
+            <div class="public-summary-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Quote</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Xem báo giá trước khi giữ chỗ</h3>
+                <div id="quote-badges" class="mt-4 flex flex-wrap gap-2"></div>
+                <div class="mt-5 space-y-3 text-sm">
+                    <div class="flex items-center justify-between"><span>Tạm tính</span><span id="subtotal">@subtotal.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Giảm giá</span><span id="discountTotal">0₫</span></div>
+                    <div class="flex items-center justify-between"><span>Tổng thanh toán</span><span id="grandTotal">@subtotal.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Thanh toán ngay</span><span id="amountDueNow">@amountDueNow.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Còn lại</span><span id="balanceDue">@balanceDue.ToString("N0")₫</span></div>
+                </div>
+                <div id="quote-status" class="mt-4 rounded-2xl bg-surface-muted-light px-4 py-3 text-sm text-slate-600 dark:bg-surface-elevated-dark dark:text-slate-300">Máy chủ sẽ tính lại báo giá khi bạn đổi departure, số khách, coupon hoặc payment plan.</div>
+                <button form="booking-form" type="submit" id="submit-booking" class="mt-6 w-full rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white">Tiếp tục sang thanh toán</button>
+                <p class="mt-3 text-center text-xs text-slate-400">Ghế chỉ được giữ khi máy chủ xác nhận báo giá và tạo booking thành công.</p>
+            </div>
+        </aside>
     </div>
 </section>
 
 @section Scripts {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <partial name="_ValidationScriptsPartial" />
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Check for validation errors and show SweetAlert2 popup
-            var validationSummary = document.getElementById("validation-summary-errors");
-            if (validationSummary) {
-                var errors = [];
-                var listItems = validationSummary.querySelectorAll("li");
-                listItems.forEach(function (li) {
-                    if (li.innerText && li.innerText.trim() !== "") {
-                        errors.push(li.innerText.trim());
-                    }
-                });
+        (() => {
+            const quoteUrl = '@Url.Action("Quote", "Booking")';
+            const form = document.getElementById('booking-form');
+            const selectedStartDate = document.getElementById('SelectedStartDate');
+            const remainingCapacity = document.getElementById('remaining-capacity');
+            const quoteBadges = document.getElementById('quote-badges');
+            const quoteStatus = document.getElementById('quote-status');
+            const submitButton = document.getElementById('submit-booking');
+            const formatCurrency = (value) => `${new Intl.NumberFormat('vi-VN').format(value || 0)}₫`;
 
-                if (errors.length > 0) {
-                    Swal.fire({
-                        title: 'Thông tin chưa hợp lệ!',
-                        html: '<div class="text-center"><p class="mb-3 text-slate-500 dark:text-slate-400">Vui lòng kiểm tra lại các mục sau:</p><ul class="list-none space-y-2 text-sm text-slate-700 dark:text-slate-200 inline-block text-left">' +
-                              errors.map(e => `<li class="flex items-start gap-2"><span class="material-symbols-outlined text-red-500 text-[18px] shrink-0 mt-0.5">error</span><span>${e}</span></li>`).join('') +
-                              '</ul></div>',
-                        icon: 'warning',
-                        iconColor: '#f59e0b', // Amber-500
-                        confirmButtonText: 'Đã hiểu, để tôi sửa',
-                        confirmButtonColor: '#2bcdee',
-                        background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
-                        color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0f172a',
-                        allowOutsideClick: false,
-                        showClass: {
-                            popup: 'animate__animated animate__fadeInUp animate__faster'
-                        },
-                        hideClass: {
-                            popup: 'animate__animated animate__fadeOutDown animate__faster'
-                        },
-                        customClass: {
-                            popup: 'rounded-3xl shadow-2xl border border-border-light dark:border-border-dark',
-                            confirmButton: 'rounded-xl px-8 py-3 font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all',
-                            title: 'font-display font-bold text-2xl mb-2',
-                            htmlContainer: 'text-center px-2'
-                        }
-                    });
+            const updateSelectedStartDate = () => {
+                const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
+                if (activeDeparture && selectedStartDate) {
+                    selectedStartDate.value = activeDeparture.dataset.startDate || '';
+                    remainingCapacity.textContent = `${activeDeparture.dataset.remainingCapacity || 0} chỗ`;
                 }
-            }
-        });
+            };
 
-    const adultPrice = @((int)adultPrice);
-    const childPrice = @((int)childPrice);
-    const infantPrice = @((int)infantPrice);
-    const discountPercent = @discount;
-    const maxParticipants = @tour.MaxParticipants;
-    const currentParticipants = @tour.CurrentParticipants;
-    const remainingSpots = @tour.RemainingSpots;
+            const renderBadges = (badges) => {
+                quoteBadges.innerHTML = (badges || [])
+                    .map((badge) => `<span class="rounded-full bg-primary/10 px-3 py-2 text-xs font-bold text-primary">${badge}</span>`)
+                    .join('');
+            };
 
-    function adjustCount(id, delta) {
-        const input = document.getElementById(id);
-        const adults = parseInt(document.getElementById('AdultCount').value) || 0;
-        const children = parseInt(document.getElementById('ChildCount').value) || 0;
-        const infants = parseInt(document.getElementById('InfantCount').value) || 0;
-        
-        const currentTotal = adults + children + infants;
-        const min = parseInt(input.getAttribute('min')) || 0;
-        
-        if (delta > 0 && currentTotal >= remainingSpots) {
-            Swal.fire({
-                title: 'Hết chỗ!',
-                text: `Tour này hiện chỉ còn ${remainingSpots} chỗ trống.`,
-                icon: 'warning',
-                confirmButtonColor: '#2bcdee'
+            const collectParams = () => {
+                const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
+                return new URLSearchParams({
+                    tourId: document.getElementById('TourId').value,
+                    departureId: activeDeparture ? activeDeparture.value : '',
+                    adultCount: document.getElementById('AdultCount').value || '1',
+                    childCount: document.getElementById('ChildCount').value || '0',
+                    infantCount: document.getElementById('InfantCount').value || '0',
+                    couponCode: document.getElementById('CouponCode').value || '',
+                    paymentPlanType: document.querySelector('input[name="PaymentPlanType"]:checked')?.value || 'Full'
+                });
+            };
+
+            const refreshQuote = async () => {
+                updateSelectedStartDate();
+                const response = await fetch(`${quoteUrl}?${collectParams().toString()}`);
+                const data = await response.json();
+                document.getElementById('subtotal').textContent = formatCurrency(data.subtotal);
+                document.getElementById('discountTotal').textContent = formatCurrency(data.discountTotal);
+                document.getElementById('grandTotal').textContent = formatCurrency(data.grandTotal);
+                document.getElementById('amountDueNow').textContent = formatCurrency(data.amountDueNow);
+                document.getElementById('balanceDue').textContent = formatCurrency(data.balanceDue);
+                renderBadges(data.badges);
+                remainingCapacity.textContent = `${data.remainingCapacity || 0} chỗ`;
+                quoteStatus.textContent = data.errorMessage || (data.appliedCouponCode
+                    ? `Đã áp dụng coupon ${data.appliedCouponCode}.`
+                    : 'Báo giá hợp lệ, có thể tiếp tục giữ chỗ.');
+                submitButton.disabled = !data.isAvailable;
+                submitButton.classList.toggle('opacity-50', !data.isAvailable);
+                submitButton.classList.toggle('cursor-not-allowed', !data.isAvailable);
+            };
+
+            form.querySelectorAll('input, textarea').forEach((element) => {
+                if (element.type === 'hidden' || element.name === '__RequestVerificationToken') {
+                    return;
+                }
+                element.addEventListener('change', refreshQuote);
+                if (element.id === 'CouponCode') {
+                    element.addEventListener('input', refreshQuote);
+                }
             });
-            return;
-        }
 
-        let val = parseInt(input.value) + delta;
-        if (val < min) val = min;
-        
-        input.value = val;
-        updatePrice();
-    }
-
-    function updatePrice() {
-        const adults = parseInt(document.getElementById('AdultCount').value) || 1;
-        const children = parseInt(document.getElementById('ChildCount').value) || 0;
-        const infants = parseInt(document.getElementById('InfantCount').value) || 0;
-
-        const currentTotal = adults + children + infants;
-        const spotsLeft = remainingSpots - currentTotal;
-
-        const badge = document.getElementById('spots-left-badge');
-        if (badge) {
-            badge.textContent = spotsLeft > 0 ? `Còn ${spotsLeft} chỗ` : 'Đã hết chỗ';
-            if (spotsLeft <= 5) {
-                badge.className = "ml-auto text-xs font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-500 border border-red-100 transition-all animate-pulse";
-            } else {
-                badge.className = "ml-auto text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all";
-            }
-        }
-
-        const adultTotal = adults * adultPrice;
-        const childTotal = children * childPrice;
-        const infantTotal = infants * infantPrice;
-        const subtotal = adultTotal + childTotal + infantTotal;
-        const discountAmt = discountPercent > 0 ? Math.round(subtotal * discountPercent / 100) : 0;
-        const grandTotal = subtotal - discountAmt;
-
-        document.getElementById('adult-display').textContent = adults;
-        document.getElementById('adult-total').textContent = adultTotal.toLocaleString('vi-VN') + '₫';
-
-        const childRow = document.getElementById('child-row');
-        if (children > 0) {
-            childRow.style.display = 'flex';
-            document.getElementById('child-display').textContent = children;
-            document.getElementById('child-total').textContent = childTotal.toLocaleString('vi-VN') + '₫';
-        } else { childRow.style.display = 'none'; }
-
-        const infantRow = document.getElementById('infant-row');
-        if (infants > 0) {
-            infantRow.style.display = 'flex';
-            document.getElementById('infant-display').textContent = infants;
-            document.getElementById('infant-total').textContent = infantTotal.toLocaleString('vi-VN') + '₫';
-        } else { infantRow.style.display = 'none'; }
-
-        const discEl = document.getElementById('discount-amount');
-        if (discEl) discEl.textContent = '-' + discountAmt.toLocaleString('vi-VN') + '₫';
-
-        document.getElementById('grand-total').textContent = grandTotal.toLocaleString('vi-VN') + '₫';
-    }
-
-    updatePrice();
-</script>
+            updateSelectedStartDate();
+            refreshQuote();
+        })();
+    </script>
 }
-
-
-
-
-
-
-

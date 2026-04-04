@@ -1,5 +1,6 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
+using HVTravel.Domain.Models;
 using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +8,9 @@ namespace HVTravel.Web.Controllers;
 
 public class PublicToursController : Controller
 {
-    private readonly IRepository<Tour> _tourRepository;
+    private readonly ITourRepository _tourRepository;
 
-    public PublicToursController(IRepository<Tour> tourRepository)
+    public PublicToursController(ITourRepository tourRepository)
     {
         _tourRepository = tourRepository;
     }
@@ -26,110 +27,43 @@ public class PublicToursController : Controller
         string? collection = null,
         bool availableOnly = false,
         bool promotionOnly = false,
+        int travellers = 0,
+        string? confirmationType = null,
+        string? cancellationType = null,
         int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
         ViewData["Title"] = "Tour Du Lịch";
 
-        var allTours = (await _tourRepository.GetAllAsync())
-            .Where(t => IsPubliclyVisible(t.Status))
-            .ToList();
-
-        ViewData["Regions"] = allTours
-            .Select(t => t.Destination?.Region)
-            .Where(value => !string.IsNullOrWhiteSpace(value))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(value => value)
-            .ToList();
-        ViewData["Destinations"] = allTours
-            .Select(t => t.Destination?.City)
-            .Where(value => !string.IsNullOrWhiteSpace(value))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(value => value)
-            .ToList();
-
-        IEnumerable<Tour> tours = allTours;
-
-        if (!string.IsNullOrWhiteSpace(search))
+        var result = await _tourRepository.SearchAsync(new TourSearchRequest
         {
-            var normalizedSearch = search.Trim();
-            tours = tours.Where(t =>
-                (t.Name != null && t.Name.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
-                RichTextContentFormatter.ToPlainText(t.ShortDescription).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
-                RichTextContentFormatter.ToPlainText(t.Description).Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase) ||
-                (t.Destination?.City != null && t.Destination.City.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
-                (t.Destination?.Region != null && t.Destination.Region.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase)) ||
-                (t.Destination?.Country != null && t.Destination.Country.Contains(normalizedSearch, StringComparison.OrdinalIgnoreCase))
-            );
-            ViewData["CurrentSearch"] = normalizedSearch;
-        }
+            Search = search,
+            Sort = sort,
+            Region = region,
+            Destination = destination,
+            MinPrice = minPrice,
+            MaxPrice = maxPrice,
+            DepartureMonth = departureMonth,
+            MaxDays = maxDays,
+            Collection = collection,
+            AvailableOnly = availableOnly,
+            PromotionOnly = promotionOnly,
+            Travellers = travellers,
+            ConfirmationType = confirmationType,
+            CancellationType = cancellationType,
+            Page = page,
+            PageSize = 9,
+            PublicOnly = true
+        });
 
-        if (!string.IsNullOrWhiteSpace(region))
-        {
-            tours = tours.Where(t => string.Equals(t.Destination?.Region, region, StringComparison.OrdinalIgnoreCase));
-        }
+        ViewData["Regions"] = result.Regions.Select(option => option.Value).ToList();
+        ViewData["RegionFacets"] = result.Regions;
+        ViewData["Destinations"] = result.Destinations.Select(option => option.Value).ToList();
+        ViewData["DestinationFacets"] = result.Destinations;
+        ViewData["ConfirmationTypeFacets"] = result.ConfirmationTypes;
+        ViewData["CancellationTypeFacets"] = result.CancellationTypes;
 
-        if (!string.IsNullOrWhiteSpace(destination))
-        {
-            tours = tours.Where(t => string.Equals(t.Destination?.City, destination, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (minPrice.HasValue)
-        {
-            tours = tours.Where(t => (t.Price?.Adult ?? 0) >= minPrice.Value);
-        }
-
-        if (maxPrice.HasValue)
-        {
-            tours = tours.Where(t => (t.Price?.Adult ?? 0) <= maxPrice.Value);
-        }
-
-        if (departureMonth.HasValue)
-        {
-            tours = tours.Where(t => (t.StartDates ?? new List<DateTime>()).Any(date => date.Month == departureMonth.Value));
-        }
-
-        if (maxDays.HasValue)
-        {
-            tours = tours.Where(t => (t.Duration?.Days ?? int.MaxValue) <= maxDays.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(collection))
-        {
-            tours = collection.Trim().ToLowerInvariant() switch
-            {
-                "domestic" => tours.Where(t => string.Equals(t.Destination?.Country, "Vietnam", StringComparison.OrdinalIgnoreCase) || string.Equals(t.Destination?.Country, "Việt Nam", StringComparison.OrdinalIgnoreCase)),
-                "international" => tours.Where(t => !string.Equals(t.Destination?.Country, "Vietnam", StringComparison.OrdinalIgnoreCase) && !string.Equals(t.Destination?.Country, "Việt Nam", StringComparison.OrdinalIgnoreCase)),
-                "premium" => tours.Where(t => (t.Price?.Adult ?? 0) >= 10000000),
-                "budget" => tours.Where(t => (t.Price?.Adult ?? 0) <= 3000000),
-                "family" => tours.Where(t => t.MaxParticipants >= 10 && (t.Duration?.Days ?? 0) <= 6),
-                "couple" => tours.Where(t => t.MaxParticipants <= 12 && (t.Duration?.Days ?? 0) <= 5),
-                "seasonal" => tours.Where(t => (t.StartDates ?? new List<DateTime>()).Any(date => date >= DateTime.UtcNow && date <= DateTime.UtcNow.AddDays(90))),
-                "deal" => tours.Where(t => (t.Price?.Discount ?? 0) > 0),
-                _ => tours
-            };
-        }
-
-        if (availableOnly)
-        {
-            tours = tours.Where(t => t.RemainingSpots > 0 && !string.Equals(t.Status, "SoldOut", StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (promotionOnly)
-        {
-            tours = tours.Where(t => (t.Price?.Discount ?? 0) > 0);
-        }
-
-        tours = sort switch
-        {
-            "price_asc" => tours.OrderBy(t => t.Price?.Adult ?? 0),
-            "price_desc" => tours.OrderByDescending(t => t.Price?.Adult ?? 0),
-            "rating" => tours.OrderByDescending(t => t.Rating),
-            "newest" => tours.OrderByDescending(t => t.CreatedAt),
-            "departure" => tours.OrderBy(t => t.StartDates?.Where(d => d >= DateTime.UtcNow).DefaultIfEmpty(DateTime.MaxValue).Min()),
-            _ => tours.OrderByDescending(t => t.Rating)
-        };
-
+        ViewData["CurrentSearch"] = search?.Trim();
         ViewData["CurrentSort"] = sort;
         ViewData["CurrentRegion"] = region;
         ViewData["CurrentDestination"] = destination;
@@ -140,46 +74,69 @@ public class PublicToursController : Controller
         ViewData["CurrentCollection"] = collection;
         ViewData["CurrentAvailableOnly"] = availableOnly;
         ViewData["CurrentPromotionOnly"] = promotionOnly;
+        ViewData["CurrentTravellers"] = travellers;
+        ViewData["CurrentConfirmationType"] = confirmationType;
+        ViewData["CurrentCancellationType"] = cancellationType;
+        ViewData["CurrentPage"] = result.CurrentPage;
+        ViewData["TotalPages"] = result.TotalPages;
+        ViewData["TotalItems"] = result.TotalItems;
 
-        int pageSize = 9;
-        var tourList = tours.ToList();
-        int totalItems = tourList.Count;
-        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-        page = Math.Max(1, Math.Min(page, totalPages == 0 ? 1 : totalPages));
+        result.Items.ForEach(tour => PublicTextSanitizer.NormalizeTourForDisplay(tour));
 
-        var pagedTours = tourList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-        ViewData["CurrentPage"] = page;
-        ViewData["TotalPages"] = totalPages;
-        ViewData["TotalItems"] = totalItems;
-
-        return View(pagedTours);
+        return View(result.Items);
     }
 
     public async Task<IActionResult> Details(string id)
     {
         ViewData["ActivePage"] = "Tours";
 
-        if (string.IsNullOrEmpty(id))
-            return RedirectToAction("Index");
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return RedirectToAction(nameof(Index));
+        }
 
-        var tour = await _tourRepository.GetByIdAsync(id);
+        var tour = await _tourRepository.GetByIdAsync(id) ?? await _tourRepository.GetBySlugAsync(id);
         if (tour == null || !IsPubliclyVisible(tour.Status))
+        {
             return NotFound();
+        }
 
-        ViewData["Title"] = tour.Name;
+        tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
 
-        var allTours = await _tourRepository.GetAllAsync();
-        var relatedTours = allTours
-            .Where(t => IsPubliclyVisible(t.Status) && t.Id != id)
-            .OrderByDescending(t => string.Equals(t.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(t => string.Equals(t.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(t => (t.Price?.Discount ?? 0) > 0)
-            .ThenByDescending(t => t.Rating)
+        var description = tour.Seo?.Description;
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            description = RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 160);
+        }
+
+        ViewData["Title"] = string.IsNullOrWhiteSpace(tour.Seo?.Title) ? tour.Name : tour.Seo.Title;
+        ViewData["Description"] = description;
+        ViewData["CanonicalUrl"] = Url.Action(nameof(Details), "PublicTours", new { id = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug }, Request.Scheme);
+        ViewData["OpenGraphTitle"] = ViewData["Title"];
+        ViewData["OpenGraphDescription"] = description;
+        ViewData["OpenGraphImage"] = !string.IsNullOrWhiteSpace(tour.Seo?.OpenGraphImageUrl)
+            ? tour.Seo.OpenGraphImageUrl
+            : tour.Images.FirstOrDefault();
+
+        var searchContext = await _tourRepository.SearchAsync(new TourSearchRequest
+        {
+            Region = tour.Destination?.Region,
+            Page = 1,
+            PageSize = 12,
+            PublicOnly = true
+        });
+
+        var relatedTours = searchContext.Items
+            .Where(item => item.Id != tour.Id)
+            .OrderByDescending(item => string.Equals(item.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(item => string.Equals(item.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(item => item.EffectiveDepartures.Any(departure => departure.RemainingCapacity is > 0 and <= 5))
+            .ThenByDescending(item => item.Rating)
             .Take(4)
             .ToList();
-        ViewData["RelatedTours"] = relatedTours;
 
+        relatedTours.ForEach(tour => PublicTextSanitizer.NormalizeTourForDisplay(tour));
+        ViewData["RelatedTours"] = relatedTours;
         return View(tour);
     }
 

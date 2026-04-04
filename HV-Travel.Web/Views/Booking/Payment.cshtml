@@ -1,14 +1,18 @@
-﻿@model HVTravel.Web.Models.BookingResultViewModel
+@using HVTravel.Domain.Entities
+@model HVTravel.Web.Models.BookingResultViewModel
 @{
     var booking = Model.Booking;
     var tour = Model.Tour;
+    var departure = tour?.ResolveDeparture(booking.DepartureId, booking.TourSnapshot?.StartDate);
+    var activePaymentSession = booking.PaymentSessions.OrderByDescending(item => item.UpdatedAt).FirstOrDefault();
+    var timeline = booking.Events ?? new List<BookingEvent>();
     var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
     {
         Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
         {
             new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
             new() { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") },
-            new() { Label = tour?.Name ?? "Tour", Url = tour != null ? Url.Action("Details", "PublicTours", new { id = tour.Id }) : null },
+            new() { Label = tour?.Name ?? "Tour", Url = tour != null ? Url.Action("Details", "PublicTours", new { id = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug }) : null },
             new() { Label = "Đặt tour" },
             new() { Label = "Thanh toán", IsCurrent = true }
         }
@@ -18,182 +22,151 @@
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-top-section-content is-left" data-animate="fade-up">
             <span class="public-badge public-top-section-badge">
                 <span class="material-symbols-outlined text-[16px] text-primary">payments</span>
                 Bước 2 trong hành trình đặt tour
             </span>
             <h1 class="public-top-section-title text-white">Xác nhận thanh toán booking</h1>
-            <p class="public-top-section-lead">Theo dõi mã booking, chọn phương thức thanh toán phù hợp và tải minh chứng đối soát ngay trong cùng một luồng thao tác.</p>
+            <p class="public-top-section-lead">Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần.</p>
         </div>
     </div>
 </section>
 
-<div class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="border-b border-border-light bg-surface-light py-6 dark:border-border-dark dark:bg-surface-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-stepper flex items-center justify-center gap-0" data-animate="fade-in">
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold"><span class="material-symbols-outlined text-[16px]">check</span></div>
-                <span class="text-sm font-medium text-primary hidden sm:inline">Thông Tin</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white"><span class="material-symbols-outlined text-[16px]">check</span></div>
+                <span class="hidden text-sm font-medium text-primary sm:inline">Thông tin</span>
             </div>
-            <div class="public-stepper-divider w-12 sm:w-20 h-0.5 bg-primary mx-2"></div>
+            <div class="public-stepper-divider mx-2 h-0.5 w-12 bg-primary sm:w-20"></div>
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-primary/30">2</div>
-                <span class="text-sm font-bold text-primary hidden sm:inline">Thanh Toán</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-lg shadow-primary/30">2</div>
+                <span class="hidden text-sm font-bold text-primary sm:inline">Thanh toán</span>
             </div>
-            <div class="public-stepper-divider w-12 sm:w-20 h-0.5 bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div class="public-stepper-divider mx-2 h-0.5 w-12 bg-slate-200 dark:bg-slate-700 sm:w-20"></div>
             <div class="flex items-center gap-2">
-                <div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-sm font-bold">3</div>
-                <span class="text-sm font-medium text-slate-400 hidden sm:inline">Hoàn Tất</span>
+                <div class="flex size-9 items-center justify-center rounded-full bg-slate-200 text-sm font-bold text-slate-400 dark:bg-slate-700">3</div>
+                <span class="hidden text-sm font-medium text-slate-400 sm:inline">Hoàn tất</span>
             </div>
         </div>
     </div>
 </div>
 
-<section class="py-10 bg-background-light dark:bg-background-dark">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        @if (TempData["PaymentSuccess"] != null)
-        {
-            <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">@TempData["PaymentSuccess"]</div>
-        }
-        @if (TempData["PaymentError"] != null)
-        {
-            <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-semibold text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300">@TempData["PaymentError"]</div>
-        }
+<section class="bg-background-light py-10 dark:bg-background-dark">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
+        <div class="space-y-6">
+            @if (TempData["PaymentSuccess"] != null)
+            {
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-300">@TempData["PaymentSuccess"]</div>
+            }
+            @if (TempData["PaymentError"] != null)
+            {
+                <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/20 dark:text-rose-300">@TempData["PaymentError"]</div>
+            }
 
-        <div class="grid lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 space-y-6" data-animate="fade-up">
-                <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">payments</span> Chọn phương thức thanh toán
-                    </h3>
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Payment methods</p>
+                <h2 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">Chọn cách thu tiền cho booking này</h2>
+                <form asp-action="ProcessPayment" method="post" class="mt-6 space-y-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@booking.Id" />
 
-                    <form asp-action="ProcessPayment" method="post" id="payment-form">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="bookingId" value="@booking.Id" />
-                        <div class="space-y-4">
-                            <label class="block cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="BankTransfer" class="peer hidden" checked />
-                                <div class="p-5 rounded-2xl border-2 border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
-                                    <div class="flex items-start gap-4">
-                                        <div class="size-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">account_balance</span></div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-1"><h4 class="text-sm font-bold text-slate-900 dark:text-white">Chuyển khoản ngân hàng</h4></div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Tải minh chứng, hệ thống lưu lại và vận hành đối soát trên admin.</p>
-                                            <div class="bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl p-4 space-y-2 text-xs">
-                                                <div class="flex justify-between"><span class="text-slate-500">Ngân hàng</span><span class="font-bold text-slate-900 dark:text-white">Vietcombank</span></div>
-                                                <div class="flex justify-between"><span class="text-slate-500">Số TK</span><span class="font-bold text-slate-900 dark:text-white font-mono">1234 5678 9012</span></div>
-                                                <div class="flex justify-between"><span class="text-slate-500">Chủ TK</span><span class="font-bold text-slate-900 dark:text-white">CONG TY HV TRAVEL</span></div>
-                                                <div class="flex justify-between"><span class="text-slate-500">Nội dung CK</span><span class="font-bold text-primary">@booking.BookingCode</span></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
+                    <label class="block cursor-pointer rounded-2xl border border-border-light p-4 transition hover:border-primary dark:border-border-dark">
+                        <input type="radio" name="paymentMethod" value="BankTransfer" checked class="mr-2" />
+                        <span class="font-semibold text-slate-900 dark:text-white">Chuyển khoản thủ công</span>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Tải minh chứng chuyển khoản để đội vận hành đối soát trên admin.</p>
+                    </label>
 
-                            <label class="block cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="CreditCard" class="peer hidden" />
-                                <div class="p-5 rounded-2xl border-2 border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
-                                    <div class="flex items-start gap-4">
-                                        <div class="size-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">credit_card</span></div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-1"><h4 class="text-sm font-bold text-slate-900 dark:text-white">Cổng thanh toán online</h4></div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">Phiên demo nội bộ gọi workflow callback idempotent để mô phỏng gateway online + webhook.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
+                    <label class="block cursor-pointer rounded-2xl border border-border-light p-4 transition hover:border-primary dark:border-border-dark">
+                        <input type="radio" name="paymentMethod" value="CreditCard" class="mr-2" />
+                        <span class="font-semibold text-slate-900 dark:text-white">Mock online gateway</span>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Luồng demo nội bộ sẽ gọi callback idempotent để mô phỏng gateway online.</p>
+                    </label>
 
-                            <label class="block cursor-pointer">
-                                <input type="radio" name="paymentMethod" value="Cash" class="peer hidden" />
-                                <div class="p-5 rounded-2xl border-2 border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 transition-all hover:border-primary/50">
-                                    <div class="flex items-start gap-4">
-                                        <div class="size-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center shrink-0"><span class="material-symbols-outlined">local_atm</span></div>
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-1"><h4 class="text-sm font-bold text-slate-900 dark:text-white">Tiền mặt</h4></div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">Giữ chỗ trước, thanh toán tại văn phòng hoặc khi khởi hành.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
+                    <label class="block cursor-pointer rounded-2xl border border-border-light p-4 transition hover:border-primary dark:border-border-dark">
+                        <input type="radio" name="paymentMethod" value="Cash" class="mr-2" />
+                        <span class="font-semibold text-slate-900 dark:text-white">Cash hold</span>
+                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Giữ chỗ trước và thanh toán bằng tiền mặt tại văn phòng hoặc khi khởi hành.</p>
+                    </label>
 
-                        <button type="submit" class="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
-                            <span class="material-symbols-outlined text-[18px]">lock</span>
-                            Xác nhận thanh toán
-                        </button>
-                    </form>
-                </div>
-
-                <div class="public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                    <div class="flex items-center justify-between gap-4 mb-4">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.3em] text-primary">Transfer Proof</p>
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-2">Tải minh chứng chuyển khoản</h3>
-                        </div>
-                        <a asp-action="RetryPayment" asp-route-bookingId="@booking.Id" class="rounded-xl border border-border-light px-4 py-2 text-xs font-bold text-slate-600 dark:border-border-dark dark:text-slate-300">Tải lại trang</a>
-                    </div>
-                    <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="space-y-4">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="bookingId" value="@booking.Id" />
-                        <input type="file" name="proofFile" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                        <textarea name="note" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="Ghi chú đối soát hoặc số tham chiếu giao dịch"></textarea>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-xs font-bold text-white dark:bg-white dark:text-slate-900">
-                            <span class="material-symbols-outlined text-[18px]">upload</span>
-                            Gửi minh chứng
-                        </button>
-                    </form>
-                </div>
+                    <button type="submit" class="w-full rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white">Xác nhận thanh toán</button>
+                </form>
             </div>
 
-            <div class="lg:col-span-1">
-                <div class="public-summary-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark shadow-sm" data-animate="slide-right">
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Tóm tắt đơn</h3>
-                    @if (tour != null)
-                    {
-                        <div class="flex gap-3 mb-5 pb-5 border-b border-border-light dark:border-border-dark">
-                            @if (tour.Images != null && tour.Images.Any())
-                            {
-                                <img src="@tour.Images.First()" alt="" class="w-20 h-14 rounded-xl object-cover shrink-0" />
-                            }
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white truncate">@tour.Name</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">@(tour.Duration?.Text)</p>
-                            </div>
-                        </div>
-                    }
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between"><span class="text-slate-500">Mã đơn</span><span class="font-bold font-mono text-primary">@booking.BookingCode</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Khách hàng</span><span class="font-bold text-slate-900 dark:text-white">@booking.ContactInfo?.Name</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Số hành khách</span><span class="font-bold text-slate-900 dark:text-white">@booking.ParticipantsCount</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Khởi hành</span><span class="font-bold text-slate-900 dark:text-white">@(booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "—")</span></div>
-                        <div class="flex justify-between"><span class="text-slate-500">Payment status</span><span class="font-bold text-slate-900 dark:text-white">@booking.PaymentStatus</span></div>
+            <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Transfer proof</p>
+                        <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Tải minh chứng chuyển khoản</h3>
                     </div>
-                    <div class="border-t border-border-light dark:border-border-dark mt-4 pt-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-base font-bold text-slate-900 dark:text-white">Tổng cộng</span>
-                            <span class="text-xl font-extrabold text-primary">@booking.TotalAmount.ToString("N0")₫</span>
-                        </div>
-                    </div>
-                    @if ((booking.Events ?? new List<HVTravel.Domain.Entities.BookingEvent>()).Any())
+                    @if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
                     {
-                        <div class="mt-6 border-t border-border-light pt-4 dark:border-border-dark">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Timeline</p>
-                            <div class="mt-4 space-y-3">
-                                @foreach (var evt in booking.Events.OrderByDescending(item => item.OccurredAt).Take(4))
-                                {
-                                    <div class="rounded-2xl bg-surface-muted-light px-4 py-3 text-sm dark:bg-surface-elevated-dark">
-                                        <p class="font-bold text-slate-900 dark:text-white">@evt.Title</p>
-                                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@evt.Description</p>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+                        <a asp-action="Resume" asp-route-checkoutSessionId="@booking.CheckoutSessionId" class="text-sm font-bold text-primary">Resume checkout</a>
                     }
                 </div>
+                <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@booking.Id" />
+                    <input type="file" name="proofFile" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                    <textarea name="note" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="Ghi chú đối soát hoặc mã tham chiếu giao dịch"></textarea>
+                    <button type="submit" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold dark:border-border-dark">Gửi minh chứng</button>
+                </form>
             </div>
         </div>
+
+        <aside class="space-y-6">
+            <div class="public-summary-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Order summary</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Booking @booking.BookingCode</h3>
+
+                @if (tour != null)
+                {
+                    <div class="mt-5 flex gap-3 border-b border-border-light pb-5 dark:border-border-dark">
+                        @if (tour.Images != null && tour.Images.Any())
+                        {
+                            <img src="@tour.Images.First()" alt="@tour.Name" class="h-16 w-20 rounded-xl object-cover" />
+                        }
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">@tour.Name</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">@(tour.Duration?.Text ?? booking.TourSnapshot?.Duration)</p>
+                        </div>
+                    </div>
+                }
+
+                <div class="mt-5 space-y-3 text-sm">
+                    <div class="flex items-center justify-between"><span>Mã đơn</span><span class="font-bold font-mono text-primary">@booking.BookingCode</span></div>
+                    <div class="flex items-center justify-between"><span>Khởi hành</span><span class="font-bold">@(departure?.StartDate.ToString("dd/MM/yyyy") ?? booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "-")</span></div>
+                    <div class="flex items-center justify-between"><span>Coupon</span><span data-model-field="booking.CouponCode" class="font-bold">@(string.IsNullOrWhiteSpace(booking.CouponCode) ? "-" : booking.CouponCode)</span></div>
+                    <div class="flex items-center justify-between"><span>Trạng thái thanh toán</span><span class="font-bold">@booking.PaymentStatus</span></div>
+                    <div class="flex items-center justify-between"><span>Tạm tính</span><span class="font-bold">@booking.PricingBreakdown.Subtotal.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Giảm giá</span><span class="font-bold">@booking.PricingBreakdown.DiscountTotal.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Tổng thanh toán</span><span class="font-bold">@booking.PricingBreakdown.GrandTotal.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between"><span>Kế hoạch</span><span class="font-bold">@booking.PaymentPlan.PlanType</span></div>
+                    <div class="flex items-center justify-between" data-model-field="booking.PaymentPlan.AmountDueNow"><span>Thanh toán ngay</span><span class="font-bold">@booking.PaymentPlan.AmountDueNow.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between" data-model-field="booking.PaymentPlan.BalanceDue"><span>Còn lại</span><span class="font-bold">@booking.PaymentPlan.BalanceDue.ToString("N0")₫</span></div>
+                    <div class="flex items-center justify-between" data-model-field="booking.CheckoutSessionId"><span>Checkout session</span><span class="font-mono text-xs font-bold">@(string.IsNullOrWhiteSpace(booking.CheckoutSessionId) ? "-" : booking.CheckoutSessionId)</span></div>
+                    <div class="flex items-center justify-between" data-model-field="booking.PaymentSessions"><span>Payment session</span><span class="font-mono text-xs font-bold">@(activePaymentSession?.Reference ?? activePaymentSession?.Id ?? "Pending")</span></div>
+                </div>
+            </div>
+
+            @if (timeline.Any())
+            {
+                <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Timeline</p>
+                    <div class="mt-4 space-y-3">
+                        @foreach (var evt in timeline.OrderByDescending(item => item.OccurredAt).Take(4))
+                        {
+                            <div class="rounded-2xl bg-surface-muted-light px-4 py-3 text-sm dark:bg-surface-elevated-dark">
+                                <p class="font-bold text-slate-900 dark:text-white">@evt.Title</p>
+                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@evt.Description</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </aside>
     </div>
 </section>
-

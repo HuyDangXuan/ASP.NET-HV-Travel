@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @using HVTravel.Web.Services
 @model HVTravel.Web.Models.BookingResultViewModel
 @{
@@ -15,7 +15,7 @@
     if (tour != null)
     {
         breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Tour du lịch", Url = Url.Action("Index", "PublicTours") });
-        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = tour.Id }) });
+        breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = tour.Name, Url = Url.Action("Details", "PublicTours", new { id = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug }) });
     }
     breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Đặt tour" });
     breadcrumbItems.Add(new HVTravel.Web.Models.BreadcrumbItemViewModel { Label = "Thanh toán" });
@@ -26,59 +26,50 @@
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="public-top-section-content is-left" data-animate="fade-up">
             <span class="public-badge public-top-section-badge">
                 <span class="material-symbols-outlined text-[16px] text-primary">warning</span>
                 Cần hoàn tất bước thanh toán
             </span>
             <h1 class="public-top-section-title text-white">Booking vẫn đang chờ thanh toán</h1>
-            <p class="public-top-section-lead">Đơn đặt tour của bạn vẫn được giữ chỗ. Hãy thử lại thanh toán, chọn phương thức khác hoặc liên hệ đội ngũ HV Travel để được hỗ trợ ngay.</p>
+            <p class="public-top-section-lead">Bạn có thể thử lại thanh toán, đổi phương thức khác hoặc khôi phục phiên checkout hiện tại để tiếp tục.</p>
         </div>
     </div>
 </section>
 
-<section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
-    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="mb-8" data-animate="scale-in">
-            <div class="mx-auto size-24 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                <span class="material-symbols-outlined text-5xl text-red-500">error</span>
+<section class="bg-background-light py-12 dark:bg-background-dark">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-8 text-center shadow-sm dark:border-border-dark dark:bg-surface-dark">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-rose-500">Failed state</p>
+            <h2 class="mt-2 text-3xl font-black text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedTitle")">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h2>
+            <div class="mt-4 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedDescription")">
+                @Html.Raw(string.IsNullOrWhiteSpace(Model.ErrorMessage)
+                    ? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác.")
+                    : Model.ErrorMessage)
             </div>
-        </div>
-
-        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedTitle")">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h1>
-        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedDescription")">
-            @Html.Raw(Model.ErrorMessage ?? statusCopy?.Fields.GetFieldValue("failedDescription", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."))
-        </div>
-
-        @if (!string.IsNullOrEmpty(booking?.BookingCode))
-        {
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Mã đơn: <span class="font-bold font-mono text-primary">@booking.BookingCode</span></p>
-        }
-
-        <div class="public-form-card bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200/50 dark:border-amber-900/30 mb-8 text-left" data-animate="fade-up" data-delay="200">
-            <div class="flex gap-3">
-                <span class="material-symbols-outlined text-amber-500 shrink-0">info</span>
-                <div class="text-sm text-amber-800 dark:text-amber-300">
-                    <p class="font-bold mb-1">Đơn đặt tour của bạn vẫn được giữ</p>
-                    <p class="text-xs">Bạn có thể thử lại thanh toán hoặc chọn phương thức khác. Nếu cần hỗ trợ, hãy liên hệ hotline <strong>@phone</strong>.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="public-action-stack flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
-            @if (!string.IsNullOrEmpty(booking?.Id))
+            @if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
             {
-                <a asp-controller="Booking" asp-action="Payment" asp-route-bookingId="@booking.Id" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                    <span class="material-symbols-outlined text-[18px]">refresh</span> Thử Lại
-                </a>
+                <p class="mt-4 text-xs text-slate-400" data-model-field="booking.CheckoutSessionId">checkout session: @booking.CheckoutSessionId</p>
             }
-            <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Về Trang Chủ
-            </a>
-            <a href="tel:@phone" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">call</span> Gọi Hỗ Trợ
-            </a>
+
+            <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-left text-sm text-amber-800 dark:border-amber-900/30 dark:bg-amber-900/10 dark:text-amber-300">
+                <p class="font-bold">Đơn đặt tour của bạn vẫn được giữ chỗ</p>
+                <p class="mt-2">Bạn có thể tiếp tục thanh toán hoặc liên hệ hotline <strong>@phone</strong> để được hỗ trợ nhanh.</p>
+            </div>
+
+            <div class="public-action-stack mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+                @if (!string.IsNullOrWhiteSpace(booking.Id))
+                {
+                    <a asp-action="Payment" asp-route-bookingId="@booking.Id" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Thử Lại</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
+                {
+                    <a asp-action="Resume" asp-route-checkoutSessionId="@booking.CheckoutSessionId" title="Resume checkout" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-700 dark:border-border-dark dark:text-slate-300">Khôi phục checkout</a>
+                }
+                <a asp-controller="Home" asp-action="Index" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-700 dark:border-border-dark dark:text-slate-300">Về Trang Chủ</a>
+                <a href="tel:@phone" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-700 dark:border-border-dark dark:text-slate-300">Gọi Hỗ Trợ</a>
+            </div>
         </div>
     </div>
 </section>

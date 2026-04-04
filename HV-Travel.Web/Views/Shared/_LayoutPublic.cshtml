@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @{
     var siteSettings = await ContentService.GetSiteSettingsAsync();
     var headerGroup = siteSettings.GetGroup("header");
@@ -19,6 +19,13 @@
     var loginLabel = headerGroup?.Fields.GetFieldValue("loginLabel", "\u0110\u0103ng nh\u1eadp") ?? "\u0110\u0103ng nh\u1eadp";
     var defaultDescription = seoGroup?.Fields.GetFieldValue("defaultMetaDescription", "HV Travel - Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam c\u00f9ng nh\u1eefng tour du l\u1ecbch tuy\u1ec7t v\u1eddi nh\u1ea5t")
         ?? "HV Travel - Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam c\u00f9ng nh\u1eefng tour du l\u1ecbch tuy\u1ec7t v\u1eddi nh\u1ea5t";
+    var pageTitle = ViewData["Title"]?.ToString();
+    var resolvedTitle = string.IsNullOrWhiteSpace(pageTitle) ? brandName : $"{pageTitle} - {brandName}";
+    var pageDescription = RichTextContentFormatter.ToPlainTextSummary(ViewData["Description"]?.ToString() ?? defaultDescription, 160);
+    var canonicalUrl = ViewData["CanonicalUrl"]?.ToString();
+    var openGraphTitle = ViewData["OpenGraphTitle"]?.ToString() ?? resolvedTitle;
+    var openGraphDescription = ViewData["OpenGraphDescription"]?.ToString() ?? pageDescription;
+    var openGraphImage = ViewData["OpenGraphImage"]?.ToString() ?? string.Empty;
 
     var footerBrandTitle = footerBrandGroup?.Fields.GetFieldValue("title", "HV Travel") ?? "HV Travel";
     var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam") ?? "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam";
@@ -132,8 +139,20 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>@ViewData["Title"] - @brandName</title>
-    <meta name="description" content="@(RichTextContentFormatter.ToPlainTextSummary(ViewData["Description"]?.ToString() ?? defaultDescription, 160))" />
+    <title>@resolvedTitle</title>
+        <meta name="description" content="@pageDescription" />
+    @if (!string.IsNullOrWhiteSpace(canonicalUrl))
+    {
+        <link rel="canonical" href="@canonicalUrl" />
+    }
+    <meta property="og:title" content="@openGraphTitle" />
+    <meta property="og:description" content="@openGraphDescription" />
+    <meta property="og:type" content="website" />
+    @if (!string.IsNullOrWhiteSpace(canonicalUrl))
+    {
+        <meta property="og:url" content="@canonicalUrl" />
+    }
+    <meta property="og:image" content="@openGraphImage" />
 
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -573,3 +592,6 @@
     </script>
 </body>
 </html>
+
+
+

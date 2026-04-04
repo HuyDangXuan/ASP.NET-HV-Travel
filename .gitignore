@@ -21,6 +21,9 @@
 .dotnet/
 brain/
 
+## Mockdata
+tools/
+
 ## [OS Specific]
 .DS_Store
 Thumbs.db
@@ -42,3 +45,5 @@ staged_files.txt
 *.swp
 *~
 node_modules/
+__pycache__/
+tools/mockdata_generator/output/
