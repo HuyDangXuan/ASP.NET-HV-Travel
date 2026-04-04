@@ -3,10 +3,28 @@
 @model HVTravel.Web.Models.BookingLookupViewModel
 @{
     var sections = await ContentService.GetPageSectionsAsync("bookingLookup");
+    var siteSettings = await ContentService.GetSiteSettingsAsync();
     var hero = sections.GetSection("hero");
     var lookupForm = sections.GetSection("lookupForm");
     var readyState = sections.GetSection("readyState");
+    var headerGroup = siteSettings.GetGroup("header");
     var showLookupForm = lookupForm?.IsEnabled != false;
+    var homeLabel = headerGroup?.Fields.GetVisibleFieldValue("navHomeLabel", "Trang chủ") ?? "Trang chủ";
+    var bookingLookupLabel = headerGroup?.Fields.GetVisibleFieldValue("bookingLookupLabel", "Tra cứu booking") ?? "Tra cứu booking";
+    var bookingCodeLabel = lookupForm?.Fields.GetVisibleFieldValue("bookingCodeLabel", "Mã booking") ?? "Mã booking";
+    var bookingCodePlaceholder = lookupForm?.Fields.GetVisibleFieldValue("bookingCodePlaceholder", "Ví dụ: HV20260328001") ?? "Ví dụ: HV20260328001";
+    var emailLabel = lookupForm?.Fields.GetVisibleFieldValue("emailLabel", "Email") ?? "Email";
+    var emailPlaceholder = lookupForm?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@example.com") ?? "email@example.com";
+    var phoneLabel = lookupForm?.Fields.GetVisibleFieldValue("phoneLabel", "Hoặc số điện thoại") ?? "Hoặc số điện thoại";
+    var phonePlaceholder = lookupForm?.Fields.GetVisibleFieldValue("phonePlaceholder", "0901 234 567") ?? "0901 234 567";
+    var resultEyebrowText = readyState?.Fields.GetVisibleFieldValue("resultEyebrowText", "Kết quả booking") ?? "Kết quả booking";
+    var bookingStatusLabel = readyState?.Fields.GetVisibleFieldValue("bookingStatusLabel", "Trạng thái đơn") ?? "Trạng thái đơn";
+    var startDateLabel = readyState?.Fields.GetVisibleFieldValue("startDateLabel", "Ngày khởi hành") ?? "Ngày khởi hành";
+    var startDateFallback = readyState?.Fields.GetVisibleFieldValue("startDateFallback", "Chưa xác định") ?? "Chưa xác định";
+    var participantsCountLabel = readyState?.Fields.GetVisibleFieldValue("participantsCountLabel", "Số hành khách") ?? "Số hành khách";
+    var totalAmountLabel = readyState?.Fields.GetVisibleFieldValue("totalAmountLabel", "Tổng tiền") ?? "Tổng tiền";
+    var timelineTitle = readyState?.Fields.GetVisibleFieldValue("timelineTitle", "Timeline xử lý") ?? "Timeline xử lý";
+    var timelineEmptyText = readyState?.Fields.GetVisibleFieldValue("timelineEmptyText", "Booking chưa có mốc xử lý chi tiết.") ?? "Booking chưa có mốc xử lý chi tiết.";
     var lookupGridClass = showLookupForm
         ? "grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
         : "grid gap-8";
@@ -14,8 +32,8 @@
     {
         Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
         {
-            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
-            new() { Label = "Tra cứu booking", IsCurrent = true }
+            new() { Label = homeLabel, Url = Url.Action("Index", "Home") },
+            new() { Label = bookingLookupLabel, IsCurrent = true }
         }
     };
 
@@ -60,16 +78,16 @@
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="rounded-2xl bg-red-50 text-red-600 px-4 py-3 text-sm dark:bg-red-900/20 dark:text-red-300"></div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mã booking</label>
-                        <input name="bookingCode" value="@Model.QueryBookingCode" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="Ví dụ: HV20260328001" />
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">@bookingCodeLabel</label>
+                        <input name="bookingCode" value="@Model.QueryBookingCode" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="@bookingCodePlaceholder" />
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Email</label>
-                        <input name="email" value="@Model.QueryEmail" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="email@example.com" />
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">@emailLabel</label>
+                        <input name="email" value="@Model.QueryEmail" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="@emailPlaceholder" />
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Hoặc số điện thoại</label>
-                        <input name="phone" value="@Model.QueryPhone" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="0901 234 567" />
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">@phoneLabel</label>
+                        <input name="phone" value="@Model.QueryPhone" class="w-full rounded-2xl border border-border-light dark:border-border-dark bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" placeholder="@phonePlaceholder" />
                     </div>
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-6 py-3.5 rounded-2xl text-sm font-bold shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
                         <span class="material-symbols-outlined text-[18px]">search</span>
@@ -84,7 +102,7 @@
             {
                 <div class="flex items-start justify-between gap-4 mb-6">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary mb-2">Kết quả booking</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary mb-2">@resultEyebrowText</p>
                         <h2 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.BookingCode</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">@Model.TourName</p>
                     </div>
@@ -93,25 +111,25 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Trạng thái đơn</p>
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@bookingStatusLabel</p>
                         <p class="font-bold text-slate-900 dark:text-white">@Model.BookingStatus</p>
                     </div>
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Ngày khởi hành</p>
-                        <p class="font-bold text-slate-900 dark:text-white">@(Model.StartDate?.ToString("dd/MM/yyyy") ?? "Chưa xác định")</p>
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@startDateLabel</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@(Model.StartDate?.ToString("dd/MM/yyyy") ?? startDateFallback)</p>
                     </div>
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Số hành khách</p>
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@participantsCountLabel</p>
                         <p class="font-bold text-slate-900 dark:text-white">@Model.ParticipantsCount</p>
                     </div>
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">Tổng tiền</p>
+                        <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@totalAmountLabel</p>
                         <p class="font-bold text-slate-900 dark:text-white">@Model.TotalAmount.ToString("N0")₫</p>
                     </div>
                 </div>
 
                 <div class="rounded-3xl border border-border-light dark:border-border-dark px-5 py-5">
-                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Timeline xử lý</h3>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">@timelineTitle</h3>
                     @if (Model.History.Count > 0)
                     {
                         <div class="space-y-3">
@@ -126,7 +144,7 @@
                     }
                     else
                     {
-                        <p class="text-sm text-slate-500 dark:text-slate-400">Booking chưa có mốc xử lý chi tiết.</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">@timelineEmptyText</p>
                     }
                 </div>
             }
@@ -143,3 +161,5 @@
         </div>
     </div>
 </section>
+
+

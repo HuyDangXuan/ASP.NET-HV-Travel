@@ -1,4 +1,4 @@
-namespace HV_Travel.Web.Tests;
+﻿namespace HV_Travel.Web.Tests;
 
 public class PublicResponsiveMarkupTests
 {
@@ -265,6 +265,24 @@ public class PublicResponsiveMarkupTests
         Assert.Contains("@media (min-width: 1680px)", content);
         Assert.Contains("grid-template-columns: repeat(3, minmax(0, 1fr));", content);
     }
+
+    [Fact]
+    public void PublicTheme_DefinesHomeCarouselHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+        var script = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\js\home-carousel.js"));
+
+        Assert.Contains(".home-carousel", content);
+        Assert.Contains(".home-carousel-viewport", content);
+        Assert.Contains(".home-carousel-track", content);
+        Assert.Contains(".home-carousel-slide", content);
+        Assert.Contains(".home-carousel-nav", content);
+        Assert.Contains(".home-carousel-dot", content);
+        Assert.Contains("margin-top: 0;", content);
+        Assert.Contains("prefers-reduced-motion", script);
+        Assert.Contains("pointerdown", script);
+        Assert.Contains("data-home-carousel", script);
+    }
     private static void AssertContains(string relativePath, string expectedContent)
     {
         var content = File.ReadAllText(GetRepoPath(relativePath));
@@ -277,6 +295,8 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
+
 
 
 

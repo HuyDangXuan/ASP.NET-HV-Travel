@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HVTravel.Domain.Entities;
@@ -22,10 +22,20 @@ public class ContentSection
     [BsonElement("description")]
     public string Description { get; set; } = string.Empty;
 
+    [BsonElement("isTitleEnabled")]
+    [BsonDefaultValue(true)]
+    public bool IsTitleEnabled { get; set; } = true;
+
+    [BsonElement("isDescriptionEnabled")]
+    [BsonDefaultValue(true)]
+    public bool IsDescriptionEnabled { get; set; } = true;
+
     [BsonElement("isEnabled")]
+    [BsonDefaultValue(true)]
     public bool IsEnabled { get; set; } = true;
 
     [BsonElement("isPublished")]
+    [BsonDefaultValue(true)]
     public bool IsPublished { get; set; } = true;
 
     [BsonElement("displayOrder")]

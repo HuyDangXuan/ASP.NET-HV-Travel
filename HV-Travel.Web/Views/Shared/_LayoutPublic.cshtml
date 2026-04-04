@@ -1,4 +1,4 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
 @{
     var siteSettings = await ContentService.GetSiteSettingsAsync();
     var headerGroup = siteSettings.GetGroup("header");
@@ -29,8 +29,9 @@
 
     var footerBrandTitle = footerBrandGroup?.Fields.GetFieldValue("title", "HV Travel") ?? "HV Travel";
     var footerBrandTagline = footerBrandGroup?.Fields.GetFieldValue("tagline", "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam") ?? "Kh\u00e1m ph\u00e1 Vi\u1ec7t Nam";
-    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Kh\u00e1m ph\u00e1 v\u1ebb \u0111\u1eb9p Vi\u1ec7t Nam v\u1edbi nh\u1eefng tour du l\u1ecbch \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf ri\u00eang. Tr\u1ea3i nghi\u1ec7m v\u0103n h\u00f3a, \u1ea9m th\u1ef1c v\u00e0 thi\u00ean nhi\u00ean tuy\u1ec7t v\u1eddi.")
-        ?? "Kh\u00e1m ph\u00e1 v\u1ebb \u0111\u1eb9p Vi\u1ec7t Nam v\u1edbi nh\u1eefng tour du l\u1ecbch \u0111\u01b0\u1ee3c thi\u1ebft k\u1ebf ri\u00eang. Tr\u1ea3i nghi\u1ec7m v\u0103n h\u00f3a, \u1ea9m th\u1ef1c v\u00e0 thi\u00ean nhi\u00ean tuy\u1ec7t v\u1eddi.";
+    var footerBrandDescription = footerBrandGroup?.Fields.GetFieldValue("description", "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.")
+        ?? "Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng. Trải nghiệm văn hóa, ẩm thực và thiên nhiên tuyệt vời.";
+    var allRightsReservedLabel = footerBrandGroup?.Fields.GetFieldValue("allRightsReservedLabel", "Bảo lưu mọi quyền.") ?? "Bảo lưu mọi quyền.";
 
     var footerExploreTitle = footerExploreGroup?.Fields.GetFieldValue("title", "Kh\u00e1m ph\u00e1") ?? "Kh\u00e1m ph\u00e1";
     var allToursLabel = footerExploreGroup?.Fields.GetFieldValue("allToursLabel", "T\u1ea5t c\u1ea3 tour") ?? "T\u1ea5t c\u1ea3 tour";
@@ -42,7 +43,8 @@
     var footerAboutLabel = footerCompanyGroup?.Fields.GetFieldValue("aboutLabel", "Gi\u1edbi thi\u1ec7u") ?? "Gi\u1edbi thi\u1ec7u";
     var footerContactLabel = footerCompanyGroup?.Fields.GetFieldValue("contactLabel", "Li\u00ean h\u1ec7") ?? "Li\u00ean h\u1ec7";
     var privacyLabel = footerCompanyGroup?.Fields.GetFieldValue("privacyLabel", "Ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt") ?? "Ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt";
-    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "\u0110i\u1ec1u kho\u1ea3n s\u1eed d\u1ee5ng") ?? "\u0110i\u1ec1u kho\u1ea3n s\u1eed d\u1ee5ng";
+    var termsLabel = footerCompanyGroup?.Fields.GetFieldValue("termsLabel", "Điều khoản sử dụng") ?? "Điều khoản sử dụng";
+    var sitemapLabel = footerCompanyGroup?.Fields.GetFieldValue("sitemapLabel", "Sơ đồ trang") ?? "Sơ đồ trang";
 
     var contactTitle = contactGroup?.Fields.GetFieldValue("title", "Li\u00ean h\u1ec7") ?? "Li\u00ean h\u1ec7";
     var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 \u0110\u01b0\u1eddng Nguy\u1ec5n Hu\u1ec7, Qu\u1eadn 1, TP.HCM") ?? "123 \u0110\u01b0\u1eddng Nguy\u1ec5n Hu\u1ec7, Qu\u1eadn 1, TP.HCM";
@@ -54,18 +56,16 @@
     var instagramUrl = socialGroup?.Fields.GetFieldValue("instagramUrl", "#") ?? "#";
     var youtubeUrl = socialGroup?.Fields.GetFieldValue("youtubeUrl", "#") ?? "#";
     var activePage = ViewData["ActivePage"]?.ToString() ?? string.Empty;
-    var destinationsLabel = "\u0110i\u1ec3m \u0111\u1ebfn";
-    var promotionsLabel = "\u01afu \u0111\u00e3i";
-    var inspirationLabel = "C\u1ea9m nang";
-    var servicesLabel = "D\u1ecbch v\u1ee5";
-    var bookingLookupLabel = "Tra c\u1ee9u booking";
-    var moreLabel = "Kh\u00e1m ph\u00e1 th\u00eam";
-    var openPortalLabel = "M\u1edf portal";
-    var customerFallbackLabel = "Kh\u00e1ch h\u00e0ng";
-    var customerCodeFallbackLabel = "Kh\u00e1ch h\u00e0ng HV Travel";
-    var logoutLabel = "\u0110\u0103ng xu\u1ea5t";
-    var allRightsReservedLabel = "B\u1ea3o l\u01b0u m\u1ecdi quy\u1ec1n.";
-    var sitemapLabel = "S\u01a1 \u0111\u1ed3 trang";
+    var destinationsLabel = headerGroup?.Fields.GetFieldValue("navDestinationsLabel", "Điểm đến") ?? "Điểm đến";
+    var promotionsLabel = headerGroup?.Fields.GetFieldValue("navPromotionsLabel", "Ưu đãi") ?? "Ưu đãi";
+    var inspirationLabel = headerGroup?.Fields.GetFieldValue("navInspirationLabel", "Cẩm nang") ?? "Cẩm nang";
+    var servicesLabel = headerGroup?.Fields.GetFieldValue("navServicesLabel", "Dịch vụ") ?? "Dịch vụ";
+    var bookingLookupLabel = headerGroup?.Fields.GetFieldValue("bookingLookupLabel", "Tra cứu booking") ?? "Tra cứu booking";
+    var moreLabel = headerGroup?.Fields.GetFieldValue("moreLabel", "Khám phá thêm") ?? "Khám phá thêm";
+    var openPortalLabel = headerGroup?.Fields.GetFieldValue("openPortalLabel", "Mở portal") ?? "Mở portal";
+    var customerFallbackLabel = headerGroup?.Fields.GetFieldValue("customerFallbackLabel", "Khách hàng") ?? "Khách hàng";
+    var customerCodeFallbackLabel = headerGroup?.Fields.GetFieldValue("customerCodeFallbackLabel", "Khách hàng HV Travel") ?? "Khách hàng HV Travel";
+    var logoutLabel = headerGroup?.Fields.GetFieldValue("logoutLabel", "Đăng xuất") ?? "Đăng xuất";
 
     bool IsActive(string pageKey) => string.Equals(activePage, pageKey, System.StringComparison.OrdinalIgnoreCase);
 
@@ -76,6 +76,7 @@
         new { Controller = "Destinations", Action = "Index", Label = destinationsLabel, ActivePage = "Destinations", Icon = "globe_asia" },
         new { Controller = "Home", Action = "Contact", Label = navContactLabel, ActivePage = "Contact", Icon = "call" }
     };
+    primaryNavItems = primaryNavItems.Where(item => !string.IsNullOrWhiteSpace(item.Label)).ToArray();
 
     var secondaryNavItems = new[]
     {
@@ -84,6 +85,7 @@
         new { Controller = "Services", Action = "Index", Label = servicesLabel, ActivePage = "Services", Icon = "package_2" },
         new { Controller = "Home", Action = "About", Label = navAboutLabel, ActivePage = "About", Icon = "info" }
     };
+    secondaryNavItems = secondaryNavItems.Where(item => !string.IsNullOrWhiteSpace(item.Label)).ToArray();
 
     var mobileNavItems = new[]
     {
@@ -96,6 +98,7 @@
         new { Controller = "Home", Action = "About", Label = navAboutLabel, ActivePage = "About", Icon = "info" },
         new { Controller = "Home", Action = "Contact", Label = navContactLabel, ActivePage = "Contact", Icon = "call" }
     };
+    mobileNavItems = mobileNavItems.Where(item => !string.IsNullOrWhiteSpace(item.Label)).ToArray();
 
     var hasSecondaryActive = false;
     foreach (var secondaryItem in secondaryNavItems)
@@ -267,23 +270,26 @@
                     {
                         <a asp-controller="@item.Controller" asp-action="@item.Action" class="@DesktopNavLinkClass(item.ActivePage)">@item.Label</a>
                     }
-                    <div class="public-secondary-nav relative">
-                        <button id="public-nav-more-toggle" type="button" class="@MoreToggleClass()" aria-expanded="false" aria-controls="public-nav-more-panel">
-                            <span>@moreLabel</span>
-                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                        </button>
-                        <div id="public-nav-more-panel" class="public-secondary-nav-panel public-header-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl p-3 backdrop-blur">
-                            <div class="space-y-1">
-                                @foreach (var item in secondaryNavItems)
-                                {
-                                    <a asp-controller="@item.Controller" asp-action="@item.Action" class="@MobileNavLinkClass(item.ActivePage)">
-                                        <span class="material-symbols-outlined text-[20px]">@item.Icon</span>
-                                        <span>@item.Label</span>
-                                    </a>
-                                }
+                    @if (!string.IsNullOrWhiteSpace(moreLabel) && secondaryNavItems.Any())
+                    {
+                        <div class="public-secondary-nav relative">
+                            <button id="public-nav-more-toggle" type="button" class="@MoreToggleClass()" aria-expanded="false" aria-controls="public-nav-more-panel">
+                                <span>@moreLabel</span>
+                                <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                            </button>
+                            <div id="public-nav-more-panel" class="public-secondary-nav-panel public-header-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl p-3 backdrop-blur">
+                                <div class="space-y-1">
+                                    @foreach (var item in secondaryNavItems)
+                                    {
+                                        <a asp-controller="@item.Controller" asp-action="@item.Action" class="@MobileNavLinkClass(item.ActivePage)">
+                                            <span class="material-symbols-outlined text-[20px]">@item.Icon</span>
+                                            <span>@item.Label</span>
+                                        </a>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </nav>
 
                 <div class="public-nav-actions ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-3">
@@ -292,10 +298,13 @@
                         <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
                     </button>
                     <div class="hidden xl:flex items-center gap-2 2xl:gap-3">
-                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[0.86rem] font-bold transition-all">
-                            <span class="material-symbols-outlined text-[18px]">search</span>
-                            <span>@bookingLookupLabel</span>
-                        </a>
+@if (!string.IsNullOrWhiteSpace(bookingLookupLabel))
+                        {
+                            <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[0.86rem] font-bold transition-all">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                <span>@bookingLookupLabel</span>
+                            </a>
+                        }
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                         {
                             var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? customerFallbackLabel;
@@ -320,27 +329,36 @@
                                         </div>
                                     </div>
                                     <div class="mt-4 space-y-2">
-                                        <a asp-controller="CustomerPortal" asp-action="Index" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/10">
-                                            <span class="material-symbols-outlined text-[20px]">account_circle</span>
-                                            <span>@openPortalLabel</span>
-                                        </a>
-                                        <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white">
-                                                <span class="material-symbols-outlined text-[20px]">logout</span>
-                                                <span>@logoutLabel</span>
-                                            </button>
-                                        </form>
+                                        @if (!string.IsNullOrWhiteSpace(openPortalLabel))
+                                        {
+                                            <a asp-controller="CustomerPortal" asp-action="Index" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/10">
+                                                <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                                                <span>@openPortalLabel</span>
+                                            </a>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(logoutLabel))
+                                        {
+                                            <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white">
+                                                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                                                    <span>@logoutLabel</span>
+                                                </button>
+                                            </form>
+                                        }
                                     </div>
                                 </div>
                             </div>
                         }
                         else
                         {
-                            <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[0.86rem] font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40 active:scale-95">
-                                <span class="material-symbols-outlined text-[18px]">login</span>
-                                @loginLabel
-                            </a>
+                            @if (!string.IsNullOrWhiteSpace(loginLabel))
+                            {
+                                <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[0.86rem] font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40 active:scale-95">
+                                    <span class="material-symbols-outlined text-[18px]">login</span>
+                                    @loginLabel
+                                </a>
+                            }
                         }
                     </div>
                     <button id="mobile-menu-btn" type="button" class="public-header-icon-button public-header-control rounded-xl p-2 transition-all xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
@@ -360,10 +378,13 @@
                         }
                     </nav>
                     <div class="mt-4 border-t border-border-light pt-4 dark:border-border-dark">
-                        <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold transition-all">
-                            <span class="material-symbols-outlined text-[18px]">search</span>
-                            <span>@bookingLookupLabel</span>
-                        </a>
+                        @if (!string.IsNullOrWhiteSpace(bookingLookupLabel))
+                        {
+                            <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold transition-all">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                <span>@bookingLookupLabel</span>
+                            </a>
+                        }
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
                         {
                             var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? customerFallbackLabel;
@@ -371,25 +392,40 @@
                             <div class="mt-3 rounded-3xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
                                 <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
                                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel)</p>
-                                <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-border-light px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10 dark:border-border-dark dark:hover:bg-primary/10">
-                                    <span class="material-symbols-outlined text-[18px]">account_circle</span>
-                                    <span>@openPortalLabel</span>
-                                </a>
-                                <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-2">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
-                                        <span class="material-symbols-outlined text-[18px]">logout</span>
-                                        <span>@logoutLabel</span>
-                                    </button>
-                                </form>
+                                @if (!string.IsNullOrWhiteSpace(openPortalLabel))
+                                {
+                                    <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-border-light px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10 dark:border-border-dark dark:hover:bg-primary/10">
+                                        <span class="material-symbols-outlined text-[18px]">account_circle</span>
+                                        <span>@openPortalLabel</span>
+                                    </a>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(logoutLabel))
+                                {
+                                    <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-2">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
+                                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                                            <span>@logoutLabel</span>
+                                        </button>
+                                    </form>
+                                }
                             </div>
                         }
                         else
                         {
-                            <div class="mt-3 grid grid-cols-2 gap-2">
-                                <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 rounded-2xl bg-surface-muted-light px-4 py-3 text-sm font-bold text-slate-600 transition-all dark:bg-surface-elevated-dark dark:text-slate-300">@registerLabel</a>
-                                <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all">@loginLabel</a>
-                            </div>
+                            @if (!string.IsNullOrWhiteSpace(registerLabel) || !string.IsNullOrWhiteSpace(loginLabel))
+                            {
+                                <div class="mt-3 grid grid-cols-2 gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(registerLabel))
+                                    {
+                                        <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 rounded-2xl bg-surface-muted-light px-4 py-3 text-sm font-bold text-slate-600 transition-all dark:bg-surface-elevated-dark dark:text-slate-300">@registerLabel</a>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(loginLabel))
+                                    {
+                                        <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all">@loginLabel</a>
+                                    }
+                                </div>
+                            }
                         }
                     </div>
                 </div>
@@ -410,13 +446,22 @@
                             <span class="material-symbols-outlined">flight_takeoff</span>
                         </div>
                         <div>
-                            <h3 class="text-lg font-extrabold leading-none">@footerBrandTitle</h3>
-                            <p class="text-[10px] font-semibold text-primary tracking-widest uppercase">@footerBrandTagline</p>
+                            @if (!string.IsNullOrWhiteSpace(footerBrandTitle))
+                            {
+                                <h3 class="text-lg font-extrabold leading-none">@footerBrandTitle</h3>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(footerBrandTagline))
+                            {
+                                <p class="text-[10px] font-semibold text-primary tracking-widest uppercase">@footerBrandTagline</p>
+                            }
                         </div>
                     </div>
-                    <div class="text-slate-400 text-sm leading-relaxed mb-6">
-                        @Html.Raw(footerBrandDescription)
-                    </div>
+@if (!string.IsNullOrWhiteSpace(footerBrandDescription))
+                    {
+                        <div class="text-slate-400 text-sm leading-relaxed mb-6">
+                            @Html.Raw(footerBrandDescription)
+                        </div>
+                    }
                     <div class="flex gap-3">
                         <a href="@facebookUrl" class="size-10 rounded-xl bg-surface-elevated-dark hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -431,44 +476,65 @@
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@footerExploreTitle</h4>
+                    @if (!string.IsNullOrWhiteSpace(footerExploreTitle))
+                    {
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@footerExploreTitle</h4>
+                    }
                     <ul class="space-y-3">
-                        <li><a asp-controller="PublicTours" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@allToursLabel</a></li>
-                        <li><a asp-controller="Promotions" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@popularToursLabel</a></li>
-                        <li><a asp-controller="Destinations" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@hotDestinationsLabel</a></li>
-                        <li><a asp-controller="Services" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@specialOffersLabel</a></li>
+                        @if (!string.IsNullOrWhiteSpace(allToursLabel)) { <li><a asp-controller="PublicTours" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@allToursLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(popularToursLabel)) { <li><a asp-controller="Promotions" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@popularToursLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(hotDestinationsLabel)) { <li><a asp-controller="Destinations" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@hotDestinationsLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(specialOffersLabel)) { <li><a asp-controller="Services" asp-action="Index" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@specialOffersLabel</a></li> }
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@footerCompanyTitle</h4>
+                    @if (!string.IsNullOrWhiteSpace(footerCompanyTitle))
+                    {
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@footerCompanyTitle</h4>
+                    }
                     <ul class="space-y-3">
-                        <li><a asp-controller="Home" asp-action="About" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@footerAboutLabel</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@footerContactLabel</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@privacyLabel</a></li>
-                        <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@termsLabel</a></li>
+                        @if (!string.IsNullOrWhiteSpace(footerAboutLabel)) { <li><a asp-controller="Home" asp-action="About" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@footerAboutLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(footerContactLabel)) { <li><a asp-controller="Home" asp-action="Contact" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@footerContactLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(privacyLabel)) { <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@privacyLabel</a></li> }
+                        @if (!string.IsNullOrWhiteSpace(termsLabel)) { <li><a href="#" class="text-slate-400 hover:text-primary text-sm transition-colors flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">chevron_right</span>@termsLabel</a></li> }
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@contactTitle</h4>
+                    @if (!string.IsNullOrWhiteSpace(contactTitle))
+                    {
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-300 mb-5">@contactTitle</h4>
+                    }
                     <ul class="space-y-4">
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">location_on</span>
-                            <span class="text-slate-400 text-sm">@contactAddress</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">call</span>
-                            <a class="text-slate-400 text-sm hover:text-primary transition-colors" href="tel:@contactPhone">@contactPhone</a>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">mail</span>
-                            <a class="text-slate-400 text-sm hover:text-primary transition-colors" href="mailto:@contactEmail">@contactEmail</a>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">schedule</span>
-                            <span class="text-slate-400 text-sm">@businessHours</span>
-                        </li>
+                        @if (!string.IsNullOrWhiteSpace(contactAddress))
+                        {
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">location_on</span>
+                                <span class="text-slate-400 text-sm">@contactAddress</span>
+                            </li>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(contactPhone))
+                        {
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">call</span>
+                                <a class="text-slate-400 text-sm hover:text-primary transition-colors" href="tel:@contactPhone">@contactPhone</a>
+                            </li>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(contactEmail))
+                        {
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">mail</span>
+                                <a class="text-slate-400 text-sm hover:text-primary transition-colors" href="mailto:@contactEmail">@contactEmail</a>
+                            </li>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(businessHours))
+                        {
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary text-[20px] mt-0.5">schedule</span>
+                                <span class="text-slate-400 text-sm">@businessHours</span>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -476,12 +542,30 @@
 
         <div class="border-t border-border-dark">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-slate-500 text-xs">&copy; @DateTime.Now.Year @brandName. @allRightsReservedLabel</p>
-                <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
-                    <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@sitemapLabel</a>
-                </div>
+                                <p class="text-slate-500 text-xs">
+                    &copy; @DateTime.Now.Year @brandName
+                    @if (!string.IsNullOrWhiteSpace(allRightsReservedLabel))
+                    {
+                        <span>. @allRightsReservedLabel</span>
+                    }
+                </p>
+@if (!string.IsNullOrWhiteSpace(privacyLabel) || !string.IsNullOrWhiteSpace(termsLabel) || !string.IsNullOrWhiteSpace(sitemapLabel))
+                {
+                    <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                        @if (!string.IsNullOrWhiteSpace(privacyLabel))
+                        {
+                            <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@privacyLabel</a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(termsLabel))
+                        {
+                            <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@termsLabel</a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(sitemapLabel))
+                        {
+                            <a href="#" class="text-slate-500 hover:text-primary text-xs transition-colors">@sitemapLabel</a>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </footer>
@@ -592,6 +676,24 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

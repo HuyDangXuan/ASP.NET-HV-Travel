@@ -1,10 +1,14 @@
-@inject IPublicContentService ContentService
+﻿@inject IPublicContentService ContentService
+@using HVTravel.Domain.Entities
 @using HVTravel.Domain.Models
 @using HVTravel.Web.Services
 @model List<Tour>
 @{
     var sections = await ContentService.GetPageSectionsAsync("publicTours");
     var hero = sections.GetSection("indexHero");
+    var collectionChips = sections.GetSection("collectionChips");
+    var filterPanel = sections.GetSection("filterPanel");
+    var resultsPanel = sections.GetSection("resultsPanel");
     var emptyState = sections.GetSection("emptyState");
 
     var currentSearch = ViewData["CurrentSearch"]?.ToString();
@@ -28,6 +32,40 @@
     var destinationFacets = ViewData["DestinationFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
     var confirmationFacets = ViewData["ConfirmationTypeFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
     var cancellationFacets = ViewData["CancellationTypeFacets"] as IReadOnlyList<TourFacetOption> ?? Array.Empty<TourFacetOption>();
+
+    string CmsText(ContentSection? section, string key, string fallback)
+        => section?.Fields.GetVisibleFieldValue(key, fallback) ?? fallback;
+
+    var heroBadgeText = CmsText(hero, "badgeText", "Tour tuyển chọn");
+    var heroTitleLine1 = CmsText(hero, "titleLine1", "Tour");
+    var heroTitleHighlight = CmsText(hero, "titleHighlight", "du lịch");
+    var heroDescription = CmsText(hero, "description", "Tìm điểm đến, loại tour, mùa lễ hội, số khách và chính sách xác nhận phù hợp với từng lịch khởi hành.");
+    var heroSearchPlaceholder = CmsText(hero, "searchPlaceholder", "Tìm điểm đến, loại tour, mùa lễ hội...");
+    var searchButtonText = CmsText(hero, "searchButtonText", "Tìm kiếm");
+    var resultsEyebrow = CmsText(resultsPanel, "eyebrowText", "Discovery");
+    var resultsTitleFormat = CmsText(resultsPanel, "titleFormat", "{0} tour phù hợp");
+    var resultsTitle = string.IsNullOrWhiteSpace(resultsTitleFormat)
+        ? string.Empty
+        : string.Format(resultsTitleFormat, totalItems);
+    var wishlistEyebrow = CmsText(resultsPanel, "wishlistEyebrow", "Wishlist");
+    var wishlistTitle = CmsText(resultsPanel, "wishlistTitle", "Tour đã lưu");
+    var wishlistEmptyText = CmsText(resultsPanel, "wishlistEmptyText", "Chưa có tour nào trong wishlist.");
+    var recentEyebrow = CmsText(resultsPanel, "recentEyebrow", "Recently viewed");
+    var recentTitle = CmsText(resultsPanel, "recentTitle", "Tour vừa xem");
+    var recentEmptyText = CmsText(resultsPanel, "recentEmptyText", "Chưa có tour nào vừa xem.");
+    var emptyStateTitle = CmsText(emptyState, "title", "Không tìm thấy tour nào");
+    var emptyStateDescription = CmsText(emptyState, "description", "Hãy thử đổi bộ lọc hoặc quay lại toàn bộ danh sách tour.");
+    var emptyStateCtaText = CmsText(emptyState, "ctaText", "Xem tất cả tour");
+
+    var chips = new[]
+    {
+        new { Key = "domestic", Label = CmsText(collectionChips, "domesticLabel", "Trong nước") },
+        new { Key = "premium", Label = CmsText(collectionChips, "premiumLabel", "Premium") },
+        new { Key = "family", Label = CmsText(collectionChips, "familyLabel", "Gia đình") },
+        new { Key = "couple", Label = CmsText(collectionChips, "coupleLabel", "Cặp đôi") },
+        new { Key = "seasonal", Label = CmsText(collectionChips, "seasonalLabel", "Mùa lễ hội") },
+        new { Key = "deal", Label = CmsText(collectionChips, "dealLabel", "Săn deal") }
+    }.Where(chip => !string.IsNullOrWhiteSpace(chip.Label)).ToArray();
 }
 
 @if (hero?.IsEnabled != false)
@@ -39,17 +77,32 @@
         </div>
         <div class="public-top-section-shell public-page-hero-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="@($"public-top-section-content public-page-hero-content is-centered {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
-                    <span class="material-symbols-outlined text-[16px] text-primary">travel_explore</span>
-                    @hero.Fields.GetFieldValue("badgeText", "Tour tuy\u1ec3n ch\u1ecdn")
-                </span>
-                <h1 class="public-top-section-title public-hero-title text-white">
-                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@hero.Fields.GetFieldValue("titleLine1", "Tour")</span>
-                    <span class="public-top-section-highlight public-page-hero-highlight" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@hero.Fields.GetFieldValue("titleHighlight", "du l\u1ecbch")</span>
-                </h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                    @Html.Raw(hero.Fields.GetFieldValue("description", "T\u00ecm \u0111i\u1ec3m \u0111\u1ebfn, lo\u1ea1i tour, m\u00f9a l\u1ec5 h\u1ed9i, s\u1ed1 kh\u00e1ch v\u00e0 ch\u00ednh s\u00e1ch x\u00e1c nh\u1eadn ph\u00f9 h\u1ee3p v\u1edbi t\u1eebng l\u1ecbch kh\u1edfi h\u00e0nh."))
-                </div>
+                @if (!string.IsNullOrWhiteSpace(heroBadgeText))
+                {
+                    <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+                        <span class="material-symbols-outlined text-[16px] text-primary">travel_explore</span>
+                        @heroBadgeText
+                    </span>
+                }
+                @if (!string.IsNullOrWhiteSpace(heroTitleLine1) || !string.IsNullOrWhiteSpace(heroTitleHighlight))
+                {
+                    <h1 class="public-top-section-title public-hero-title text-white">
+                        @if (!string.IsNullOrWhiteSpace(heroTitleLine1))
+                        {
+                            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@heroTitleLine1</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(heroTitleHighlight))
+                        {
+                            <span class="public-top-section-highlight public-page-hero-highlight" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@heroTitleHighlight</span>
+                        }
+                    </h1>
+                }
+                @if (!string.IsNullOrWhiteSpace(heroDescription))
+                {
+                    <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                        @Html.Raw(heroDescription)
+                    </div>
+                }
                 <div class="public-top-section-actions public-page-hero-actions mt-2 w-full max-w-4xl">
                     <form asp-controller="PublicTours" asp-action="Index" method="get" class="w-full">
                         <input type="hidden" name="sort" value="@currentSort" />
@@ -60,13 +113,17 @@
                         <input type="hidden" name="confirmationType" value="@currentConfirmationType" />
                         <input type="hidden" name="cancellationType" value="@currentCancellationType" />
                         <div class="public-search-shell flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-2xl shadow-slate-950/20 backdrop-blur-md sm:flex-row">
-                            <input type="text" name="search" value="@currentSearch" placeholder="@hero.Fields.GetFieldValue("searchPlaceholder", "T\u00ecm \u0111i\u1ec3m \u0111\u1ebfn, lo\u1ea1i tour, m\u00f9a l\u1ec5 h\u1ed9i...")" class="min-w-0 w-full flex-1 bg-transparent px-6 py-4 text-sm text-white outline-none placeholder-white/60" />
-                            <button type="submit" class="flex w-full items-center justify-center gap-2 bg-primary px-8 py-4 text-sm font-bold text-white transition-colors hover:bg-primary-dark sm:w-auto">
-                                <span class="material-symbols-outlined text-[20px]">search</span>
-                                <span>@("T\u00ecm ki\u1ebfm")</span>
-                            </button>
+                            <input type="text" name="search" value="@currentSearch" placeholder="@heroSearchPlaceholder" class="min-w-0 w-full flex-1 bg-transparent px-6 py-4 text-sm text-white outline-none placeholder-white/60" />
+                            @if (!string.IsNullOrWhiteSpace(searchButtonText))
+                            {
+                                <button type="submit" class="flex w-full items-center justify-center gap-2 bg-primary px-8 py-4 text-sm font-bold text-white transition-colors hover:bg-primary-dark sm:w-auto">
+                                    <span class="material-symbols-outlined text-[20px]">search</span>
+                                    <span>@searchButtonText</span>
+                                </button>
+                            }
                         </div>
                     </form>
+                </div>
             </div>
         </div>
     </section>
@@ -74,46 +131,50 @@
 
 <section class="bg-background-light py-12 dark:bg-background-dark">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-wrap gap-3" data-animate="fade-in">
-            @foreach (var chip in new[]
-            {
-                new { Key = "domestic", Label = "Trong n\u01b0\u1edbc" },
-                new { Key = "premium", Label = "Premium" },
-                new { Key = "family", Label = "Gia \u0111\u00ecnh" },
-                new { Key = "couple", Label = "C\u1eb7p \u0111\u00f4i" },
-                new { Key = "seasonal", Label = "M\u00f9a l\u1ec5 h\u1ed9i" },
-                new { Key = "deal", Label = "S\u0103n deal" }
-            })
-            {
-                <a asp-action="Index"
-                   asp-route-collection="@chip.Key"
-                   asp-route-search="@currentSearch"
-                   asp-route-sort="@currentSort"
-                   asp-route-region="@currentRegion"
-                   asp-route-destination="@currentDestination"
-                   asp-route-minPrice="@currentMinPrice"
-                   asp-route-maxPrice="@currentMaxPrice"
-                   asp-route-departureMonth="@currentDepartureMonth"
-                   asp-route-maxDays="@currentMaxDays"
-                   asp-route-availableOnly="@currentAvailableOnly"
-                   asp-route-promotionOnly="@currentPromotionOnly"
-                   asp-route-travellers="@currentTravellers"
-                   asp-route-confirmationType="@currentConfirmationType"
-                   asp-route-cancellationType="@currentCancellationType"
-                   class="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] transition @(currentCollection == chip.Key ? "bg-primary text-white" : "bg-surface-light text-slate-600 ring-1 ring-border-light dark:bg-surface-dark dark:text-slate-300 dark:ring-border-dark")">@chip.Label</a>
-            }
-        </div>
+        @if (chips.Any())
+        {
+            <div class="mb-8 flex flex-wrap gap-3" data-animate="fade-in">
+                @foreach (var chip in chips)
+                {
+                    <a asp-action="Index"
+                       asp-route-collection="@chip.Key"
+                       asp-route-search="@currentSearch"
+                       asp-route-sort="@currentSort"
+                       asp-route-region="@currentRegion"
+                       asp-route-destination="@currentDestination"
+                       asp-route-minPrice="@currentMinPrice"
+                       asp-route-maxPrice="@currentMaxPrice"
+                       asp-route-departureMonth="@currentDepartureMonth"
+                       asp-route-maxDays="@currentMaxDays"
+                       asp-route-availableOnly="@currentAvailableOnly"
+                       asp-route-promotionOnly="@currentPromotionOnly"
+                       asp-route-travellers="@currentTravellers"
+                       asp-route-confirmationType="@currentConfirmationType"
+                       asp-route-cancellationType="@currentCancellationType"
+                       class="rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] transition @(currentCollection == chip.Key ? "bg-primary text-white" : "bg-surface-light text-slate-600 ring-1 ring-border-light dark:bg-surface-dark dark:text-slate-300 dark:ring-border-dark")">@chip.Label</a>
+                }
+            </div>
+        }
 
         <div class="grid items-start gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
             <aside class="self-start rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-left">
-                @await Html.PartialAsync("_PublicToursFilter", Model)
+                @await Html.PartialAsync("_PublicToursFilter", Model, new ViewDataDictionary(ViewData)
+                {
+                    ["FilterPanel"] = filterPanel
+                })
             </aside>
 
             <div>
                 <div class="mb-8 flex flex-wrap items-center justify-between gap-4" data-animate="fade-in">
                     <div>
-                        <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Discovery</p>
-                        <h2 class="public-section-title mt-2">@($"{totalItems} tour ph\u00f9 h\u1ee3p")</h2>
+                        @if (!string.IsNullOrWhiteSpace(resultsEyebrow))
+                        {
+                            <p class="text-xs uppercase tracking-[0.25em] text-slate-400">@resultsEyebrow</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(resultsTitle))
+                        {
+                            <h2 class="public-section-title mt-2">@resultsTitle</h2>
+                        }
                     </div>
                 </div>
 
@@ -156,27 +217,48 @@
                 {
                     <div class="@($"rounded-[2rem] border border-border-light px-6 py-14 text-center shadow-sm dark:border-border-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(emptyState)} {ContentPresentationViewHelper.GetSectionTextClass(emptyState)}")" style="@ContentPresentationViewHelper.GetSectionStyle(emptyState)">
                         <span class="material-symbols-outlined mb-4 text-6xl text-slate-300 dark:text-slate-600">search_off</span>
-                        <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(emptyState, "title")">@((emptyState?.Fields.GetFieldValue("title", "Kh\u00f4ng t\u00ecm th\u1ea5y tour n\u00e0o")) ?? "Kh\u00f4ng t\u00ecm th\u1ea5y tour n\u00e0o")</h3>
-                        <div class="mb-6 mt-3 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(emptyState, "description")">
-                            @Html.Raw((emptyState?.Fields.GetFieldValue("description", "H\u00e3y th\u1eed \u0111\u1ed5i b\u1ed9 l\u1ecdc ho\u1eb7c quay l\u1ea1i to\u00e0n b\u1ed9 danh s\u00e1ch tour.")) ?? "H\u00e3y th\u1eed \u0111\u1ed5i b\u1ed9 l\u1ecdc ho\u1eb7c quay l\u1ea1i to\u00e0n b\u1ed9 danh s\u00e1ch tour.")
-                        </div>
-                        <a asp-action="Index" class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-dark">
-                            <span class="material-symbols-outlined text-[18px]">refresh</span>
-                            @("Xem t\u1ea5t c\u1ea3 tour")
-                        </a>
+                        @if (!string.IsNullOrWhiteSpace(emptyStateTitle))
+                        {
+                            <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(emptyState, "title")">@emptyStateTitle</h3>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(emptyStateDescription))
+                        {
+                            <div class="mb-6 mt-3 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(emptyState, "description")">
+                                @Html.Raw(emptyStateDescription)
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(emptyStateCtaText))
+                        {
+                            <a asp-action="Index" class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-dark">
+                                <span class="material-symbols-outlined text-[18px]">refresh</span>
+                                @emptyStateCtaText
+                            </a>
+                        }
                     </div>
                 }
 
                 <div class="mt-12 grid gap-6 lg:grid-cols-2">
                     <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs uppercase tracking-[0.3em] text-primary">Wishlist</p>
-                        <h2 class="public-section-title mt-2">@("Tour \u0111\u00e3 l\u01b0u")</h2>
-                        <div id="wishlist-shell" class="mt-5 grid gap-4"></div>
+                        @if (!string.IsNullOrWhiteSpace(wishlistEyebrow))
+                        {
+                            <p class="text-xs uppercase tracking-[0.3em] text-primary">@wishlistEyebrow</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(wishlistTitle))
+                        {
+                            <h2 class="public-section-title mt-2">@wishlistTitle</h2>
+                        }
+                        <div id="wishlist-shell" data-empty-text="@wishlistEmptyText" class="mt-5 grid gap-4"></div>
                     </section>
                     <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs uppercase tracking-[0.3em] text-primary">Recently Viewed</p>
-                        <h2 class="public-section-title mt-2">@("Tour v\u1eeba xem")</h2>
-                        <div id="recently-viewed-shell" class="mt-5 grid gap-4"></div>
+                        @if (!string.IsNullOrWhiteSpace(recentEyebrow))
+                        {
+                            <p class="text-xs uppercase tracking-[0.3em] text-primary">@recentEyebrow</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(recentTitle))
+                        {
+                            <h2 class="public-section-title mt-2">@recentTitle</h2>
+                        }
+                        <div id="recently-viewed-shell" data-empty-text="@recentEmptyText" class="mt-5 grid gap-4"></div>
                     </section>
                 </div>
             </div>
@@ -186,112 +268,8 @@
 
 @section Scripts {
 <script src="~/js/public-custom-select.js" asp-append-version="true"></script>
-<script>
-(function () {
-    const STORAGE_KEYS = {
-        wishlist: 'hvtravel_wishlist',
-        recent: 'hvtravel_recent'
-    };
-
-    const currencyFormatter = new Intl.NumberFormat('vi-VN');
-
-    const parseItems = (key) => {
-        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
-    };
-
-    const saveItems = (key, items) => localStorage.setItem(key, JSON.stringify(items.slice(0, 6)));
-
-    const buildItemFromCard = (card) => ({
-        id: card.dataset.tourId,
-        name: card.dataset.tourName,
-        price: Number(card.dataset.tourPrice || 0),
-        location: card.dataset.tourLocation,
-        url: card.dataset.tourUrl,
-        image: card.dataset.tourImage
-    });
-
-    const isWishlisted = (id) => parseItems(STORAGE_KEYS.wishlist).some((entry) => entry.id === id);
-
-    const setHeartState = (button, active) => {
-        button.setAttribute('aria-pressed', active ? 'true' : 'false');
-        button.classList.toggle('is-active', active);
-
-        const icon = button.querySelector('[data-tour-heart-icon]');
-        if (icon) {
-            icon.textContent = active ? 'favorite' : 'favorite_border';
-        }
-    };
-
-    const syncWishlistButtons = () => {
-        document.querySelectorAll('[data-tour-wishlist-toggle]').forEach((button) => {
-            const card = button.closest('[data-tour-id]');
-            if (!card) { return; }
-            setHeartState(button, isWishlisted(card.dataset.tourId));
-        });
-    };
-
-    const toCardMarkup = (item) => `
-        <a href="${item.url}" class="rounded-2xl border border-border-light px-4 py-4 transition hover:border-primary dark:border-border-dark">
-            <div class="flex items-center justify-between gap-4">
-                <div>
-                    <p class="text-sm font-black text-slate-900 dark:text-white">${item.name}</p>
-                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">${item.location}</p>
-                </div>
-                <span class="text-sm font-black text-primary">${currencyFormatter.format(item.price)}\u20ab</span>
-            </div>
-        </a>`;
-
-    const render = () => {
-        const wishlistShell = document.getElementById('wishlist-shell');
-        const recentShell = document.getElementById('recently-viewed-shell');
-        const wishlist = parseItems(STORAGE_KEYS.wishlist);
-        const recent = parseItems(STORAGE_KEYS.recent);
-
-        wishlistShell.innerHTML = wishlist.length
-            ? wishlist.map(toCardMarkup).join('')
-            : '<p class="text-sm text-slate-500 dark:text-slate-400">Ch\u01b0a c\u00f3 tour n\u00e0o trong wishlist.</p>';
-
-        recentShell.innerHTML = recent.length
-            ? recent.map(toCardMarkup).join('')
-            : '<p class="text-sm text-slate-500 dark:text-slate-400">Ch\u01b0a c\u00f3 tour n\u00e0o v\u1eeba xem.</p>';
-
-        syncWishlistButtons();
-    };
-
-    document.querySelectorAll('.record-view').forEach((link) => {
-        link.addEventListener('click', () => {
-            const card = link.closest('[data-tour-id]');
-            if (!card) { return; }
-
-            const item = buildItemFromCard(card);
-            const recent = parseItems(STORAGE_KEYS.recent).filter((entry) => entry.id !== item.id);
-            recent.unshift(item);
-            saveItems(STORAGE_KEYS.recent, recent);
-        });
-    });
-
-    document.querySelectorAll('[data-tour-wishlist-toggle]').forEach((button) => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const card = button.closest('[data-tour-id]');
-            if (!card) { return; }
-
-            const item = buildItemFromCard(card);
-            const wishlist = parseItems(STORAGE_KEYS.wishlist).filter((entry) => entry.id !== item.id);
-            const currentlySaved = isWishlisted(item.id);
-
-            if (!currentlySaved) {
-                wishlist.unshift(item);
-            }
-
-            saveItems(STORAGE_KEYS.wishlist, wishlist);
-            render();
-        });
-    });
-
-    render();
-})();
-</script>
+<script src="~/js/public-tour-card.js" asp-append-version="true"></script>
 }
+
+
+

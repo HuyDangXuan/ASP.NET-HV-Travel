@@ -193,6 +193,8 @@ public class ContentController : Controller
             SectionKey = source.SectionKey,
             Title = source.Title,
             Description = source.Description,
+            IsTitleEnabled = source.IsTitleEnabled,
+            IsDescriptionEnabled = source.IsDescriptionEnabled,
             IsEnabled = source.IsEnabled,
             IsPublished = source.IsPublished,
             DisplayOrder = source.DisplayOrder,
@@ -207,6 +209,7 @@ public class ContentController : Controller
                     FieldType = field.FieldType,
                     Value = field.Value,
                     Placeholder = field.Placeholder,
+                    IsEnabled = field.IsEnabled,
                     Style = ContentPresentationDefaults.CloneTextStyle(field.Style)
                 })
                 .ToList()
@@ -216,3 +219,5 @@ public class ContentController : Controller
         return clone;
     }
 }
+
+

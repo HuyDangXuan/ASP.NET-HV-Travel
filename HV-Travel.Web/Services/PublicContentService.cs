@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
@@ -11,7 +11,7 @@ public class PublicContentService : IPublicContentService
 {
     private static readonly string[] MojibakeMarkers =
     {
-        "Ã", "Â", "Ä", "Æ", "áº", "á»", "â€™", "â€œ", "â€", "�"
+        "Ãƒ", "Ã‚", "Ã„", "Ã†", "Ã¡Âº", "Ã¡Â»", "Ã¢â‚¬â„¢", "Ã¢â‚¬Å“", "Ã¢â‚¬", "ï¿½"
     };
 
     private const string SiteSettingsCacheKey = "public-content-site-settings";
@@ -198,6 +198,8 @@ public class PublicContentService : IPublicContentService
             group.Title = string.IsNullOrWhiteSpace(normalizedGroupTitle) ? group.Title : normalizedGroupTitle;
             group.Description = string.IsNullOrWhiteSpace(normalizedGroupDescription) ? group.Description : normalizedGroupDescription;
             group.IsEnabled = storedGroup.IsEnabled;
+            group.IsTitleEnabled = storedGroup.IsTitleEnabled;
+            group.IsDescriptionEnabled = storedGroup.IsDescriptionEnabled;
             group.DisplayOrder = storedGroup.DisplayOrder;
 
             foreach (var field in group.Fields)
@@ -215,6 +217,7 @@ public class PublicContentService : IPublicContentService
                 field.Label = string.IsNullOrWhiteSpace(normalizedFieldLabel) ? field.Label : normalizedFieldLabel;
                 field.FieldType = string.IsNullOrWhiteSpace(storedField.FieldType) ? field.FieldType : storedField.FieldType;
                 field.Placeholder = string.IsNullOrWhiteSpace(normalizedPlaceholder) ? field.Placeholder : normalizedPlaceholder;
+                field.IsEnabled = storedField.IsEnabled;
                 field.Style = ContentPresentationSchema.SanitizeTextStyle(storedField.Style);
             }
         }
@@ -236,6 +239,8 @@ public class PublicContentService : IPublicContentService
         var normalizedSectionDescription = NormalizeText(stored.Description);
         merged.Title = string.IsNullOrWhiteSpace(normalizedSectionTitle) ? merged.Title : normalizedSectionTitle;
         merged.Description = string.IsNullOrWhiteSpace(normalizedSectionDescription) ? merged.Description : normalizedSectionDescription;
+        merged.IsTitleEnabled = stored.IsTitleEnabled;
+        merged.IsDescriptionEnabled = stored.IsDescriptionEnabled;
         merged.IsEnabled = stored.IsEnabled;
         merged.IsPublished = stored.IsPublished;
         merged.DisplayOrder = stored.DisplayOrder;
@@ -273,6 +278,8 @@ public class PublicContentService : IPublicContentService
         {
             target.Title = NormalizeText(posted.Title);
             target.Description = NormalizeText(posted.Description);
+            target.IsTitleEnabled = posted.IsTitleEnabled;
+            target.IsDescriptionEnabled = posted.IsDescriptionEnabled;
             target.IsEnabled = posted.IsEnabled;
             target.IsPublished = posted.IsPublished;
             target.DisplayOrder = posted.DisplayOrder;
@@ -301,10 +308,18 @@ public class PublicContentService : IPublicContentService
 
             var normalizedPostedLabel = NormalizeText(postedField.Label);
             var normalizedPostedPlaceholder = NormalizeText(postedField.Placeholder);
-            targetField.Value = NormalizeText(postedField.Value);
+            var normalizedFieldValue = NormalizeText(postedField.Value);
+            if (string.Equals(target.SectionKey, "carousel", StringComparison.OrdinalIgnoreCase)
+                && postedField.Key.EndsWith("LinkUrl", StringComparison.OrdinalIgnoreCase))
+            {
+                normalizedFieldValue = NormalizeCarouselLinkValue(normalizedFieldValue);
+            }
+
+            targetField.Value = normalizedFieldValue;
             targetField.Label = string.IsNullOrWhiteSpace(normalizedPostedLabel) ? targetField.Label : normalizedPostedLabel;
             targetField.FieldType = string.IsNullOrWhiteSpace(postedField.FieldType) ? targetField.FieldType : postedField.FieldType;
             targetField.Placeholder = string.IsNullOrWhiteSpace(normalizedPostedPlaceholder) ? targetField.Placeholder : normalizedPostedPlaceholder;
+            targetField.IsEnabled = postedField.IsEnabled;
             targetField.Style = ContentPresentationDefaults.CloneTextStyle(postedField.Style);
         }
     }
@@ -328,6 +343,8 @@ public class PublicContentService : IPublicContentService
             Title = NormalizeText(source.Title),
             Description = NormalizeText(source.Description),
             IsEnabled = source.IsEnabled,
+            IsTitleEnabled = source.IsTitleEnabled,
+            IsDescriptionEnabled = source.IsDescriptionEnabled,
             DisplayOrder = source.DisplayOrder,
             Fields = source.Fields.Select(CloneField).ToList()
         };
@@ -343,6 +360,8 @@ public class PublicContentService : IPublicContentService
             Title = NormalizeText(source.Title),
             Description = NormalizeText(source.Description),
             IsEnabled = source.IsEnabled,
+            IsTitleEnabled = source.IsTitleEnabled,
+            IsDescriptionEnabled = source.IsDescriptionEnabled,
             IsPublished = source.IsPublished,
             DisplayOrder = source.DisplayOrder,
             UpdatedAt = source.UpdatedAt,
@@ -363,6 +382,7 @@ public class PublicContentService : IPublicContentService
             FieldType = source.FieldType,
             Value = NormalizeText(source.Value),
             Placeholder = NormalizeText(source.Placeholder),
+            IsEnabled = source.IsEnabled,
             Style = ContentPresentationDefaults.CloneTextStyle(source.Style)
         };
 
@@ -393,6 +413,29 @@ public class PublicContentService : IPublicContentService
         }
     }
 
+    private static string NormalizeCarouselLinkValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = value.Trim();
+        if (trimmed.StartsWith("/", StringComparison.Ordinal))
+        {
+            return trimmed;
+        }
+
+        if (Uri.TryCreate(trimmed, UriKind.Absolute, out var absoluteUri)
+            && (string.Equals(absoluteUri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(absoluteUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)))
+        {
+            return trimmed;
+        }
+
+        return string.Empty;
+    }
+
     private static bool LooksLikeMojibake(string value)
     {
         if (string.IsNullOrEmpty(value))
@@ -413,7 +456,7 @@ public class PublicContentService : IPublicContentService
 
     private static int ScoreCandidate(string value)
     {
-        const string vietnameseChars = "ăâđêôơưáàảãạắằẳẵặấầẩẫậéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵĂÂĐÊÔƠƯÁÀẢÃẠẮẰẲẴẶẤẦẨẪẬÉÈẺẼẸẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌỐỒỔỖỘỚỜỞỠỢÚÙỦŨỤỨỪỬỮỰÝỲỶỸỴ";
+        const string vietnameseChars = "ÄƒÃ¢Ä‘ÃªÃ´Æ¡Æ°Ã¡Ã áº£Ã£áº¡áº¯áº±áº³áºµáº·áº¥áº§áº©áº«áº­Ã©Ã¨áº»áº½áº¹áº¿á»á»ƒá»…á»‡Ã­Ã¬á»‰Ä©á»‹Ã³Ã²á»Ãµá»á»‘á»“á»•á»—á»™á»›á»á»Ÿá»¡á»£ÃºÃ¹á»§Å©á»¥á»©á»«á»­á»¯á»±Ã½á»³á»·á»¹á»µÄ‚Ã‚ÄÃŠÃ”Æ Æ¯ÃÃ€áº¢Ãƒáº áº®áº°áº²áº´áº¶áº¤áº¦áº¨áºªáº¬Ã‰Ãˆáººáº¼áº¸áº¾á»€á»‚á»„á»†ÃÃŒá»ˆÄ¨á»ŠÃ“Ã’á»ŽÃ•á»Œá»á»’á»”á»–á»˜á»šá»œá»žá» á»¢ÃšÃ™á»¦Å¨á»¤á»¨á»ªá»¬á»®á»°Ãá»²á»¶á»¸á»´";
         var suspiciousPenalty = 0;
         foreach (var marker in MojibakeMarkers ?? Array.Empty<string>())
         {
@@ -427,3 +470,11 @@ public class PublicContentService : IPublicContentService
         return vietnameseBonus - suspiciousPenalty;
     }
 }
+
+
+
+
+
+
+
+
