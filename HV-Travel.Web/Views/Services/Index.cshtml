@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @using HVTravel.Web.Services
 @model HVTravel.Web.Models.ServicesHubViewModel
 @{
@@ -36,6 +36,22 @@
             ? fallback
             : serviceCards?.Fields.GetFieldValue(key, fallback) ?? fallback;
     }
+
+    string ResolveServiceTypeLabel(string? serviceType) => serviceType switch
+    {
+        "Flight" => "Vé máy bay",
+        "Hotel" => "Khách sạn",
+        "Combo" => "Combo",
+        "Visa" => "Visa",
+        _ => "Chọn dịch vụ"
+    };
+
+    string ResolveDateLabel(DateTime? value, string placeholder)
+        => value.HasValue ? value.Value.ToString("dd/MM/yyyy") : placeholder;
+
+    var selectedServiceLabel = ResolveServiceTypeLabel(request.ServiceType);
+    var departureDateLabel = ResolveDateLabel(request.DepartureDate, "Chọn ngày đi");
+    var returnDateLabel = ResolveDateLabel(request.ReturnDate, "Chọn ngày về");
 
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
         ?? "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.";
@@ -107,17 +123,44 @@
                         </div>
                     </div>
 
-                    <form asp-action="RequestQuote" method="post" enctype="multipart/form-data" class="space-y-4">
+                    <form asp-action="RequestQuote" method="post" enctype="multipart/form-data" class="space-y-4 public-service-form">
                         @Html.AntiForgeryToken()
                         <div>
                             <label asp-for="Request.ServiceType" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Dịch vụ</label>
-                            <select asp-for="Request.ServiceType" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
-                                <option value="">Chọn dịch vụ</option>
-                                <option value="Flight">Vé máy bay</option>
-                                <option value="Hotel">Khách sạn</option>
-                                <option value="Combo">Combo</option>
-                                <option value="Visa">Visa</option>
-                            </select>
+                            <div class="public-custom-select" data-public-select-id="serviceType">
+                                <select asp-for="Request.ServiceType" class="public-filter-control public-native-select">
+                                    <option value="">Chọn dịch vụ</option>
+                                    <option value="Flight">Vé máy bay</option>
+                                    <option value="Hotel">Khách sạn</option>
+                                    <option value="Combo">Combo</option>
+                                    <option value="Visa">Visa</option>
+                                </select>
+                                <div class="public-custom-select-shell">
+                                    <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('serviceType')">
+                                        <span class="public-custom-select-meta">
+                                            <span class="selected-label">@selectedServiceLabel</span>
+                                        </span>
+                                        <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                    </button>
+                                    <div class="public-custom-select-menu">
+                                        <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(request.ServiceType) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('serviceType', '', 'Chọn dịch vụ')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Chọn dịch vụ</span></span>
+                                        </button>
+                                        <button type="button" class="public-custom-select-option @(request.ServiceType == "Flight" ? "selected" : string.Empty)" data-value="Flight" onclick="selectPublicCustomOption('serviceType', 'Flight', 'Vé máy bay')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Vé máy bay</span></span>
+                                        </button>
+                                        <button type="button" class="public-custom-select-option @(request.ServiceType == "Hotel" ? "selected" : string.Empty)" data-value="Hotel" onclick="selectPublicCustomOption('serviceType', 'Hotel', 'Khách sạn')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Khách sạn</span></span>
+                                        </button>
+                                        <button type="button" class="public-custom-select-option @(request.ServiceType == "Combo" ? "selected" : string.Empty)" data-value="Combo" onclick="selectPublicCustomOption('serviceType', 'Combo', 'Combo')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Combo</span></span>
+                                        </button>
+                                        <button type="button" class="public-custom-select-option @(request.ServiceType == "Visa" ? "selected" : string.Empty)" data-value="Visa" onclick="selectPublicCustomOption('serviceType', 'Visa', 'Visa')">
+                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Visa</span></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
@@ -140,11 +183,35 @@
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label asp-for="Request.DepartureDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày đi</label>
-                                <input asp-for="Request.DepartureDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <div class="public-date-input-shell">
+                                    <input asp-for="Request.DepartureDate" type="date" class="public-filter-control public-date-native-input" data-public-date-input data-placeholder="Chọn ngày đi" />
+                                    <div class="public-date-shell">
+                                        <button type="button" class="public-date-trigger" data-public-date-trigger>
+                                            <span class="material-symbols-outlined public-date-trigger-icon">calendar_month</span>
+                                            <span class="public-date-trigger-meta">
+                                                <span class="public-date-trigger-caption">Khởi hành</span>
+                                                <span class="public-date-trigger-label">@departureDateLabel</span>
+                                            </span>
+                                            <span class="material-symbols-outlined public-date-trigger-arrow">expand_more</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label asp-for="Request.ReturnDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày về</label>
-                                <input asp-for="Request.ReturnDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <div class="public-date-input-shell">
+                                    <input asp-for="Request.ReturnDate" type="date" class="public-filter-control public-date-native-input" data-public-date-input data-placeholder="Chọn ngày về" />
+                                    <div class="public-date-shell">
+                                        <button type="button" class="public-date-trigger" data-public-date-trigger>
+                                            <span class="material-symbols-outlined public-date-trigger-icon">event_repeat</span>
+                                            <span class="public-date-trigger-meta">
+                                                <span class="public-date-trigger-caption">Kết thúc</span>
+                                                <span class="public-date-trigger-label">@returnDateLabel</span>
+                                            </span>
+                                            <span class="material-symbols-outlined public-date-trigger-arrow">expand_more</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="grid gap-4 sm:grid-cols-2">
@@ -171,3 +238,30 @@
         </div>
     </div>
 </section>
+
+<div id="public-date-picker-dropdown" class="public-date-menu hidden" aria-hidden="true">
+    <div class="public-date-month-bar">
+        <button type="button" class="public-date-month-action" data-public-date-prev aria-label="Tháng trước">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div id="public-date-month-label" class="public-date-month-label">Tháng 1, 2026</div>
+        <button type="button" class="public-date-month-action" data-public-date-next aria-label="Tháng sau">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+    </div>
+    <div class="public-date-weekdays">
+        <span>T2</span>
+        <span>T3</span>
+        <span>T4</span>
+        <span>T5</span>
+        <span>T6</span>
+        <span>T7</span>
+        <span>CN</span>
+    </div>
+    <div id="public-date-grid" class="public-date-grid"></div>
+</div>
+
+@section Scripts {
+<script src="~/js/public-custom-select.js" asp-append-version="true"></script>
+<script src="~/js/public-date-picker.js" asp-append-version="true"></script>
+}

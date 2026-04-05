@@ -72,20 +72,39 @@
 
         <!-- Role -->
         <div>
-            <label for="Role" class="label-text">Vai Trò <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select asp-for="Role" class="input-field appearance-none cursor-pointer">
+            <label for="Role" class="label-text">Vai trò <span class="text-red-500">*</span></label>
+            <div class="admin-shared-select" data-public-select-id="adminUserRole" data-admin-select-mode="true">
+                <select asp-for="Role" class="input-field public-native-select admin-shared-select-native">
                     <option value="Staff">Nhân viên</option>
                     <option value="Manager">Quản lý</option>
                     <option value="Guide">Hướng dẫn viên</option>
                     <option value="Admin">Quản trị viên</option>
                 </select>
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                </span>
+                <div class="admin-shared-select-shell">
+                    <button type="button" class="public-custom-select-trigger admin-shared-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('adminUserRole')">
+                        <span class="public-custom-select-meta admin-shared-select-meta">
+                            <span class="custom-select-caption">Phân quyền</span>
+                            <span class="selected-label">@(string.IsNullOrWhiteSpace(Model.Role) ? "Nhân viên" : Model.Role)</span>
+                        </span>
+                        <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                    </button>
+                    <div class="public-custom-select-menu admin-shared-select-menu">
+                        <button type="button" class="public-custom-select-option admin-shared-select-option @((string.IsNullOrWhiteSpace(Model.Role) || Model.Role == "Staff") ? "selected" : string.Empty)" data-value="Staff" onclick="selectPublicCustomOption('adminUserRole', 'Staff', 'Nhân viên')">
+                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Nhân viên</span></span>
+                        </button>
+                        <button type="button" class="public-custom-select-option admin-shared-select-option @(Model.Role == "Manager" ? "selected" : string.Empty)" data-value="Manager" onclick="selectPublicCustomOption('adminUserRole', 'Manager', 'Quản lý')">
+                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Quản lý</span></span>
+                        </button>
+                        <button type="button" class="public-custom-select-option admin-shared-select-option @(Model.Role == "Guide" ? "selected" : string.Empty)" data-value="Guide" onclick="selectPublicCustomOption('adminUserRole', 'Guide', 'Hướng dẫn viên')">
+                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Hướng dẫn viên</span></span>
+                        </button>
+                        <button type="button" class="public-custom-select-option admin-shared-select-option @(Model.Role == "Admin" ? "selected" : string.Empty)" data-value="Admin" onclick="selectPublicCustomOption('adminUserRole', 'Admin', 'Quản trị viên')">
+                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Quản trị viên</span></span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-
         <!-- Avatar URL (Optional) -->
         <div>
             <label for="AvatarUrl" class="label-text">Ảnh đại diện (URL) <span class="text-slate-400 font-normal normal-case">(Tùy chọn)</span></label>
@@ -125,6 +144,7 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/public-custom-select.js" asp-append-version="true"></script>
     <script>
         (function () {
             const avatarInput = document.querySelector('input[name="AvatarUrl"]');

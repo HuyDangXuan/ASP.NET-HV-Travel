@@ -1,4 +1,4 @@
-﻿namespace HV_Travel.Web.Tests;
+namespace HV_Travel.Web.Tests;
 
 public class PublicResponsiveMarkupTests
 {
@@ -267,6 +267,22 @@ public class PublicResponsiveMarkupTests
     }
 
     [Fact]
+    public void PublicTheme_DefinesReusableDatePickerHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains(".public-date-input-shell", content);
+        Assert.Contains(".public-date-trigger", content);
+        Assert.Contains(".public-date-trigger-label", content);
+        Assert.Contains(".public-date-menu", content);
+        Assert.Contains(".public-date-month-bar", content);
+        Assert.Contains(".public-date-grid", content);
+        Assert.Contains(".public-date-day", content);
+        Assert.Contains(".public-date-day.is-selected", content);
+        Assert.Contains("body.public-page-shell.dark .public-date-menu", content);
+    }
+
+    [Fact]
     public void PublicTheme_DefinesHomeCarouselHooks()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
@@ -295,6 +311,7 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
 
 
 

@@ -1,21 +1,33 @@
-﻿(function () {
+(function () {
+    function getContainerSelector() {
+        return '.public-custom-select, .admin-shared-select[data-admin-select-mode]';
+    }
+
     function findContainer(id) {
-        return document.querySelector(`.public-custom-select[data-public-select-id="${id}"]`);
+        return document.querySelector(`.public-custom-select[data-public-select-id="${id}"], .admin-shared-select[data-admin-select-mode][data-public-select-id="${id}"]`);
+    }
+
+    function getContainers() {
+        return document.querySelectorAll(getContainerSelector());
     }
 
     function closePublicCustomSelect(container) {
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const menu = container.querySelector('.public-custom-select-menu');
         const arrow = container.querySelector('.arrow-icon');
 
         menu?.classList.remove('visible');
         container.classList.remove('is-open');
-        if (arrow) arrow.style.transform = '';
+        if (arrow) {
+            arrow.style.transform = '';
+        }
     }
 
     function closeAllPublicCustomSelects(exceptContainer) {
-        document.querySelectorAll('.public-custom-select').forEach(function (container) {
+        getContainers().forEach(function (container) {
             if (container !== exceptContainer) {
                 closePublicCustomSelect(container);
             }
@@ -24,22 +36,31 @@
 
     function togglePublicCustomSelect(id) {
         const container = findContainer(id);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const menu = container.querySelector('.public-custom-select-menu');
         const arrow = container.querySelector('.arrow-icon');
-        const willOpen = !menu.classList.contains('visible');
+        if (!menu) {
+            return;
+        }
 
+        const willOpen = !menu.classList.contains('visible');
         closeAllPublicCustomSelects(willOpen ? container : null);
 
         menu.classList.toggle('visible', willOpen);
         container.classList.toggle('is-open', willOpen);
-        if (arrow) arrow.style.transform = willOpen ? 'rotate(180deg)' : '';
+        if (arrow) {
+            arrow.style.transform = willOpen ? 'rotate(180deg)' : '';
+        }
     }
 
     function selectPublicCustomOption(id, value, text) {
         const container = findContainer(id);
-        if (!container) return;
+        if (!container) {
+            return;
+        }
 
         const nativeSelect = container.querySelector('select');
         const label = container.querySelector('.selected-label');
@@ -73,7 +94,9 @@
     function syncPublicCustomSelect(container) {
         const nativeSelect = container.querySelector('select');
         const label = container.querySelector('.selected-label');
-        if (!nativeSelect || !label) return;
+        if (!nativeSelect || !label) {
+            return;
+        }
 
         const nativeOption = nativeSelect.options[nativeSelect.selectedIndex];
         if (nativeOption) {
@@ -86,14 +109,25 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.public-custom-select').forEach(function (container) {
+        getContainers().forEach(function (container) {
+            const nativeSelect = container.querySelector('select');
             container.classList.add('is-enhanced');
             syncPublicCustomSelect(container);
+
+            if (nativeSelect) {
+                nativeSelect.addEventListener('change', function () {
+                    syncPublicCustomSelect(container);
+                });
+
+                nativeSelect.addEventListener('input', function () {
+                    syncPublicCustomSelect(container);
+                });
+            }
         });
     });
 
     document.addEventListener('click', function (event) {
-        if (!event.target.closest('.public-custom-select')) {
+        if (!event.target.closest(getContainerSelector())) {
             closeAllPublicCustomSelects(null);
         }
     });

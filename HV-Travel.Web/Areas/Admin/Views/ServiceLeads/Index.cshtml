@@ -1,4 +1,4 @@
-﻿@model List<HVTravel.Domain.Entities.AncillaryLead>
+@model List<HVTravel.Domain.Entities.AncillaryLead>
 @{
     ViewData["Title"] = "Service Leads";
 }
@@ -32,6 +32,15 @@
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                 @foreach (var lead in Model)
                 {
+                    var selectId = $"leadStatus-{lead.Id}";
+                    var selectedStatusLabel = lead.Status switch
+                    {
+                        "Qualified" => "Qualified",
+                        "Quoted" => "Quoted",
+                        "Won" => "Won",
+                        _ => "New"
+                    };
+
                     <tr>
                         <td class="py-4 pr-4">
                             <p class="font-bold text-slate-900 dark:text-white">@lead.FullName</p>
@@ -41,14 +50,39 @@
                         <td class="py-4 pr-4">@lead.Destination</td>
                         <td class="py-4 pr-4">@lead.SlaDueAt.ToLocalTime().ToString("HH:mm dd/MM")</td>
                         <td class="py-4">
-                            <form asp-action="UpdateStatus" method="post" class="flex flex-wrap items-center gap-2">
+                            <form asp-action="UpdateStatus" method="post" class="flex flex-wrap items-center gap-3">
                                 <input type="hidden" name="id" value="@lead.Id" />
-                                <select name="status" class="rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700">
-                                    <option value="New" selected="@(lead.Status == "New")">New</option>
-                                    <option value="Qualified" selected="@(lead.Status == "Qualified")">Qualified</option>
-                                    <option value="Quoted" selected="@(lead.Status == "Quoted")">Quoted</option>
-                                    <option value="Won" selected="@(lead.Status == "Won")">Won</option>
-                                </select>
+                                <div class="admin-shared-select min-w-[220px] flex-1" data-public-select-id="@selectId" data-admin-select-mode="true">
+                                    <select name="status" class="public-native-select admin-shared-select-native rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700">
+                                        <option value="New" selected="@(lead.Status == "New")">New</option>
+                                        <option value="Qualified" selected="@(lead.Status == "Qualified")">Qualified</option>
+                                        <option value="Quoted" selected="@(lead.Status == "Quoted")">Quoted</option>
+                                        <option value="Won" selected="@(lead.Status == "Won")">Won</option>
+                                    </select>
+                                    <div class="admin-shared-select-shell">
+                                        <button type="button" class="public-custom-select-trigger admin-shared-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('@selectId')">
+                                            <span class="public-custom-select-meta admin-shared-select-meta">
+                                                <span class="custom-select-caption">Trạng thái</span>
+                                                <span class="selected-label">@selectedStatusLabel</span>
+                                            </span>
+                                            <span class="material-symbols-outlined arrow-icon">expand_more</span>
+                                        </button>
+                                        <div class="public-custom-select-menu admin-shared-select-menu">
+                                            <button type="button" class="public-custom-select-option admin-shared-select-option @(lead.Status == "New" ? "selected" : string.Empty)" data-value="New" onclick="selectPublicCustomOption('@selectId', 'New', 'New')">
+                                                <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>New</span></span>
+                                            </button>
+                                            <button type="button" class="public-custom-select-option admin-shared-select-option @(lead.Status == "Qualified" ? "selected" : string.Empty)" data-value="Qualified" onclick="selectPublicCustomOption('@selectId', 'Qualified', 'Qualified')">
+                                                <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Qualified</span></span>
+                                            </button>
+                                            <button type="button" class="public-custom-select-option admin-shared-select-option @(lead.Status == "Quoted" ? "selected" : string.Empty)" data-value="Quoted" onclick="selectPublicCustomOption('@selectId', 'Quoted', 'Quoted')">
+                                                <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Quoted</span></span>
+                                            </button>
+                                            <button type="button" class="public-custom-select-option admin-shared-select-option @(lead.Status == "Won" ? "selected" : string.Empty)" data-value="Won" onclick="selectPublicCustomOption('@selectId', 'Won', 'Won')">
+                                                <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>Won</span></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <input name="assignedTo" value="@lead.AssignedTo" class="rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700" placeholder="Assignee" />
                                 <button type="submit" class="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white">Lưu</button>
                             </form>
@@ -59,3 +93,7 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/public-custom-select.js" asp-append-version="true"></script>
+}

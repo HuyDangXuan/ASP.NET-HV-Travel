@@ -1,6 +1,11 @@
-﻿@model HVTravel.Domain.Entities.TravelArticle
+@model HVTravel.Domain.Entities.TravelArticle
 @{
     ViewData["Title"] = "Article Form";
+
+    string FormatDateLabel(DateTime value, string placeholder)
+        => value == default ? placeholder : value.ToString("dd/MM/yyyy");
+
+    var publishedAtLabel = FormatDateLabel(Model.PublishedAt, "Chọn ngày xuất bản");
 }
 
 <div class="max-w-5xl">
@@ -16,7 +21,8 @@
 
     <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
         <form method="post" class="space-y-5">
-            @Html.AntiForgeryToken()`r`n            <input asp-for="Id" type="hidden" />
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Title</label>
@@ -52,7 +58,22 @@
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">PublishedAt</label>
-                    <input asp-for="PublishedAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <div class="admin-date-input-shell public-date-input-shell">
+                        <input asp-for="PublishedAt" type="datetime-local" class="admin-date-native-input w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" data-public-date-input data-public-datetime-input data-placeholder="Chọn ngày xuất bản" />
+                        <div class="admin-date-enhanced-grid">
+                            <div class="admin-date-shell">
+                                <button type="button" class="public-date-trigger admin-date-trigger" data-public-date-trigger>
+                                    <span class="material-symbols-outlined public-date-trigger-icon">calendar_month</span>
+                                    <span class="public-date-trigger-meta">
+                                        <span class="public-date-trigger-caption">Xuất bản</span>
+                                        <span class="public-date-trigger-label">@publishedAtLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined public-date-trigger-arrow">expand_more</span>
+                                </button>
+                            </div>
+                            <input type="time" class="admin-date-time-input" data-public-time-input value="@Model.PublishedAt.ToString("HH:mm")" step="60" />
+                        </div>
+                    </div>
                 </div>
                 <label class="inline-flex items-center gap-3 text-sm font-semibold mt-8">
                     <input asp-for="IsPublished" class="rounded border-slate-300" /> Xuất bản
@@ -66,3 +87,6 @@
     </div>
 </div>
 
+@section Scripts {
+    <script src="~/js/public-date-picker.js" asp-append-version="true"></script>
+}

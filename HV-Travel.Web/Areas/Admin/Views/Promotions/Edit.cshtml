@@ -1,6 +1,12 @@
-﻿@model HVTravel.Domain.Entities.Promotion
+@model HVTravel.Domain.Entities.Promotion
 @{
     ViewData["Title"] = "Promotion Form";
+
+    string FormatDateLabel(DateTime value, string placeholder)
+        => value == default ? placeholder : value.ToString("dd/MM/yyyy");
+
+    var validFromLabel = FormatDateLabel(Model.ValidFrom, "Chọn ngày bắt đầu");
+    var validToLabel = FormatDateLabel(Model.ValidTo, "Chọn ngày kết thúc");
 }
 
 <div class="max-w-4xl">
@@ -16,7 +22,8 @@
 
     <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
         <form method="post" class="space-y-5">
-            @Html.AntiForgeryToken()`r`n            <input asp-for="Id" type="hidden" />
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Code</label>
@@ -44,11 +51,41 @@
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">ValidFrom</label>
-                    <input asp-for="ValidFrom" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <div class="admin-date-input-shell public-date-input-shell">
+                        <input asp-for="ValidFrom" type="datetime-local" class="admin-date-native-input w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" data-public-date-input data-public-datetime-input data-placeholder="Chọn ngày bắt đầu" />
+                        <div class="admin-date-enhanced-grid">
+                            <div class="admin-date-shell">
+                                <button type="button" class="public-date-trigger admin-date-trigger" data-public-date-trigger>
+                                    <span class="material-symbols-outlined public-date-trigger-icon">calendar_month</span>
+                                    <span class="public-date-trigger-meta">
+                                        <span class="public-date-trigger-caption">Bắt đầu</span>
+                                        <span class="public-date-trigger-label">@validFromLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined public-date-trigger-arrow">expand_more</span>
+                                </button>
+                            </div>
+                            <input type="time" class="admin-date-time-input" data-public-time-input value="@Model.ValidFrom.ToString("HH:mm")" step="60" />
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-semibold">ValidTo</label>
-                    <input asp-for="ValidTo" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <div class="admin-date-input-shell public-date-input-shell">
+                        <input asp-for="ValidTo" type="datetime-local" class="admin-date-native-input w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" data-public-date-input data-public-datetime-input data-placeholder="Chọn ngày kết thúc" />
+                        <div class="admin-date-enhanced-grid">
+                            <div class="admin-date-shell">
+                                <button type="button" class="public-date-trigger admin-date-trigger" data-public-date-trigger>
+                                    <span class="material-symbols-outlined public-date-trigger-icon">event_repeat</span>
+                                    <span class="public-date-trigger-meta">
+                                        <span class="public-date-trigger-caption">Kết thúc</span>
+                                        <span class="public-date-trigger-label">@validToLabel</span>
+                                    </span>
+                                    <span class="material-symbols-outlined public-date-trigger-arrow">expand_more</span>
+                                </button>
+                            </div>
+                            <input type="time" class="admin-date-time-input" data-public-time-input value="@Model.ValidTo.ToString("HH:mm")" step="60" />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>
@@ -63,3 +100,6 @@
     </div>
 </div>
 
+@section Scripts {
+    <script src="~/js/public-date-picker.js" asp-append-version="true"></script>
+}

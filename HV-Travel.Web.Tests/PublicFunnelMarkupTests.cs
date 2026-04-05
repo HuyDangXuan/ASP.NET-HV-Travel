@@ -1,4 +1,4 @@
-﻿namespace HV_Travel.Web.Tests;
+namespace HV_Travel.Web.Tests;
 
 public class PublicFunnelMarkupTests
 {
@@ -64,6 +64,39 @@ public class PublicFunnelMarkupTests
         Assert.Contains("data-public-select-id", script);
         Assert.Contains("togglePublicCustomSelect", script);
         Assert.Contains("selectPublicCustomOption", script);
+    }
+    [Fact]
+    public void ServicesIndex_UsesPublicCustomSelectAndDatePickerControls()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Services\Index.cshtml"));
+        var selectScript = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\js\public-custom-select.js"));
+        var datePickerScript = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\js\public-date-picker.js"));
+
+        Assert.Contains("public-service-form", content);
+        Assert.Contains("data-public-select-id=\"serviceType\"", content);
+        Assert.Contains("asp-for=\"Request.ServiceType\"", content);
+        Assert.Contains("data-public-date-input", content);
+        Assert.Contains("asp-for=\"Request.DepartureDate\"", content);
+        Assert.Contains("asp-for=\"Request.ReturnDate\"", content);
+        Assert.Contains("~/js/public-custom-select.js", content);
+        Assert.Contains("~/js/public-date-picker.js", content);
+        Assert.Contains("togglePublicCustomSelect", selectScript);
+        Assert.Contains("window.PublicDatePicker", datePickerScript);
+        Assert.Contains("data-public-date-input", datePickerScript);
+    }
+
+    [Fact]
+    public void ContactView_UsesPublicCustomSelectHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Home\Contact.cshtml"));
+        var selectScript = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\js\public-custom-select.js"));
+
+        Assert.Contains("public-custom-select", content);
+        Assert.Contains("data-public-select-id=\"contactSubject\"", content);
+        Assert.Contains("asp-for=\"Subject\"", content);
+        Assert.Contains("~/js/public-custom-select.js", content);
+        Assert.Contains("togglePublicCustomSelect", selectScript);
+        Assert.Contains("selectPublicCustomOption", selectScript);
     }
 
     [Fact]
@@ -194,6 +227,7 @@ public class PublicFunnelMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
 
 
 
