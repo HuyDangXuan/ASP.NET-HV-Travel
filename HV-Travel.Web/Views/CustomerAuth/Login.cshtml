@@ -1,99 +1,69 @@
-﻿@model HVTravel.Web.Models.CustomerLoginViewModel
+﻿@inject IPublicContentService ContentService
+@using HVTravel.Web.Services
+@model HVTravel.Web.Models.CustomerLoginViewModel
 @{
     ViewData["ActivePage"] = "Login";
+    var sections = await ContentService.GetPageSectionsAsync("customerLogin");
+    var hero = sections.GetSection("hero");
+    var featureCards = sections.GetSection("featureCards");
+    var formIntro = sections.GetSection("formIntro");
+    var registerPrompt = sections.GetSection("registerPrompt");
 }
 
-<section class="public-top-section public-top-section--compact relative overflow-hidden bg-slate-950">
-    <div class="absolute inset-0">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(43,205,238,0.22),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.28),_transparent_30%),linear-gradient(135deg,_#020617_0%,_#0f172a_50%,_#082f49_100%)]"></div>
-        <div class="absolute -left-24 top-28 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl"></div>
-        <div class="absolute -right-10 bottom-10 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl"></div>
-    </div>
-
+<section class="public-top-section public-top-section--compact relative overflow-hidden bg-slate-950 @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
     <div class="public-top-section-shell relative mx-auto flex min-h-[calc(100vh-9rem)] max-w-7xl items-center px-4 py-14 sm:px-6 lg:px-8">
         <div class="grid w-full gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-            <div class="public-top-section-content is-left flex flex-col justify-center text-white" data-animate="slide-left">
-                <span class="public-badge public-top-section-badge inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-cyan-100">
-                    Tài Khoản HV Travel
-                </span>
-                <h1 class="public-top-section-title public-auth-title mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-                    Đăng nhập để tiếp tục hành trình của bạn.
-                </h1>
-                <p class="public-top-section-lead public-body-copy mt-5 max-w-xl text-base leading-8 text-slate-300 sm:text-lg">
-                    Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.
-                </p>
-
-                <div class="public-card-grid mt-10 grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
-                        <p class="text-2xl font-extrabold text-white">24/7</p>
-                        <p class="mt-2 text-sm text-slate-300">Hỗ trợ cập nhật booking mọi lúc</p>
-                    </div>
-                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
-                        <p class="text-2xl font-extrabold text-white">1 tài khoản</p>
-                        <p class="mt-2 text-sm text-slate-300">Quản lý email, hồ sơ và điểm thưởng</p>
-                    </div>
-                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
-                        <p class="text-2xl font-extrabold text-white">Bảo mật</p>
-                        <p class="mt-2 text-sm text-slate-300">Mật khẩu đang được mã hóa theo chuẩn hash</p>
-                    </div>
+            <div class="public-top-section-content is-left flex flex-col justify-center text-white @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="slide-left">
+                <span class="public-badge public-top-section-badge inline-flex w-fit rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em]" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">@hero?.Fields.GetVisibleFieldValue("badgeText", "Tài khoản HV Travel")</span>
+                <h1 class="public-top-section-title mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">@hero?.Fields.GetVisibleFieldValue("title", "Đăng nhập để tiếp tục hành trình của bạn.")</h1>
+                <p class="public-top-section-lead mt-5 max-w-xl text-base leading-8 text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero?.Fields.GetVisibleFieldValue("description", "Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.")</p>
+                <div class="mt-10 grid gap-4 sm:grid-cols-3 @ContentPresentationViewHelper.GetSectionTextClass(featureCards)" style="@ContentPresentationViewHelper.GetSectionStyle(featureCards)">
+                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5"><p class="text-2xl font-extrabold">@featureCards?.Fields.GetVisibleFieldValue("card1Value", "24/7")</p><p class="mt-2 text-sm text-slate-300">@featureCards?.Fields.GetVisibleFieldValue("card1Description", "Hỗ trợ cập nhật booking mọi lúc")</p></div>
+                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5"><p class="text-2xl font-extrabold">@featureCards?.Fields.GetVisibleFieldValue("card2Value", "1 tài khoản")</p><p class="mt-2 text-sm text-slate-300">@featureCards?.Fields.GetVisibleFieldValue("card2Description", "Quản lý email, hồ sơ và điểm thưởng")</p></div>
+                    <div class="rounded-3xl border border-white/10 bg-white/10 p-5"><p class="text-2xl font-extrabold">@featureCards?.Fields.GetVisibleFieldValue("card3Value", "Bảo mật")</p><p class="mt-2 text-sm text-slate-300">@featureCards?.Fields.GetVisibleFieldValue("card3Description", "Mật khẩu đang được mã hóa theo chuẩn hash")</p></div>
                 </div>
             </div>
 
             <div class="flex items-center justify-center" data-animate="zoom-in">
-                <div class="public-form-card w-full max-w-lg rounded-[2rem] border border-white/60 bg-white/90 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/90 sm:p-8">
+                <div class="w-full max-w-lg rounded-[2rem] border border-white/60 bg-white/90 p-6 shadow-2xl shadow-sky-950/20 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/90 sm:p-8 @ContentPresentationViewHelper.GetSectionTextClass(formIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(formIntro)">
                     <div class="mb-8">
-                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-primary">Chào mừng trở lại</p>
-                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">Đăng nhập khách hàng</h2>
-                        <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                            Ví dụ tài khoản hợp lệ theo dữ liệu hiện có: <span class="font-semibold text-slate-700 dark:text-slate-200">hhunu114@gmail.com</span>
-                        </p>
+                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "eyebrowText")">@formIntro?.Fields.GetVisibleFieldValue("eyebrowText", "Chào mừng trở lại")</p>
+                        <h2 class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "title")">@formIntro?.Fields.GetVisibleFieldValue("title", "Đăng nhập khách hàng")</h2>
+                        <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "description")">@formIntro?.Fields.GetVisibleFieldValue("description", "Ví dụ tài khoản hợp lệ theo dữ liệu hiện có: hhunu114@gmail.com")</p>
                     </div>
 
                     @if (TempData["AuthSuccessMessage"] != null)
                     {
-                        <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
-                            @TempData["AuthSuccessMessage"]
-                        </div>
+                        <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@TempData["AuthSuccessMessage"]</div>
                     }
 
                     <form asp-action="Login" method="post" class="space-y-5">
                         @Html.AntiForgeryToken()
                         <input asp-for="ReturnUrl" type="hidden" />
-
-                        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 empty:hidden dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"></div>
-
+                        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 empty:hidden"></div>
                         <div>
-                            <label asp-for="Email" class="mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Email</label>
-                            <input asp-for="Email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="email@vidu.com" />
+                            <label asp-for="Email" class="mb-2 block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("emailLabel", "Email")</label>
+                            <input asp-for="Email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@vidu.com"))" />
                             <span asp-validation-for="Email" class="mt-2 block text-sm text-red-500"></span>
                         </div>
-
                         <div>
                             <div class="mb-2 flex items-center justify-between gap-4">
-                                <label asp-for="Password" class="block text-sm font-bold text-slate-700 dark:text-slate-200">Mật khẩu</label>
-                                <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary hover:text-primary-dark">Quên mật khẩu?</a>
+                                <label asp-for="Password" class="block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("passwordLabel", "Mật khẩu")</label>
+                                <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary">@formIntro?.Fields.GetVisibleFieldValue("forgotPasswordText", "Quên mật khẩu?")</a>
                             </div>
-                            <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white" placeholder="Nhập mật khẩu của bạn" />
+                            <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("passwordPlaceholder", "Nhập mật khẩu của bạn"))" />
                             <span asp-validation-for="Password" class="mt-2 block text-sm text-red-500"></span>
                         </div>
-
                         <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-surface-elevated-dark/85">
-                            <label class="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
-                                <input asp-for="RememberMe" class="rounded border-slate-300 text-primary focus:ring-primary" />
-                                Ghi nhớ đăng nhập
-                            </label>
-                            <span class="text-xs text-slate-400">Cookie tối đa 14 ngày</span>
+                            <label class="flex items-center gap-3 text-sm font-medium"><input asp-for="RememberMe" class="rounded border-slate-300 text-primary" />@formIntro?.Fields.GetVisibleFieldValue("rememberMeLabel", "Ghi nhớ đăng nhập")</label>
+                            <span class="text-xs text-slate-400">@formIntro?.Fields.GetVisibleFieldValue("cookieHint", "Cookie tối đa 14 ngày")</span>
                         </div>
-
-                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40">
-                            <span class="material-symbols-outlined text-[18px]">login</span>
-                            Đăng nhập
-                        </button>
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-sm font-extrabold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "submitText")">@formIntro?.Fields.GetVisibleFieldValue("submitText", "Đăng nhập")</button>
                     </form>
 
-                    <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-                        <span>Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ.</span>
-                        <a asp-controller="CustomerAuth" asp-action="Register" class="font-bold text-primary hover:text-primary-dark">Đăng ký ngay</a>
+                    <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 @ContentPresentationViewHelper.GetSectionTextClass(registerPrompt)" style="@ContentPresentationViewHelper.GetSectionStyle(registerPrompt)">
+                        <span style="@ContentPresentationViewHelper.GetFieldTextStyle(registerPrompt, "title")">@registerPrompt?.Fields.GetVisibleFieldValue("title", "Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ.")</span>
+                        <a asp-controller="CustomerAuth" asp-action="Register" class="font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(registerPrompt, "actionText")">@registerPrompt?.Fields.GetVisibleFieldValue("actionText", "Đăng ký ngay")</a>
                     </div>
                 </div>
             </div>
@@ -104,5 +74,3 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-
-

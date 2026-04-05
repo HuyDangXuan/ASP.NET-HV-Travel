@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
@@ -87,21 +87,13 @@ public class CustomerAuthController : Controller
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.CustomerScheme);
-        var authProperties = new AuthenticationProperties
-        {
-            IsPersistent = model.RememberMe
-        };
-
+        var authProperties = new AuthenticationProperties { IsPersistent = model.RememberMe };
         if (model.RememberMe)
         {
             authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(14);
         }
 
-        await HttpContext.SignInAsync(
-            AuthSchemes.CustomerScheme,
-            new ClaimsPrincipal(claimsIdentity),
-            authProperties);
-
+        await HttpContext.SignInAsync(AuthSchemes.CustomerScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
         return RedirectToLocal(model.ReturnUrl);
     }
 
@@ -127,7 +119,6 @@ public class CustomerAuthController : Controller
 
         var allCustomers = await _customerRepository.GetAllAsync();
         var now = DateTime.UtcNow;
-
         var customer = new Customer
         {
             FullName = model.FullName.Trim(),

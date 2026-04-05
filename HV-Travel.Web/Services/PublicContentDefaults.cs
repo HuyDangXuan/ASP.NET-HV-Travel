@@ -12,12 +12,17 @@ public static class PublicContentDefaults
         new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh/tầm nhìn, đội ngũ" },
         new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, giới thiệu biểu mẫu" },
         new() { Key = "publicTours", Label = "Tour", Description = "Hero, ô tìm kiếm, trạng thái rỗng" },
+        new() { Key = "publicTourDetails", Label = "Chi tiết tour", Description = "Hero, heading, CTA và helper copy cho tour detail" },
         new() { Key = "destinations", Label = "Điểm đến", Description = "Hero, bộ sưu tập nổi bật, khám phá theo vùng" },
         new() { Key = "promotions", Label = "Khuyến mãi", Description = "Hero, flash sale, voucher, deal theo mùa" },
         new() { Key = "services", Label = "Dịch vụ", Description = "Hero, thẻ dịch vụ, form báo giá" },
         new() { Key = "inspiration", Label = "Cẩm nang", Description = "Hero, bài nổi bật, danh sách bài mới" },
-        new() { Key = "booking", Label = "Đặt tour", Description = "Hero tư vấn, lợi ích, nội dung trạng thái" },
-        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu, trạng thái sẵn sàng" }
+        new() { Key = "inspirationDetails", Label = "Chi tiết cẩm nang", Description = "Hero, heading, tags và empty state của bài viết" },
+        new() { Key = "booking", Label = "Đặt tour", Description = "Hero tư vấn, tạo booking, thanh toán và nội dung trạng thái" },
+        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu, trạng thái sẵn sàng" },
+        new() { Key = "customerLogin", Label = "Đăng nhập khách hàng", Description = "Hero, feature cards, form intro và CTA đăng ký" },
+        new() { Key = "customerRegister", Label = "Đăng ký khách hàng", Description = "Hero, benefits, form intro và CTA đăng nhập" },
+        new() { Key = "customerPortal", Label = "Customer portal", Description = "Hero, stats, booking, review, voucher, traveller và notifications" }
     };
 
     public static Dictionary<string, List<string>> Inventory => new()
@@ -27,12 +32,17 @@ public static class PublicContentDefaults
         ["about"] = new() { "hero", "story", "missionVision", "team" },
         ["contact"] = new() { "hero", "cards", "formIntro" },
         ["publicTours"] = new() { "indexHero", "collectionChips", "filterPanel", "resultsPanel", "emptyState" },
+        ["publicTourDetails"] = new() { "hero", "highlights", "overview", "inclusions", "schedule", "policies", "departures", "bookingPanel", "relatedTours" },
         ["destinations"] = new() { "hero", "collectionsIntro", "regionsIntro" },
         ["promotions"] = new() { "hero", "flashSalesIntro", "voucherIntro", "seasonalDealsIntro" },
         ["services"] = new() { "hero", "serviceCards", "quoteFormIntro" },
         ["inspiration"] = new() { "hero", "featuredIntro", "latestIntro" },
-        ["booking"] = new() { "consultationHero", "consultationBenefits", "statusCopy" },
-        ["bookingLookup"] = new() { "hero", "lookupForm", "readyState" }
+        ["inspirationDetails"] = new() { "hero", "body", "tags" },
+        ["booking"] = new() { "consultationHero", "consultationBenefits", "statusCopy", "createHero", "createStepper", "travellerForm", "pricingPanel", "paymentHero", "paymentStepper", "paymentMethods", "transferProof", "orderSummary", "paymentTimeline" },
+        ["bookingLookup"] = new() { "hero", "lookupForm", "readyState" },
+        ["customerLogin"] = new() { "hero", "featureCards", "formIntro", "registerPrompt" },
+        ["customerRegister"] = new() { "hero", "benefits", "formIntro", "loginPrompt" },
+        ["customerPortal"] = new() { "hero", "stats", "bookingPanel", "reviewPanel", "voucherPanel", "travellerPanel", "notificationsPanel" }
     };
 
     public static SiteSettings CreateSiteSettings()
@@ -387,6 +397,106 @@ public static class PublicContentDefaults
                 Text("title", "Tiêu đề", "Bài viết mới nhất"),
                 TextArea("description", "Mô tả", "Danh sách bài mới hỗ trợ giữ nhịp xuất bản đều và mở rộng chiều sâu cho content hub.")
             }),
+            Section("inspirationDetails", "hero", "Hero chi tiết cẩm nang", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Travel story"),
+                Text("metaFormat", "Định dạng meta", "{0} • HV Travel"),
+                TextArea("description", "Mô tả", "Bài viết giữ nội dung động từ hệ thống, còn hero copy và helper text có thể chỉnh trong CMS.")
+            }),
+            Section("inspirationDetails", "body", "Thân bài chi tiết cẩm nang", 2, new List<ContentField>
+            {
+                Text("title", "Tiêu đề", "Nội dung bài viết"),
+                TextArea("description", "Mô tả", "Đội ngũ có thể thay đổi phần mở đầu của khu vực body mà không can thiệp nội dung bài viết gốc."),
+                Text("emptyStateText", "Thông báo rỗng", "Bài viết này đang được cập nhật nội dung.")
+            }),
+            Section("inspirationDetails", "tags", "Tags chi tiết cẩm nang", 3, new List<ContentField>
+            {
+                Text("title", "Tiêu đề", "Chủ đề liên quan"),
+                Text("emptyStateText", "Thông báo rỗng", "Bài viết chưa có tag hiển thị.")
+            }),
+            Section("publicTourDetails", "hero", "Hero chi tiết tour", 1, new List<ContentField>
+            {
+                Text("instantConfirmationLabel", "Nhãn xác nhận tức thì", "Xác nhận tức thì"),
+                Text("requestConfirmationLabel", "Nhãn chờ xác nhận", "Chờ xác nhận"),
+                Text("freeCancellationLabel", "Nhãn hủy miễn phí", "Hủy miễn phí"),
+                Text("lowAvailabilityLabel", "Nhãn còn ít chỗ", "Còn ít chỗ"),
+                Text("locationFallback", "Fallback địa điểm", "Việt Nam"),
+                Text("durationFallback", "Fallback thời lượng", "Liên hệ tư vấn"),
+                Text("reviewFormat", "Định dạng đánh giá", "{0} đánh giá")
+            }),
+            Section("publicTourDetails", "highlights", "Điểm nổi bật tour", 2, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Highlights"),
+                Text("title", "Tiêu đề", "Điểm nổi bật của hành trình"),
+                Text("badgeText", "Badge", "Tour bán tốt"),
+                Text("emptyStateText", "Thông báo rỗng", "Tour này chưa có danh sách highlights hiển thị.")
+            }),
+            Section("publicTourDetails", "overview", "Tổng quan tour", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Tổng quan"),
+                Text("title", "Tiêu đề", "Tổng quan hành trình"),
+                Text("canonicalReadyLabel", "Nhãn canonical", "Canonical ready")
+            }),
+            Section("publicTourDetails", "inclusions", "Bao gồm và không bao gồm", 4, new List<ContentField>
+            {
+                Text("includedTitle", "Tiêu đề bao gồm", "Bao gồm"),
+                Text("includedEmptyText", "Thông báo bao gồm rỗng", "Thông tin dịch vụ bao gồm đang được cập nhật."),
+                Text("excludedTitle", "Tiêu đề không bao gồm", "Không bao gồm"),
+                Text("excludedEmptyText", "Thông báo không bao gồm rỗng", "Thông tin dịch vụ không bao gồm đang được cập nhật.")
+            }),
+            Section("publicTourDetails", "schedule", "Lịch trình tour", 5, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Lịch trình"),
+                Text("title", "Tiêu đề", "Lịch trình chi tiết"),
+                Text("emptyStateText", "Thông báo rỗng", "Lịch trình chi tiết sẽ được cập nhật gần ngày khởi hành.")
+            }),
+            Section("publicTourDetails", "policies", "Chính sách tour", 6, new List<ContentField>
+            {
+                Text("cancellationEyebrowText", "Eyebrow hủy", "Cancellation"),
+                Text("cancellationTitle", "Tiêu đề hủy", "Chính sách hủy và hoàn"),
+                Text("cancellationSummaryFallback", "Fallback tóm tắt", "Liên hệ tư vấn để kiểm tra chính sách theo từng departure."),
+                Text("freeCancellationFormat", "Định dạng hủy miễn phí", "Miễn phí hủy trước {0} giờ."),
+                TextArea("cancellationDescriptionFallback", "Fallback mô tả hủy", "Điều kiện hủy và hoàn tiền được áp dụng theo quy định của tour và từng lịch khởi hành."),
+                Text("meetingPointEyebrowText", "Eyebrow điểm đón", "Meeting point"),
+                Text("meetingPointTitle", "Tiêu đề điểm đón", "Điểm đón và hướng dẫn check-in"),
+                Text("meetingPointFallback", "Fallback điểm đón", "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận."),
+                TextArea("meetingPointDescription", "Mô tả điểm đón", "Thông tin hotline, giờ có mặt và hướng dẫn check-in sẽ được cập nhật rõ trong booking timeline.")
+            }),
+            Section("publicTourDetails", "departures", "Lịch khởi hành tour", 7, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Price calendar"),
+                Text("title", "Tiêu đề", "Lịch khởi hành và chỗ trống"),
+                Text("countFormat", "Định dạng số đợt", "{0} đợt khởi hành"),
+                Text("departureColumnLabel", "Nhãn cột departure", "Departure"),
+                Text("adultPriceColumnLabel", "Nhãn cột người lớn", "Người lớn"),
+                Text("policyColumnLabel", "Nhãn cột chính sách", "Chính sách"),
+                Text("seatsColumnLabel", "Nhãn cột số chỗ", "Số chỗ"),
+                Text("instantConfirmationLabel", "Nhãn xác nhận tức thì", "Xác nhận tức thì"),
+                Text("requestConfirmationLabel", "Nhãn chờ xác nhận", "Chờ xác nhận"),
+                Text("freeCancellationLabel", "Nhãn hủy miễn phí", "Hủy miễn phí"),
+                Text("conditionalPolicyLabel", "Nhãn theo điều kiện", "Theo điều kiện tour"),
+                Text("seatsRemainingFormat", "Định dạng số chỗ còn lại", "{0} còn lại")
+            }),
+            Section("publicTourDetails", "bookingPanel", "Khối đặt tour", 8, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Sẵn sàng đặt tour"),
+                TextArea("priceHelperText", "Mô tả giá", "Mức giá tốt nhất theo departure hiện có."),
+                Text("confirmationLabel", "Nhãn xác nhận", "Xác nhận"),
+                Text("ratingLabel", "Nhãn đánh giá", "Đánh giá"),
+                Text("departureLabel", "Nhãn departure", "Departure gần nhất"),
+                Text("bookNowText", "CTA đặt tour", "Đặt tour ngay"),
+                Text("callAdvisorText", "CTA gọi tư vấn", "Gọi tư vấn"),
+                Text("trustEyebrowText", "Eyebrow trust", "Khối tin cậy"),
+                Text("supportTitle", "Tiêu đề hỗ trợ", "Hỗ trợ sau booking"),
+                TextArea("supportDescription", "Mô tả hỗ trợ", "Portal khách hàng, payment timeline và tra cứu booking đã sẵn sàng sau checkout."),
+                Text("voucherTitle", "Tiêu đề voucher", "Voucher và hóa đơn"),
+                TextArea("voucherDescription", "Mô tả voucher", "Sau khi thanh toán, booking có thể mở rộng sang voucher, invoice và trạng thái fulfillment theo policy.")
+            }),
+            Section("publicTourDetails", "relatedTours", "Tour liên quan", 9, new List<ContentField>
+            {
+                Text("title", "Tiêu đề", "Tour liên quan"),
+                Text("emptyStateText", "Thông báo rỗng", "Chưa có tour liên quan phù hợp để hiển thị.")
+            }),
             Section("booking", "consultationHero", "Hero tư vấn", 1, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Tư vấn chuyến đi theo cách của bạn"),
@@ -433,6 +543,264 @@ public static class PublicContentDefaults
                 TextArea("failedDescription", "Mô tả thất bại", "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."),
                 Text("errorTitle", "Tiêu đề lỗi", "Đã xảy ra lỗi"),
                 TextArea("errorDescription", "Mô tả lỗi", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau.")
+            }),
+            Section("booking", "createHero", "Hero tạo booking", 4, new List<ContentField>
+            {
+                Text("badgeText", "Badge", "Bước 1 trong hành trình đặt tour"),
+                Text("title", "Tiêu đề", "Đặt tour và xác nhận hành khách"),
+                TextArea("description", "Mô tả", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán.")
+            }),
+            Section("booking", "createStepper", "Stepper tạo booking", 5, new List<ContentField>
+            {
+                Text("detailsStepLabel", "Bước 1", "Thông tin"),
+                Text("paymentStepLabel", "Bước 2", "Thanh toán"),
+                Text("completeStepLabel", "Bước 3", "Hoàn tất")
+            }),
+            Section("booking", "travellerForm", "Form hành khách", 6, new List<ContentField>
+            {
+                Text("tourSnapshotEyebrow", "Eyebrow tour snapshot", "Tour snapshot"),
+                Text("tourFallbackDestination", "Fallback điểm đến", "Việt Nam"),
+                Text("tourFallbackDuration", "Fallback thời lượng", "Liên hệ tư vấn"),
+                Text("viewDetailsText", "CTA xem chi tiết", "Xem chi tiết"),
+                Text("tourInfoTitle", "Tiêu đề thông tin tour", "Thông tin tour"),
+                Text("departureEyebrow", "Eyebrow departure", "Departure"),
+                Text("departureTitle", "Tiêu đề departure", "Chọn đợt khởi hành"),
+                Text("remainingCapacityFormat", "Định dạng còn chỗ", "{0} chỗ"),
+                Text("instantConfirmationLabel", "Nhãn xác nhận tức thì", "Xác nhận tức thì"),
+                Text("requestConfirmationLabel", "Nhãn chờ xác nhận", "Chờ xác nhận"),
+                Text("cutoffFormat", "Định dạng cutoff", "cutoff {0} giờ"),
+                Text("adultLabel", "Nhãn người lớn", "Người lớn"),
+                Text("childLabel", "Nhãn trẻ em", "Trẻ em"),
+                Text("infantLabel", "Nhãn em bé", "Em bé"),
+                Text("freeCancellationFormat", "Định dạng hủy miễn phí", "Hủy miễn phí trước {0} giờ."),
+                Text("cancellationFallback", "Fallback chính sách hủy", "Chính sách hủy áp dụng theo điều kiện của tour."),
+                Text("departureEmptyText", "Thông báo không có departure", "Tour này hiện chưa có lịch khởi hành khả dụng."),
+                Text("travellerEyebrow", "Eyebrow hành khách", "Traveller"),
+                Text("travellerTitle", "Tiêu đề hành khách", "Thông tin liên hệ và số khách"),
+                Text("contactNameLabel", "Nhãn họ tên", "Họ và tên"),
+                Text("contactNamePlaceholder", "Placeholder họ tên", "Nguyễn Văn A"),
+                Text("contactEmailLabel", "Nhãn email", "Email"),
+                Text("contactEmailPlaceholder", "Placeholder email", "email@example.com"),
+                Text("contactPhoneLabel", "Nhãn số điện thoại", "Số điện thoại"),
+                Text("contactPhonePlaceholder", "Placeholder số điện thoại", "0901 234 567"),
+                Text("specialRequestsLabel", "Nhãn yêu cầu đặc biệt", "Yêu cầu đặc biệt"),
+                Text("specialRequestsPlaceholder", "Placeholder yêu cầu đặc biệt", "Ví dụ: ăn chay, ghế gần cửa sổ, hỗ trợ xe đón...")
+            }),
+            Section("booking", "pricingPanel", "Panel báo giá", 7, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Pricing controls"),
+                Text("title", "Tiêu đề", "Coupon và kế hoạch thanh toán"),
+                Text("couponLabel", "Nhãn coupon", "Coupon"),
+                Text("couponPlaceholder", "Placeholder coupon", "WELCOME10"),
+                Text("paymentPlanLabel", "Nhãn payment plan", "Payment plan"),
+                Text("paymentPlanFullLabel", "Nhãn full", "Full"),
+                Text("paymentPlanDepositLabel", "Nhãn deposit", "Deposit"),
+                Text("quoteEyebrowText", "Eyebrow báo giá", "Quote"),
+                Text("quoteTitle", "Tiêu đề báo giá", "Xem báo giá trước khi giữ chỗ"),
+                Text("subtotalLabel", "Nhãn tạm tính", "Tạm tính"),
+                Text("discountLabel", "Nhãn giảm giá", "Giảm giá"),
+                Text("grandTotalLabel", "Nhãn tổng thanh toán", "Tổng thanh toán"),
+                Text("amountDueNowLabel", "Nhãn thanh toán ngay", "Thanh toán ngay"),
+                Text("balanceDueLabel", "Nhãn còn lại", "Còn lại"),
+                TextArea("quoteStatusText", "Thông báo trạng thái", "Máy chủ sẽ tính lại báo giá khi bạn đổi departure, số khách, coupon hoặc payment plan."),
+                Text("submitText", "CTA tiếp tục", "Tiếp tục sang thanh toán"),
+                TextArea("submitHelperText", "Mô tả CTA", "Ghế chỉ được giữ khi máy chủ xác nhận báo giá và tạo booking thành công."),
+                Text("couponAppliedFormat", "Định dạng coupon đã áp dụng", "Đã áp dụng coupon {0}."),
+                Text("quoteReadyText", "Thông báo báo giá hợp lệ", "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.")
+            }),
+            Section("booking", "paymentHero", "Hero thanh toán", 8, new List<ContentField>
+            {
+                Text("badgeText", "Badge", "Bước 2 trong hành trình đặt tour"),
+                Text("title", "Tiêu đề", "Xác nhận thanh toán booking"),
+                TextArea("description", "Mô tả", "Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần.")
+            }),
+            Section("booking", "paymentStepper", "Stepper thanh toán", 9, new List<ContentField>
+            {
+                Text("detailsStepLabel", "Bước 1", "Thông tin"),
+                Text("paymentStepLabel", "Bước 2", "Thanh toán"),
+                Text("completeStepLabel", "Bước 3", "Hoàn tất")
+            }),
+            Section("booking", "paymentMethods", "Phương thức thanh toán", 10, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Payment methods"),
+                Text("title", "Tiêu đề", "Chọn cách thu tiền cho booking này"),
+                Text("bankTransferTitle", "Phương thức chuyển khoản", "Chuyển khoản thủ công"),
+                TextArea("bankTransferDescription", "Mô tả chuyển khoản", "Tải minh chứng chuyển khoản để đội vận hành đối soát trên admin."),
+                Text("creditCardTitle", "Phương thức online", "Mock online gateway"),
+                TextArea("creditCardDescription", "Mô tả online", "Luồng demo nội bộ sẽ gọi callback idempotent để mô phỏng gateway online."),
+                Text("cashTitle", "Phương thức tiền mặt", "Cash hold"),
+                TextArea("cashDescription", "Mô tả tiền mặt", "Giữ chỗ trước và thanh toán bằng tiền mặt tại văn phòng hoặc khi khởi hành."),
+                Text("submitText", "CTA xác nhận", "Xác nhận thanh toán")
+            }),
+            Section("booking", "transferProof", "Minh chứng chuyển khoản", 11, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Transfer proof"),
+                Text("title", "Tiêu đề", "Tải minh chứng chuyển khoản"),
+                Text("resumeText", "CTA resume", "Resume checkout"),
+                Text("notePlaceholder", "Placeholder note", "Ghi chú đối soát hoặc mã tham chiếu giao dịch"),
+                Text("submitText", "CTA gửi minh chứng", "Gửi minh chứng")
+            }),
+            Section("booking", "orderSummary", "Tóm tắt đơn", 12, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Order summary"),
+                Text("titleFormat", "Định dạng tiêu đề", "Booking {0}"),
+                Text("bookingCodeLabel", "Nhãn mã đơn", "Mã đơn"),
+                Text("departureLabel", "Nhãn khởi hành", "Khởi hành"),
+                Text("couponLabel", "Nhãn coupon", "Coupon"),
+                Text("paymentStatusLabel", "Nhãn trạng thái thanh toán", "Trạng thái thanh toán"),
+                Text("subtotalLabel", "Nhãn tạm tính", "Tạm tính"),
+                Text("discountLabel", "Nhãn giảm giá", "Giảm giá"),
+                Text("grandTotalLabel", "Nhãn tổng thanh toán", "Tổng thanh toán"),
+                Text("paymentPlanLabel", "Nhãn kế hoạch", "Kế hoạch"),
+                Text("amountDueNowLabel", "Nhãn thanh toán ngay", "Thanh toán ngay"),
+                Text("balanceDueLabel", "Nhãn còn lại", "Còn lại"),
+                Text("checkoutSessionLabel", "Nhãn checkout session", "Checkout session"),
+                Text("paymentSessionLabel", "Nhãn payment session", "Payment session"),
+                Text("pendingLabel", "Fallback pending", "Pending")
+            }),
+            Section("booking", "paymentTimeline", "Timeline thanh toán", 13, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Timeline"),
+                Text("title", "Tiêu đề", "Timeline thanh toán"),
+                Text("emptyStateText", "Thông báo rỗng", "Booking chưa có mốc xử lý hiển thị cho khách hàng.")
+            }),
+            Section("customerLogin", "hero", "Hero đăng nhập", 1, new List<ContentField>
+            {
+                Text("badgeText", "Badge", "Tài khoản HV Travel"),
+                Text("title", "Tiêu đề", "Đăng nhập để tiếp tục hành trình của bạn."),
+                TextArea("description", "Mô tả", "Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.")
+            }),
+            Section("customerLogin", "featureCards", "Thẻ tính năng đăng nhập", 2, new List<ContentField>
+            {
+                Text("card1Value", "Giá trị thẻ 1", "24/7"),
+                Text("card1Description", "Mô tả thẻ 1", "Hỗ trợ cập nhật booking mọi lúc"),
+                Text("card2Value", "Giá trị thẻ 2", "1 tài khoản"),
+                Text("card2Description", "Mô tả thẻ 2", "Quản lý email, hồ sơ và điểm thưởng"),
+                Text("card3Value", "Giá trị thẻ 3", "Bảo mật"),
+                Text("card3Description", "Mô tả thẻ 3", "Mật khẩu đang được mã hóa theo chuẩn hash")
+            }),
+            Section("customerLogin", "formIntro", "Giới thiệu form đăng nhập", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Chào mừng trở lại"),
+                Text("title", "Tiêu đề", "Đăng nhập khách hàng"),
+                TextArea("description", "Mô tả", "Ví dụ tài khoản hợp lệ theo dữ liệu hiện có: hhunu114@gmail.com"),
+                Text("emailLabel", "Nhãn email", "Email"),
+                Text("emailPlaceholder", "Placeholder email", "email@vidu.com"),
+                Text("passwordLabel", "Nhãn mật khẩu", "Mật khẩu"),
+                Text("passwordPlaceholder", "Placeholder mật khẩu", "Nhập mật khẩu của bạn"),
+                Text("forgotPasswordText", "CTA quên mật khẩu", "Quên mật khẩu?"),
+                Text("rememberMeLabel", "Nhãn ghi nhớ", "Ghi nhớ đăng nhập"),
+                Text("cookieHint", "Gợi ý cookie", "Cookie tối đa 14 ngày"),
+                Text("submitText", "CTA đăng nhập", "Đăng nhập")
+            }),
+            Section("customerLogin", "registerPrompt", "CTA đăng ký", 4, new List<ContentField>
+            {
+                TextArea("title", "Thông điệp", "Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ."),
+                Text("actionText", "CTA", "Đăng ký ngay")
+            }),
+            Section("customerRegister", "hero", "Hero đăng ký", 1, new List<ContentField>
+            {
+                Text("badgeText", "Badge", "Tham gia HV Travel"),
+                Text("title", "Tiêu đề", "Tạo tài khoản để bắt đầu những chuyến đi mới."),
+                TextArea("description", "Mô tả", "Đăng ký một lần để lưu hồ sơ liên hệ, nhận ưu đãi riêng và quản lý toàn bộ lịch sử đặt tour trên cùng một giao diện.")
+            }),
+            Section("customerRegister", "benefits", "Quyền lợi đăng ký", 2, new List<ContentField>
+            {
+                Text("sectionTitle", "Tiêu đề khối", "Quyền lợi"),
+                Text("sectionDescription", "Mô tả khối", "Theo dõi booking và thông tin khách hàng tập trung"),
+                Text("card1Title", "Tiêu đề thẻ 1", "Nhanh"),
+                Text("card1Description", "Mô tả thẻ 1", "Đăng ký trong vài phút với thông tin cơ bản"),
+                Text("card2Title", "Tiêu đề thẻ 2", "Minh bạch"),
+                Text("card2Description", "Mô tả thẻ 2", "Tài khoản mới được tạo ở trạng thái hoạt động ngay")
+            }),
+            Section("customerRegister", "formIntro", "Giới thiệu form đăng ký", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Tạo tài khoản"),
+                Text("title", "Tiêu đề", "Đăng ký khách hàng"),
+                TextArea("description", "Mô tả", "Giao diện này được thiết kế đồng bộ với trang đăng nhập để người dùng có trải nghiệm liền mạch."),
+                Text("fullNameLabel", "Nhãn họ tên", "Họ và tên"),
+                Text("fullNamePlaceholder", "Placeholder họ tên", "Nguyễn Văn A"),
+                Text("emailLabel", "Nhãn email", "Email"),
+                Text("emailPlaceholder", "Placeholder email", "email@vidu.com"),
+                Text("phoneLabel", "Nhãn điện thoại", "Số điện thoại"),
+                Text("phonePlaceholder", "Placeholder điện thoại", "09xxxxxxxx"),
+                Text("passwordLabel", "Nhãn mật khẩu", "Mật khẩu"),
+                Text("passwordPlaceholder", "Placeholder mật khẩu", "Tối thiểu 6 ký tự"),
+                Text("confirmPasswordLabel", "Nhãn xác nhận mật khẩu", "Xác nhận mật khẩu"),
+                Text("confirmPasswordPlaceholder", "Placeholder xác nhận mật khẩu", "Nhập lại mật khẩu"),
+                Text("streetLabel", "Nhãn địa chỉ", "Địa chỉ"),
+                Text("streetPlaceholder", "Placeholder địa chỉ", "Số nhà, đường, phường/xã"),
+                Text("cityLabel", "Nhãn thành phố", "Thành phố"),
+                Text("cityPlaceholder", "Placeholder thành phố", "Hà Nội"),
+                Text("countryLabel", "Nhãn quốc gia", "Quốc gia"),
+                Text("countryPlaceholder", "Placeholder quốc gia", "Việt Nam"),
+                TextArea("acceptTermsText", "Điều khoản", "Tôi đồng ý với điều khoản sử dụng và cho phép HV Travel lưu thông tin để phục vụ quá trình tư vấn, đặt tour."),
+                Text("submitText", "CTA đăng ký", "Tạo tài khoản")
+            }),
+            Section("customerRegister", "loginPrompt", "CTA đăng nhập", 4, new List<ContentField>
+            {
+                TextArea("title", "Thông điệp", "Đã có tài khoản? Đăng nhập để tiếp tục đặt tour và quản lý hành trình."),
+                Text("actionText", "CTA", "Đi đến đăng nhập")
+            }),
+            Section("customerPortal", "hero", "Hero customer portal", 1, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Customer Portal"),
+                Text("greetingFormat", "Định dạng lời chào", "Xin chào {0}."),
+                TextArea("description", "Mô tả", "Portal mới gom booking, thanh toán, loyalty, voucher, traveller profile và yêu cầu hậu mãi về cùng một nơi."),
+                Text("tierLabel", "Nhãn tier", "Tier hiện tại"),
+                Text("pointsFormat", "Định dạng điểm", "{0} điểm • chi tiêu {1}₫")
+            }),
+            Section("customerPortal", "stats", "Thống kê customer portal", 2, new List<ContentField>
+            {
+                Text("loyaltyLabel", "Nhãn điểm thưởng", "Điểm thưởng"),
+                Text("voucherLabel", "Nhãn voucher", "Voucher khả dụng"),
+                Text("travellerLabel", "Nhãn hồ sơ hành khách", "Hồ sơ hành khách"),
+                Text("notificationLabel", "Nhãn thông báo", "Thông báo chưa đọc")
+            }),
+            Section("customerPortal", "bookingPanel", "Khối booking portal", 3, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Booking timeline"),
+                Text("title", "Tiêu đề", "Lịch sử booking"),
+                Text("upcomingFormat", "Định dạng sắp khởi hành", "Sắp khởi hành: {0}"),
+                Text("tourFallbackTitle", "Fallback tour", "Hành trình HV Travel"),
+                Text("departurePrefix", "Tiền tố khởi hành", "Khởi hành"),
+                Text("departureFallback", "Fallback khởi hành", "Đang cập nhật"),
+                Text("paymentPrefix", "Tiền tố thanh toán", "Thanh toán"),
+                Text("statusPrefix", "Tiền tố trạng thái", "Trạng thái"),
+                Text("totalLabel", "Nhãn tổng tiền", "Tổng tiền"),
+                Text("cancelActionText", "CTA hủy", "Yêu cầu hủy"),
+                Text("cancelReason", "Lý do hủy mặc định", "Khách yêu cầu tự phục vụ từ portal"),
+                Text("emptyStateText", "Thông báo rỗng", "Khách hàng này chưa có booking hiển thị trên portal.")
+            }),
+            Section("customerPortal", "reviewPanel", "Khối review portal", 4, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Verified review"),
+                Text("title", "Tiêu đề", "Đánh giá chờ gửi"),
+                Text("commentPlaceholder", "Placeholder đánh giá", "Chia sẻ cảm nhận của bạn"),
+                Text("submitText", "CTA gửi đánh giá", "Gửi đánh giá"),
+                Text("emptyStateText", "Thông báo rỗng", "Hiện chưa có chuyến đi đủ điều kiện gửi review mới.")
+            }),
+            Section("customerPortal", "voucherPanel", "Khối voucher portal", 5, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Voucher wallet"),
+                Text("title", "Tiêu đề", "Ưu đãi cá nhân hóa"),
+                Text("emptyStateText", "Thông báo rỗng", "Ví voucher chưa có item khả dụng.")
+            }),
+            Section("customerPortal", "travellerPanel", "Khối traveller portal", 6, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Traveller profiles"),
+                Text("title", "Tiêu đề", "Lưu hồ sơ hành khách"),
+                Text("fullNamePlaceholder", "Placeholder họ tên", "Họ tên"),
+                Text("passportPlaceholder", "Placeholder hộ chiếu", "Số hộ chiếu"),
+                Text("nationalityPlaceholder", "Placeholder quốc tịch", "Quốc tịch"),
+                Text("defaultCheckboxLabel", "Nhãn checkbox mặc định", "Đặt làm hồ sơ mặc định"),
+                Text("submitText", "CTA lưu hồ sơ", "Lưu hồ sơ")
+            }),
+            Section("customerPortal", "notificationsPanel", "Khối thông báo portal", 7, new List<ContentField>
+            {
+                Text("eyebrowText", "Eyebrow", "Notifications"),
+                Text("title", "Tiêu đề", "Thông báo gần đây"),
+                Text("emptyStateText", "Thông báo rỗng", "Hiện chưa có thông báo mới.")
             }),
             Section("bookingLookup", "hero", "Hero tra cứu booking", 1, new List<ContentField>
             {
@@ -516,5 +884,10 @@ public static class PublicContentDefaults
         return new ContentField { Key = key, Label = label, Value = value, FieldType = "url" };
     }
 }
+
+
+
+
+
 
 

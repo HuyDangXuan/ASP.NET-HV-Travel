@@ -1,5 +1,6 @@
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
+using HVTravel.Domain.Utils;
 
 namespace HVTravel.Web.Services;
 
@@ -19,7 +20,12 @@ public static partial class RichTextContentFormatter
 
     public static string ToTrustedHtml(string? html)
     {
-        return string.IsNullOrWhiteSpace(html) ? string.Empty : DecodeHtmlLayers(html).Trim();
+        if (string.IsNullOrWhiteSpace(html))
+        {
+            return string.Empty;
+        }
+
+        return TextEncodingRepair.NormalizeText(DecodeHtmlLayers(html)).Trim();
     }
 
     public static string ToPlainText(string? html)
@@ -34,7 +40,7 @@ public static partial class RichTextContentFormatter
         withBreaks = BlockTagRegex().Replace(withBreaks, " ");
         var withoutTags = AnyTagRegex().Replace(withBreaks, " ");
         var decoded = WebUtility.HtmlDecode(withoutTags).Replace('\u00A0', ' ');
-        return WhitespaceRegex().Replace(decoded, " ").Trim();
+        return TextEncodingRepair.NormalizeText(WhitespaceRegex().Replace(decoded, " ").Trim());
     }
 
     public static string ToPlainTextSummary(string? html, int maxLength = 160)
@@ -60,7 +66,7 @@ public static partial class RichTextContentFormatter
             }
         }
 
-        return shortened.TrimEnd() + "�";
+        return shortened.TrimEnd() + "…";
     }
 
     private static string DecodeHtmlLayers(string value)

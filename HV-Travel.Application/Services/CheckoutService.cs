@@ -1,4 +1,4 @@
-using HVTravel.Application.Interfaces;
+ï»¿using HVTravel.Application.Interfaces;
 using HVTravel.Application.Models;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
@@ -72,7 +72,7 @@ public class CheckoutService : ICheckoutService
                 Code = tour.Code,
                 Name = tour.Name,
                 StartDate = selectedDeparture.StartDate,
-                Duration = tour.Duration?.Text ?? $"{tour.Duration?.Days} ngày {tour.Duration?.Nights} dêm"
+                Duration = tour.Duration?.Text ?? $"{tour.Duration?.Days} ng\u00E0y {tour.Duration?.Nights} \u0111\u00EAm"
             },
             ContactInfo = new ContactInfo
             {
@@ -123,8 +123,8 @@ public class CheckoutService : ICheckoutService
             UpdatedAt = now
         };
 
-        AddTimelineEntry(booking, "checkout", "Kh?i t?o checkout", $"Checkout du?c t?o cho d?t kh?i hành {selectedDeparture.StartDate:dd/MM/yyyy}.", request.ContactName, now);
-        AddTimelineEntry(booking, "inventory", "Gi? ch? t?m th?i", $"Ðã gi? {travellerCount} ch? trên departure {selectedDeparture.Id}.", "System", now);
+        AddTimelineEntry(booking, "checkout", "Kh\u1EDFi t\u1EA1o checkout", $"Checkout \u0111\u01B0\u1EE3c t\u1EA1o cho \u0111\u1EE3t kh\u1EDFi h\u00E0nh {selectedDeparture.StartDate:dd/MM/yyyy}.", request.ContactName, now);
+        AddTimelineEntry(booking, "inventory", "Gi\u1EEF ch\u1ED7 t\u1EA1m th\u1EDDi", $"\u0110\u00E3 gi\u1EEF {travellerCount} ch\u1ED7 tr\u00EAn departure {selectedDeparture.Id}.", "System", now);
 
         await _bookingRepository.AddAsync(booking);
 
@@ -179,7 +179,7 @@ public class CheckoutService : ICheckoutService
             passengers.Add(new Passenger
             {
                 Type = "Adult",
-                FullName = index == 0 ? request.ContactName : $"Ngu?i l?n {index + 1}"
+                FullName = index == 0 ? request.ContactName : $"Ng\u01B0\u1EDDi l\u1EDBn {index + 1}"
             });
         }
 
@@ -188,7 +188,7 @@ public class CheckoutService : ICheckoutService
             passengers.Add(new Passenger
             {
                 Type = "Child",
-                FullName = $"Tr? em {index + 1}"
+                FullName = $"Tr\u1EBB em {index + 1}"
             });
         }
 
@@ -197,7 +197,7 @@ public class CheckoutService : ICheckoutService
             passengers.Add(new Passenger
             {
                 Type = "Infant",
-                FullName = $"Em bé {index + 1}"
+                FullName = $"Em b\u00E9 {index + 1}"
             });
         }
 

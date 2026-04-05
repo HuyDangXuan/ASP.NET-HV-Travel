@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Models;
 using HVTravel.Web.Services;
@@ -33,7 +33,7 @@ public class PublicToursController : Controller
         int page = 1)
     {
         ViewData["ActivePage"] = "Tours";
-        ViewData["Title"] = "Tour Du L?ch";
+        ViewData["Title"] = "Tour du lịch";
 
         var result = await _tourRepository.SearchAsync(new TourSearchRequest
         {
@@ -145,3 +145,4 @@ public class PublicToursController : Controller
         return status is "Active" or "ComingSoon" or "SoldOut";
     }
 }
+

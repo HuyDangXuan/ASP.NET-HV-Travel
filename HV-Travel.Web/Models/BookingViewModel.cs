@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,18 +12,18 @@ public class BookingViewModel
     public string DepartureId { get; set; } = string.Empty;
     public DateTime? SelectedStartDate { get; set; }
 
-    [Required(ErrorMessage = "Vui l?ng nh?p h? t?n")]
+    [Required(ErrorMessage = "Vui lòng nhập họ tên")]
     public string ContactName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui l?ng nh?p email")]
-    [EmailAddress(ErrorMessage = "Email kh?ng h?p l?")]
+    [Required(ErrorMessage = "Vui lòng nhập email")]
+    [EmailAddress(ErrorMessage = "Email không hợp lệ")]
     public string ContactEmail { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui l?ng nh?p s? ?i?n tho?i")]
-    [Phone(ErrorMessage = "S? ?i?n tho?i kh?ng h?p l?")]
+    [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+    [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
     public string ContactPhone { get; set; } = string.Empty;
 
-    [Range(1, 50, ErrorMessage = "C?n ?t nh?t 1 ng??i l?n")]
+    [Range(1, 50, ErrorMessage = "Cần ít nhất 1 người lớn")]
     public int AdultCount { get; set; } = 1;
 
     [Range(0, 50)]
@@ -49,19 +49,19 @@ public class BookingResultViewModel
 
 public class ConsultationViewModel
 {
-    [Required(ErrorMessage = "Vui l?ng nh?p h? t?n")]
+    [Required(ErrorMessage = "Vui lòng nhập họ tên")]
     public string FullName { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui l?ng nh?p s? ?i?n tho?i")]
-    [Phone(ErrorMessage = "S? ?i?n tho?i kh?ng h?p l?")]
+    [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+    [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
     public string Phone { get; set; } = string.Empty;
 
-    [EmailAddress(ErrorMessage = "Email kh?ng h?p l?")]
+    [EmailAddress(ErrorMessage = "Email không hợp lệ")]
     public string Email { get; set; } = string.Empty;
 
     public string TourInterest { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Vui l?ng nh?p n?i dung")]
+    [Required(ErrorMessage = "Vui lòng nhập nội dung")]
     public string Message { get; set; } = string.Empty;
 
     public string PreferredContactTime { get; set; } = string.Empty;

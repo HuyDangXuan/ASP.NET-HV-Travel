@@ -1,20 +1,10 @@
-using System.Text;
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
+using HVTravel.Domain.Utils;
 
 namespace HVTravel.Web.Services;
 
 public static class PublicTextSanitizer
 {
-    private static readonly string[] MojibakeMarkers =
-    [
-        "Ã", "Â", "Ä", "Æ", "áº", "á»", "â€™", "â€œ", "â€", "�"
-    ];
-
-    static PublicTextSanitizer()
-    {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-    }
-
     public static TravelArticle NormalizeArticleForDisplay(TravelArticle article)
     {
         if (article == null)
@@ -27,6 +17,7 @@ public static class PublicTextSanitizer
         article.Body = NormalizeText(article.Body);
         article.Category = NormalizeText(article.Category);
         article.Destination = NormalizeText(article.Destination);
+        article.HeroImageUrl = NormalizeText(article.HeroImageUrl);
         article.Tags = NormalizeList(article.Tags);
         return article;
     }
@@ -41,8 +32,11 @@ public static class PublicTextSanitizer
         tour.Name = NormalizeText(tour.Name);
         tour.Description = NormalizeText(tour.Description);
         tour.ShortDescription = NormalizeText(tour.ShortDescription);
+        tour.Code = NormalizeText(tour.Code);
+        tour.Status = NormalizeText(tour.Status);
         tour.ConfirmationType = NormalizeText(tour.ConfirmationType);
         tour.MeetingPoint = NormalizeText(tour.MeetingPoint);
+        tour.Images = NormalizeList(tour.Images);
         tour.Highlights = NormalizeList(tour.Highlights);
         tour.BadgeSet = NormalizeList(tour.BadgeSet);
         tour.GeneratedInclusions = NormalizeList(tour.GeneratedInclusions);
@@ -65,6 +59,7 @@ public static class PublicTextSanitizer
             tour.Seo.Title = NormalizeText(tour.Seo.Title);
             tour.Seo.Description = NormalizeText(tour.Seo.Description);
             tour.Seo.CanonicalPath = NormalizeText(tour.Seo.CanonicalPath);
+            tour.Seo.OpenGraphImageUrl = NormalizeText(tour.Seo.OpenGraphImageUrl);
         }
 
         if (tour.CancellationPolicy != null)
@@ -107,6 +102,9 @@ public static class PublicTextSanitizer
         booking.BookingCode = NormalizeText(booking.BookingCode);
         booking.CouponCode = NormalizeText(booking.CouponCode);
         booking.FulfillmentStatus = NormalizeText(booking.FulfillmentStatus);
+        booking.TransferProofFileName = NormalizeText(booking.TransferProofFileName);
+        booking.TransferProofContentType = NormalizeText(booking.TransferProofContentType);
+        booking.CheckoutSessionId = NormalizeText(booking.CheckoutSessionId);
 
         if (booking.TourSnapshot != null)
         {
@@ -145,6 +143,22 @@ public static class PublicTextSanitizer
             log.User = NormalizeText(log.User);
         }
 
+        foreach (var paymentSession in booking.PaymentSessions ?? [])
+        {
+            paymentSession.Reference = NormalizeText(paymentSession.Reference);
+            paymentSession.Provider = NormalizeText(paymentSession.Provider);
+            paymentSession.Status = NormalizeText(paymentSession.Status);
+        }
+
+        foreach (var paymentTransaction in booking.PaymentTransactions ?? [])
+        {
+            paymentTransaction.Provider = NormalizeText(paymentTransaction.Provider);
+            paymentTransaction.Method = NormalizeText(paymentTransaction.Method);
+            paymentTransaction.TransactionId = NormalizeText(paymentTransaction.TransactionId);
+            paymentTransaction.Reference = NormalizeText(paymentTransaction.Reference);
+            paymentTransaction.Status = NormalizeText(paymentTransaction.Status);
+        }
+
         if (booking.CancellationRequest != null)
         {
             booking.CancellationRequest.Status = NormalizeText(booking.CancellationRequest.Status);
@@ -158,42 +172,11 @@ public static class PublicTextSanitizer
 
     public static string NormalizeText(string? value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return value ?? string.Empty;
-        }
-
-        if (!LooksLikeMojibake(value))
-        {
-            return value;
-        }
-
-        try
-        {
-            var repaired = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(value));
-            return ScoreCandidate(repaired) >= ScoreCandidate(value) ? repaired : value;
-        }
-        catch (ArgumentException)
-        {
-            return value;
-        }
+        return TextEncodingRepair.NormalizeText(value);
     }
 
     private static List<string> NormalizeList(IEnumerable<string>? values)
     {
         return values?.Select(NormalizeText).ToList() ?? [];
-    }
-
-    private static bool LooksLikeMojibake(string value)
-    {
-        return MojibakeMarkers.Any(marker => value.Contains(marker, StringComparison.Ordinal));
-    }
-
-    private static int ScoreCandidate(string value)
-    {
-        const string vietnameseChars = "ăâđêôơưáàảãạắằẳẵặấầẩẫậéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵĂÂĐÊÔƠƯÁÀẢÃẠẮẰẲẴẶẤẦẨẪẬÉÈẺẼẸẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌỐỒỔỖỘỚỜỞỠỢÚÙỦŨỤỨỪỬỮỰÝỲỶỸỴ";
-        var suspiciousPenalty = MojibakeMarkers.Count(marker => value.Contains(marker, StringComparison.Ordinal)) * 10;
-        var vietnameseBonus = value.Count(character => vietnameseChars.Contains(character));
-        return vietnameseBonus - suspiciousPenalty;
     }
 }
