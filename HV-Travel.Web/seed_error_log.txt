@@ -1,4 +1,4 @@
 === SEED ERROR ===
-[System.FormatException] An error occurred while deserializing the PublishedAt property of class HVTravel.Domain.Entities.TravelArticle: Cannot deserialize a 'DateTime' from BsonType 'Null'.
-[System.FormatException] Cannot deserialize a 'DateTime' from BsonType 'Null'.
+[System.TypeInitializationException] The type initializer for 'HVTravel.Domain.Utils.TextEncodingRepair' threw an exception.
+[System.NotSupportedException] No data is available for encoding 1252. For information on defining a custom encoding, see the documentation for the Encoding.RegisterProvider method.
 === END SEED ERROR ===

@@ -29,6 +29,8 @@ public class ContentVisibilityToggleTests
         Assert.Contains("group.IsDescriptionEnabled = storedGroup.IsDescriptionEnabled;", service);
         Assert.Contains("field.IsEnabled = storedField.IsEnabled;", service);
         Assert.Contains("field.Style = ContentPresentationSchema.SanitizeTextStyle(storedField.Style);", service);
+        Assert.Contains("field.Style = ContentPresentationSchema.SanitizeTextStyle(storedField.Style);", service);
+        Assert.Contains("field.IsEnabled = storedField.IsEnabled;", service);
         Assert.Contains("field.Style = ContentPresentationDefaults.CloneTextStyle(storedField.Style);", service);
         Assert.Contains("target.IsTitleEnabled = posted.IsTitleEnabled;", service);
         Assert.Contains("target.IsDescriptionEnabled = posted.IsDescriptionEnabled;", service);

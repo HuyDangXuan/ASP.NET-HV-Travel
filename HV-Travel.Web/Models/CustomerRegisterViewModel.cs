@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using HVTravel.Web.Validation;
 
 namespace HVTravel.Web.Models;
@@ -27,9 +27,7 @@ public class CustomerRegisterViewModel
     public string ConfirmPassword { get; set; } = string.Empty;
 
     public string Street { get; set; } = string.Empty;
-
     public string City { get; set; } = string.Empty;
-
     public string Country { get; set; } = "Việt Nam";
 
     [MustBeTrue(ErrorMessage = "Bạn cần đồng ý với điều khoản để tiếp tục.")]

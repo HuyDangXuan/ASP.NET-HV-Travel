@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using HVTravel.Domain.Utils;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
@@ -9,21 +9,12 @@ namespace HVTravel.Web.Services;
 
 public class PublicContentService : IPublicContentService
 {
-    private static readonly string[] MojibakeMarkers =
-    {
-        "Ãƒ", "Ã‚", "Ã„", "Ã†", "Ã¡Âº", "Ã¡Â»", "Ã¢â‚¬â„¢", "Ã¢â‚¬Å“", "Ã¢â‚¬", "ï¿½"
-    };
 
     private const string SiteSettingsCacheKey = "public-content-site-settings";
     private readonly IRepository<SiteSettings> _siteSettingsRepository;
     private readonly IRepository<ContentSection> _contentSectionRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
-
-    static PublicContentService()
-    {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-    }
 
     public PublicContentService(
         IRepository<SiteSettings> siteSettingsRepository,
@@ -262,6 +253,7 @@ public class PublicContentService : IPublicContentService
             field.Label = string.IsNullOrWhiteSpace(normalizedFieldLabel) ? field.Label : normalizedFieldLabel;
             field.FieldType = string.IsNullOrWhiteSpace(storedField.FieldType) ? field.FieldType : storedField.FieldType;
             field.Placeholder = string.IsNullOrWhiteSpace(normalizedPlaceholder) ? field.Placeholder : normalizedPlaceholder;
+            field.IsEnabled = storedField.IsEnabled;
             field.Style = ContentPresentationDefaults.CloneTextStyle(storedField.Style);
         }
 
@@ -392,27 +384,8 @@ public class PublicContentService : IPublicContentService
 
     private static string NormalizeText(string? value)
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return value ?? string.Empty;
-        }
-
-        if (!LooksLikeMojibake(value))
-        {
-            return value;
-        }
-
-        try
-        {
-            var repaired = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(value));
-            return ScoreCandidate(repaired) >= ScoreCandidate(value) ? repaired : value;
-        }
-        catch (ArgumentException)
-        {
-            return value;
-        }
+        return TextEncodingRepair.NormalizeText(value);
     }
-
     private static string NormalizeCarouselLinkValue(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -435,46 +408,6 @@ public class PublicContentService : IPublicContentService
 
         return string.Empty;
     }
-
-    private static bool LooksLikeMojibake(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return false;
-        }
-
-        foreach (var marker in MojibakeMarkers ?? Array.Empty<string>())
-        {
-            if (!string.IsNullOrEmpty(marker) && value.Contains(marker, StringComparison.Ordinal))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static int ScoreCandidate(string value)
-    {
-        const string vietnameseChars = "ÄƒÃ¢Ä‘ÃªÃ´Æ¡Æ°Ã¡Ã áº£Ã£áº¡áº¯áº±áº³áºµáº·áº¥áº§áº©áº«áº­Ã©Ã¨áº»áº½áº¹áº¿á»á»ƒá»…á»‡Ã­Ã¬á»‰Ä©á»‹Ã³Ã²á»Ãµá»á»‘á»“á»•á»—á»™á»›á»á»Ÿá»¡á»£ÃºÃ¹á»§Å©á»¥á»©á»«á»­á»¯á»±Ã½á»³á»·á»¹á»µÄ‚Ã‚ÄÃŠÃ”Æ Æ¯ÃÃ€áº¢Ãƒáº áº®áº°áº²áº´áº¶áº¤áº¦áº¨áºªáº¬Ã‰Ãˆáººáº¼áº¸áº¾á»€á»‚á»„á»†ÃÃŒá»ˆÄ¨á»ŠÃ“Ã’á»ŽÃ•á»Œá»á»’á»”á»–á»˜á»šá»œá»žá» á»¢ÃšÃ™á»¦Å¨á»¤á»¨á»ªá»¬á»®á»°Ãá»²á»¶á»¸á»´";
-        var suspiciousPenalty = 0;
-        foreach (var marker in MojibakeMarkers ?? Array.Empty<string>())
-        {
-            if (!string.IsNullOrEmpty(marker) && value.Contains(marker, StringComparison.Ordinal))
-            {
-                suspiciousPenalty += 10;
-            }
-        }
-
-        var vietnameseBonus = value.Count(character => vietnameseChars.Contains(character));
-        return vietnameseBonus - suspiciousPenalty;
-    }
 }
-
-
-
-
-
-
 
 

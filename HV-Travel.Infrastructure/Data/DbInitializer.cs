@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using MongoDB.Bson;
 using System.Threading.Tasks;
@@ -7,6 +7,8 @@ using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using System.Text.Json;
+using HVTravel.Domain.Utils;
 using MongoDB.Driver;
 
 namespace HVTravel.Infrastructure.Data
@@ -26,6 +28,8 @@ namespace HVTravel.Infrastructure.Data
             var promotionRepository = serviceProvider.GetRequiredService<IRepository<Promotion>>();
             var reviewRepository = serviceProvider.GetRequiredService<IRepository<Review>>();
             var articleRepository = serviceProvider.GetRequiredService<IRepository<TravelArticle>>();
+            var siteSettingsRepository = serviceProvider.GetRequiredService<IRepository<SiteSettings>>();
+            var contentSectionRepository = serviceProvider.GetRequiredService<IRepository<ContentSection>>();
 
 
             // 1. Seed Users
@@ -296,8 +300,8 @@ namespace HVTravel.Infrastructure.Data
                 {
                     var reviews = new List<Review>
                     {
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault()?.Id, CustomerId = customers.FirstOrDefault()?.Id, Rating = 5, Comment = "Tr?i nghi?m tuy?t v?i! C?nh quan th?t s? ngo?n m?c.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.FirstOrDefault()?.FullName ?? "Kh�ch h�ng" },
-                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault()?.Id, CustomerId = customers.LastOrDefault()?.Id, Rating = 4, Comment = "Tour r?t ?n nhung ph?n an c� th? c?i thi?n th�m.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.LastOrDefault()?.FullName ?? "Kh�ch h�ng" }
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.FirstOrDefault()?.Id, CustomerId = customers.FirstOrDefault()?.Id, Rating = 5, Comment = "Trải nghiệm tuyệt vời! Cảnh quan thật sự ngoạn mục.", CreatedAt = DateTime.UtcNow.AddDays(-10), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.FirstOrDefault()?.FullName ?? "Khách hàng" },
+                        new Review { Id = ObjectId.GenerateNewId().ToString(), TourId = tours.LastOrDefault()?.Id, CustomerId = customers.LastOrDefault()?.Id, Rating = 4, Comment = "Tour rất ổn nhưng phần ăn có thể cải thiện thêm.", CreatedAt = DateTime.UtcNow.AddDays(-5), IsApproved = true, ModerationStatus = "Approved", DisplayName = customers.LastOrDefault()?.FullName ?? "Khách hàng" }
                     };
                     foreach (var r in reviews) await reviewRepository.AddAsync(r);
                 }
@@ -311,13 +315,13 @@ namespace HVTravel.Infrastructure.Data
                     new TravelArticle
                     {
                         Slug = "visa-nhat-ban-checklist",
-                        Title = "Checklist visa Nh?t B?n cho kh�ch di t? t�c ho?c theo tour",
-                        Summary = "T?ng h?p h? so, timeline v� c�c l?i thu?ng g?p khi chu?n b? visa Nh?t B?n.",
-                        Body = "<p>Chu?n b? visa Nh?t B?n n�n b?t d?u t? l?ch tr�nh, ch?ng minh t�i ch�nh v� t?p ch?ng t? nh�n th�n. N?u di theo tour, b?n v?n n�n ch?t l?ch ngh? v� ki?m tra hi?u l?c h? chi?u tru?c.</p><p>HV Travel c� th? h? tr? r� so�t checklist v� timeline n?p h? so theo m�a cao di?m.</p>",
+                        Title = "Checklist visa Nhật Bản cho khách đi tự túc hoặc theo tour",
+                        Summary = "Tổng hợp hồ sơ, timeline và các lỗi thường gặp khi chuẩn bị visa Nhật Bản.",
+                        Body = "<p>Chuẩn bị visa Nhật Bản nên bắt đầu từ lịch trình, chứng minh tài chính và tập chứng từ nhân thân. Nếu đi theo tour, bạn vẫn nên chốt lịch nghỉ và kiểm tra hiệu lực hộ chiếu trước.</p><p>HV Travel có thể hỗ trợ rà soát checklist và timeline nộp hồ sơ theo mùa cao điểm.</p>",
                         Category = "Visa Tips",
-                        Destination = "Nh?t B?n",
+                        Destination = "Nhật Bản",
                         HeroImageUrl = "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200",
-                        Tags = new List<string> { "visa", "nh?t b?n", "checklist" },
+                        Tags = new List<string> { "visa", "nhật bản", "checklist" },
                         Featured = true,
                         IsPublished = true,
                         PublishedAt = DateTime.UtcNow.AddDays(-5),
@@ -327,13 +331,13 @@ namespace HVTravel.Infrastructure.Data
                     new TravelArticle
                     {
                         Slug = "hanh-trinh-san-deal-cuoi-nam",
-                        Title = "C�ch san deal cu?i nam m� kh�ng b? v? ng�n s�ch",
-                        Summary = "G?i � ch?n th�ng kh?i h�nh, k?t h?p voucher v� d?c d�ng t�n hi?u flash sale.",
-                        Body = "<p>Deal t?t kh�ng ch? n?m ? gi� r? m� c�n ? t?ng chi ph� sau khi c?ng h�nh l�, di chuy?n v� ph? thu m�a cao di?m. H�y uu ti�n nh?ng h�nh tr�nh c� khuy?n m�i r� r�ng, l?ch kh?i h�nh g?n v� s? ch? c�n �t.</p><p>Trang promotion center c?a HV Travel du?c thi?t k? d? l�m d�ng vi?c d�.</p>",
+                        Title = "Cách săn deal cuối năm mà không bể vỡ ngân sách",
+                        Summary = "Gợi ý chọn tháng khởi hành, kết hợp voucher và đọc đúng tín hiệu flash sale.",
+                        Body = "<p>Deal tốt không chỉ nằm ở giá rẻ mà còn ở tổng chi phí sau khi cộng hành lý, di chuyển và phụ thu mùa cao điểm. Hãy ưu tiên những hành trình có khuyến mãi rõ ràng, lịch khởi hành gần và số chỗ còn ít.</p><p>Trang promotion center của HV Travel được thiết kế để làm đúng việc đó.</p>",
                         Category = "Seasonal Campaign",
-                        Destination = "Ch�u �",
+                        Destination = "Châu Á",
                         HeroImageUrl = "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200",
-                        Tags = new List<string> { "deal", "flash sale", "ng�n s�ch" },
+                        Tags = new List<string> { "deal", "flash sale", "ngân sách" },
                         Featured = false,
                         IsPublished = true,
                         PublishedAt = DateTime.UtcNow.AddDays(-2),
@@ -343,13 +347,13 @@ namespace HVTravel.Infrastructure.Data
                     new TravelArticle
                     {
                         Slug = "lich-trinh-gia-dinh-ngan-ngay",
-                        Title = "Thi?t k? l?ch tr�nh gia d�nh ng?n ng�y m� v?n nhi?u tr?i nghi?m",
-                        Summary = "C�n d?i nh?p di chuy?n, d? tu?i tr? nh? v� c�c di?m d?ng c� gi� tr? th?t cho c? nh�.",
-                        Body = "<p>Gia d�nh di ng?n ng�y n�n tr�nh l?ch tr�nh d?i kh�ch s?n li�n t?c. Thay v�o d�, h�y ch?n tuy?n bay d?, m?t di?m ch�nh d? s�u v� m?t s? ho?t d?ng c� th? thay d?i theo th?i ti?t.</p>",
+                        Title = "Thiết kế lịch trình gia đình ngắn ngày mà vẫn nhiều trải nghiệm",
+                        Summary = "Cân đối nhịp di chuyển, độ tuổi trẻ nhỏ và các điểm dừng có giá trị thật cho cả nhà.",
+                        Body = "<p>Gia đình đi ngắn ngày nên tránh lịch trình đổi khách sạn liên tục. Thay vào đó, hãy chọn tuyến bay dễ, một điểm chính đủ sâu và một số hoạt động có thể thay đổi theo thời tiết.</p>",
                         Category = "Destination Guide",
-                        Destination = "Vi?t Nam",
+                        Destination = "Việt Nam",
                         HeroImageUrl = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=80&w=1200",
-                        Tags = new List<string> { "gia d�nh", "ng?n ng�y", "itinerary" },
+                        Tags = new List<string> { "gia đình", "ngắn ngày", "itinerary" },
                         Featured = false,
                         IsPublished = true,
                         PublishedAt = DateTime.UtcNow.AddDays(-1),
@@ -360,6 +364,63 @@ namespace HVTravel.Infrastructure.Data
 
                 foreach (var article in articles) await articleRepository.AddAsync(article);
             }
+
+            await RepairTextCollectionsAsync(
+                tourRepository,
+                articleRepository,
+                bookingRepository,
+                promotionRepository,
+                notificationRepository,
+                reviewRepository,
+                siteSettingsRepository,
+                contentSectionRepository,
+                customerRepository);
+        }
+        private static async Task RepairTextCollectionsAsync(
+            IRepository<Tour> tourRepository,
+            IRepository<TravelArticle> articleRepository,
+            IRepository<Booking> bookingRepository,
+            IRepository<Promotion> promotionRepository,
+            IRepository<Notification> notificationRepository,
+            IRepository<Review> reviewRepository,
+            IRepository<SiteSettings> siteSettingsRepository,
+            IRepository<ContentSection> contentSectionRepository,
+            IRepository<Customer> customerRepository)
+        {
+            await RepairCollectionAsync(await tourRepository.GetAllAsync(), tourRepository);
+            await RepairCollectionAsync(await articleRepository.GetAllAsync(), articleRepository);
+            await RepairCollectionAsync(await bookingRepository.GetAllAsync(), bookingRepository);
+            await RepairCollectionAsync(await promotionRepository.GetAllAsync(), promotionRepository);
+            await RepairCollectionAsync(await notificationRepository.GetAllAsync(), notificationRepository);
+            await RepairCollectionAsync(await reviewRepository.GetAllAsync(), reviewRepository);
+            await RepairCollectionAsync(await siteSettingsRepository.GetAllAsync(), siteSettingsRepository);
+            await RepairCollectionAsync(await contentSectionRepository.GetAllAsync(), contentSectionRepository);
+            await RepairCollectionAsync(await customerRepository.GetAllAsync(), customerRepository);
+        }
+
+        private static async Task RepairCollectionAsync<T>(IEnumerable<T> items, IRepository<T> repository) where T : class
+        {
+            foreach (var item in items)
+            {
+                var id = GetEntityId(item);
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    continue;
+                }
+
+                var before = JsonSerializer.Serialize(item);
+                TextEncodingRepair.NormalizeObjectGraph(item);
+                var after = JsonSerializer.Serialize(item);
+                if (!string.Equals(before, after, StringComparison.Ordinal))
+                {
+                    await repository.UpdateAsync(id, item);
+                }
+            }
+        }
+
+        private static string? GetEntityId<T>(T item) where T : class
+        {
+            return item?.GetType().GetProperty("Id")?.GetValue(item) as string;
         }
         private static async Task EnsureCommerceIndexesAsync(IServiceProvider serviceProvider)
         {
@@ -469,6 +530,9 @@ namespace HVTravel.Infrastructure.Data
         }
     }
 }
+
+
+
 
 
 

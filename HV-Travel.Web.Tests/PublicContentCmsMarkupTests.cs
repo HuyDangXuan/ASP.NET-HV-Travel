@@ -10,6 +10,13 @@ public class PublicContentCmsMarkupTests
         AssertContains(@"HV-Travel.Web\Views\Services\Index.cshtml", "GetPageSectionsAsync(\"services\")");
         AssertContains(@"HV-Travel.Web\Views\Inspiration\Index.cshtml", "GetPageSectionsAsync(\"inspiration\")");
         AssertContains(@"HV-Travel.Web\Views\BookingLookup\Index.cshtml", "GetPageSectionsAsync(\"bookingLookup\")");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "GetPageSectionsAsync(\"booking\")");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "GetPageSectionsAsync(\"booking\")");
+        AssertContains(@"HV-Travel.Web\Views\PublicTours\Details.cshtml", "GetPageSectionsAsync(\"publicTourDetails\")");
+        AssertContains(@"HV-Travel.Web\Views\Inspiration\Details.cshtml", "GetPageSectionsAsync(\"inspirationDetails\")");
+        AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Login.cshtml", "GetPageSectionsAsync(\"customerLogin\")");
+        AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Register.cshtml", "GetPageSectionsAsync(\"customerRegister\")");
+        AssertContains(@"HV-Travel.Web\Views\CustomerPortal\Index.cshtml", "GetPageSectionsAsync(\"customerPortal\")");
     }
 
     [Fact]
@@ -44,6 +51,48 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("lookupForm", bookingLookup);
         Assert.Contains("readyState", bookingLookup);
         Assert.Contains("Model.HasResult", bookingLookup);
+
+        var bookingCreate = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Create.cshtml"));
+        Assert.Contains("createHero", bookingCreate);
+        Assert.Contains("travellerForm", bookingCreate);
+        Assert.Contains("pricingPanel", bookingCreate);
+        Assert.Contains("Model.Tour", bookingCreate);
+
+        var bookingPayment = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Payment.cshtml"));
+        Assert.Contains("paymentHero", bookingPayment);
+        Assert.Contains("paymentMethods", bookingPayment);
+        Assert.Contains("orderSummary", bookingPayment);
+        Assert.Contains("booking.PaymentSessions", bookingPayment);
+
+        var tourDetails = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\PublicTours\Details.cshtml"));
+        Assert.Contains("relatedTours", tourDetails);
+        Assert.Contains("bookingPanel", tourDetails);
+        Assert.Contains("Model.Name", tourDetails);
+        Assert.Contains("Model.Schedule", tourDetails);
+
+        var inspirationDetails = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Inspiration\Details.cshtml"));
+        Assert.Contains("body", inspirationDetails);
+        Assert.Contains("tags", inspirationDetails);
+        Assert.Contains("Model.Body", inspirationDetails);
+        Assert.Contains("Model.Tags", inspirationDetails);
+
+        var customerLogin = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\CustomerAuth\Login.cshtml"));
+        Assert.Contains("featureCards", customerLogin);
+        Assert.Contains("formIntro", customerLogin);
+        Assert.Contains("registerPrompt", customerLogin);
+        Assert.Contains("asp-for=\"Email\"", customerLogin);
+
+        var customerRegister = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\CustomerAuth\Register.cshtml"));
+        Assert.Contains("benefits", customerRegister);
+        Assert.Contains("formIntro", customerRegister);
+        Assert.Contains("loginPrompt", customerRegister);
+        Assert.Contains("asp-for=\"FullName\"", customerRegister);
+
+        var customerPortal = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\CustomerPortal\Index.cshtml"));
+        Assert.Contains("stats", customerPortal);
+        Assert.Contains("bookingPanel", customerPortal);
+        Assert.Contains("notificationsPanel", customerPortal);
+        Assert.Contains("Model.Customer.FullName", customerPortal);
     }
 
     [Fact]
@@ -75,7 +124,14 @@ public class PublicContentCmsMarkupTests
             @"HV-Travel.Web\Views\Services\Index.cshtml",
             @"HV-Travel.Web\Views\Inspiration\Index.cshtml",
             @"HV-Travel.Web\Views\Booking\Consultation.cshtml",
-            @"HV-Travel.Web\Views\BookingLookup\Index.cshtml"
+            @"HV-Travel.Web\Views\BookingLookup\Index.cshtml",
+            @"HV-Travel.Web\Views\Booking\Create.cshtml",
+            @"HV-Travel.Web\Views\Booking\Payment.cshtml",
+            @"HV-Travel.Web\Views\PublicTours\Details.cshtml",
+            @"HV-Travel.Web\Views\Inspiration\Details.cshtml",
+            @"HV-Travel.Web\Views\CustomerAuth\Login.cshtml",
+            @"HV-Travel.Web\Views\CustomerAuth\Register.cshtml",
+            @"HV-Travel.Web\Views\CustomerPortal\Index.cshtml"
         };
 
         foreach (var view in sectionManagedViews)
@@ -99,14 +155,16 @@ public class PublicContentCmsMarkupTests
     }
 
     [Fact]
-    public void Utility_And_Detail_Views_Remain_Outside_AdminContent()
+    public void Utility_And_Detail_Views_Are_Now_CmsManaged_As_Shell_Copy()
     {
-        AssertDoesNotContain(@"HV-Travel.Web\Views\Inspiration\Details.cshtml", "GetPageSectionsAsync(");
-        AssertDoesNotContain(@"HV-Travel.Web\Views\CustomerPortal\Index.cshtml", "GetPageSectionsAsync(");
-        AssertDoesNotContain(@"HV-Travel.Web\Views\CustomerAuth\Login.cshtml", "GetPageSectionsAsync(");
-        AssertDoesNotContain(@"HV-Travel.Web\Views\CustomerAuth\Register.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\Inspiration\Details.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\CustomerPortal\Index.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Login.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Register.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\PublicTours\Details.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "GetPageSectionsAsync(");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "GetPageSectionsAsync(");
     }
-
 
     [Fact]
     public void AdminContentEditor_Exposes_Metadata_And_Field_Visibility_Toggles()
@@ -120,7 +178,6 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("Sections[i].IsDescriptionEnabled", adminContent);
         Assert.Contains("Sections[i].Fields[j].IsEnabled", adminContent);
         Assert.Contains("SupportsFieldVisibilityToggle(", adminContent);
-
     }
 
     [Fact]
@@ -140,6 +197,7 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("!string.IsNullOrWhiteSpace(featuredTitle)", home);
         Assert.Contains("!string.IsNullOrWhiteSpace(commitmentsTitle)", home);
     }
+
     [Fact]
     public void HomeCarousel_AdminEditor_Allows_Relative_And_Absolute_Link_Targets()
     {
@@ -155,6 +213,7 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("NormalizeCarouselLinkValue", service);
         Assert.Contains("NormalizeCarouselLink(slide.LinkUrl)", publicCarousel);
     }
+
     [Fact]
     public void GlobalHeaderAndPublicTours_Use_New_Cms_Field_Hooks()
     {
@@ -192,16 +251,11 @@ public class PublicContentCmsMarkupTests
         Assert.Contains("applyButtonText", filter);
         Assert.Contains("commitmentsEyebrowText", home);
     }
+
     private static void AssertContains(string relativePath, string expectedContent)
     {
         var content = File.ReadAllText(GetRepoPath(relativePath));
         Assert.Contains(expectedContent, content);
-    }
-
-    private static void AssertDoesNotContain(string relativePath, string unexpectedContent)
-    {
-        var content = File.ReadAllText(GetRepoPath(relativePath));
-        Assert.DoesNotContain(unexpectedContent, content);
     }
 
     private static string GetRepoPath(string relativePath)
@@ -210,9 +264,3 @@ public class PublicContentCmsMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
-
-
-
-
-
-

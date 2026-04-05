@@ -1,4 +1,4 @@
-using HVTravel.Domain.Entities;
+﻿using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using HVTravel.Web.Services;
@@ -56,3 +56,4 @@ public class InspirationController : Controller
         return View(article);
     }
 }
+

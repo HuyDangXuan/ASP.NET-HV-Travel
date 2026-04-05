@@ -1,4 +1,4 @@
-using HVTravel.Application.Interfaces;
+﻿using HVTravel.Application.Interfaces;
 using HVTravel.Application.Models;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
@@ -545,3 +545,4 @@ public class BookingController : Controller
         booking.UpdatedAt = DateTime.UtcNow;
     }
 }
+

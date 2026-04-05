@@ -15,6 +15,11 @@ public class ContentAdminCatalogCoverageTests
         Assert.Contains("services", tabKeys);
         Assert.Contains("inspiration", tabKeys);
         Assert.Contains("bookingLookup", tabKeys);
+        Assert.Contains("publicTourDetails", tabKeys);
+        Assert.Contains("inspirationDetails", tabKeys);
+        Assert.Contains("customerLogin", tabKeys);
+        Assert.Contains("customerRegister", tabKeys);
+        Assert.Contains("customerPortal", tabKeys);
     }
 
     [Theory]
@@ -23,6 +28,11 @@ public class ContentAdminCatalogCoverageTests
     [InlineData("services", "services", new[] { "hero", "serviceCards", "quoteFormIntro" })]
     [InlineData("inspiration", "inspiration", new[] { "hero", "featuredIntro", "latestIntro" })]
     [InlineData("bookingLookup", "bookingLookup", new[] { "hero", "lookupForm", "readyState" })]
+    [InlineData("publicTourDetails", "publicTourDetails", new[] { "hero", "highlights", "overview", "inclusions", "schedule", "policies", "departures", "bookingPanel", "relatedTours" })]
+    [InlineData("inspirationDetails", "inspirationDetails", new[] { "hero", "body", "tags" })]
+    [InlineData("customerLogin", "customerLogin", new[] { "hero", "featureCards", "formIntro", "registerPrompt" })]
+    [InlineData("customerRegister", "customerRegister", new[] { "hero", "benefits", "formIntro", "loginPrompt" })]
+    [InlineData("customerPortal", "customerPortal", new[] { "hero", "stats", "bookingPanel", "reviewPanel", "voucherPanel", "travellerPanel", "notificationsPanel" })]
     public void ContentAdminCatalog_Resolves_NewB2CEditors(
         string tabKey,
         string pageKey,
@@ -32,6 +42,21 @@ public class ContentAdminCatalogCoverageTests
 
         Assert.Equal(tabKey, editor.TabKey);
         Assert.Equal(pageKey, editor.PageKey);
+        Assert.Equal(expectedSectionKeys, editor.Sections.Select(section => section.SectionKey).ToArray());
+    }
+
+    [Theory]
+    [InlineData("create", new[] { "createHero", "createStepper", "travellerForm", "pricingPanel" })]
+    [InlineData("payment", new[] { "paymentHero", "paymentStepper", "paymentMethods", "transferProof", "orderSummary", "paymentTimeline" })]
+    public void ContentAdminCatalog_Resolves_NewBookingFlowEditors(
+        string subtabKey,
+        string[] expectedSectionKeys)
+    {
+        var editor = ContentAdminCatalog.Resolve("booking", subtabKey);
+
+        Assert.Equal("booking", editor.TabKey);
+        Assert.Equal("booking", editor.PageKey);
+        Assert.Equal(subtabKey, editor.SubtabKey);
         Assert.Equal(expectedSectionKeys, editor.Sections.Select(section => section.SectionKey).ToArray());
     }
 
@@ -53,6 +78,11 @@ public class ContentAdminCatalogCoverageTests
     [InlineData("services", new[] { "hero", "serviceCards", "quoteFormIntro" })]
     [InlineData("inspiration", new[] { "hero", "featuredIntro", "latestIntro" })]
     [InlineData("bookingLookup", new[] { "hero", "lookupForm", "readyState" })]
+    [InlineData("publicTourDetails", new[] { "hero", "highlights", "overview", "inclusions", "schedule", "policies", "departures", "bookingPanel", "relatedTours" })]
+    [InlineData("inspirationDetails", new[] { "hero", "body", "tags" })]
+    [InlineData("customerLogin", new[] { "hero", "featureCards", "formIntro", "registerPrompt" })]
+    [InlineData("customerRegister", new[] { "hero", "benefits", "formIntro", "loginPrompt" })]
+    [InlineData("customerPortal", new[] { "hero", "stats", "bookingPanel", "reviewPanel", "voucherPanel", "travellerPanel", "notificationsPanel" })]
     public void PublicContentDefaults_Define_Inventory_And_SeedSections_For_NewB2CPages(
         string pageKey,
         string[] expectedSectionKeys)
@@ -63,6 +93,30 @@ public class ContentAdminCatalogCoverageTests
         var sections = PublicContentDefaults.CreateSectionsForPage(pageKey);
 
         Assert.Equal(expectedSectionKeys, sections.Select(section => section.SectionKey).ToArray());
+    }
+
+    [Fact]
+    public void PublicContentDefaults_Extend_Booking_Inventory_For_Create_And_Payment()
+    {
+        Assert.True(PublicContentDefaults.Inventory.ContainsKey("booking"));
+        Assert.Equal(
+            new[]
+            {
+                "consultationHero",
+                "consultationBenefits",
+                "statusCopy",
+                "createHero",
+                "createStepper",
+                "travellerForm",
+                "pricingPanel",
+                "paymentHero",
+                "paymentStepper",
+                "paymentMethods",
+                "transferProof",
+                "orderSummary",
+                "paymentTimeline"
+            },
+            PublicContentDefaults.Inventory["booking"]);
     }
 
     [Fact]

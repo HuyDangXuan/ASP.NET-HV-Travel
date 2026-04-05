@@ -1,360 +1,219 @@
+﻿@inject IPublicContentService ContentService
 @using System.Text.Json
 @using HVTravel.Web.Services
 @model Tour
 @{
+    var sections = await ContentService.GetPageSectionsAsync("publicTourDetails");
+    var hero = sections.GetSection("hero");
+    var highlights = sections.GetSection("highlights");
+    var overview = sections.GetSection("overview");
+    var inclusions = sections.GetSection("inclusions");
+    var schedule = sections.GetSection("schedule");
+    var policies = sections.GetSection("policies");
+    var departuresSection = sections.GetSection("departures");
+    var bookingPanel = sections.GetSection("bookingPanel");
+    var relatedToursSection = sections.GetSection("relatedTours");
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
-    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
-    {
-        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
-        {
-            new() { Label = "Trang ch?", Url = Url.Action("Index", "Home") },
-            new() { Label = "Tour du l?ch", Url = Url.Action("Index", "PublicTours") },
-            new() { Label = Model.Name, IsCurrent = true }
-        }
-    };
-
     var departures = ((Model.Departures != null && Model.Departures.Any()) ? Model.Departures : Model.EffectiveDepartures).OrderBy(item => item.StartDate).ToList();
     var featuredDeparture = departures.FirstOrDefault();
-    var startingPrice = departures.Any()
-        ? departures.Min(item => item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m)
-        : Model.Price?.Adult ?? 0m;
+    var startingPrice = departures.Any() ? departures.Min(item => item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m) : Model.Price?.Adult ?? 0m;
     var headlineDescription = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 180);
-    var canonicalPath = Model.Seo?.CanonicalPath;
     var structuredData = JsonSerializer.Serialize(new Dictionary<string, object?>
     {
         ["@context"] = "https://schema.org",
         ["@type"] = "Product",
         ["name"] = Model.Name,
-        ["description"] = RichTextContentFormatter.ToPlainTextSummary(Model.ShortDescription ?? Model.Description, 180),
-        ["image"] = Model.Images,
-        ["brand"] = new Dictionary<string, object?>
-        {
-            ["@type"] = "Brand",
-            ["name"] = "HV Travel"
-        },
-        ["aggregateRating"] = new Dictionary<string, object?>
-        {
-            ["@type"] = "AggregateRating",
-            ["ratingValue"] = Model.Rating,
-            ["reviewCount"] = Model.ReviewCount
-        },
-        ["offers"] = departures.Select(item => new Dictionary<string, object?>
-        {
-            ["@type"] = "Offer",
-            ["price"] = item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m,
-            ["priceCurrency"] = Model.Price?.Currency ?? "VND",
-            ["availability"] = item.RemainingCapacity > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
-            ["validFrom"] = item.StartDate.ToString("yyyy-MM-dd")
-        }).ToList()
+        ["description"] = headlineDescription,
+        ["image"] = Model.Images
     });
+    string ConfirmationText(string? value) => string.Equals(value, "Instant", StringComparison.OrdinalIgnoreCase)
+        ? hero?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Xác nhận tức thì") ?? "Xác nhận tức thì"
+        : hero?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "Chờ xác nhận") ?? "Chờ xác nhận";
 }
-
-@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
 <script type="application/ld+json">@Html.Raw(structuredData)</script>
 
-<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="public-top-section-content is-left" data-animate="fade-up">
-            <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-white/80">
-                <span class="rounded-full bg-white/12 px-4 py-2 backdrop-blur">@(string.Equals(Model.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "X?c nh?n t?c th?" : "Ch? x?c nh?n")</span>
+@if (hero?.IsEnabled != false)
+{
+    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
+            <div class="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/80">
+                <span class="rounded-full bg-white/10 px-3 py-1.5" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "instantConfirmationLabel")">@ConfirmationText(Model.ConfirmationType)</span>
                 @if (Model.CancellationPolicy?.IsFreeCancellation == true)
                 {
-                    <span class="rounded-full bg-emerald-400/20 px-4 py-2 text-emerald-100">H?y mi?n ph?</span>
+                    <span class="rounded-full bg-emerald-400/20 px-3 py-1.5 text-emerald-100" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "freeCancellationLabel")">@hero.Fields.GetVisibleFieldValue("freeCancellationLabel", "Hủy miễn phí")</span>
                 }
                 @if (featuredDeparture?.RemainingCapacity is > 0 and <= 5)
                 {
-                    <span class="rounded-full bg-amber-300/20 px-4 py-2 text-amber-50">C?n ?t ch?</span>
+                    <span class="rounded-full bg-amber-300/20 px-3 py-1.5 text-amber-50" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "lowAvailabilityLabel")">@hero.Fields.GetVisibleFieldValue("lowAvailabilityLabel", "Còn ít chỗ")</span>
                 }
             </div>
-            <h1 class="public-top-section-title mt-5 text-white">@Model.Name</h1>
+            <h1 class="public-top-section-title mt-4 text-white">@Model.Name</h1>
             <p class="public-top-section-lead">@headlineDescription</p>
-            <div class="public-top-section-meta">
-                <span><span class="material-symbols-outlined text-[16px] text-primary">location_on</span>@(Model.Destination?.City ?? "Vi?t Nam")@(Model.Destination?.Country != null ? $", {Model.Destination.Country}" : string.Empty)</span>
-                <span><span class="material-symbols-outlined text-[16px] text-primary">schedule</span>@(Model.Duration?.Text ?? $"{Model.Duration?.Days} ng?y {Model.Duration?.Nights} ??m")</span>
-                <span><span class="material-symbols-outlined text-[16px] text-amber-300">star</span>@Model.Rating.ToString("0.0") ? @Model.ReviewCount ??nh gi?</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="bg-background-light py-10 dark:bg-background-dark">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
-            <div class="space-y-8">
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="fade-in">
-                    @if (Model.Images != null && Model.Images.Any())
-                    {
-                        <div class="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-                            <img src="@Model.Images.First()" alt="@Model.Name" class="h-[320px] w-full rounded-[1.5rem] object-cover sm:h-[420px]" />
-                            <div class="grid grid-cols-2 gap-4">
-                                @foreach (var image in Model.Images.Skip(1).Take(4))
-                                {
-                                    <img src="@image" alt="@Model.Name" class="h-36 w-full rounded-[1.25rem] object-cover sm:h-[198px]" />
-                                }
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="flex h-[320px] items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary/15 to-sky-500/20 sm:h-[420px]">
-                            <span class="material-symbols-outlined text-[96px] text-primary/30">landscape</span>
-                        </div>
-                    }
-                </section>
-
-                <section class="grid gap-6 sm:grid-cols-3" data-animate="fade-up" data-stagger>
-                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Gi? t?</p>
-                        <p class="mt-3 text-3xl font-extrabold text-primary">@startingPrice.ToString("N0")₫</p>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Gi? theo departure g?n nh?t c?n m? b?n.</p>
-                    </div>
-                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">?i?m h?n</p>
-                        <p class="mt-3 text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? "C?p nh?t khi x?c nh?n booking" : Model.MeetingPoint)</p>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Th?ng tin check-in v? h??ng d?n g?p ?o?n r? r?ng tr??c gi? kh?i h?nh.</p>
-                    </div>
-                    <div class="rounded-[1.75rem] border border-border-light bg-surface-light p-5 dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Tin c?y</p>
-                        <p class="mt-3 text-base font-bold text-slate-900 dark:text-white">verified booking reviews</p>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@Model.ReviewCount ??nh gi? ?? ???c ??i so?t t? h?nh tr?nh th?c t?.</p>
-                    </div>
-                </section>
-
-                @if (Model.Highlights != null && Model.Highlights.Any())
-                {
-                    <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
-                        <div class="flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Highlights</p>
-                                <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Điểm nổi bật của hành trình</h2>
-                            </div>
-                            <span class="rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary">Tour bán tốt</span>
-                        </div>
-                        <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                            @foreach (var highlight in Model.Highlights)
-                            {
-                                <div class="rounded-[1.5rem] bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                                    <span class="material-symbols-outlined mr-2 align-middle text-[18px] text-primary">check_circle</span>@highlight
-                                </div>
-                            }
-                        </div>
-                    </section>
-                }
-
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
-                    <div class="flex items-center justify-between gap-4">
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Tổng quan</p>
-                            <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Tổng quan hành trình</h2>
-                        </div>
-                        @if (!string.IsNullOrWhiteSpace(canonicalPath))
-                        {
-                            <span class="rounded-full border border-border-light px-4 py-2 text-xs font-semibold text-slate-500 dark:border-border-dark dark:text-slate-400">Canonical ready</span>
-                        }
-                    </div>
-                    <div class="public-rich-text prose prose-sm mt-6 max-w-none text-slate-600 dark:prose-invert dark:text-slate-300">
-                        @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
-                    </div>
-                </section>
-
-                @if ((Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any()) || (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any()))
-                {
-                    <section class="grid gap-6 sm:grid-cols-2" data-animate="fade-up" data-stagger>
-                        @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
-                        {
-                            <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-emerald-500">Bao gồm</p>
-                                <ul class="mt-5 space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                                    @foreach (var item in Model.GeneratedInclusions)
-                                    {
-                                        <li><span class="material-symbols-outlined mr-2 align-middle text-[18px] text-emerald-500">done</span>@item</li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                        @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
-                        {
-                            <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-rose-500">Không bao gồm</p>
-                                <ul class="mt-5 space-y-3 text-sm text-slate-600 dark:text-slate-300">
-                                    @foreach (var item in Model.GeneratedExclusions)
-                                    {
-                                        <li><span class="material-symbols-outlined mr-2 align-middle text-[18px] text-rose-500">close</span>@item</li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                    </section>
-                }
-
-                @if (Model.Schedule != null && Model.Schedule.Any())
-                {
-                    <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Lịch trình</p>
-                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Lịch trình chi tiết</h2>
-                        <div class="mt-6 space-y-5">
-                            @foreach (var item in Model.Schedule)
-                            {
-                                <article class="rounded-[1.5rem] border border-border-light p-5 dark:border-border-dark">
-                                    <div class="flex gap-4">
-                                        <div class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 font-extrabold text-primary">@item.Day</div>
-                                        <div class="min-w-0">
-                                            <h3 class="text-base font-bold text-slate-900 dark:text-white">@item.Title</h3>
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                <div class="public-rich-text prose prose-sm mt-3 max-w-none text-slate-600 dark:prose-invert dark:text-slate-300">
-                                                    @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
-                                                </div>
-                                            }
-                                            @if (item.Activities != null && item.Activities.Any())
-                                            {
-                                                <div class="mt-4 flex flex-wrap gap-2">
-                                                    @foreach (var activity in item.Activities)
-                                                    {
-                                                        <span class="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">@activity</span>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </article>
-                            }
-                        </div>
-                    </section>
-                }
-
-                <section class="grid gap-6 lg:grid-cols-2" data-animate="fade-up">
-                    <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Cancellation</p>
-                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Chính sách hủy và hoàn</h2>
-                        <div class="mt-5 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
-                            <p class="text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? "Liên hệ tư vấn để kiểm tra chính sách theo từng departure." : Model.CancellationPolicy.Summary)</p>
-                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">
-                                @if (Model.CancellationPolicy?.IsFreeCancellation == true)
-                                {
-                                    <text>Miễn phí hủy trước @Model.CancellationPolicy.FreeCancellationBeforeHours giờ.</text>
-                                }
-                                else
-                                {
-                                    <text>Điều kiện hủy và hoàn tiền được áp dụng theo quy định của tour và từng lịch khởi hành.</text>
-                                }
-                            </p>
-                        </div>
-                    </div>
-                    <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Meeting point</p>
-                        <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Điểm đón và hướng dẫn check-in</h2>
-                        <div class="mt-5 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
-                            <p class="text-base font-bold text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận." : Model.MeetingPoint)</p>
-                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">Thông tin hotline, giờ có mặt và hướng dẫn check-in sẽ được cập nhật rõ trong booking timeline.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="fade-up">
-                    <div class="flex items-center justify-between gap-4">
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Price calendar</p>
-                            <h2 class="mt-3 text-2xl font-extrabold text-slate-900 dark:text-white">Lịch khởi hành và chỗ trống</h2>
-                        </div>
-                        <span class="rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary">@departures.Count đợt khởi hành</span>
-                    </div>
-                    <div class="mt-6 overflow-hidden rounded-[1.5rem] border border-border-light dark:border-border-dark">
-                        <div class="grid grid-cols-[1.2fr_1fr_1fr_0.9fr] bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                            <span>Departure</span>
-                            <span>Người lớn</span>
-                            <span>Chính sách</span>
-                            <span class="text-right">Số chỗ</span>
-                        </div>
-                        <div class="divide-y divide-border-light dark:divide-border-dark">
-                            @foreach (var departure in departures)
-                            {
-                                var seatTone = departure.RemainingCapacity <= 5 ? "text-amber-500" : "text-emerald-500";
-                                <div class="grid grid-cols-[1.2fr_1fr_1fr_0.9fr] items-center px-4 py-4 text-sm text-slate-700 dark:text-slate-200">
-                                    <div>
-                                        <p class="font-bold text-slate-900 dark:text-white">@departure.StartDate.ToString("dd/MM/yyyy")</p>
-                                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận")</p>
-                                    </div>
-                                    <div class="font-bold text-primary">@((departure.AdultPrice > 0m ? departure.AdultPrice : Model.Price?.Adult ?? 0m).ToString("N0"))₫</div>
-                                    <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">@(Model.CancellationPolicy?.IsFreeCancellation == true ? "Hủy miễn phí" : "Theo điều kiện tour")</div>
-                                    <div class="text-right text-xs font-bold @seatTone">@departure.RemainingCapacity còn lại</div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <aside class="public-detail-sidebar space-y-6 lg:sticky lg:top-24">
-                <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
-                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Sẵn sàng đặt tour</p>
-                    <p class="mt-3 text-4xl font-extrabold text-slate-900 dark:text-white">@startingPrice.ToString("N0")₫</p>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Mức giá tốt nhất theo departure hiện có.</p>
-                    <div class="mt-5 space-y-3 rounded-[1.5rem] bg-slate-50 p-5 dark:bg-slate-800">
-                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Xác nhận</span><span class="font-bold text-slate-900 dark:text-white">@Model.ConfirmationType</span></div>
-                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Đánh giá</span><span class="font-bold text-slate-900 dark:text-white">@Model.Rating.ToString("0.0") / 5</span></div>
-                        <div class="flex items-center justify-between text-sm"><span class="text-slate-500 dark:text-slate-400">Departure gần nhất</span><span class="font-bold text-slate-900 dark:text-white">@(featuredDeparture?.StartDate.ToString("dd/MM") ?? "TBD")</span></div>
-                    </div>
-                    <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] bg-primary px-5 py-4 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark">
-                        <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
-                        Đặt tour ngay
-                    </a>
-                    <a href="tel:+842838229999" class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-[1.2rem] border border-border-light px-5 py-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-dark dark:text-slate-200 dark:hover:bg-slate-800">
-                        <span class="material-symbols-outlined text-[18px]">call</span>
-                        Gọi tư vấn
-                    </a>
-                </div>
-
-                <div class="rounded-[2rem] border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark" data-animate="slide-right">
-                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-primary">Khối tin cậy</p>
-                    <div class="mt-5 space-y-4 text-sm text-slate-600 dark:text-slate-300">
-                        <div class="rounded-[1.5rem] bg-slate-50 p-4 dark:bg-slate-800">
-                            <p class="font-bold text-slate-900 dark:text-white">Hỗ trợ sau booking</p>
-                            <p class="mt-2">Portal khách hàng, payment timeline và tra cứu booking đã sẵn sàng sau checkout.</p>
-                        </div>
-                        <div class="rounded-[1.5rem] bg-slate-50 p-4 dark:bg-slate-800">
-                            <p class="font-bold text-slate-900 dark:text-white">Voucher và hóa đơn</p>
-                            <p class="mt-2">Sau khi thanh toán, booking có thể mở rộng sang voucher, invoice và trạng thái fulfillment theo policy.</p>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </div>
-</section>
-
-@if (relatedTours.Any())
-{
-    <section class="bg-surface-light py-16 dark:bg-surface-dark">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white" data-animate="fade-up">Tour liên quan</h2>
-            <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4" data-animate="fade-in" data-stagger>
-                @foreach (var tour in relatedTours)
-                {
-                    var relatedPrice = tour.EffectiveDepartures.FirstOrDefault()?.AdultPrice ?? 0m;
-                    if (relatedPrice <= 0m)
-                    {
-                        relatedPrice = tour.Price?.Adult ?? 0m;
-                    }
-                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@(string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug)" class="overflow-hidden rounded-[1.75rem] border border-border-light bg-white transition-all hover:-translate-y-1 hover:shadow-xl dark:border-border-dark dark:bg-slate-900">
-                        <div class="h-48 bg-slate-100 dark:bg-slate-800">
-                            @if (tour.Images != null && tour.Images.Any())
-                            {
-                                <img src="@tour.Images.First()" alt="@tour.Name" class="h-full w-full object-cover" />
-                            }
-                        </div>
-                        <div class="p-5">
-                            <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">@(tour.Destination?.City ?? "HV Travel")</p>
-                            <h3 class="mt-2 text-base font-bold text-slate-900 dark:text-white">@tour.Name</h3>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-lg font-extrabold text-primary">@relatedPrice.ToString("N0")₫</span>
-                                <span class="text-xs font-bold text-slate-500 dark:text-slate-400">@tour.Rating.ToString("0.0") ★</span>
-                            </div>
-                        </div>
-                    </a>
-                }
+            <div class="mt-4 flex flex-wrap gap-4 text-sm text-slate-200">
+                <span>@(Model.Destination?.City ?? (hero.Fields.GetVisibleFieldValue("locationFallback", "Việt Nam")))</span>
+                <span>@(Model.Duration?.Text ?? (hero.Fields.GetVisibleFieldValue("durationFallback", "Liên hệ tư vấn")))</span>
+                <span>@string.Format(hero.Fields.GetVisibleFieldValue("reviewFormat", "{0} đánh giá") ?? "{0} đánh giá", Model.ReviewCount)</span>
             </div>
         </div>
     </section>
 }
+
+<section class="bg-background-light py-10 dark:bg-background-dark">
+    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
+        <div class="space-y-6">
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                @if (Model.Images != null && Model.Images.Any())
+                {
+                    <img src="@Model.Images.First()" alt="@Model.Name" class="h-80 w-full rounded-3xl object-cover" />
+                }
+            </section>
+
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(highlights)" style="@ContentPresentationViewHelper.GetSectionStyle(highlights)">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "eyebrowText")">@highlights?.Fields.GetVisibleFieldValue("eyebrowText", "Highlights")</p>
+                <div class="mt-2 flex items-center justify-between gap-4">
+                    <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "title")">@highlights?.Fields.GetVisibleFieldValue("title", "Điểm nổi bật của hành trình")</h2>
+                    <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "badgeText")">@highlights?.Fields.GetVisibleFieldValue("badgeText", "Tour bán tốt")</span>
+                </div>
+                @if (Model.Highlights != null && Model.Highlights.Any())
+                {
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        @foreach (var item in Model.Highlights)
+                        {
+                            <div class="rounded-2xl bg-surface-muted-light px-4 py-3 text-sm dark:bg-surface-elevated-dark">@item</div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@highlights?.Fields.GetVisibleFieldValue("emptyStateText", "Tour này chưa có danh sách highlights hiển thị.")</p>
+                }
+            </section>
+
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(overview)" style="@ContentPresentationViewHelper.GetSectionStyle(overview)">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "eyebrowText")">@overview?.Fields.GetVisibleFieldValue("eyebrowText", "Tổng quan")</p>
+                <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "title")">@overview?.Fields.GetVisibleFieldValue("title", "Tổng quan hành trình")</h2>
+                <div class="public-rich-text mt-4">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))</div>
+            </section>
+
+            <section class="grid gap-6 sm:grid-cols-2 @ContentPresentationViewHelper.GetSectionTextClass(inclusions)" style="@ContentPresentationViewHelper.GetSectionStyle(inclusions)">
+                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                    <h2 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "includedTitle")">@inclusions?.Fields.GetVisibleFieldValue("includedTitle", "Bao gồm")</h2>
+                    @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
+                    {
+                        <ul class="mt-4 space-y-2 text-sm">@foreach (var item in Model.GeneratedInclusions) { <li>@item</li> }</ul>
+                    }
+                    else
+                    {
+                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@inclusions?.Fields.GetVisibleFieldValue("includedEmptyText", "Thông tin dịch vụ bao gồm đang được cập nhật.")</p>
+                    }
+                </div>
+                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                    <h2 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "excludedTitle")">@inclusions?.Fields.GetVisibleFieldValue("excludedTitle", "Không bao gồm")</h2>
+                    @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
+                    {
+                        <ul class="mt-4 space-y-2 text-sm">@foreach (var item in Model.GeneratedExclusions) { <li>@item</li> }</ul>
+                    }
+                    else
+                    {
+                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@inclusions?.Fields.GetVisibleFieldValue("excludedEmptyText", "Thông tin dịch vụ không bao gồm đang được cập nhật.")</p>
+                    }
+                </div>
+            </section>
+
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(schedule)" style="@ContentPresentationViewHelper.GetSectionStyle(schedule)">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "eyebrowText")">@schedule?.Fields.GetVisibleFieldValue("eyebrowText", "Lịch trình")</p>
+                <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "title")">@schedule?.Fields.GetVisibleFieldValue("title", "Lịch trình chi tiết")</h2>
+                @if (Model.Schedule != null && Model.Schedule.Any())
+                {
+                    <div class="mt-4 space-y-4">
+                        @foreach (var item in Model.Schedule)
+                        {
+                            <article class="rounded-2xl border border-border-light p-4 dark:border-border-dark">
+                                <strong>Ngày @item.Day - @item.Title</strong>
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    <div class="public-rich-text mt-2">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))</div>
+                                }
+                            </article>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@schedule?.Fields.GetVisibleFieldValue("emptyStateText", "Lịch trình chi tiết sẽ được cập nhật gần ngày khởi hành.")</p>
+                }
+            </section>
+
+            <section class="grid gap-6 sm:grid-cols-2 @ContentPresentationViewHelper.GetSectionTextClass(policies)" style="@ContentPresentationViewHelper.GetSectionStyle(policies)">
+                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">@policies?.Fields.GetVisibleFieldValue("cancellationEyebrowText", "Cancellation")</p>
+                    <h2 class="mt-2 text-2xl font-black">@policies?.Fields.GetVisibleFieldValue("cancellationTitle", "Chính sách hủy và hoàn")</h2>
+                    <p class="mt-4 text-sm">@(string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? (policies?.Fields.GetVisibleFieldValue("cancellationSummaryFallback", "Liên hệ tư vấn để kiểm tra chính sách theo từng departure.")) : Model.CancellationPolicy.Summary)</p>
+                </div>
+                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">@policies?.Fields.GetVisibleFieldValue("meetingPointEyebrowText", "Meeting point")</p>
+                    <h2 class="mt-2 text-2xl font-black">@policies?.Fields.GetVisibleFieldValue("meetingPointTitle", "Điểm đón và hướng dẫn check-in")</h2>
+                    <p class="mt-4 text-sm">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? (policies?.Fields.GetVisibleFieldValue("meetingPointFallback", "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận.")) : Model.MeetingPoint)</p>
+                </div>
+            </section>
+
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(departuresSection)" style="@ContentPresentationViewHelper.GetSectionStyle(departuresSection)">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "eyebrowText")">@departuresSection?.Fields.GetVisibleFieldValue("eyebrowText", "Price calendar")</p>
+                <div class="mt-2 flex items-center justify-between gap-4">
+                    <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "title")">@departuresSection?.Fields.GetVisibleFieldValue("title", "Lịch khởi hành và chỗ trống")</h2>
+                    <span class="text-sm text-primary">@string.Format(departuresSection?.Fields.GetVisibleFieldValue("countFormat", "{0} đợt khởi hành") ?? "{0} đợt khởi hành", departures.Count)</span>
+                </div>
+                <div class="mt-4 space-y-3 text-sm">
+                    @foreach (var departure in departures)
+                    {
+                        <div class="rounded-2xl border border-border-light px-4 py-3 dark:border-border-dark">
+                            <div class="flex items-center justify-between gap-4">
+                                <span>@departure.StartDate.ToString("dd/MM/yyyy")</span>
+                                <span>@((departure.AdultPrice > 0m ? departure.AdultPrice : Model.Price?.Adult ?? 0m).ToString("N0"))₫</span>
+                                <span>@ConfirmationText(departure.ConfirmationType)</span>
+                                <span>@string.Format(departuresSection?.Fields.GetVisibleFieldValue("seatsRemainingFormat", "{0} còn lại") ?? "{0} còn lại", departure.RemainingCapacity)</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        </div>
+
+        <aside class="space-y-6">
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(bookingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(bookingPanel)">
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "eyebrowText")">@bookingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Sẵn sàng đặt tour")</p>
+                <p class="mt-3 text-4xl font-extrabold text-primary">@startingPrice.ToString("N0")₫</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "priceHelperText")">@bookingPanel?.Fields.GetVisibleFieldValue("priceHelperText", "Mức giá tốt nhất theo departure hiện có.")</p>
+                <div class="mt-4 space-y-2 text-sm">
+                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("confirmationLabel", "Xác nhận")</span><span>@Model.ConfirmationType</span></div>
+                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("ratingLabel", "Đánh giá")</span><span>@Model.Rating.ToString("0.0") / 5</span></div>
+                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("departureLabel", "Departure gần nhất")</span><span>@(featuredDeparture?.StartDate.ToString("dd/MM") ?? "TBD")</span></div>
+                </div>
+                <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-4 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "bookNowText")">@bookingPanel?.Fields.GetVisibleFieldValue("bookNowText", "Đặt tour ngay")</a>
+                <a href="tel:+842838229999" class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-border-light px-4 py-3 font-bold dark:border-border-dark" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "callAdvisorText")">@bookingPanel?.Fields.GetVisibleFieldValue("callAdvisorText", "Gọi tư vấn")</a>
+            </section>
+
+            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(relatedToursSection)" style="@ContentPresentationViewHelper.GetSectionStyle(relatedToursSection)">
+                <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(relatedToursSection, "title")">@relatedToursSection?.Fields.GetVisibleFieldValue("title", "Tour liên quan")</h2>
+                @if (relatedTours.Any())
+                {
+                    <div class="mt-4 space-y-3">
+                        @foreach (var tour in relatedTours)
+                        {
+                            var relatedPrice = tour.EffectiveDepartures.FirstOrDefault()?.AdultPrice ?? tour.Price?.Adult ?? 0m;
+                            <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@(string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug)" class="block rounded-2xl border border-border-light px-4 py-3 dark:border-border-dark">
+                                <p class="font-bold">@tour.Name</p>
+                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@relatedPrice.ToString("N0")₫</p>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@relatedToursSection?.Fields.GetVisibleFieldValue("emptyStateText", "Chưa có tour liên quan phù hợp để hiển thị.")</p>
+                }
+            </section>
+        </aside>
+    </div>
+</section>

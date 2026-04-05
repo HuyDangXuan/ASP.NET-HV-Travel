@@ -7,6 +7,8 @@ public static class ContentAdminCatalog
     private static readonly IReadOnlyList<ContentSubtabOption> BookingSubtabs = new List<ContentSubtabOption>
     {
         new() { Key = "consultation", Label = "Tư vấn", Description = "Hero, quyền lợi, form và trạng thái gửi yêu cầu" },
+        new() { Key = "create", Label = "Tạo booking", Description = "Hero, stepper, form hành khách và báo giá" },
+        new() { Key = "payment", Label = "Thanh toán", Description = "Hero, stepper, phương thức thanh toán, đối soát và timeline" },
         new() { Key = "success", Label = "Thành công", Description = "Thông điệp đặt tour thành công" },
         new() { Key = "failed", Label = "Thất bại", Description = "Thông điệp thanh toán thất bại" },
         new() { Key = "error", Label = "Lỗi hệ thống", Description = "Thông điệp lỗi và hướng dẫn hỗ trợ" }
@@ -19,12 +21,17 @@ public static class ContentAdminCatalog
         new() { Key = "about", Label = "Giới thiệu", Description = "Hero, câu chuyện, sứ mệnh, đội ngũ" },
         new() { Key = "contact", Label = "Liên hệ", Description = "Hero, thẻ liên hệ, mở đầu form" },
         new() { Key = "publicTours", Label = "Danh sách tour", Description = "Hero, chip bộ sưu tập, bộ lọc, kết quả và trạng thái rỗng" },
+        new() { Key = "publicTourDetails", Label = "Chi tiết tour", Description = "Shell copy cho trang tour detail: badge, heading, CTA và helper copy" },
         new() { Key = "destinations", Label = "Điểm đến", Description = "Hero, mở đầu bộ sưu tập và mở đầu theo vùng" },
         new() { Key = "promotions", Label = "Khuyến mãi", Description = "Hero và các section flash sale, voucher, deal theo mùa" },
         new() { Key = "services", Label = "Dịch vụ", Description = "Hero, thẻ dịch vụ và giới thiệu form báo giá" },
         new() { Key = "inspiration", Label = "Cẩm nang", Description = "Hero, bài nổi bật và danh sách bài mới" },
-        new() { Key = "booking", Label = "Đặt tour", Description = "Tư vấn và các màn trạng thái booking" },
-        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu và trạng thái sẵn sàng" }
+        new() { Key = "inspirationDetails", Label = "Chi tiết cẩm nang", Description = "Shell copy cho trang bài viết: badge, heading, empty state và CTA" },
+        new() { Key = "booking", Label = "Đặt tour", Description = "Tư vấn, tạo booking, thanh toán và các màn trạng thái booking" },
+        new() { Key = "bookingLookup", Label = "Tra cứu booking", Description = "Hero, form tra cứu và trạng thái sẵn sàng" },
+        new() { Key = "customerLogin", Label = "Đăng nhập khách hàng", Description = "Hero, feature cards, intro form và CTA sang đăng ký" },
+        new() { Key = "customerRegister", Label = "Đăng ký khách hàng", Description = "Hero, quyền lợi, intro form và CTA sang đăng nhập" },
+        new() { Key = "customerPortal", Label = "Customer portal", Description = "Hero, stats, booking, review, voucher, traveller và notifications" }
     };
 
     private static readonly IReadOnlyList<ContentDependencyNoteViewModel> ContactInfoDependency = new List<ContentDependencyNoteViewModel>
@@ -136,6 +143,21 @@ public static class ContentAdminCatalog
                 Section("resultsPanel", "Nhãn phần kết quả", "Eyebrow, tiêu đề kết quả, wishlist và recently viewed"),
                 Section("emptyState", "Trạng thái rỗng", "Thông điệp và CTA khi không có tour phù hợp")),
             Editor(
+                "publicTourDetails",
+                "Chi tiết tour",
+                "Trang chi tiết tour",
+                "Chỉ quản lý shell copy, CTA và fallback text trên trang tour detail; dữ liệu record-level vẫn lấy từ Tour.",
+                "9 section shell-copy cho trang chi tiết tour.",
+                Section("hero", "Hero chi tiết tour", "Badge xác nhận, badge hủy, badge seat, meta label và helper copy"),
+                Section("highlights", "Điểm nổi bật", "Tiêu đề, badge phụ và empty state cho highlights"),
+                Section("overview", "Tổng quan", "Eyebrow, heading và helper copy của phần tổng quan"),
+                Section("inclusions", "Bao gồm / không bao gồm", "Heading và empty state cho inclusions, exclusions"),
+                Section("schedule", "Lịch trình", "Heading và empty state cho schedule"),
+                Section("policies", "Chính sách", "Heading, fallback copy cho cancellation và meeting point"),
+                Section("departures", "Lịch khởi hành", "Heading, cột bảng và helper copy cho departures"),
+                Section("bookingPanel", "Sidebar đặt tour", "Eyebrow, helper copy và CTA của khối booking sidebar"),
+                Section("relatedTours", "Tour liên quan", "Heading và empty state cho related tours")),
+            Editor(
                 "destinations",
                 "Điểm đến",
                 "Trang điểm đến",
@@ -172,6 +194,15 @@ public static class ContentAdminCatalog
                 Section("hero", "Hero cẩm nang", "Badge, tiêu đề và mô tả mở đầu của hub cẩm nang"),
                 Section("featuredIntro", "Mở đầu bài nổi bật", "Tiêu đề và mô tả cho khu vực bài viết nổi bật"),
                 Section("latestIntro", "Mở đầu bài mới", "Tiêu đề và mô tả cho danh sách bài viết mới")),
+            Editor(
+                "inspirationDetails",
+                "Chi tiết cẩm nang",
+                "Trang chi tiết bài viết",
+                "Chỉ quản lý shell copy của hero, phần thân bài và tags; nội dung bài vẫn lấy từ TravelArticle.",
+                "3 section shell-copy cho trang chi tiết bài viết.",
+                Section("hero", "Hero bài viết", "Eyebrow, heading phụ và meta copy cho hero bài viết"),
+                Section("body", "Thân bài", "Heading, mô tả phụ và empty state cho thân bài"),
+                Section("tags", "Tags", "Heading và empty state cho danh sách tags")),
             new()
             {
                 TabKey = "booking",
@@ -188,6 +219,46 @@ public static class ContentAdminCatalog
                 {
                     Section("consultationHero", "Hero tư vấn", "Tiêu đề và mô tả đầu trang"),
                     Section("consultationBenefits", "Quyền lợi và form tư vấn", "Thông điệp liên hệ nhanh, lý do chọn, nội dung submit và trạng thái gửi yêu cầu")
+                }
+            },
+            new()
+            {
+                TabKey = "booking",
+                SubtabKey = "create",
+                PageKey = "booking",
+                NavigationLabel = "Đặt tour",
+                Title = "Đặt tour / Tạo booking",
+                Description = "Quản lý shell copy cho bước xác nhận hành khách và báo giá trước khi thanh toán.",
+                ScopeSummary = "4 section cho màn tạo booking.",
+                Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Tạo booking" },
+                Subtabs = BookingSubtabs,
+                Sections = new List<ContentAdminSectionDefinition>
+                {
+                    Section("createHero", "Hero tạo booking", "Badge, tiêu đề và mô tả đầu trang"),
+                    Section("createStepper", "Stepper tạo booking", "Nhãn các bước trong flow booking"),
+                    Section("travellerForm", "Form hành khách", "Nhãn section, label form, placeholder và empty state lịch khởi hành"),
+                    Section("pricingPanel", "Panel báo giá", "Heading, nhãn tiền tệ, CTA và helper copy của báo giá")
+                }
+            },
+            new()
+            {
+                TabKey = "booking",
+                SubtabKey = "payment",
+                PageKey = "booking",
+                NavigationLabel = "Đặt tour",
+                Title = "Đặt tour / Thanh toán",
+                Description = "Quản lý shell copy cho bước thanh toán, đối soát và timeline booking.",
+                ScopeSummary = "6 section cho màn thanh toán.",
+                Breadcrumb = new List<string> { "Nội dung website", "Đặt tour", "Thanh toán" },
+                Subtabs = BookingSubtabs,
+                Sections = new List<ContentAdminSectionDefinition>
+                {
+                    Section("paymentHero", "Hero thanh toán", "Badge, tiêu đề và mô tả đầu trang"),
+                    Section("paymentStepper", "Stepper thanh toán", "Nhãn các bước trong flow booking"),
+                    Section("paymentMethods", "Phương thức thanh toán", "Heading, label option và CTA xác nhận thanh toán"),
+                    Section("transferProof", "Minh chứng chuyển khoản", "Heading, placeholder note và CTA tải minh chứng"),
+                    Section("orderSummary", "Tóm tắt đơn", "Heading, label số liệu và helper copy của panel booking"),
+                    Section("paymentTimeline", "Timeline thanh toán", "Heading và empty state cho timeline xử lý")
                 }
             },
             new()
@@ -249,7 +320,40 @@ public static class ContentAdminCatalog
                 "3 section của trang tra cứu booking.",
                 Section("hero", "Hero tra cứu booking", "Badge, tiêu đề và mô tả phần mở đầu"),
                 Section("lookupForm", "Giới thiệu form tra cứu", "Tiêu đề, mô tả và nút submit của form tra cứu"),
-                Section("readyState", "Trạng thái sẵn sàng", "Thông điệp hiển thị trước khi người dùng tra cứu booking"))
+                Section("readyState", "Trạng thái sẵn sàng", "Thông điệp hiển thị trước khi người dùng tra cứu booking")),
+            Editor(
+                "customerLogin",
+                "Đăng nhập khách hàng",
+                "Trang đăng nhập khách hàng",
+                "Quản lý hero, feature cards, intro form và CTA sang đăng ký.",
+                "4 section của trang đăng nhập khách hàng.",
+                Section("hero", "Hero đăng nhập", "Badge, tiêu đề và mô tả mở đầu"),
+                Section("featureCards", "Feature cards", "Tiêu đề và mô tả các điểm nhấn của tài khoản khách hàng"),
+                Section("formIntro", "Giới thiệu form", "Eyebrow, tiêu đề, mô tả và helper copy của form đăng nhập"),
+                Section("registerPrompt", "CTA đăng ký", "Thông điệp và nút chuyển sang đăng ký")),
+            Editor(
+                "customerRegister",
+                "Đăng ký khách hàng",
+                "Trang đăng ký khách hàng",
+                "Quản lý hero, benefits, intro form và CTA sang đăng nhập.",
+                "4 section của trang đăng ký khách hàng.",
+                Section("hero", "Hero đăng ký", "Badge, tiêu đề và mô tả mở đầu"),
+                Section("benefits", "Quyền lợi", "Heading, title và mô tả cho các thẻ quyền lợi"),
+                Section("formIntro", "Giới thiệu form", "Eyebrow, tiêu đề, mô tả và helper copy của form đăng ký"),
+                Section("loginPrompt", "CTA đăng nhập", "Thông điệp và nút chuyển sang đăng nhập")),
+            Editor(
+                "customerPortal",
+                "Customer portal",
+                "Trang customer portal",
+                "Chỉ quản lý shell copy cho hero, stats, booking, review, voucher, traveller và notification; dữ liệu portal vẫn giữ động.",
+                "7 section shell-copy của customer portal.",
+                Section("hero", "Hero portal", "Eyebrow, tiêu đề, mô tả và khối tier summary"),
+                Section("stats", "Thống kê portal", "Label 4 khối số liệu đầu trang"),
+                Section("bookingPanel", "Khối booking", "Heading, helper copy, CTA và empty state cho booking history"),
+                Section("reviewPanel", "Khối review", "Heading, empty state và CTA của review request"),
+                Section("voucherPanel", "Khối voucher", "Heading, empty state và helper copy của voucher wallet"),
+                Section("travellerPanel", "Khối traveller", "Heading, placeholder form và CTA lưu traveller"),
+                Section("notificationsPanel", "Khối notifications", "Heading và empty state cho notifications"))
         };
     }
 
@@ -293,6 +397,3 @@ public static class ContentAdminCatalog
         };
     }
 }
-
-
-
