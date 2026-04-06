@@ -1,0 +1,33 @@
+﻿@model BookingSupportVm
+
+<section class="public-journey-panel public-journey-support-card">
+    <p class="public-journey-card-eyebrow">Hỗ trợ nhanh</p>
+    <h2 class="public-journey-panel-title">@Model.Title</h2>
+    <p class="public-journey-support-copy">@Model.Description</p>
+    @if (!string.IsNullOrWhiteSpace(Model.Phone) || !string.IsNullOrWhiteSpace(Model.Email))
+    {
+        <div class="public-journey-support-meta">
+            @if (!string.IsNullOrWhiteSpace(Model.Phone))
+            {
+                <a href="tel:@Model.Phone">@Model.Phone</a>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Email))
+            {
+                <a href="mailto:@Model.Email">@Model.Email</a>
+            }
+        </div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.SecondaryNote))
+    {
+        <p class="public-journey-support-note">@Model.SecondaryNote</p>
+    }
+    @if (Model.Actions.Any())
+    {
+        <div class="public-journey-action-row">
+            @foreach (var action in Model.Actions)
+            {
+                <a href="@action.Url" class="public-journey-action public-journey-action--@action.Tone">@action.Label</a>
+            }
+        </div>
+    }
+</section>

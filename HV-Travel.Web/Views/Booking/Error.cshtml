@@ -1,77 +1,31 @@
-﻿@inject IPublicContentService ContentService
-@using HVTravel.Web.Services
-@{
-    var sections = await ContentService.GetPageSectionsAsync("booking");
-    var siteSettings = await ContentService.GetSiteSettingsAsync();
-    var statusCopy = sections.GetSection("statusCopy");
-    var contactGroup = siteSettings.GetGroup("contactInfo");
-    var phone = contactGroup?.Fields.GetFieldValue("phoneNumber", "028 3822 9999") ?? "028 3822 9999";
-    var email = contactGroup?.Fields.GetFieldValue("email", "support@hvtravel.vn") ?? "support@hvtravel.vn";
-    var breadcrumb = new HVTravel.Web.Models.BreadcrumbViewModel
-    {
-        Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
-        {
-            new() { Label = "Trang chủ", Url = Url.Action("Index", "Home") },
-            new() { Label = "Đặt tour" },
-            new() { Label = "Lỗi hệ thống", IsCurrent = true }
-        }
-    };
+﻿@model BookingResultViewModel
 
-    ViewData["Title"] = "Lỗi Hệ Thống";
-}
-
-@await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
-
-<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="public-top-section-content is-left" data-animate="fade-up">
-            <span class="public-badge public-top-section-badge">
-                <span class="material-symbols-outlined text-[16px] text-primary">priority_high</span>
-                Hệ thống đang cần bạn thử lại
-            </span>
-            <h1 class="public-top-section-title text-white">Có sự cố trong quá trình xử lý</h1>
-            <p class="public-top-section-lead">Phiên thao tác này chưa thể hoàn tất. Bạn có thể tải lại trang, quay lại bước trước hoặc liên hệ hỗ trợ để HV Travel tiếp tục xử lý cùng bạn.</p>
-        </div>
-    </div>
-</section>
-
-<section class="py-20 bg-background-light dark:bg-background-dark min-h-[70vh] flex items-center">
-    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="mb-8" data-animate="scale-in">
-            <div class="mx-auto size-28 rounded-full bg-surface-muted-light dark:bg-surface-elevated-dark flex items-center justify-center relative">
-                <span class="material-symbols-outlined text-6xl text-slate-400">cloud_off</span>
-                <div class="absolute -bottom-1 -right-1 size-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-xl text-red-500">priority_high</span>
+<section class="public-journey-shell public-journey-shell--status public-booking-status-shell public-booking-status-shell--error">
+    <div class="public-journey-shell-inner">
+        <span class="sr-only">Trang chủ</span>
+        @await Html.PartialAsync("_JourneyHeader", Model.Journey)
+        <div class="public-journey-desk public-journey-desk--status">
+            <div class="public-journey-main">
+                <section class="public-journey-panel public-booking-section public-booking-status-intro">
+                    <p class="public-journey-card-eyebrow">Không thể hoàn tất thao tác</p>
+                    <h2 class="public-journey-panel-title">Hệ thống đang cần thêm một lần thử lại</h2>
+                    <p class="public-journey-note">Bạn có thể tải lại trang, quay lại bước trước hoặc nhờ đội hỗ trợ tiếp tục xử lý thủ công.</p>
+                </section>
+                <div class="public-journey-status-panel">
+                    @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
                 </div>
             </div>
-        </div>
-
-        <h1 class="public-section-title text-3xl font-extrabold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "errorTitle")">@statusCopy?.Fields.GetFieldValue("errorTitle", "Đã Xảy Ra Lỗi")</h1>
-        <div class="public-body-copy text-slate-500 dark:text-slate-400 mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "errorDescription")">
-            @Html.Raw(statusCopy?.Fields.GetFieldValue("errorDescription", "Đã xảy ra lỗi hệ thống trong quá trình xử lý. Vui lòng thử lại sau."))
-        </div>
-        <p class="text-xs text-slate-400 mb-8">Mã lỗi: 500 · @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
-
-        <div class="public-form-card bg-surface-muted-light dark:bg-surface-elevated-dark/70 rounded-2xl p-5 border border-border-light dark:border-border-dark mb-8 text-left" data-animate="fade-up" data-delay="200">
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Bạn có thể thử:</h4>
-            <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">refresh</span> Tải lại trang</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">history</span> Quay lại trang trước</li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span> Liên hệ hỗ trợ: <strong>@phone</strong></li>
-                <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">mail</span> Email: <strong>@email</strong></li>
-            </ul>
-        </div>
-
-        <div class="public-action-stack flex flex-col sm:flex-row justify-center gap-3" data-animate="fade-up" data-delay="300">
-            <button onclick="location.reload()" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                <span class="material-symbols-outlined text-[18px]">refresh</span> Tải Lại
-            </button>
-            <a asp-controller="Home" asp-action="Index" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">home</span> Trang Chủ
-            </a>
-            <button onclick="history.back()" class="flex items-center justify-center gap-2 px-6 py-3 bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay Lại
-            </button>
+            <aside class="public-journey-rail">
+                <div class="public-journey-support">
+                    @await Html.PartialAsync("_JourneySupportPanel", Model.Journey.Support)
+                </div>
+                <section class="public-journey-panel public-booking-section">
+                    <div class="public-booking-status-actions public-journey-action-row">
+                        <button type="button" onclick="location.reload()" class="public-journey-submit">Tải lại</button>
+                        <a asp-controller="Home" asp-action="Index" class="public-journey-action public-journey-action--secondary">Trang chủ</a>
+                    </div>
+                </section>
+            </aside>
         </div>
     </div>
 </section>

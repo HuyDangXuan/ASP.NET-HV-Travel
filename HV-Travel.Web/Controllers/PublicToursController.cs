@@ -3,6 +3,7 @@ using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Models;
 using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace HVTravel.Web.Controllers;
 
@@ -35,7 +36,7 @@ public class PublicToursController : Controller
         ViewData["ActivePage"] = "Tours";
         ViewData["Title"] = "Tour du lịch";
 
-        var result = await _tourRepository.SearchAsync(new TourSearchRequest
+        var request = new TourSearchRequest
         {
             Search = search,
             Sort = sort,
@@ -54,11 +55,25 @@ public class PublicToursController : Controller
             Page = page,
             PageSize = 9,
             PublicOnly = true
-        });
+        };
 
-        ViewData["Regions"] = result.Regions.Select(option => option.Value).ToList();
+        var result = await _tourRepository.SearchAsync(request);
+
+        var regionValues = new List<string>();
+        foreach (var option in result.Regions)
+        {
+            regionValues.Add(option.Value);
+        }
+
+        var destinationValues = new List<string>();
+        foreach (var option in result.Destinations)
+        {
+            destinationValues.Add(option.Value);
+        }
+
+        ViewData["Regions"] = regionValues;
         ViewData["RegionFacets"] = result.Regions;
-        ViewData["Destinations"] = result.Destinations.Select(option => option.Value).ToList();
+        ViewData["Destinations"] = destinationValues;
         ViewData["DestinationFacets"] = result.Destinations;
         ViewData["ConfirmationTypeFacets"] = result.ConfirmationTypes;
         ViewData["CancellationTypeFacets"] = result.CancellationTypes;
@@ -81,7 +96,10 @@ public class PublicToursController : Controller
         ViewData["TotalPages"] = result.TotalPages;
         ViewData["TotalItems"] = result.TotalItems;
 
-        result.Items.ForEach(tour => PublicTextSanitizer.NormalizeTourForDisplay(tour));
+        foreach (var item in result.Items)
+        {
+            PublicTextSanitizer.NormalizeTourForDisplay(item);
+        }
 
         return View(result.Items);
     }
@@ -95,7 +113,17 @@ public class PublicToursController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var tour = await _tourRepository.GetByIdAsync(id) ?? await _tourRepository.GetBySlugAsync(id);
+        Tour? tour = null;
+        if (ObjectId.TryParse(id, out _))
+        {
+            tour = await _tourRepository.GetByIdAsync(id);
+        }
+
+        if (tour == null)
+        {
+            tour = await _tourRepository.GetBySlugAsync(id);
+        }
+
         if (tour == null || !IsPubliclyVisible(tour.Status))
         {
             return NotFound();
@@ -126,18 +154,24 @@ public class PublicToursController : Controller
             PublicOnly = true
         });
 
-        var relatedTours = searchContext.Items
-            .Where(item => item.Id != tour.Id)
-            .OrderByDescending(item => string.Equals(item.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(item => string.Equals(item.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(item => item.EffectiveDepartures.Any(departure => departure.RemainingCapacity is > 0 and <= 5))
-            .ThenByDescending(item => item.Rating)
-            .Take(4)
-            .ToList();
+        var relatedTours = new List<Tour>();
+        foreach (var item in searchContext.Items)
+        {
+            if (item.Id == tour.Id)
+            {
+                continue;
+            }
 
-        relatedTours.ForEach(tour => PublicTextSanitizer.NormalizeTourForDisplay(tour));
-        ViewData["RelatedTours"] = relatedTours;
-        return View(tour);
+            PublicTextSanitizer.NormalizeTourForDisplay(item);
+            relatedTours.Add(item);
+            if (relatedTours.Count == 4)
+            {
+                break;
+            }
+        }
+
+        var dossierPresenter = new PublicTourDossierPresenter();
+        return View(dossierPresenter.Build(tour, relatedTours));
     }
 
     private static bool IsPubliclyVisible(string? status)
@@ -145,4 +179,3 @@ public class PublicToursController : Controller
         return status is "Active" or "ComingSoon" or "SoldOut";
     }
 }
-

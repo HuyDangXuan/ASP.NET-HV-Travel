@@ -1,140 +1,128 @@
-﻿@inject IPublicContentService ContentService
-@using HVTravel.Domain.Entities
-@using HVTravel.Web.Services
-@model HVTravel.Web.Models.BookingResultViewModel
+﻿@model BookingResultViewModel
 @{
-    var sections = await ContentService.GetPageSectionsAsync("booking");
-    var paymentHero = sections.GetSection("paymentHero");
-    var paymentStepper = sections.GetSection("paymentStepper");
-    var paymentMethods = sections.GetSection("paymentMethods");
-    var transferProof = sections.GetSection("transferProof");
-    var orderSummary = sections.GetSection("orderSummary");
-    var paymentTimeline = sections.GetSection("paymentTimeline");
     var booking = Model.Booking;
-    var tour = Model.Tour;
-    var departure = tour?.ResolveDeparture(booking.DepartureId, booking.TourSnapshot?.StartDate);
-    var activePaymentSession = booking.PaymentSessions.OrderByDescending(item => item.UpdatedAt).FirstOrDefault();
-    var timeline = booking.Events ?? new List<BookingEvent>();
+    var paymentSessionCount = booking.PaymentSessions?.Count ?? 0;
+    var amountDueNow = booking.PaymentPlan?.AmountDueNow > 0m ? booking.PaymentPlan.AmountDueNow : booking.TotalAmount;
+    var balanceDue = booking.PaymentPlan?.BalanceDue ?? 0m;
+    var grandTotal = booking.PricingBreakdown?.GrandTotal ?? booking.TotalAmount;
+    var planLabel = string.Equals(booking.PaymentPlan?.PlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "Đặt cọc 30%" : "Thanh toán toàn bộ";
+    var nextStepText = balanceDue > 0m
+        ? "Phần còn lại sẽ được đội vận hành nhắc trước ngày khởi hành."
+        : "Hoàn tất một lần để booking chuyển sang trạng thái xác nhận ngay.";
+
+    string FormatCurrency(decimal amount) => $"{amount:N0}₫";
 }
 
-@if (paymentHero?.IsEnabled != false)
-{
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(paymentHero)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentHero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(paymentHero)">
-            <span class="public-badge public-top-section-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "badgeText")">@paymentHero.Fields.GetVisibleFieldValue("badgeText", "Bước 2 trong hành trình đặt tour")</span>
-            <h1 class="public-top-section-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "title")">@paymentHero.Fields.GetVisibleFieldValue("title", "Xác nhận thanh toán booking")</h1>
-            <div class="public-top-section-lead" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "description")">@Html.Raw(paymentHero.Fields.GetVisibleFieldValue("description", "Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần."))</div>
-        </div>
-    </section>
-}
-
-@if (paymentStepper?.IsEnabled != false)
-{
-    <div class="border-b border-border-light bg-surface-light py-4 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentStepper) @ContentPresentationViewHelper.GetSectionBackgroundClass(paymentStepper)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentStepper)">
-        <div class="mx-auto flex max-w-5xl items-center justify-center gap-4 px-4 text-sm sm:px-6 lg:px-8">
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "detailsStepLabel")">1. @paymentStepper.Fields.GetVisibleFieldValue("detailsStepLabel", "Thông tin")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "paymentStepLabel")">2. @paymentStepper.Fields.GetVisibleFieldValue("paymentStepLabel", "Thanh toán")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "completeStepLabel")">3. @paymentStepper.Fields.GetVisibleFieldValue("completeStepLabel", "Hoàn tất")</span>
-        </div>
-    </div>
-}
-
-<section class="bg-background-light py-10 dark:bg-background-dark">
-    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-        <div class="space-y-6">
-            @if (TempData["PaymentSuccess"] != null)
-            {
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@TempData["PaymentSuccess"]</div>
-            }
-            @if (TempData["PaymentError"] != null)
-            {
-                <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">@TempData["PaymentError"]</div>
-            }
-
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentMethods)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentMethods)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "eyebrowText")">@paymentMethods?.Fields.GetVisibleFieldValue("eyebrowText", "Payment methods")</p>
-                <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "title")">@paymentMethods?.Fields.GetVisibleFieldValue("title", "Chọn cách thu tiền cho booking này")</h2>
-                <form asp-action="ProcessPayment" method="post" class="mt-6 space-y-4">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="bookingId" value="@booking.Id" />
-                    <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                        <input type="radio" name="paymentMethod" value="BankTransfer" checked class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "bankTransferTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("bankTransferTitle", "Chuyển khoản thủ công")</strong>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "bankTransferDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("bankTransferDescription", "Tải minh chứng chuyển khoản để đội vận hành đối soát trên admin.")</p>
-                    </label>
-                    <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                        <input type="radio" name="paymentMethod" value="CreditCard" class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "creditCardTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("creditCardTitle", "Mock online gateway")</strong>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "creditCardDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("creditCardDescription", "Luồng demo nội bộ sẽ gọi callback idempotent để mô phỏng gateway online.")</p>
-                    </label>
-                    <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                        <input type="radio" name="paymentMethod" value="Cash" class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "cashTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("cashTitle", "Cash hold")</strong>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "cashDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("cashDescription", "Giữ chỗ trước và thanh toán bằng tiền mặt tại văn phòng hoặc khi khởi hành.")</p>
-                    </label>
-                    <button type="submit" class="w-full rounded-2xl bg-primary px-5 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "submitText")">@paymentMethods?.Fields.GetVisibleFieldValue("submitText", "Xác nhận thanh toán")</button>
-                </form>
-            </div>
-
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(transferProof)" style="@ContentPresentationViewHelper.GetSectionStyle(transferProof)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "eyebrowText")">@transferProof?.Fields.GetVisibleFieldValue("eyebrowText", "Transfer proof")</p>
-                <div class="mt-2 flex items-center justify-between gap-3">
-                    <h3 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "title")">@transferProof?.Fields.GetVisibleFieldValue("title", "Tải minh chứng chuyển khoản")</h3>
-                    @if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
-                    {
-                        <a asp-action="Resume" asp-route-checkoutSessionId="@booking.CheckoutSessionId" class="text-sm font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "resumeText")">@transferProof?.Fields.GetVisibleFieldValue("resumeText", "Resume checkout")</a>
-                    }
-                </div>
-                <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="bookingId" value="@booking.Id" />
-                    <input type="file" name="proofFile" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                    <textarea name="note" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(transferProof?.Fields.GetVisibleFieldValue("notePlaceholder", "Ghi chú đối soát hoặc mã tham chiếu giao dịch"))"></textarea>
-                    <button type="submit" class="rounded-2xl border border-border-light px-5 py-3 text-sm font-bold dark:border-border-dark" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "submitText")">@transferProof?.Fields.GetVisibleFieldValue("submitText", "Gửi minh chứng")</button>
-                </form>
-            </div>
+<section class="public-journey-shell public-booking-payment-shell">
+    <div class="public-journey-shell-inner">
+        @await Html.PartialAsync("_JourneyHeader", Model.Journey)
+        <div class="public-journey-stagebar">
+            @await Html.PartialAsync("_JourneyStageBar", Model.Journey)
         </div>
 
-        <aside class="space-y-6">
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(orderSummary)" style="@ContentPresentationViewHelper.GetSectionStyle(orderSummary)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "eyebrowText")">@orderSummary?.Fields.GetVisibleFieldValue("eyebrowText", "Order summary")</p>
-                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "titleFormat")">@string.Format(orderSummary?.Fields.GetVisibleFieldValue("titleFormat", "Booking {0}") ?? "Booking {0}", booking.BookingCode)</h3>
-                <div class="mt-4 space-y-2 text-sm">
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("bookingCodeLabel", "Mã đơn")</span><span class="font-mono text-primary">@booking.BookingCode</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("departureLabel", "Khởi hành")</span><span>@(departure?.StartDate.ToString("dd/MM/yyyy") ?? booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "-")</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("couponLabel", "Coupon")</span><span>@(string.IsNullOrWhiteSpace(booking.CouponCode) ? "-" : booking.CouponCode)</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentStatusLabel", "Trạng thái thanh toán")</span><span>@booking.PaymentStatus</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("subtotalLabel", "Tạm tính")</span><span>@booking.PricingBreakdown.Subtotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("discountLabel", "Giảm giá")</span><span>@booking.PricingBreakdown.DiscountTotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("grandTotalLabel", "Tổng thanh toán")</span><span>@booking.PricingBreakdown.GrandTotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentPlanLabel", "Kế hoạch")</span><span>@booking.PaymentPlan.PlanType</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("amountDueNowLabel", "Thanh toán ngay")</span><span>@booking.PaymentPlan.AmountDueNow.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("balanceDueLabel", "Còn lại")</span><span>@booking.PaymentPlan.BalanceDue.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("checkoutSessionLabel", "Checkout session")</span><span class="font-mono text-xs">@(string.IsNullOrWhiteSpace(booking.CheckoutSessionId) ? "-" : booking.CheckoutSessionId)</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentSessionLabel", "Payment session")</span><span class="font-mono text-xs">@(activePaymentSession?.Reference ?? activePaymentSession?.Id ?? (orderSummary?.Fields.GetVisibleFieldValue("pendingLabel", "Pending") ?? "Pending"))</span></div>
-                </div>
-            </div>
-
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentTimeline)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentTimeline)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "eyebrowText")">@paymentTimeline?.Fields.GetVisibleFieldValue("eyebrowText", "Timeline")</p>
-                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "title")">@paymentTimeline?.Fields.GetVisibleFieldValue("title", "Timeline thanh toán")</h3>
-                @if (timeline.Any())
+        <div class="public-journey-desk public-journey-desk--payment">
+            <div class="public-journey-main">
+                @if (TempData["PaymentSuccess"] != null)
                 {
-                    <div class="mt-4 space-y-3">
-                        @foreach (var evt in timeline.OrderByDescending(item => item.OccurredAt).Take(4))
-                        {
-                            <div class="rounded-2xl bg-surface-muted-light px-4 py-3 text-sm dark:bg-surface-elevated-dark">
-                                <p class="font-bold">@evt.Title</p>
-                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@evt.Description</p>
-                            </div>
-                        }
+                    <div class="public-journey-flash public-journey-flash--success">@TempData["PaymentSuccess"]</div>
+                }
+                @if (TempData["PaymentError"] != null)
+                {
+                    <div class="public-journey-flash public-journey-flash--danger">@TempData["PaymentError"]</div>
+                }
+
+                <div class="public-journey-status-panel">
+                    @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
+                </div>
+
+                <section class="public-journey-panel public-booking-section public-booking-payment-glance">
+                    <div class="public-journey-panel-heading">
+                        <p class="public-journey-card-eyebrow">Đọc nhanh trước khi chọn phương thức</p>
+                        <h2 class="public-journey-panel-title">Thanh toán trong một lần nhìn</h2>
                     </div>
-                }
-                else
-                {
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@paymentTimeline?.Fields.GetVisibleFieldValue("emptyStateText", "Booking chưa có mốc xử lý hiển thị cho khách hàng.")</p>
-                }
+                    <div class="public-booking-glance-grid">
+                        <article class="public-booking-glance-card">
+                            <span>Thanh toán ngay</span>
+                            <strong>@FormatCurrency(amountDueNow)</strong>
+                            <p>@planLabel</p>
+                        </article>
+                        <article class="public-booking-glance-card">
+                            <span>Còn lại</span>
+                            <strong>@FormatCurrency(balanceDue)</strong>
+                            <p>@nextStepText</p>
+                        </article>
+                        <article class="public-booking-glance-card">
+                            <span>Tổng giá trị</span>
+                            <strong>@FormatCurrency(grandTotal)</strong>
+                            <p>Booking @booking.BookingCode</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="public-journey-panel public-journey-payment-switcher public-booking-section" data-session-count="@paymentSessionCount" data-checkout-session="@booking.CheckoutSessionId">
+                    <div class="public-journey-panel-heading">
+                        <p class="public-journey-card-eyebrow">Chọn cách bạn muốn thanh toán</p>
+                        <h2 class="public-journey-panel-title">Một bước chốt phương thức, một bước hoàn tất</h2>
+                    </div>
+                    @await Html.PartialAsync("_JourneyPaymentMethodSwitcher", Model)
+                </section>
+
+                <section class="public-journey-panel public-booking-section" data-transfer-proof-block hidden>
+                    <div class="public-journey-panel-heading">
+                        <p class="public-journey-card-eyebrow">Tải minh chứng khi đã chuyển khoản</p>
+                        <h2 class="public-journey-panel-title">Gửi minh chứng chuyển khoản</h2>
+                    </div>
+                    <p class="public-journey-note">Nếu bạn chọn chuyển khoản ngân hàng, hãy tải minh chứng tại đây để đội vận hành đối soát nhanh hơn.</p>
+                    <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="public-journey-upload-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="bookingId" value="@booking.Id" />
+                        <input type="file" name="proofFile" />
+                        <textarea name="note" rows="4" placeholder="Ghi chú mã giao dịch hoặc thông tin cần đội vận hành lưu ý"></textarea>
+                        <button type="submit" class="public-journey-submit public-journey-submit--ghost">Gửi minh chứng</button>
+                    </form>
+                </section>
             </div>
-        </aside>
+
+            <aside class="public-journey-rail">
+                <div class="public-journey-summary">
+                    @await Html.PartialAsync("_JourneySummaryRail", Model.Journey.Summary)
+                </div>
+                <div class="public-journey-timeline">
+                    @await Html.PartialAsync("_JourneyTimeline", Model.Journey.Timeline)
+                </div>
+                <div class="public-journey-support">
+                    @await Html.PartialAsync("_JourneySupportPanel", Model.Journey.Support)
+                </div>
+            </aside>
+        </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        (() => {
+            document.querySelectorAll('[data-journey-payment-switcher]').forEach((switcher) => {
+                const radios = switcher.querySelectorAll('input[data-payment-method]');
+                const panels = switcher.querySelectorAll('[data-payment-panel]');
+                const submitLabel = switcher.querySelector('[data-payment-cta-label]');
+                const transferProofBlock = document.querySelector('[data-transfer-proof-block]');
+                const sync = () => {
+                    const active = Array.from(radios).find((radio) => radio.checked);
+                    panels.forEach((panel) => panel.classList.toggle('is-active', panel.dataset.paymentPanel === active?.dataset.paymentMethod));
+                    switcher.querySelectorAll('[data-payment-option]').forEach((option) => {
+                        const input = option.querySelector('input[data-payment-method]');
+                        option.classList.toggle('is-selected', Boolean(input && input.checked));
+                    });
+                    if (submitLabel && active?.dataset.paymentCta) {
+                        submitLabel.textContent = active.dataset.paymentCta;
+                    }
+                    if (transferProofBlock) {
+                        transferProofBlock.hidden = active?.dataset.paymentMethod !== 'BankTransfer';
+                    }
+                };
+                radios.forEach((radio) => radio.addEventListener('change', sync));
+                sync();
+            });
+        })();
+    </script>
+}

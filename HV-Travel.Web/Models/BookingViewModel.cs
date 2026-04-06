@@ -8,6 +8,10 @@ public class BookingViewModel
 {
     [BindNever]
     public Tour? Tour { get; set; }
+
+    [BindNever]
+    public BookingJourneyPageVm Journey { get; set; } = new();
+
     public string TourId { get; set; } = string.Empty;
     public string DepartureId { get; set; } = string.Empty;
     public DateTime? SelectedStartDate { get; set; }
@@ -45,10 +49,14 @@ public class BookingResultViewModel
     public Booking Booking { get; set; } = new();
     public Tour? Tour { get; set; }
     public string? ErrorMessage { get; set; }
+    public BookingJourneyPageVm Journey { get; set; } = new();
 }
 
 public class ConsultationViewModel
 {
+    [BindNever]
+    public BookingJourneyPageVm Journey { get; set; } = new();
+
     [Required(ErrorMessage = "Vui lòng nhập họ tên")]
     public string FullName { get; set; } = string.Empty;
 

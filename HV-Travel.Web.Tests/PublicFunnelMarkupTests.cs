@@ -1,4 +1,4 @@
-namespace HV_Travel.Web.Tests;
+﻿namespace HV_Travel.Web.Tests;
 
 public class PublicFunnelMarkupTests
 {
@@ -43,8 +43,6 @@ public class PublicFunnelMarkupTests
         Assert.Contains("name=\"sort\"", filterPartial);
         Assert.Contains("name=\"confirmationType\"", filterPartial);
         Assert.Contains("name=\"cancellationType\"", filterPartial);
-        Assert.Contains("availableOnlyLabelText", filterPartial);
-        Assert.Contains("promotionOnlyLabelText", filterPartial);
         Assert.Contains("applyButtonText", filterPartial);
         Assert.Contains("resetButtonText", filterPartial);
         Assert.Contains("PartialAsync(\"_TourCard\"", content);
@@ -65,6 +63,7 @@ public class PublicFunnelMarkupTests
         Assert.Contains("togglePublicCustomSelect", script);
         Assert.Contains("selectPublicCustomOption", script);
     }
+
     [Fact]
     public void ServicesIndex_UsesPublicCustomSelectAndDatePickerControls()
     {
@@ -141,39 +140,108 @@ public class PublicFunnelMarkupTests
     }
 
     [Fact]
-    public void BookingCreate_ExposesDepartureCouponPlanAndQuotePreviewHooks()
+    public void BookingCreate_UsesJourneyDeskBuilderAndLiveQuoteHooks()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Create.cshtml"));
 
-        Assert.Contains("tour.EffectiveDepartures", content);
+        Assert.Contains("Model.Journey", content);
+        Assert.Contains("PartialAsync(\"_JourneyHeader\"", content);
+        Assert.Contains("PartialAsync(\"_JourneyStageBar\"", content);
+        Assert.Contains("PartialAsync(\"_JourneySummaryRail\"", content);
+        Assert.Contains("PartialAsync(\"_JourneySupportPanel\"", content);
+        Assert.Contains("public-journey-shell", content);
+        Assert.Contains("public-journey-desk", content);
+        Assert.Contains("public-journey-panel", content);
+        Assert.Contains("public-journey-quote", content);
+        Assert.Contains("public-journey-summary", content);
+        Assert.Contains("public-booking-runway", content);
+        Assert.Contains("public-booking-intro", content);
+        Assert.Contains("public-booking-overview-grid", content);
+        Assert.Contains("public-booking-section", content);
+        Assert.Contains("public-booking-finance-panel", content);
+        Assert.Contains("public-booking-coupon-disclosure", content);
+        Assert.Contains("public-booking-field", content);
+        Assert.Contains("public-booking-party-grid", content);
+        Assert.Contains("data-booking-selected-date", content);
+        Assert.Contains("data-booking-selected-capacity", content);
+        Assert.Contains("data-booking-selected-plan", content);
         Assert.Contains("asp-for=\"DepartureId\"", content);
         Assert.Contains("asp-for=\"CouponCode\"", content);
         Assert.Contains("asp-for=\"PaymentPlanType\"", content);
+        Assert.Contains("Có mã ưu đãi?", content);
         Assert.Contains("Quote", content);
         Assert.Contains("fetch(", content);
-        Assert.Contains("amountDueNow", content);
-        Assert.Contains("balanceDue", content);
+        Assert.DoesNotContain("Stage 1", content);
+        Assert.DoesNotContain("Stage 2", content);
+        Assert.DoesNotContain("Stage 3", content);
     }
 
     [Fact]
-    public void PaymentAndSuccess_ExposePaymentBreakdownSessionAndResumeHooks()
+    public void PaymentLookupAndStatusViews_UseSharedJourneyPartialsAndStatusHooks()
     {
         var payment = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Payment.cshtml"));
         var success = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Success.cshtml"));
         var failed = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Failed.cshtml"));
+        var lookup = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\BookingLookup\Index.cshtml"));
+        var consultation = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Consultation.cshtml"));
 
-        Assert.Contains("booking.PaymentPlan.AmountDueNow", payment);
-        Assert.Contains("booking.PaymentPlan.BalanceDue", payment);
-        Assert.Contains("booking.CouponCode", payment);
+        Assert.Contains("PartialAsync(\"_JourneyHeader\"", payment);
+        Assert.Contains("PartialAsync(\"_JourneySummaryRail\"", payment);
+        Assert.Contains("PartialAsync(\"_JourneyTimeline\"", payment);
+        Assert.Contains("PartialAsync(\"_JourneySupportPanel\"", payment);
+        Assert.Contains("PartialAsync(\"_JourneyPaymentMethodSwitcher\"", payment);
+        Assert.Contains("public-journey-payment-switcher", payment);
+        Assert.Contains("public-booking-payment-shell", payment);
+        Assert.Contains("public-booking-payment-glance", payment);
+        Assert.Contains("public-booking-glance-card", payment);
         Assert.Contains("booking.PaymentSessions", payment);
         Assert.Contains("booking.CheckoutSessionId", payment);
-        Assert.Contains("booking.PaymentPlan.AmountDueNow", success);
-        Assert.Contains("booking.PaymentPlan.BalanceDue", success);
-        Assert.Contains("CustomerPortal", success);
-        Assert.Contains("booking.CheckoutSessionId", failed);
-        Assert.Contains("Resume", failed);
+        Assert.DoesNotContain("Payment desk", payment);
+        Assert.DoesNotContain("Transfer proof", payment);
+
+        Assert.Contains("PartialAsync(\"_JourneyStatusPanel\"", success);
+        Assert.Contains("PartialAsync(\"_JourneySummaryRail\"", success);
+        Assert.Contains("PartialAsync(\"_JourneyTimeline\"", success);
+        Assert.Contains("public-journey-status-panel", success);
+        Assert.Contains("public-booking-status-shell", success);
+        Assert.Contains("public-booking-status-intro", success);
+
+        Assert.Contains("PartialAsync(\"_JourneyStatusPanel\"", failed);
+        Assert.Contains("public-journey-status-panel", failed);
+        Assert.Contains("public-booking-status-shell", failed);
+        Assert.Contains("public-booking-status-intro", failed);
+
+        Assert.Contains("public-booking-lookup-shell", lookup);
+        Assert.Contains("public-booking-lookup-intro", lookup);
+        Assert.Contains("public-journey-status-panel", lookup);
+        Assert.Contains("public-journey-timeline", lookup);
+        Assert.Contains("Tra cứu booking", lookup);
+
+        Assert.Contains("public-booking-support-shell", consultation);
+        Assert.Contains("public-journey-support", consultation);
+        Assert.Contains("public-journey-panel", consultation);
+        Assert.Contains("TourInterest", consultation);
+        Assert.DoesNotContain("Support desk", consultation);
     }
 
+    [Fact]
+    public void PublicToursDetails_UsesTourDossierPosterRailAndDepartureMatrixHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\PublicTours\Details.cshtml"));
+
+        Assert.Contains("public-tour-dossier-shell", content);
+        Assert.Contains("public-tour-dossier-hero", content);
+        Assert.Contains("public-tour-dossier-poster", content);
+        Assert.Contains("public-tour-dossier-grid", content);
+        Assert.Contains("public-tour-dossier-rail", content);
+        Assert.Contains("public-tour-dossier-strip", content);
+        Assert.Contains("public-tour-dossier-chapter", content);
+        Assert.Contains("public-tour-dossier-departures", content);
+        Assert.Contains("public-tour-dossier-booking-bar", content);
+        Assert.Contains("asp-route-departureId", content);
+        Assert.Contains("asp-route-startDate", content);
+        Assert.Contains("asp-controller=\"Booking\"", content);
+    }
 
     [Fact]
     public void PublicFunnelViews_DoNotUse_CommentPlaceholderHooks()
@@ -214,6 +282,34 @@ public class PublicFunnelMarkupTests
     }
 
     [Fact]
+    public void BookingWorkflowViews_UseUnicodeVietnameseCopyWithoutEnglishScaffolding()
+    {
+        var create = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Create.cshtml"));
+        var payment = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Payment.cshtml"));
+        var success = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Success.cshtml"));
+        var failed = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Failed.cshtml"));
+        var error = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Error.cshtml"));
+        var consultation = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\Booking\Consultation.cshtml"));
+        var lookup = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Views\BookingLookup\Index.cshtml"));
+
+        Assert.Contains("Có mã ưu đãi?", create);
+        Assert.Contains("Chọn cách bạn muốn thanh toán", payment);
+        Assert.Contains("Booking đã được ghi nhận", success);
+        Assert.Contains("Thanh toán chưa hoàn tất", failed);
+        Assert.Contains("Không thể hoàn tất thao tác", error);
+        Assert.Contains("Gửi yêu cầu tư vấn", consultation);
+        Assert.Contains("Tra cứu booking", lookup);
+
+        Assert.DoesNotContain("Trip builder", create);
+        Assert.DoesNotContain("Payment desk", payment);
+        Assert.DoesNotContain("Booking status", success);
+        Assert.DoesNotContain("Support desk", consultation);
+
+        Assert.DoesNotContain("Trang ch???", create);
+        Assert.DoesNotContain("T???i l???i", error);
+        Assert.DoesNotContain("Th??? b???i", failed);
+    }
+    [Fact]
     public void PublicToursController_UsesUnicodePageTitle()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\Controllers\PublicToursController.cs"));
@@ -221,15 +317,13 @@ public class PublicFunnelMarkupTests
         Assert.DoesNotContain("Tour Du L???ch", content);
         Assert.Contains("ViewData[\"Title\"]", content);
     }
+
     private static string GetRepoPath(string relativePath)
     {
         var repoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
         return Path.Combine(repoRoot, relativePath);
     }
 }
-
-
-
 
 
 

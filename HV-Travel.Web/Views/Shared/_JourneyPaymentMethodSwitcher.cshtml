@@ -1,0 +1,72 @@
+﻿@model BookingResultViewModel
+@{
+    var booking = Model.Booking;
+    var methods = Model.Journey.PaymentMethods ?? Array.Empty<BookingPaymentMethodVm>();
+    var activeMethod = methods.FirstOrDefault(item => item.IsSelected)?.Key ?? "CreditCard";
+    var resumeUrl = !string.IsNullOrWhiteSpace(booking.CheckoutSessionId)
+        ? Url.Action("Resume", "Booking", new { checkoutSessionId = booking.CheckoutSessionId })
+        : null;
+}
+
+<div class="public-journey-payment-choices" data-journey-payment-switcher>
+    <form asp-action="ProcessPayment" method="post" class="public-journey-payment-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="bookingId" value="@booking.Id" />
+        <div class="public-journey-payment-option-list public-booking-payment-option-list">
+            @foreach (var method in methods)
+            {
+                <label class="public-journey-payment-option public-booking-payment-option @(method.IsSelected ? "is-selected" : string.Empty)" data-payment-option data-payment-accent="@method.Accent">
+                    <input type="radio"
+                           name="paymentMethod"
+                           value="@method.Key"
+                           checked="@method.IsSelected"
+                           data-payment-method="@method.Key"
+                           data-payment-cta="@method.CTA"
+                           class="public-journey-payment-radio" />
+                    <span class="public-journey-payment-copy public-booking-payment-copy">
+                        <strong>@method.Label</strong>
+                        <span>@method.Description</span>
+                    </span>
+                </label>
+            }
+        </div>
+
+        <div class="public-journey-payment-bodies public-booking-payment-bodies">
+            @foreach (var method in methods)
+            {
+                <section class="public-journey-payment-body public-booking-payment-body @(method.Key == activeMethod ? "is-active" : string.Empty)" data-payment-panel="@method.Key">
+                    <p class="public-journey-card-eyebrow">@method.BodyTitle</p>
+                    <h3>@method.Label</h3>
+                    <p>@method.BodyDescription</p>
+                    @if (method.Key == "CreditCard")
+                    {
+                        <div class="public-journey-inline-meta">
+                            <span>Checkout session hiện tại</span>
+                            <strong>@(string.IsNullOrWhiteSpace(booking.CheckoutSessionId) ? "Chưa có" : booking.CheckoutSessionId)</strong>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(resumeUrl))
+                        {
+                            <a href="@resumeUrl" class="public-journey-inline-link">Tiếp tục checkout online</a>
+                        }
+                    }
+                    else if (method.Key == "BankTransfer")
+                    {
+                        <ul class="public-journey-inline-list">
+                            <li>Ngân hàng: Vietcombank</li>
+                            <li>Chủ tài khoản: HV Travel</li>
+                            <li>Nội dung: @booking.BookingCode</li>
+                        </ul>
+                    }
+                    else if (method.Key == "Cash")
+                    {
+                        <p class="public-journey-inline-note">Booking sẽ được giữ chỗ trước, đội vận hành sẽ hướng dẫn khung thời gian thanh toán phù hợp.</p>
+                    }
+                </section>
+            }
+        </div>
+
+        <button type="submit" class="public-journey-submit" data-payment-submit>
+            <span data-payment-cta-label>@methods.FirstOrDefault(item => item.Key == activeMethod)?.CTA</span>
+        </button>
+    </form>
+</div>

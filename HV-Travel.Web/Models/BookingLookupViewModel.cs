@@ -1,4 +1,4 @@
-namespace HVTravel.Web.Models;
+﻿namespace HVTravel.Web.Models;
 
 public class BookingLookupViewModel
 {
@@ -17,5 +17,6 @@ public class BookingLookupViewModel
     public DateTime? StartDate { get; set; }
     public DateTime BookingDate { get; set; }
     public IReadOnlyList<string> History { get; set; } = Array.Empty<string>();
+    public BookingJourneyPageVm Journey { get; set; } = new();
     public bool HasResult => !string.IsNullOrWhiteSpace(BookingCode);
 }

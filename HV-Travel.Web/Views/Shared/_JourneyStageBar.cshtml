@@ -1,0 +1,28 @@
+﻿@model BookingJourneyPageVm
+@{
+    var stages = new[]
+    {
+        new { Index = 1, Label = "Giữ chỗ" },
+        new { Index = 2, Label = "Thanh toán" },
+        new { Index = 3, Label = "Xác nhận" }
+    };
+}
+@if (Model.ShowStageBar)
+{
+    <nav aria-label="Tiến trình đặt tour">
+        <ol class="public-journey-stagebar-list">
+            @foreach (var stage in stages)
+            {
+                var stateClass = stage.Index < Model.StageIndex
+                    ? "is-complete"
+                    : stage.Index == Model.StageIndex
+                        ? "is-current"
+                        : string.Empty;
+                <li class="public-journey-stage @stateClass">
+                    <span class="public-journey-stage-index">@stage.Index</span>
+                    <span class="public-journey-stage-label">@stage.Label</span>
+                </li>
+            }
+        </ol>
+    </nav>
+}

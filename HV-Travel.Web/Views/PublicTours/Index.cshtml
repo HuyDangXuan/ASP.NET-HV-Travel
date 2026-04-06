@@ -1,4 +1,4 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @using HVTravel.Domain.Entities
 @using HVTravel.Domain.Models
 @using HVTravel.Web.Services
@@ -180,7 +180,7 @@
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="public-card-grid public-tour-card-grid grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
+                    <div class="public-card-grid public-tour-card-grid grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
                         @foreach (var tour in Model)
                         {
                             @await Html.PartialAsync("_TourCard", tour)

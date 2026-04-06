@@ -1,7 +1,11 @@
 ﻿using HVTravel.Domain.Entities;
+using HVTravel.Domain.Interfaces;
+using HVTravel.Domain.Models;
 using HVTravel.Web.Controllers;
 using HV_Travel.Web.Tests.TestSupport;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace HV_Travel.Web.Tests;
 
@@ -198,5 +202,71 @@ public class PublicToursControllerSearchTests
         Assert.Equal(4, Assert.IsType<int>(controller.ViewData["CurrentTravellers"]));
         Assert.Equal("Instant", controller.ViewData["CurrentConfirmationType"]);
         Assert.Equal("FreeCancellation", controller.ViewData["CurrentCancellationType"]);
+    }
+
+    [Fact]
+    public async Task Details_FallsBackToSlugWithoutQueryingObjectIdParserForNonObjectIdInput()
+    {
+        var tour = new Tour
+        {
+            Id = "507f1f77bcf86cd799439011",
+            Slug = "ha-long-premium",
+            Name = "Hạ Long Premium",
+            Description = "Du thuyền vịnh",
+            ShortDescription = "Hành trình cao cấp",
+            Status = "Active",
+            Destination = new Destination { City = "Hạ Long", Country = "Việt Nam", Region = "Miền Bắc" },
+            Price = new TourPrice { Adult = 4500000m },
+            Duration = new TourDuration { Days = 2, Nights = 1, Text = "2 ngày 1 đêm" },
+            Images = []
+        };
+
+        var controller = new PublicToursController(new SlugFirstTourRepository(tour))
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            },
+            Url = new StubUrlHelper()
+        };
+        controller.ControllerContext.HttpContext.Request.Scheme = "https";
+
+        var result = await controller.Details("ha-long-premium");
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<HVTravel.Web.Models.PublicTourDetailsPageViewModel>(view.Model);
+        Assert.Equal("ha-long-premium", model.Tour.Slug);
+    }
+
+    private sealed class SlugFirstTourRepository : ITourRepository
+    {
+        private readonly Tour _tour;
+
+        public SlugFirstTourRepository(Tour tour)
+        {
+            _tour = tour;
+        }
+
+        public Task<IEnumerable<Tour>> GetAllAsync() => Task.FromResult<IEnumerable<Tour>>([_tour]);
+        public Task<Tour> GetByIdAsync(string id) => throw new FormatException($"Unexpected id lookup for {id}");
+        public Task<Tour?> GetBySlugAsync(string slug) => Task.FromResult<Tour?>(string.Equals(slug, _tour.Slug, StringComparison.OrdinalIgnoreCase) ? _tour : null);
+        public Task<IEnumerable<Tour>> FindAsync(System.Linq.Expressions.Expression<Func<Tour, bool>> predicate) => Task.FromResult<IEnumerable<Tour>>([_tour]);
+        public Task AddAsync(Tour entity) => Task.CompletedTask;
+        public Task UpdateAsync(string id, Tour entity) => Task.CompletedTask;
+        public Task DeleteAsync(string id) => Task.CompletedTask;
+        public Task<PaginatedResult<Tour>> GetPagedAsync(int pageIndex, int pageSize, System.Linq.Expressions.Expression<Func<Tour, bool>>? filter = null) => Task.FromResult(new PaginatedResult<Tour>([_tour], 1, pageIndex, pageSize));
+        public Task<TourSearchResult> SearchAsync(TourSearchRequest request) => Task.FromResult(new TourSearchResult { Items = [_tour], CurrentPage = 1, TotalItems = 1, TotalPages = 1 });
+        public Task<bool> IncrementParticipantsAsync(string tourId, int count) => Task.FromResult(false);
+        public Task<bool> ReserveDepartureAsync(string tourId, string departureId, int travellerCount) => Task.FromResult(false);
+    }
+
+    private sealed class StubUrlHelper : IUrlHelper
+    {
+        public ActionContext ActionContext { get; } = new();
+        public string? Action(UrlActionContext actionContext) => $"/{actionContext.Controller}/{actionContext.Action}";
+        public string? Content(string? contentPath) => contentPath;
+        public bool IsLocalUrl(string? url) => true;
+        public string? Link(string? routeName, object? values) => "/PublicTours/Details";
+        public string? RouteUrl(UrlRouteContext routeContext) => "/PublicTours/Details";
     }
 }

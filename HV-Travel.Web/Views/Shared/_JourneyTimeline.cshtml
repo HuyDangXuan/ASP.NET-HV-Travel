@@ -1,0 +1,34 @@
+﻿@model BookingTimelineVm
+
+<section class="public-journey-panel public-journey-timeline-card">
+    <div class="public-journey-panel-heading">
+        <p class="public-journey-card-eyebrow">Tiến trình</p>
+        <h2 class="public-journey-panel-title">@Model.Title</h2>
+    </div>
+    @if (Model.Items.Any())
+    {
+        <ol class="public-journey-timeline-list">
+            @foreach (var item in Model.Items)
+            {
+                <li class="public-journey-timeline-item">
+                    <span class="public-journey-timeline-dot"></span>
+                    <div>
+                        <h3>@item.Title</h3>
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <p>@item.Description</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Meta))
+                        {
+                            <span class="public-journey-timeline-meta">@item.Meta</span>
+                        }
+                    </div>
+                </li>
+            }
+        </ol>
+    }
+    else
+    {
+        <p class="public-journey-empty">@Model.EmptyText</p>
+    }
+</section>

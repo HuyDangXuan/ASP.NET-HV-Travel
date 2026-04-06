@@ -1,0 +1,29 @@
+﻿@model BookingSummaryVm
+
+<section class="public-journey-card public-journey-summary-card">
+    <p class="public-journey-card-eyebrow">@Model.Eyebrow</p>
+    <h2 class="public-journey-card-title">@Model.Title</h2>
+    @if (!string.IsNullOrWhiteSpace(Model.PrimaryAmount))
+    {
+        <div class="public-journey-amount-block">
+            <strong class="public-journey-primary-amount">@Model.PrimaryAmount</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.SecondaryAmount))
+            {
+                <span class="public-journey-secondary-amount">@Model.SecondaryAmount</span>
+            }
+        </div>
+    }
+    <dl class="public-journey-summary-list">
+        @foreach (var row in Model.Rows)
+        {
+            <div class="public-journey-summary-row @(row.Emphasized ? "is-emphasized" : string.Empty)">
+                <dt>@row.Label</dt>
+                <dd>@row.Value</dd>
+            </div>
+        }
+    </dl>
+    @if (!string.IsNullOrWhiteSpace(Model.Note))
+    {
+        <p class="public-journey-summary-note">@Model.Note</p>
+    }
+</section>

@@ -1,4 +1,4 @@
-namespace HV_Travel.Web.Tests;
+﻿namespace HV_Travel.Web.Tests;
 
 public class PublicResponsiveMarkupTests
 {
@@ -130,7 +130,7 @@ public class PublicResponsiveMarkupTests
         AssertContains(@"HV-Travel.Web\Views\Home\About.cshtml", "public-hero-title");
         AssertContains(@"HV-Travel.Web\Views\Home\Contact.cshtml", "public-form-card");
         AssertContains(@"HV-Travel.Web\Views\PublicTours\Index.cshtml", "public-search-shell");
-        AssertContains(@"HV-Travel.Web\Views\PublicTours\Details.cshtml", "public-detail-sidebar");
+        AssertContains(@"HV-Travel.Web\Views\PublicTours\Details.cshtml", "public-tour-dossier-shell");
         AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Login.cshtml", "public-auth-title");
         AssertContains(@"HV-Travel.Web\Views\CustomerAuth\Register.cshtml", "public-auth-title");
     }
@@ -146,8 +146,7 @@ public class PublicResponsiveMarkupTests
             @"HV-Travel.Web\Views\Destinations\Index.cshtml",
             @"HV-Travel.Web\Views\Promotions\Index.cshtml",
             @"HV-Travel.Web\Views\Services\Index.cshtml",
-            @"HV-Travel.Web\Views\Inspiration\Index.cshtml",
-            @"HV-Travel.Web\Views\BookingLookup\Index.cshtml"
+            @"HV-Travel.Web\Views\Inspiration\Index.cshtml"
         };
 
         foreach (var heroView in heroViews)
@@ -179,22 +178,16 @@ public class PublicResponsiveMarkupTests
             AssertContains(centeredHeroView, "public-top-section-content public-page-hero-content is-centered");
         }
     }
+
     [Fact]
     public void DetailAndUtilityPublicViews_UseCompactTopSectionHooks()
     {
         var compactViews = new[]
         {
-            @"HV-Travel.Web\Views\PublicTours\Details.cshtml",
             @"HV-Travel.Web\Views\Inspiration\Details.cshtml",
             @"HV-Travel.Web\Views\CustomerAuth\Login.cshtml",
             @"HV-Travel.Web\Views\CustomerAuth\Register.cshtml",
-            @"HV-Travel.Web\Views\CustomerPortal\Index.cshtml",
-            @"HV-Travel.Web\Views\Booking\Consultation.cshtml",
-            @"HV-Travel.Web\Views\Booking\Create.cshtml",
-            @"HV-Travel.Web\Views\Booking\Payment.cshtml",
-            @"HV-Travel.Web\Views\Booking\Success.cshtml",
-            @"HV-Travel.Web\Views\Booking\Failed.cshtml",
-            @"HV-Travel.Web\Views\Booking\Error.cshtml"
+            @"HV-Travel.Web\Views\CustomerPortal\Index.cshtml"
         };
 
         foreach (var compactView in compactViews)
@@ -207,15 +200,18 @@ public class PublicResponsiveMarkupTests
     }
 
     [Fact]
-    public void BookingFlow_UsesResponsiveStepperAndSummaryLayout()
+    public void BookingJourney_UsesResponsiveStageAndSummaryLayout()
     {
-        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-stepper");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "public-stepper");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Success.cshtml", "public-stepper");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-summary-card");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "public-summary-card");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Failed.cshtml", "public-action-stack");
-        AssertContains(@"HV-Travel.Web\Views\Booking\Error.cshtml", "public-action-stack");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-journey-stagebar");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "public-journey-stagebar");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Success.cshtml", "public-journey-shell");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Failed.cshtml", "public-journey-shell");
+        AssertContains(@"HV-Travel.Web\Views\BookingLookup\Index.cshtml", "public-journey-shell");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-journey-summary");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "public-journey-summary");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Success.cshtml", "public-journey-status-panel");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Failed.cshtml", "public-journey-status-panel");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Error.cshtml", "public-journey-status-panel");
     }
 
     [Fact]
@@ -230,6 +226,7 @@ public class PublicResponsiveMarkupTests
         Assert.Contains("public-chat-status", content);
         Assert.Contains("public-chat-composer", content);
     }
+
     [Fact]
     public void PublicTheme_DefinesDedicatedTourCardHooks()
     {
@@ -267,6 +264,35 @@ public class PublicResponsiveMarkupTests
     }
 
     [Fact]
+    public void PublicTheme_DefinesTourDossierAndJourneyDeskHooks()
+    {
+        var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
+
+        Assert.Contains(".public-tour-dossier-shell", content);
+        Assert.Contains(".public-tour-dossier-hero", content);
+        Assert.Contains(".public-tour-dossier-poster", content);
+        Assert.Contains(".public-tour-dossier-grid", content);
+        Assert.Contains(".public-tour-dossier-rail", content);
+        Assert.Contains(".public-tour-dossier-departures", content);
+        Assert.Contains(".public-tour-dossier-chapter", content);
+        Assert.Contains(".public-journey-shell", content);
+        Assert.Contains(".public-journey-desk", content);
+        Assert.Contains(".public-journey-stagebar", content);
+        Assert.Contains(".public-journey-summary", content);
+        Assert.Contains(".public-journey-status-panel", content);
+        Assert.Contains(".public-journey-payment-switcher", content);
+        Assert.Contains(".public-journey-support", content);
+        Assert.Contains(".public-booking-runway", content);
+        Assert.Contains(".public-booking-section", content);
+        Assert.Contains(".public-booking-coupon-disclosure", content);
+        Assert.Contains(".public-booking-payment-shell", content);
+        Assert.Contains(".public-booking-status-shell", content);
+        Assert.Contains(".public-booking-lookup-shell", content);
+        Assert.Contains("position: sticky;", content);
+        Assert.Contains("@media (max-width: 1023.98px)", content);
+    }
+
+    [Fact]
     public void PublicTheme_DefinesReusableDatePickerHooks()
     {
         var content = File.ReadAllText(GetRepoPath(@"HV-Travel.Web\wwwroot\css\theme-ocean.css"));
@@ -299,6 +325,7 @@ public class PublicResponsiveMarkupTests
         Assert.Contains("pointerdown", script);
         Assert.Contains("data-home-carousel", script);
     }
+
     private static void AssertContains(string relativePath, string expectedContent)
     {
         var content = File.ReadAllText(GetRepoPath(relativePath));
@@ -311,10 +338,5 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
-
-
-
-
-
 
 

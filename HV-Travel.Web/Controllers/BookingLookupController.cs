@@ -1,13 +1,18 @@
 ﻿using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
+using HVTravel.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Controllers;
 
 public class BookingLookupController : Controller
 {
+    private const string DefaultSupportPhone = "+84 901 234 567";
+    private const string DefaultSupportEmail = "support@hvtravel.vn";
+
     private readonly IRepository<Booking> _bookingRepository;
+    private readonly BookingJourneyPresenter _journeyPresenter = new();
 
     public BookingLookupController(IRepository<Booking> bookingRepository)
     {
@@ -17,23 +22,58 @@ public class BookingLookupController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        ViewData["Title"] = "Tra cứu booking";
+        ViewData["Title"] = "Quản lý booking";
         ViewData["ActivePage"] = "BookingLookup";
-        return View(new BookingLookupViewModel());
+
+        return View(new BookingLookupViewModel
+        {
+            Journey = new BookingJourneyPageVm
+            {
+                StageKey = "lookup",
+                Eyebrow = "Quản lý booking",
+                Title = "Tra cứu booking",
+                Description = "Nhập mã booking cùng email hoặc số điện thoại để xem trạng thái mới nhất.",
+                ShowStageBar = false,
+                Support = new BookingSupportVm
+                {
+                    Title = "Cần người thật hỗ trợ?",
+                    Description = "Nếu bạn cần điều chỉnh hoặc tiếp tục thanh toán, đội ngũ vận hành có thể xử lý ngay từ quầy hỗ trợ.",
+                    Phone = DefaultSupportPhone,
+                    Email = DefaultSupportEmail,
+                    SecondaryNote = "Khung giờ hỗ trợ: 8:00 - 18:00, từ thứ Hai đến thứ Bảy."
+                }
+            }
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Lookup(string bookingCode, string email, string phone)
     {
-        ViewData["Title"] = "Tra cứu booking";
+        ViewData["Title"] = "Quản lý booking";
         ViewData["ActivePage"] = "BookingLookup";
 
         var model = new BookingLookupViewModel
         {
             QueryBookingCode = bookingCode?.Trim() ?? string.Empty,
             QueryEmail = email?.Trim() ?? string.Empty,
-            QueryPhone = phone?.Trim() ?? string.Empty
+            QueryPhone = phone?.Trim() ?? string.Empty,
+            Journey = new BookingJourneyPageVm
+            {
+                StageKey = "lookup",
+                Eyebrow = "Quản lý booking",
+                Title = "Tra cứu booking",
+                Description = "Nhập mã booking cùng email hoặc số điện thoại để xem trạng thái mới nhất.",
+                ShowStageBar = false,
+                Support = new BookingSupportVm
+                {
+                    Title = "Cần người thật hỗ trợ?",
+                    Description = "Nếu bạn cần điều chỉnh hoặc tiếp tục thanh toán, đội ngũ vận hành có thể xử lý ngay từ quầy hỗ trợ.",
+                    Phone = DefaultSupportPhone,
+                    Email = DefaultSupportEmail,
+                    SecondaryNote = "Khung giờ hỗ trợ: 8:00 - 18:00, từ thứ Hai đến thứ Bảy."
+                }
+            }
         };
 
         if (string.IsNullOrWhiteSpace(model.QueryBookingCode) || (string.IsNullOrWhiteSpace(model.QueryEmail) && string.IsNullOrWhiteSpace(model.QueryPhone)))
@@ -69,6 +109,7 @@ public class BookingLookupController : Controller
             .OrderByDescending(item => item.Timestamp)
             .Select(item => $"{item.Timestamp:HH:mm dd/MM/yyyy} · {item.Action}")
             .ToList();
+        model.Journey = _journeyPresenter.BuildLookupPage(booking, DefaultSupportPhone, DefaultSupportEmail);
 
         return View("Index", model);
     }

@@ -1,14 +1,6 @@
-﻿@inject IPublicContentService ContentService
-@using System.Text.Json
-@using HVTravel.Domain.Entities
-@using HVTravel.Web.Services
-@model HVTravel.Web.Models.BookingViewModel
+﻿@model BookingViewModel
 @{
-    var sections = await ContentService.GetPageSectionsAsync("booking");
-    var createHero = sections.GetSection("createHero");
-    var createStepper = sections.GetSection("createStepper");
-    var travellerForm = sections.GetSection("travellerForm");
-    var pricingPanel = sections.GetSection("pricingPanel");
+    var journey = Model.Journey;
     var tour = Model.Tour ?? new Tour();
     var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
     var departures = tour.EffectiveDepartures.OrderBy(item => item.StartDate).ToList();
@@ -17,142 +9,178 @@
     var childPrice = selectedDeparture?.ChildPrice > 0m ? selectedDeparture.ChildPrice : tour.Price?.Child ?? 0m;
     var infantPrice = selectedDeparture?.InfantPrice > 0m ? selectedDeparture.InfantPrice : tour.Price?.Infant ?? 0m;
     var subtotal = (adultPrice * Model.AdultCount) + (childPrice * Model.ChildCount) + (infantPrice * Model.InfantCount);
-    var amountDueNow = string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? Math.Round(subtotal * 0.30m, 0, MidpointRounding.AwayFromZero) : subtotal;
+    var amountDueNow = string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase)
+        ? Math.Round(subtotal * 0.30m, 0, MidpointRounding.AwayFromZero)
+        : subtotal;
     var balanceDue = Math.Max(0m, subtotal - amountDueNow);
-    var remainingCapacityFormat = travellerForm?.Fields.GetVisibleFieldValue("remainingCapacityFormat", "{0} chỗ") ?? "{0} chỗ";
-    var couponAppliedFormat = pricingPanel?.Fields.GetVisibleFieldValue("couponAppliedFormat", "Đã áp dụng coupon {0}.") ?? "Đã áp dụng coupon {0}.";
-    var quoteReadyText = pricingPanel?.Fields.GetVisibleFieldValue("quoteReadyText", "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.") ?? "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.";
+    var selectedDateText = selectedDeparture?.StartDate.ToString("dd/MM/yyyy") ?? "Chưa chọn ngày khởi hành";
+    var selectedCapacityText = selectedDeparture != null ? $"{selectedDeparture.RemainingCapacity} chỗ còn lại" : "Chưa có lịch khởi hành khả dụng";
+    var selectedPlanText = string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "Đặt cọc 30%" : "Thanh toán toàn bộ";
 }
 
-@if (createHero?.IsEnabled != false)
-{
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(createHero)" style="@ContentPresentationViewHelper.GetSectionStyle(createHero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(createHero)">
-            <span class="public-badge public-top-section-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "badgeText")">@createHero.Fields.GetVisibleFieldValue("badgeText", "Bước 1 trong hành trình đặt tour")</span>
-            <h1 class="public-top-section-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "title")">@createHero.Fields.GetVisibleFieldValue("title", "Đặt tour và xác nhận hành khách")</h1>
-            <div class="public-top-section-lead" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "description")">@Html.Raw(createHero.Fields.GetVisibleFieldValue("description", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán."))</div>
+<section class="public-journey-shell public-journey-shell--builder public-booking-runway">
+    <div class="public-journey-shell-inner">
+        @await Html.PartialAsync("_JourneyHeader", Model.Journey)
+        <div class="public-journey-stagebar">
+            @await Html.PartialAsync("_JourneyStageBar", Model.Journey)
         </div>
-    </section>
-}
 
-@if (createStepper?.IsEnabled != false)
-{
-    <div class="border-b border-border-light bg-surface-light py-4 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(createStepper) @ContentPresentationViewHelper.GetSectionBackgroundClass(createStepper)" style="@ContentPresentationViewHelper.GetSectionStyle(createStepper)">
-        <div class="mx-auto flex max-w-5xl items-center justify-center gap-4 px-4 text-sm sm:px-6 lg:px-8">
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "detailsStepLabel")">1. @createStepper.Fields.GetVisibleFieldValue("detailsStepLabel", "Thông tin")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "paymentStepLabel")">2. @createStepper.Fields.GetVisibleFieldValue("paymentStepLabel", "Thanh toán")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "completeStepLabel")">3. @createStepper.Fields.GetVisibleFieldValue("completeStepLabel", "Hoàn tất")</span>
+        <div class="public-journey-desk public-journey-desk--builder">
+            <form asp-action="Create" method="post" id="booking-form" class="public-journey-main public-booking-builder-form">
+                @Html.AntiForgeryToken()
+                <input asp-for="TourId" type="hidden" />
+                <input asp-for="SelectedStartDate" type="hidden" />
+
+                <section class="public-journey-panel public-booking-intro public-booking-overview-grid">
+                    <div class="public-booking-intro-copy">
+                        <p class="public-journey-card-eyebrow">Giữ chỗ theo nhịp chuyến đi</p>
+                        <h2 class="public-journey-panel-title">@tour.Name</h2>
+                        <p class="public-journey-note">Chốt ngày khởi hành, số khách và phương án thanh toán trước khi điền thông tin liên hệ.</p>
+                    </div>
+                    <div class="public-journey-tour-meta public-booking-intro-metrics">
+                        <span>@(tour.Destination?.City ?? "HV Travel")</span>
+                        <span>@(tour.Duration?.Text ?? "Liên hệ tư vấn")</span>
+                        <span data-booking-selected-date>@selectedDateText</span>
+                        <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId">Xem tour đầy đủ</a>
+                    </div>
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="All" class="public-journey-validation"></div>
+                    }
+                </section>
+
+                <section class="public-journey-panel public-booking-section public-booking-section--departures">
+                    <div class="public-journey-panel-heading">
+                        <h2 class="public-journey-panel-title">Chọn lịch khởi hành</h2>
+                        <p class="public-journey-note">Mỗi lịch hiển thị ngay giá người lớn, kiểu xác nhận và số chỗ còn lại.</p>
+                    </div>
+                    @if (departures.Any())
+                    {
+                        <div class="public-journey-choice-grid public-booking-departure-matrix">
+                            @foreach (var departure in departures)
+                            {
+                                var isSelected = string.Equals(Model.DepartureId, departure.Id, StringComparison.Ordinal) || (string.IsNullOrWhiteSpace(Model.DepartureId) && selectedDeparture?.Id == departure.Id);
+                                <label class="public-journey-choice @(isSelected ? "is-selected" : string.Empty)" data-departure-card>
+                                    <input asp-for="DepartureId"
+                                           type="radio"
+                                           value="@departure.Id"
+                                           data-start-date="@departure.StartDate.ToString("yyyy-MM-dd")"
+                                           data-display-date="@departure.StartDate.ToString("dd/MM/yyyy")"
+                                           data-remaining-capacity="@departure.RemainingCapacity"
+                                           checked="@(isSelected ? "checked" : null)" />
+                                    <span class="public-journey-choice-title">@departure.StartDate.ToString("dd/MM/yyyy")</span>
+                                    <span class="public-journey-choice-copy">@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận từ điều hành")</span>
+                                    <span class="public-journey-choice-meta">@departure.RemainingCapacity chỗ còn lại</span>
+                                    <strong class="public-journey-choice-price">@((departure.AdultPrice > 0m ? departure.AdultPrice : tour.Price?.Adult ?? 0m).ToString("N0"))₫ / người lớn</strong>
+                                </label>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="public-journey-empty">Tour này hiện chưa có lịch khởi hành khả dụng.</p>
+                    }
+                </section>
+
+                <section class="public-journey-panel public-booking-section public-journey-quote public-booking-finance-panel">
+                    <div class="public-journey-panel-heading">
+                        <h2 class="public-journey-panel-title">Chi phí và kế hoạch thanh toán</h2>
+                        <p class="public-journey-note">Chọn trả toàn bộ hoặc đặt cọc trước. Báo giá sẽ đổi theo lịch đi, số khách và mã ưu đãi.</p>
+                    </div>
+                    <div class="public-journey-choice-grid public-journey-choice-grid--plans">
+                        <label class="public-journey-choice @(string.Equals(Model.PaymentPlanType, "Full", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(Model.PaymentPlanType) ? "is-selected" : string.Empty)" data-payment-plan-card>
+                            <input asp-for="PaymentPlanType" type="radio" value="Full" data-plan-label="Thanh toán toàn bộ" checked="@((string.Equals(Model.PaymentPlanType, "Full", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(Model.PaymentPlanType)) ? "checked" : null)" />
+                            <span class="public-journey-choice-title">Thanh toán toàn bộ</span>
+                            <span class="public-journey-choice-copy">Chốt toàn bộ giá trị booking ngay ở bước kế tiếp.</span>
+                        </label>
+                        <label class="public-journey-choice @(string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "is-selected" : string.Empty)" data-payment-plan-card>
+                            <input asp-for="PaymentPlanType" type="radio" value="Deposit" data-plan-label="Đặt cọc 30%" checked="@(string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "checked" : null)" />
+                            <span class="public-journey-choice-title">Đặt cọc 30%</span>
+                            <span class="public-journey-choice-copy">Giữ chỗ trước, phần còn lại xử lý sau cùng điều hành.</span>
+                        </label>
+                    </div>
+                    <div class="public-journey-quote-grid public-booking-finance-grid">
+                        <div><span>Tạm tính</span><strong id="subtotal">@subtotal.ToString("N0")₫</strong></div>
+                        <div><span>Giảm giá</span><strong id="discountTotal">0₫</strong></div>
+                        <div><span>Tổng thanh toán</span><strong id="grandTotal">@subtotal.ToString("N0")₫</strong></div>
+                        <div><span>Thanh toán ngay</span><strong id="amountDueNow">@amountDueNow.ToString("N0")₫</strong></div>
+                        <div><span>Còn lại</span><strong id="balanceDue">@balanceDue.ToString("N0")₫</strong></div>
+                    </div>
+                    <p id="quote-status" class="public-journey-note">Báo giá sẽ được tính lại ngay khi bạn đổi lịch khởi hành, số khách hoặc mã ưu đãi.</p>
+                    <div class="public-journey-action-row">
+                        <button form="booking-form" type="submit" id="submit-booking" class="public-journey-submit">Tiếp tục sang thanh toán</button>
+                        <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="public-journey-action public-journey-action--secondary">Quay lại xem tour</a>
+                    </div>
+                </section>
+
+                <section class="public-journey-panel public-booking-section public-booking-section--contact">
+                    <div class="public-journey-panel-heading">
+                        <h2 class="public-journey-panel-title">Thông tin liên hệ</h2>
+                        <p class="public-journey-note">Chỉ giữ lại phần dữ liệu cần để tạo booking và gửi xác nhận lại cho bạn.</p>
+                    </div>
+
+                    <div class="public-booking-party-grid">
+                        <label>
+                            <span>Người lớn</span>
+                            <input asp-for="AdultCount" type="number" min="1" class="traveller-input" />
+                        </label>
+                        <label>
+                            <span>Trẻ em</span>
+                            <input asp-for="ChildCount" type="number" min="0" class="traveller-input" />
+                        </label>
+                        <label>
+                            <span>Em bé</span>
+                            <input asp-for="InfantCount" type="number" min="0" class="traveller-input" />
+                        </label>
+                    </div>
+
+                    <div class="public-journey-field-grid public-booking-field-grid">
+                        <label class="public-booking-field">
+                            <span class="sr-only">Họ và tên</span>
+                            <input asp-for="ContactName" placeholder="Họ và tên người liên hệ" />
+                        </label>
+                        <label class="public-booking-field">
+                            <span class="sr-only">Email</span>
+                            <input asp-for="ContactEmail" placeholder="Email để nhận xác nhận" />
+                        </label>
+                        <label class="public-booking-field">
+                            <span class="sr-only">Số điện thoại</span>
+                            <input asp-for="ContactPhone" placeholder="Số điện thoại liên hệ" />
+                        </label>
+                    </div>
+
+                    <details class="public-booking-coupon-disclosure">
+                        <summary>Có mã ưu đãi?</summary>
+                        <label class="public-booking-field public-booking-field--compact">
+                            <span class="sr-only">Mã ưu đãi</span>
+                            <input asp-for="CouponCode" placeholder="Nhập mã nếu bạn đang có" />
+                        </label>
+                    </details>
+
+                    <label class="public-booking-field public-booking-field--full">
+                        <span class="sr-only">Ghi chú cho điều hành</span>
+                        <textarea asp-for="SpecialRequests" rows="4" placeholder="Ghi chú cho điều hành (không bắt buộc)"></textarea>
+                    </label>
+                </section>
+            </form>
+
+            <aside class="public-journey-rail">
+                <div class="public-journey-summary">
+                    @await Html.PartialAsync("_JourneySummaryRail", Model.Journey.Summary)
+                </div>
+                <section class="public-journey-panel public-booking-section public-booking-section--selection public-booking-selection-card">
+                    <p class="public-journey-card-eyebrow">Lựa chọn hiện tại</p>
+                    <dl class="public-journey-summary-list">
+                        <div class="public-journey-summary-row"><dt>Khởi hành</dt><dd data-booking-selected-date>@selectedDateText</dd></div>
+                        <div class="public-journey-summary-row"><dt>Sức chứa</dt><dd data-booking-selected-capacity>@selectedCapacityText</dd></div>
+                        <div class="public-journey-summary-row"><dt>Kế hoạch</dt><dd data-booking-selected-plan>@selectedPlanText</dd></div>
+                    </dl>
+                </section>
+                <div class="public-journey-support">
+                    @await Html.PartialAsync("_JourneySupportPanel", Model.Journey.Support)
+                </div>
+            </aside>
         </div>
-    </div>
-}
-
-<section class="bg-background-light py-10 dark:bg-background-dark">
-    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-        <form asp-action="Create" method="post" id="booking-form" class="space-y-6">
-            @Html.AntiForgeryToken()
-            <input asp-for="TourId" type="hidden" />
-            <input asp-for="SelectedStartDate" type="hidden" />
-
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "tourSnapshotEyebrow")">@travellerForm?.Fields.GetVisibleFieldValue("tourSnapshotEyebrow", "Tour snapshot")</p>
-                <div class="mt-2 flex items-start justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl font-black">@tour.Name</h2>
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text ?? "Liên hệ tư vấn")</p>
-                    </div>
-                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="text-sm font-bold text-primary">@travellerForm?.Fields.GetVisibleFieldValue("viewDetailsText", "Xem chi tiết")</a>
-                </div>
-                <div class="public-rich-text mt-4 text-sm">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription ?? tour.Description))</div>
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div asp-validation-summary="All" class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
-                }
-            </div>
-
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(travellerForm)" style="@ContentPresentationViewHelper.GetSectionStyle(travellerForm)">
-                <h3 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "departureTitle")">@travellerForm?.Fields.GetVisibleFieldValue("departureTitle", "Chọn đợt khởi hành")</h3>
-                @if (departures.Any())
-                {
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        @foreach (var departure in departures)
-                        {
-                            var isSelected = string.Equals(Model.DepartureId, departure.Id, StringComparison.Ordinal) || (string.IsNullOrWhiteSpace(Model.DepartureId) && selectedDeparture?.Id == departure.Id);
-                            var confirmationText = string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase)
-                                ? travellerForm?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Xác nhận tức thì")
-                                : travellerForm?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "Chờ xác nhận");
-                            <label class="rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                                <input asp-for="DepartureId" type="radio" value="@departure.Id" checked="@isSelected" class="departure-choice sr-only" data-start-date="@departure.StartDate.ToString("yyyy-MM-dd")" data-remaining-capacity="@departure.RemainingCapacity" />
-                                <strong>@departure.StartDate.ToString("dd/MM/yyyy")</strong>
-                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@confirmationText</p>
-                                <p class="mt-2 text-sm">@string.Format(remainingCapacityFormat, departure.RemainingCapacity)</p>
-                                <p class="mt-2 text-sm">@departure.AdultPrice.ToString("N0")₫ / @departure.ChildPrice.ToString("N0")₫ / @departure.InfantPrice.ToString("N0")₫</p>
-                            </label>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@travellerForm?.Fields.GetVisibleFieldValue("departureEmptyText", "Tour này hiện chưa có lịch khởi hành khả dụng.")</p>
-                }
-            </div>
-
-            <div class="grid gap-6 lg:grid-cols-2">
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(travellerForm)" style="@ContentPresentationViewHelper.GetSectionStyle(travellerForm)">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "travellerEyebrow")">@travellerForm?.Fields.GetVisibleFieldValue("travellerEyebrow", "Traveller")</p>
-                    <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "travellerTitle")">@travellerForm?.Fields.GetVisibleFieldValue("travellerTitle", "Thông tin liên hệ và số khách")</h3>
-                    <div class="mt-4 space-y-4">
-                        <div>
-                            <label class="mb-2 block text-sm font-semibold">@travellerForm?.Fields.GetVisibleFieldValue("contactNameLabel", "Họ và tên")</label>
-                            <input asp-for="ContactName" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("contactNamePlaceholder", "Nguyễn Văn A"))" />
-                        </div>
-                        <div>
-                            <label class="mb-2 block text-sm font-semibold">@travellerForm?.Fields.GetVisibleFieldValue("contactEmailLabel", "Email")</label>
-                            <input asp-for="ContactEmail" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("contactEmailPlaceholder", "email@example.com"))" />
-                        </div>
-                        <div>
-                            <label class="mb-2 block text-sm font-semibold">@travellerForm?.Fields.GetVisibleFieldValue("contactPhoneLabel", "Số điện thoại")</label>
-                            <input asp-for="ContactPhone" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("contactPhonePlaceholder", "0901 234 567"))" />
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <input asp-for="AdultCount" type="number" min="1" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                            <input asp-for="ChildCount" type="number" min="0" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                            <input asp-for="InfantCount" type="number" min="0" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                        </div>
-                        <textarea asp-for="SpecialRequests" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("specialRequestsPlaceholder", "Ví dụ: ăn chay, ghế gần cửa sổ, hỗ trợ xe đón..."))"></textarea>
-                    </div>
-                </div>
-
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(pricingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(pricingPanel)">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "eyebrowText")">@pricingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Pricing controls")</p>
-                    <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "title")">@pricingPanel?.Fields.GetVisibleFieldValue("title", "Coupon và kế hoạch thanh toán")</h3>
-                    <div class="mt-4 space-y-4">
-                        <input asp-for="CouponCode" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(pricingPanel?.Fields.GetVisibleFieldValue("couponPlaceholder", "WELCOME10"))" />
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm dark:border-border-dark"><input asp-for="PaymentPlanType" type="radio" value="Full" class="mr-2" />@pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanFullLabel", "Full")</label>
-                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm dark:border-border-dark"><input asp-for="PaymentPlanType" type="radio" value="Deposit" class="mr-2" />@pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanDepositLabel", "Deposit")</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <aside>
-            <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(pricingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(pricingPanel)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "quoteEyebrowText")">@pricingPanel?.Fields.GetVisibleFieldValue("quoteEyebrowText", "Quote")</p>
-                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "quoteTitle")">@pricingPanel?.Fields.GetVisibleFieldValue("quoteTitle", "Xem báo giá trước khi giữ chỗ")</h3>
-                <div id="quote-badges" class="mt-4 flex flex-wrap gap-2"></div>
-                <div class="mt-4 space-y-2 text-sm">
-                    <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("subtotalLabel", "Tạm tính")</span><span id="subtotal">@subtotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("discountLabel", "Giảm giá")</span><span id="discountTotal">0₫</span></div>
-                    <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("grandTotalLabel", "Tổng thanh toán")</span><span id="grandTotal">@subtotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("amountDueNowLabel", "Thanh toán ngay")</span><span id="amountDueNow">@amountDueNow.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("balanceDueLabel", "Còn lại")</span><span id="balanceDue">@balanceDue.ToString("N0")₫</span></div>
-                </div>
-                <p id="quote-status" class="mt-4 text-sm text-slate-500 dark:text-slate-400">@pricingPanel?.Fields.GetVisibleFieldValue("quoteStatusText", "Máy chủ sẽ tính lại báo giá khi bạn đổi departure, số khách, coupon hoặc payment plan.")</p>
-                <button form="booking-form" type="submit" id="submit-booking" class="mt-6 w-full rounded-2xl bg-primary px-4 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "submitText")">@pricingPanel?.Fields.GetVisibleFieldValue("submitText", "Tiếp tục sang thanh toán")</button>
-                <p class="mt-3 text-xs text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "submitHelperText")">@pricingPanel?.Fields.GetVisibleFieldValue("submitHelperText", "Ghế chỉ được giữ khi máy chủ xác nhận báo giá và tạo booking thành công.")</p>
-            </div>
-        </aside>
     </div>
 </section>
 
@@ -162,31 +190,65 @@
         (() => {
             const quoteUrl = '@Url.Action("Quote", "Booking")';
             const form = document.getElementById('booking-form');
+            if (!form) return;
             const selectedStartDate = document.getElementById('SelectedStartDate');
-            const remainingCapacityFormat = @Html.Raw(JsonSerializer.Serialize(remainingCapacityFormat));
-            const couponAppliedFormat = @Html.Raw(JsonSerializer.Serialize(couponAppliedFormat));
-            const quoteReadyText = @Html.Raw(JsonSerializer.Serialize(quoteReadyText));
             const formatCurrency = (value) => `${new Intl.NumberFormat('vi-VN').format(value || 0)}₫`;
-            const formatRemaining = (value) => remainingCapacityFormat.replace('{0}', value || 0);
-            const formatCoupon = (value) => couponAppliedFormat.replace('{0}', value || '');
-            const renderBadges = (badges) => document.getElementById('quote-badges').innerHTML = (badges || []).map((badge) => `<span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">${badge}</span>`).join('');
+            const setTextForAll = (selector, value) => document.querySelectorAll(selector).forEach((node) => node.textContent = value);
+            const syncSelectionCards = () => {
+                document.querySelectorAll('[data-departure-card]').forEach((card) => {
+                    const input = card.querySelector('input[name="DepartureId"]');
+                    card.classList.toggle('is-selected', Boolean(input && input.checked));
+                });
+                document.querySelectorAll('[data-payment-plan-card]').forEach((card) => {
+                    const input = card.querySelector('input[name="PaymentPlanType"]');
+                    card.classList.toggle('is-selected', Boolean(input && input.checked));
+                });
+            };
+            const syncSelectionMeta = () => {
+                const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
+                const activePlan = document.querySelector('input[name="PaymentPlanType"]:checked');
+                const departureText = activeDeparture?.dataset.displayDate || 'Chưa chọn ngày khởi hành';
+                const capacityText = activeDeparture ? `${activeDeparture.dataset.remainingCapacity} chỗ còn lại` : 'Chưa có lịch khởi hành khả dụng';
+                const planText = activePlan?.dataset.planLabel || 'Thanh toán toàn bộ';
+                if (selectedStartDate) selectedStartDate.value = activeDeparture?.dataset.startDate || '';
+                setTextForAll('[data-booking-selected-date]', departureText);
+                setTextForAll('[data-booking-selected-capacity]', capacityText);
+                setTextForAll('[data-booking-selected-plan]', planText);
+                syncSelectionCards();
+            };
             const collectParams = () => {
                 const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
-                return new URLSearchParams({ tourId: document.getElementById('TourId').value, departureId: activeDeparture ? activeDeparture.value : '', adultCount: document.getElementById('AdultCount').value || '1', childCount: document.getElementById('ChildCount').value || '0', infantCount: document.getElementById('InfantCount').value || '0', couponCode: document.getElementById('CouponCode').value || '', paymentPlanType: document.querySelector('input[name="PaymentPlanType"]:checked')?.value || 'Full' });
+                return new URLSearchParams({
+                    tourId: document.getElementById('TourId').value,
+                    departureId: activeDeparture ? activeDeparture.value : '',
+                    adultCount: document.getElementById('AdultCount').value || '1',
+                    childCount: document.getElementById('ChildCount').value || '0',
+                    infantCount: document.getElementById('InfantCount').value || '0',
+                    couponCode: document.getElementById('CouponCode').value || '',
+                    paymentPlanType: document.querySelector('input[name="PaymentPlanType"]:checked')?.value || 'Full'
+                });
             };
             const refreshQuote = async () => {
-                const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
-                if (activeDeparture && selectedStartDate) { selectedStartDate.value = activeDeparture.dataset.startDate || ''; }
-                const data = await (await fetch(`${quoteUrl}?${collectParams().toString()}`)).json();
-                document.getElementById('subtotal').textContent = formatCurrency(data.subtotal);
-                document.getElementById('discountTotal').textContent = formatCurrency(data.discountTotal);
-                document.getElementById('grandTotal').textContent = formatCurrency(data.grandTotal);
-                document.getElementById('amountDueNow').textContent = formatCurrency(data.amountDueNow);
-                document.getElementById('balanceDue').textContent = formatCurrency(data.balanceDue);
-                document.getElementById('quote-status').textContent = data.errorMessage || (data.appliedCouponCode ? formatCoupon(data.appliedCouponCode) : quoteReadyText);
-                renderBadges(data.badges);
+                syncSelectionMeta();
+                try {
+                    const response = await fetch(`${quoteUrl}?${collectParams().toString()}`);
+                    const data = await response.json();
+                    document.getElementById('subtotal').textContent = formatCurrency(data.subtotal);
+                    document.getElementById('discountTotal').textContent = formatCurrency(data.discountTotal);
+                    document.getElementById('grandTotal').textContent = formatCurrency(data.grandTotal);
+                    document.getElementById('amountDueNow').textContent = formatCurrency(data.amountDueNow);
+                    document.getElementById('balanceDue').textContent = formatCurrency(data.balanceDue);
+                    document.getElementById('quote-status').textContent = data.errorMessage || (data.appliedCouponCode ? `Đã áp dụng mã ${data.appliedCouponCode}.` : 'Báo giá đã sẵn sàng, bạn có thể sang bước thanh toán.');
+                } catch {
+                    document.getElementById('quote-status').textContent = 'Chưa thể cập nhật báo giá tức thời. Bạn vẫn có thể gửi form để hệ thống kiểm tra lại ở bước kế tiếp.';
+                }
             };
-            form.querySelectorAll('input, textarea').forEach((element) => { if (element.type !== 'hidden' && element.name !== '__RequestVerificationToken') { element.addEventListener('change', refreshQuote); } });
+            form.querySelectorAll('input, textarea').forEach((element) => {
+                if (element.type !== 'hidden' && element.name !== '__RequestVerificationToken') {
+                    element.addEventListener('change', refreshQuote);
+                }
+            });
+            syncSelectionMeta();
             refreshQuote();
         })();
     </script>

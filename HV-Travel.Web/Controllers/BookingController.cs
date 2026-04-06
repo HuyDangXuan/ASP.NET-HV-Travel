@@ -10,12 +10,16 @@ namespace HVTravel.Web.Controllers;
 
 public class BookingController : Controller
 {
+    private const string DefaultSupportPhone = "+84 901 234 567";
+    private const string DefaultSupportEmail = "support@hvtravel.vn";
+
     private readonly ITourRepository _tourRepository;
     private readonly IRepository<Booking> _bookingRepository;
     private readonly BookingWorkflowService _bookingWorkflowService;
     private readonly ICheckoutService _checkoutService;
     private readonly IPricingService _pricingService;
     private readonly IRepository<CheckoutSession> _checkoutSessionRepository;
+    private readonly BookingJourneyPresenter _journeyPresenter = new();
 
     public BookingController(
         ITourRepository tourRepository,
@@ -35,7 +39,13 @@ public class BookingController : Controller
 
     public IRepository<Booking> Bookings => _bookingRepository;
 
-    public async Task<IActionResult> Create(string tourId)
+    public async Task<IActionResult> Create(
+        string tourId,
+        string? departureId = null,
+        DateTime? startDate = null,
+        int adultCount = 1,
+        int childCount = 0,
+        int infantCount = 0)
     {
         if (string.IsNullOrEmpty(tourId))
         {
@@ -49,19 +59,21 @@ public class BookingController : Controller
         }
 
         tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+        var suggestedDeparture = tour.ResolveDeparture(departureId, startDate) ?? tour.ResolveDeparture(null);
 
-        ViewData["Title"] = $"Đặt Tour - {tour.Name}";
-        ViewData["ActivePage"] = "Tours";
-
-        var suggestedDeparture = tour.ResolveDeparture(null);
         var vm = new BookingViewModel
         {
             TourId = tourId,
             Tour = tour,
-            DepartureId = suggestedDeparture?.Id ?? string.Empty,
-            SelectedStartDate = suggestedDeparture?.StartDate
+            DepartureId = suggestedDeparture?.Id ?? departureId ?? string.Empty,
+            SelectedStartDate = suggestedDeparture?.StartDate ?? startDate,
+            AdultCount = Math.Max(1, adultCount),
+            ChildCount = Math.Max(0, childCount),
+            InfantCount = Math.Max(0, infantCount)
         };
 
+        PopulateCreateJourney(vm, tour);
+        ApplyCreateViewData(tour);
         return View(vm);
     }
 
@@ -124,10 +136,8 @@ public class BookingController : Controller
             vm.SelectedStartDate = tour.ResolveDeparture(vm.DepartureId)?.StartDate;
         }
 
-        tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
-
-        ViewData["Title"] = $"Đặt Tour - {tour.Name}";
-        ViewData["ActivePage"] = "Tours";
+        ApplyCreateViewData(tour);
+        PopulateCreateJourney(vm, tour);
 
         if (!ModelState.IsValid)
         {
@@ -174,7 +184,7 @@ public class BookingController : Controller
                 SpecialRequests = vm.SpecialRequests
             });
 
-            return RedirectToAction("Payment", new { bookingId = checkout.Booking.Id });
+            return RedirectToAction(nameof(Payment), new { bookingId = checkout.Booking.Id });
         }
         catch (InvalidOperationException ex)
         {
@@ -202,10 +212,18 @@ public class BookingController : Controller
         {
             tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
         }
-        ViewData["Title"] = "Chọn Phương Thức Thanh Toán";
+
+        ViewData["Title"] = "Quầy Thanh Toán";
         ViewData["ActivePage"] = "Tours";
 
-        return View(new BookingResultViewModel { Booking = booking, Tour = tour });
+        var model = new BookingResultViewModel
+        {
+            Booking = booking,
+            Tour = tour,
+            Journey = _journeyPresenter.BuildPaymentPage(booking, tour, DefaultSupportPhone, DefaultSupportEmail)
+        };
+        AttachJourneyActions(model.Journey, booking, BookingJourneyStage.Payment);
+        return View(model);
     }
 
     public async Task<IActionResult> Resume(string checkoutSessionId)
@@ -248,7 +266,7 @@ public class BookingController : Controller
                 booking.ConfirmedAt ??= DateTime.UtcNow;
                 AddBookingEntry(booking, "payment", "Giữ chỗ thanh toán tiền mặt", "Booking đã được giữ chỗ, thanh toán tại quầy hoặc khi khởi hành.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
-                break;
+                return RedirectToAction(nameof(Success), new { bookingId = booking.Id });
 
             case "BankTransfer":
                 booking.PaymentStatus = "Pending";
@@ -266,7 +284,7 @@ public class BookingController : Controller
                 });
                 AddBookingEntry(booking, "payment", "Chờ xác nhận chuyển khoản", "Khách đã chọn chuyển khoản và chờ tải minh chứng thanh toán.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
-                break;
+                return RedirectToAction(nameof(Payment), new { bookingId = booking.Id });
 
             default:
                 booking.PaymentStatus = "Pending";
@@ -293,10 +311,8 @@ public class BookingController : Controller
                     Reference = $"HVPAY-{booking.BookingCode}",
                     Signature = "local-demo"
                 });
-                break;
+                return RedirectToAction(nameof(Success), new { bookingId = booking.Id });
         }
-
-        return RedirectToAction("Success", new { bookingId = booking.Id });
     }
 
     [HttpPost]
@@ -367,8 +383,18 @@ public class BookingController : Controller
         {
             tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
         }
-        ViewData["Title"] = "Đặt Tour Thành Công";
-        return View(new BookingResultViewModel { Booking = booking, Tour = tour });
+
+        ViewData["Title"] = "Trạng Thái Booking";
+        ViewData["ActivePage"] = "Tours";
+
+        var model = new BookingResultViewModel
+        {
+            Booking = booking,
+            Tour = tour,
+            Journey = _journeyPresenter.BuildStatusPage(booking, tour, BookingJourneyStage.Success, DefaultSupportPhone, DefaultSupportEmail)
+        };
+        AttachJourneyActions(model.Journey, booking, BookingJourneyStage.Success);
+        return View(model);
     }
 
     public async Task<IActionResult> Failed(string bookingId)
@@ -383,41 +409,60 @@ public class BookingController : Controller
         {
             tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
         }
-        ViewData["Title"] = "Thanh Toán Thất Bại";
 
-        return View(new BookingResultViewModel
+        ViewData["Title"] = "Khôi Phục Thanh Toán";
+        ViewData["ActivePage"] = "Tours";
+
+        var resolvedBooking = booking ?? new Booking();
+        var model = new BookingResultViewModel
         {
-            Booking = booking ?? new Booking(),
+            Booking = resolvedBooking,
             Tour = tour,
-            ErrorMessage = "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác."
-        });
+            ErrorMessage = "Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác.",
+            Journey = _journeyPresenter.BuildStatusPage(resolvedBooking, tour, BookingJourneyStage.Failed, DefaultSupportPhone, DefaultSupportEmail)
+        };
+        AttachJourneyActions(model.Journey, resolvedBooking, BookingJourneyStage.Failed);
+        return View(model);
     }
 
     public IActionResult Error()
     {
         ViewData["Title"] = "Lỗi Hệ Thống";
-        return View();
+        ViewData["ActivePage"] = "Tours";
+        return View(new BookingResultViewModel
+        {
+            Journey = _journeyPresenter.BuildErrorPage(DefaultSupportPhone, DefaultSupportEmail)
+        });
     }
 
     public IActionResult Consultation()
     {
         ViewData["Title"] = "Tư Vấn Du Lịch";
         ViewData["ActivePage"] = "Consultation";
-        return View(new ConsultationViewModel());
+        var model = new ConsultationViewModel
+        {
+            Journey = _journeyPresenter.BuildConsultationPage(false, DefaultSupportPhone, DefaultSupportEmail)
+        };
+        AttachSupportActions(model.Journey);
+        return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult Consultation(ConsultationViewModel vm)
     {
+        ViewData["Title"] = "Tư Vấn Du Lịch";
+        ViewData["ActivePage"] = "Consultation";
+
         if (!ModelState.IsValid)
         {
-            ViewData["Title"] = "Tư Vấn Du Lịch";
+            vm.Journey = _journeyPresenter.BuildConsultationPage(false, DefaultSupportPhone, DefaultSupportEmail);
+            AttachSupportActions(vm.Journey);
             return View(vm);
         }
 
         TempData["ConsultationSuccess"] = true;
-        return RedirectToAction("Consultation");
+        return RedirectToAction(nameof(Consultation));
     }
 
     private async Task<QuotePreviewResponse> BuildQuotePreviewAsync(
@@ -487,6 +532,127 @@ public class BookingController : Controller
                 ErrorMessage = ex.Message
             };
         }
+    }
+
+    private void PopulateCreateJourney(BookingViewModel model, Tour tour)
+    {
+        model.Journey = _journeyPresenter.BuildCreatePage(model, tour);
+        AttachSupportActions(model.Journey);
+    }
+
+    private void ApplyCreateViewData(Tour tour)
+    {
+        ViewData["Title"] = $"Đặt Tour - {tour.Name}";
+        ViewData["ActivePage"] = "Tours";
+    }
+
+    private void AttachJourneyActions(BookingJourneyPageVm page, Booking booking, BookingJourneyStage stage)
+    {
+        AttachSupportActions(page);
+        page.Status.Actions = stage switch
+        {
+            BookingJourneyStage.Success => BuildSuccessActions(booking),
+            BookingJourneyStage.Failed => BuildFailedActions(booking),
+            BookingJourneyStage.Lookup => BuildLookupActions(booking),
+            BookingJourneyStage.Payment => BuildPaymentActions(booking),
+            _ => Array.Empty<BookingJourneyActionVm>()
+        };
+    }
+
+    private void AttachSupportActions(BookingJourneyPageVm page)
+    {
+        page.Support.Actions = new List<BookingJourneyActionVm>
+        {
+            new() { Label = "Nhờ tư vấn", Url = BuildUrl(nameof(Consultation), nameof(BookingController).Replace("Controller", string.Empty), "/Booking/Consultation"), Tone = "primary" },
+            new() { Label = "Quản lý booking", Url = BuildUrl("Index", "BookingLookup", "/BookingLookup"), Tone = "secondary" }
+        };
+    }
+
+    private IReadOnlyList<BookingJourneyActionVm> BuildPaymentActions(Booking booking)
+    {
+        var actions = new List<BookingJourneyActionVm>
+        {
+            new() { Label = "Quản lý booking", Url = BuildUrl("Index", "BookingLookup", "/BookingLookup"), Tone = "secondary" }
+        };
+        if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
+        {
+            actions.Add(new BookingJourneyActionVm
+            {
+                Label = "Tiếp tục checkout",
+                Url = BuildUrl(nameof(Resume), nameof(BookingController).Replace("Controller", string.Empty), $"/Booking/Resume?checkoutSessionId={booking.CheckoutSessionId}", new { checkoutSessionId = booking.CheckoutSessionId }),
+                Tone = "primary"
+            });
+        }
+
+        return actions;
+    }
+
+    private IReadOnlyList<BookingJourneyActionVm> BuildSuccessActions(Booking booking)
+    {
+        return new List<BookingJourneyActionVm>
+        {
+            new() { Label = "Quản lý booking", Url = BuildUrl("Index", "BookingLookup", "/BookingLookup"), Tone = "primary" },
+            new() { Label = "Mở cổng khách hàng", Url = BuildUrl("Index", "CustomerPortal", "/CustomerPortal"), Tone = "secondary" }
+        };
+    }
+
+    private IReadOnlyList<BookingJourneyActionVm> BuildFailedActions(Booking booking)
+    {
+        var actions = new List<BookingJourneyActionVm>();
+        if (!string.IsNullOrWhiteSpace(booking.Id))
+        {
+            actions.Add(new BookingJourneyActionVm
+            {
+                Label = "Thử lại thanh toán",
+                Url = BuildUrl(nameof(Payment), nameof(BookingController).Replace("Controller", string.Empty), $"/Booking/Payment?bookingId={booking.Id}", new { bookingId = booking.Id }),
+                Tone = "primary"
+            });
+        }
+
+        if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
+        {
+            actions.Add(new BookingJourneyActionVm
+            {
+                Label = "Khôi phục checkout",
+                Url = BuildUrl(nameof(Resume), nameof(BookingController).Replace("Controller", string.Empty), $"/Booking/Resume?checkoutSessionId={booking.CheckoutSessionId}", new { checkoutSessionId = booking.CheckoutSessionId }),
+                Tone = "secondary"
+            });
+        }
+
+        actions.Add(new BookingJourneyActionVm
+        {
+            Label = "Nhờ tư vấn",
+            Url = BuildUrl(nameof(Consultation), nameof(BookingController).Replace("Controller", string.Empty), "/Booking/Consultation"),
+            Tone = "secondary"
+        });
+        return actions;
+    }
+
+    private IReadOnlyList<BookingJourneyActionVm> BuildLookupActions(Booking booking)
+    {
+        var actions = new List<BookingJourneyActionVm>();
+        if (!string.IsNullOrWhiteSpace(booking.Id) && !string.Equals(booking.PaymentStatus, "Paid", StringComparison.OrdinalIgnoreCase))
+        {
+            actions.Add(new BookingJourneyActionVm
+            {
+                Label = "Mở quầy thanh toán",
+                Url = BuildUrl(nameof(Payment), nameof(BookingController).Replace("Controller", string.Empty), $"/Booking/Payment?bookingId={booking.Id}", new { bookingId = booking.Id }),
+                Tone = "primary"
+            });
+        }
+
+        actions.Add(new BookingJourneyActionVm
+        {
+            Label = "Mở cổng khách hàng",
+            Url = BuildUrl("Index", "CustomerPortal", "/CustomerPortal"),
+            Tone = "secondary"
+        });
+        return actions;
+    }
+
+    private string BuildUrl(string action, string controller, string fallback, object? values = null)
+    {
+        return Url?.Action(action, controller, values) ?? fallback;
     }
 
     private static IReadOnlyList<string> BuildBadges(Tour tour, TourDeparture? departure, bool hasDeal)

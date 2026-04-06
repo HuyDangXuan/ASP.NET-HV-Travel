@@ -1,4 +1,4 @@
-﻿@using System
+@using System
 @using System.Linq
 @using HVTravel.Domain.Entities
 @model Tour
@@ -106,6 +106,14 @@
         <a href="@detailUrl" class="record-view block" aria-label="Xem chi tiết tour @tour.Name">
             <h3 class="tour-card-title line-clamp-2">@tour.Name</h3>
         </a>
+
+        @if (!string.IsNullOrWhiteSpace(locationText))
+        {
+            <div class="tour-card-location">
+                <span class="material-symbols-outlined">location_on</span>
+                <span>@locationText</span>
+            </div>
+        }
 
         <div class="tour-card-meta">
             @if (!string.IsNullOrWhiteSpace(tour.Code))

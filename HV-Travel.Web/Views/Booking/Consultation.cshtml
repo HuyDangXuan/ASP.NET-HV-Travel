@@ -1,207 +1,64 @@
-﻿@inject IPublicContentService ContentService
-@using HVTravel.Web.Services
-@model HVTravel.Web.Models.ConsultationViewModel
+﻿@model ConsultationViewModel
 @{
-    var sections = await ContentService.GetPageSectionsAsync("booking");
-    var siteSettings = await ContentService.GetSiteSettingsAsync();
-    var hero = sections.GetSection("consultationHero");
-    var benefits = sections.GetSection("consultationBenefits");
-    var contactGroup = siteSettings.GetGroup("contactInfo");
-    var success = TempData["ConsultationSuccess"] != null;
-
-    var customerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "Khách hàng";
-    var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
-    var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
-    var businessHours = contactGroup?.Fields.GetFieldValue("businessHours", "T2 - T7: 8:00 - 18:00") ?? "T2 - T7: 8:00 - 18:00";
-    var hotlineLabel = benefits?.Fields.GetVisibleFieldValue("hotlineLabel", "Hotline") ?? "Hotline";
-    var contactEmailLabel = benefits?.Fields.GetVisibleFieldValue("contactEmailLabel", "Email") ?? "Email";
-    var businessHoursTitle = benefits?.Fields.GetVisibleFieldValue("businessHoursTitle", "Giờ Làm Việc") ?? "Giờ Làm Việc";
-    var supportScheduleLabel = benefits?.Fields.GetVisibleFieldValue("supportScheduleLabel", "Lịch hỗ trợ") ?? "Lịch hỗ trợ";
-    var fullNameLabel = benefits?.Fields.GetVisibleFieldValue("fullNameLabel", "Họ Và Tên") ?? "Họ Và Tên";
-    var fullNamePlaceholder = benefits?.Fields.GetVisibleFieldValue("fullNamePlaceholder", "Nguyễn Văn A") ?? "Nguyễn Văn A";
-    var phoneLabel = benefits?.Fields.GetVisibleFieldValue("phoneLabel", "Số Điện Thoại") ?? "Số Điện Thoại";
-    var phonePlaceholder = benefits?.Fields.GetVisibleFieldValue("phonePlaceholder", "0901 234 567") ?? "0901 234 567";
-    var formEmailLabel = benefits?.Fields.GetVisibleFieldValue("formEmailLabel", "Email") ?? "Email";
-    var emailPlaceholder = benefits?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@example.com") ?? "email@example.com";
-    var tourInterestLabel = benefits?.Fields.GetVisibleFieldValue("tourInterestLabel", "Tour Quan Tâm") ?? "Tour Quan Tâm";
-    var tourInterestPlaceholder = benefits?.Fields.GetVisibleFieldValue("tourInterestPlaceholder", "VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc...") ?? "VD: Tour Đà Nẵng 3N2Đ, Tour Phú Quốc...";
-    var preferredContactTimeLabel = benefits?.Fields.GetVisibleFieldValue("preferredContactTimeLabel", "Thời Gian Liên Hệ Mong Muốn") ?? "Thời Gian Liên Hệ Mong Muốn";
-    var preferredMorningLabel = benefits?.Fields.GetVisibleFieldValue("preferredMorningLabel", "Sáng (8-12h)") ?? "Sáng (8-12h)";
-    var preferredAfternoonLabel = benefits?.Fields.GetVisibleFieldValue("preferredAfternoonLabel", "Chiều (13-17h)") ?? "Chiều (13-17h)";
-    var preferredEveningLabel = benefits?.Fields.GetVisibleFieldValue("preferredEveningLabel", "Tối (18-21h)") ?? "Tối (18-21h)";
-    var messageLabel = benefits?.Fields.GetVisibleFieldValue("messageLabel", "Nội Dung Yêu Cầu") ?? "Nội Dung Yêu Cầu";
-    var messagePlaceholder = benefits?.Fields.GetVisibleFieldValue("messagePlaceholder", "Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn...") ?? "Mô tả yêu cầu của bạn: số người, ngân sách dự kiến, ngày đi mong muốn...";
-    var responseSlaText = benefits?.Fields.GetVisibleFieldValue("responseSlaText", "Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc") ?? "Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc";
-    var reasonTexts = new[]
-    {
-        benefits?.Fields.GetVisibleFieldValue("reason1Text", "10+ năm kinh nghiệm tổ chức tour") ?? "10+ năm kinh nghiệm tổ chức tour",
-        benefits?.Fields.GetVisibleFieldValue("reason2Text", "Đội ngũ hướng dẫn viên chuyên nghiệp") ?? "Đội ngũ hướng dẫn viên chuyên nghiệp",
-        benefits?.Fields.GetVisibleFieldValue("reason3Text", "Tư vấn miễn phí, không ràng buộc") ?? "Tư vấn miễn phí, không ràng buộc",
-        benefits?.Fields.GetVisibleFieldValue("reason4Text", "Cam kết giá tốt nhất thị trường") ?? "Cam kết giá tốt nhất thị trường"
-    }.Where(text => !string.IsNullOrWhiteSpace(text)).ToArray();
+    var success = string.Equals(Model.Journey.Status.Variant, "ConsultationSubmitted", StringComparison.Ordinal);
 }
 
-@if (hero?.IsEnabled != false)
-{
-    <section class="@($"public-top-section public-top-section--compact hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
-        <div class="absolute inset-0 opacity-15">
-            <div class="absolute top-20 left-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-        </div>
-        <div class="@($"public-top-section-shell public-top-section-content is-centered max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 relative z-10 text-center {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
-            <h1 class="public-top-section-title public-hero-title text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">
-                @hero.Fields.GetFieldValue("title", "Tư Vấn Chuyến Đi Theo Cách Của Bạn")
-            </h1>
-            <div class="public-top-section-lead public-body-copy text-lg text-slate-300 max-w-xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                @Html.Raw(hero.Fields.GetFieldValue("description", "Chia sẻ nhu cầu để đội ngũ HV Travel tư vấn tour phù hợp với lịch trình và ngân sách của bạn."))
-            </div>
-        </div>
-    </section>
-}
-
-<section class="py-12 bg-background-light dark:bg-background-dark">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="public-card-grid grid lg:grid-cols-5 gap-10">
-            @if (benefits?.IsEnabled != false)
-            {
-                <div class="@($"lg:col-span-2 space-y-6 {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)" data-animate="slide-left" data-stagger>
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark space-y-5">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "quickContactTitle")">
-                            <span class="material-symbols-outlined text-primary">support_agent</span> @benefits.Fields.GetFieldValue("quickContactTitle", "Liên Hệ Nhanh")
-                        </h3>
-                        <a href="tel:@contactPhone" class="flex items-center gap-4 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl hover:bg-primary/5 transition-colors group">
-                            <div class="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                                <span class="material-symbols-outlined">call</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">@hotlineLabel</p>
-                                <p class="text-base font-bold text-slate-900 dark:text-white">@contactPhone</p>
-                            </div>
-                        </a>
-                        <a href="mailto:@contactEmail" class="flex items-center gap-4 p-4 bg-surface-muted-light dark:bg-surface-elevated-dark rounded-xl hover:bg-primary/5 transition-colors group">
-                            <div class="size-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                                <span class="material-symbols-outlined">mail</span>
-                            </div>
-                            <div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">@contactEmailLabel</p>
-                                <p class="text-base font-bold text-slate-900 dark:text-white">@contactEmail</p>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-6 border border-border-light dark:border-border-dark">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">schedule</span> @businessHoursTitle
-                        </h3>
-                        <div class="space-y-2.5 text-sm">
-                            <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">@supportScheduleLabel</span><span class="font-bold text-slate-900 dark:text-white">@businessHours</span></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-primary/5 to-blue-500/5 dark:from-primary/10 dark:to-blue-500/10 rounded-2xl p-6 border border-primary/10">
-                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "reasonsTitle")">@benefits.Fields.GetFieldValue("reasonsTitle", "Tại Sao Chọn HV Travel?")</h3>
-                        <div class="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                            @foreach (var reasonText in reasonTexts)
-                            {
-                                <div class="flex items-start gap-2"><span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">verified</span>@reasonText</div>
-                            }
-                        </div>
-                    </div>
+<section class="public-journey-shell public-journey-shell--consultation public-booking-support-shell">
+    <div class="public-journey-shell-inner">
+        @await Html.PartialAsync("_JourneyHeader", Model.Journey)
+        <div class="public-journey-desk public-journey-desk--consultation">
+            <div class="public-journey-main">
+                <section class="public-journey-panel public-booking-section">
+                    <p class="public-journey-card-eyebrow">Nhờ tư vấn theo cách của bạn</p>
+                    <h2 class="public-journey-panel-title">Trao đổi với chuyên viên trước khi chốt</h2>
+                    <p class="public-journey-note">Gửi mô tả ngắn về lịch đi, ngân sách và số khách để đội ngũ đề xuất phương án phù hợp ngay trong cùng luồng đặt tour.</p>
+                </section>
+                <div class="public-journey-status-panel">
+                    @if (success)
+                    {
+                        <section class="public-journey-panel public-booking-section">
+                            <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn thành công</p>
+                            <h2 class="public-journey-panel-title">Đội ngũ tư vấn đã nhận yêu cầu của bạn</h2>
+                            <p class="public-journey-note">Chúng tôi sẽ liên hệ lại theo khung giờ bạn mong muốn hoặc trong giờ làm việc kế tiếp.</p>
+                        </section>
+                    }
+                    @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
                 </div>
-            }
-
-            <div class="lg:col-span-3" data-animate="slide-right">
-                @if (success)
+                @if (!success)
                 {
-                    <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-10 border border-border-light dark:border-border-dark text-center {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)">
-                        <div class="mx-auto size-20 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-4xl text-emerald-500">check_circle</span>
+                    <section class="public-journey-panel public-booking-section">
+                        <div class="public-journey-panel-heading">
+                            <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn</p>
+                            <h2 class="public-journey-panel-title">Điền mô tả ngắn để đội ngũ gọi lại</h2>
                         </div>
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "successTitle")">@benefits?.Fields.GetFieldValue("successTitle", "Gửi Yêu Cầu Thành Công!")</h2>
-                        <div class="text-slate-500 dark:text-slate-400 mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "successDescription")">
-                            @Html.Raw(benefits?.Fields.GetFieldValue("successDescription", "Chúng tôi đã nhận được thông tin và sẽ liên hệ với bạn trong thời gian sớm nhất."))
-                        </div>
-                        <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/25 transition-all">
-                            <span class="material-symbols-outlined text-[18px]">explore</span> @benefits?.Fields.GetFieldValue("exploreToursText", "Khám Phá Tour")
-                        </a>
-                    </div>
-                }
-                else
-                {
-                    <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl p-6 sm:p-8 border border-border-light dark:border-border-dark {ContentPresentationViewHelper.GetSectionTextClass(benefits)} {ContentPresentationViewHelper.GetSectionBackgroundClass(benefits)}")" style="@ContentPresentationViewHelper.GetSectionStyle(benefits)">
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(benefits, "formTitle")">
-                            <span class="material-symbols-outlined text-primary">edit_note</span> @benefits?.Fields.GetFieldValue("formTitle", "Gửi Yêu Cầu Tư Vấn")
-                        </h2>
-
-                        <form asp-action="Consultation" method="post">
+                        <form asp-action="Consultation" method="post" class="public-journey-form-grid">
                             @Html.AntiForgeryToken()
-                            <div class="space-y-5">
-                                <div class="grid sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@fullNameLabel <span class="text-red-500">*</span></label>
-                                        <input asp-for="FullName" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@fullNamePlaceholder" />
-                                        <span asp-validation-for="FullName" class="text-xs text-red-500 mt-1"></span>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@phoneLabel <span class="text-red-500">*</span></label>
-                                        <input asp-for="Phone" type="tel" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@phonePlaceholder" />
-                                        <span asp-validation-for="Phone" class="text-xs text-red-500 mt-1"></span>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@formEmailLabel</label>
-                                    <input asp-for="Email" type="email" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@emailPlaceholder" />
-                                    <span asp-validation-for="Email" class="text-xs text-red-500 mt-1"></span>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@tourInterestLabel</label>
-                                    <input asp-for="TourInterest" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="@tourInterestPlaceholder" />
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@preferredContactTimeLabel</label>
-                                    <div class="flex flex-wrap gap-2">
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="@preferredMorningLabel" class="peer hidden" />
-                                            <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                @preferredMorningLabel
-                                            </div>
-                                        </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="@preferredAfternoonLabel" class="peer hidden" />
-                                            <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                @preferredAfternoonLabel
-                                            </div>
-                                        </label>
-                                        <label class="cursor-pointer">
-                                            <input type="radio" name="PreferredContactTime" value="@preferredEveningLabel" class="peer hidden" />
-                                            <div class="px-4 py-2 rounded-xl border border-border-light dark:border-border-dark peer-checked:border-primary peer-checked:bg-primary/5 text-sm text-slate-600 dark:text-slate-400 peer-checked:text-primary peer-checked:font-bold transition-all hover:border-primary/50">
-                                                @preferredEveningLabel
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">@messageLabel <span class="text-red-500">*</span></label>
-                                    <textarea asp-for="Message" rows="4" class="w-full px-4 py-3 bg-surface-muted-light dark:bg-surface-elevated-dark border border-border-light dark:border-border-dark rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none" placeholder="@messagePlaceholder"></textarea>
-                                    <span asp-validation-for="Message" class="text-xs text-red-500 mt-1"></span>
-                                </div>
-
-                                <button type="submit" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-[0.98]">
-                                    <span class="material-symbols-outlined text-[18px]">send</span>
-                                    @benefits?.Fields.GetFieldValue("submitText", "Gửi Yêu Cầu")
-                                </button>
-                                <p class="text-[11px] text-slate-400 text-center">@responseSlaText</p>
-                            </div>
+                            <div asp-validation-summary="ModelOnly" class="public-journey-validation"></div>
+                            <label class="public-booking-field"><span class="sr-only">Họ và tên</span><input asp-for="FullName" placeholder="Họ và tên" /></label>
+                            <label class="public-booking-field"><span class="sr-only">Số điện thoại</span><input asp-for="Phone" placeholder="Số điện thoại" /></label>
+                            <label class="public-booking-field"><span class="sr-only">Email</span><input asp-for="Email" placeholder="Email (nếu có)" /></label>
+                            <label class="public-booking-field"><span class="sr-only">Tour quan tâm</span><input asp-for="TourInterest" placeholder="Tour hoặc điểm đến bạn quan tâm" /></label>
+                            <label class="public-booking-field"><span class="sr-only">Thời gian liên hệ mong muốn</span><input asp-for="PreferredContactTime" placeholder="Khung giờ liên hệ mong muốn" /></label>
+                            <label class="public-booking-field public-booking-field--full">
+                                <span class="sr-only">Nội dung yêu cầu</span>
+                                <textarea asp-for="Message" rows="5" placeholder="Nội dung bạn cần tư vấn"></textarea>
+                            </label>
+                            <button type="submit" class="public-journey-submit">Gửi yêu cầu tư vấn</button>
                         </form>
-                    </div>
+                    </section>
                 }
             </div>
+            <aside class="public-journey-rail">
+                <div class="public-journey-support">
+                    @await Html.PartialAsync("_JourneySupportPanel", Model.Journey.Support)
+                </div>
+            </aside>
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 
 

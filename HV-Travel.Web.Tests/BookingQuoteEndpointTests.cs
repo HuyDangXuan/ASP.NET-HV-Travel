@@ -1,11 +1,13 @@
-using System.Reflection;
+﻿using System.Reflection;
 using HVTravel.Application.Services;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Controllers;
 using HVTravel.Web.Models;
 using HVTravel.Web.Services;
 using HV_Travel.Web.Tests.TestSupport;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace HV_Travel.Web.Tests;
 
@@ -97,6 +99,35 @@ public class BookingQuoteEndpointTests
     }
 
     [Fact]
+    public async Task Create_Get_AppliesDepartureAndTravellerPreselection()
+    {
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var tour = BuildTour(nextMonth, capacity: 10, bookedCount: 3);
+        tour.Departures.Add(new TourDeparture
+        {
+            Id = "dep-2",
+            StartDate = new DateTime(nextMonth.Year, nextMonth.Month, 19),
+            AdultPrice = 4800000m,
+            ChildPrice = 2900000m,
+            InfantPrice = 600000m,
+            Capacity = 12,
+            BookedCount = 2,
+            ConfirmationType = "Instant"
+        });
+        var controller = CreateController([tour]);
+
+        var result = await controller.Create(tour.Id, "dep-2", tour.Departures.Last().StartDate, 2, 1, 0);
+
+        var view = Assert.IsType<ViewResult>(result);
+        var model = Assert.IsType<BookingViewModel>(view.Model);
+        Assert.Equal("dep-2", model.DepartureId);
+        Assert.Equal(tour.Departures.Last().StartDate, model.SelectedStartDate);
+        Assert.Equal(2, model.AdultCount);
+        Assert.Equal(1, model.ChildCount);
+        Assert.Equal(0, model.InfantCount);
+    }
+
+    [Fact]
     public async Task Resume_RedirectsOpenCheckoutSessionToPayment()
     {
         var nextMonth = DateTime.UtcNow.AddMonths(1);
@@ -123,6 +154,73 @@ public class BookingQuoteEndpointTests
         var redirect = Assert.IsType<RedirectToActionResult>(result);
         Assert.Equal("Payment", redirect.ActionName);
         Assert.Equal(bookingId, redirect.RouteValues!["bookingId"]);
+    }
+
+    [Fact]
+    public async Task ProcessPayment_BankTransfer_RedirectsBackToPaymentAndKeepsPendingState()
+    {
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var tour = BuildTour(nextMonth, capacity: 10, bookedCount: 3);
+        var controller = CreateController([tour]);
+        var booking = await CreateBookingAsync(controller, tour);
+
+        var result = await controller.ProcessPayment(booking.Id, "BankTransfer");
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Payment", redirect.ActionName);
+        Assert.Equal(booking.Id, redirect.RouteValues!["bookingId"]);
+
+        var updatedBooking = await controller.Bookings.GetByIdAsync(booking.Id);
+        Assert.Equal("Pending", updatedBooking.PaymentStatus);
+        Assert.Equal("PendingPayment", updatedBooking.Status);
+        Assert.Contains(updatedBooking.PaymentTransactions, transaction => transaction.Method == "BankTransfer");
+    }
+
+    [Fact]
+    public async Task ProcessPayment_Cash_RedirectsToSuccessWithConfirmedReservation()
+    {
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var tour = BuildTour(nextMonth, capacity: 10, bookedCount: 3);
+        var controller = CreateController([tour]);
+        var booking = await CreateBookingAsync(controller, tour);
+
+        var result = await controller.ProcessPayment(booking.Id, "Cash");
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Success", redirect.ActionName);
+        Assert.Equal(booking.Id, redirect.RouteValues!["bookingId"]);
+
+        var updatedBooking = await controller.Bookings.GetByIdAsync(booking.Id);
+        Assert.Equal("Confirmed", updatedBooking.Status);
+        Assert.Equal("Unpaid", updatedBooking.PaymentStatus);
+    }
+
+    [Fact]
+    public async Task UploadTransferProof_RedirectsToPaymentAndSetsSuccessBanner()
+    {
+        var nextMonth = DateTime.UtcNow.AddMonths(1);
+        var tour = BuildTour(nextMonth, capacity: 10, bookedCount: 3);
+        var controller = CreateController([tour]);
+        controller.TempData = new TempDataDictionary(new DefaultHttpContext(), new TestTempDataProvider());
+        var booking = await CreateBookingAsync(controller, tour);
+
+        using var stream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+        IFormFile proofFile = new FormFile(stream, 0, stream.Length, "proofFile", "proof.png")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/png"
+        };
+
+        var result = await controller.UploadTransferProof(booking.Id, proofFile, "Bank proof");
+
+        var redirect = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Payment", redirect.ActionName);
+        Assert.Equal(booking.Id, redirect.RouteValues!["bookingId"]);
+        Assert.Equal("Đã tải minh chứng chuyển khoản. Bộ phận vận hành sẽ đối soát và cập nhật trạng thái.", controller.TempData["PaymentSuccess"]);
+
+        var updatedBooking = await controller.Bookings.GetByIdAsync(booking.Id);
+        Assert.Equal("Pending", updatedBooking.PaymentStatus);
+        Assert.False(string.IsNullOrWhiteSpace(updatedBooking.TransferProofBase64));
     }
 
     private static BookingController CreateController(IEnumerable<Tour> tours, IEnumerable<Promotion>? promotions = null)
@@ -153,6 +251,25 @@ public class BookingQuoteEndpointTests
             checkoutService,
             pricingService,
             checkoutSessionRepository);
+    }
+
+    private static async Task<Booking> CreateBookingAsync(BookingController controller, Tour tour)
+    {
+        var createResult = await controller.Create(new BookingViewModel
+        {
+            TourId = tour.Id,
+            DepartureId = "dep-1",
+            SelectedStartDate = tour.Departures.Single().StartDate,
+            ContactName = "Nguyen Lan",
+            ContactEmail = "lan@example.com",
+            ContactPhone = "0909000999",
+            AdultCount = 2,
+            PaymentPlanType = "Deposit"
+        });
+
+        var redirectToPayment = Assert.IsType<RedirectToActionResult>(createResult);
+        var bookingId = Assert.IsType<string>(redirectToPayment.RouteValues!["bookingId"]);
+        return await controller.Bookings.GetByIdAsync(bookingId);
     }
 
     private static Tour BuildTour(DateTime nextMonth, int capacity, int bookedCount)
@@ -207,5 +324,14 @@ public class BookingQuoteEndpointTests
             ValidTo = DateTime.UtcNow.AddDays(10),
             IsActive = true
         };
+    }
+
+    private sealed class TestTempDataProvider : ITempDataProvider
+    {
+        public IDictionary<string, object> LoadTempData(HttpContext context) => new Dictionary<string, object>();
+
+        public void SaveTempData(HttpContext context, IDictionary<string, object> values)
+        {
+        }
     }
 }
