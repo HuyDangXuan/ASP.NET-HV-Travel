@@ -13,10 +13,13 @@
 
         <div class="public-journey-desk public-journey-desk--status">
             <div class="public-journey-main">
-                <section class="public-journey-panel public-booking-section public-booking-status-intro">
-                    <p class="public-journey-card-eyebrow">Booking đã được ghi nhận</p>
+                <section class="public-journey-panel public-booking-section public-booking-status-intro public-journey-status-hero">
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Booking đã được ghi nhận</p>
+                        <span class="public-badge is-success">@booking.BookingCode</span>
+                    </div>
                     <h2 class="public-journey-panel-title">Thông tin giữ chỗ đã sẵn sàng cho bước tiếp theo</h2>
-                    <p class="public-journey-note">Theo dõi trạng thái thanh toán, tiến trình xử lý và những việc tiếp theo ngay trong cùng một màn hình.</p>
+                    <p class="public-journey-note public-journey-section-lead">Theo dõi trạng thái thanh toán, tiến trình xử lý và những việc tiếp theo ngay trong cùng một màn hình.</p>
                 </section>
                 <div class="public-journey-status-panel">
                     @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)

@@ -1,5 +1,5 @@
-:root {
-  /* ── Design System: Color Tokens ── */
+﻿:root {
+  /* â”€â”€ Design System: Color Tokens â”€â”€ */
   --ds-primary: #0891B2;
   --ds-primary-dark: #0E7490;
   --ds-primary-light: #ECFEFF;
@@ -18,7 +18,7 @@
   --ds-warning: #D97706;
   --ds-danger: #DC2626;
 
-  /* ── Design System: Spacing (8pt grid) ── */
+  /* â”€â”€ Design System: Spacing (8pt grid) â”€â”€ */
   --ds-space-xs: 0.25rem;
   --ds-space-sm: 0.5rem;
   --ds-space-md: 1rem;
@@ -30,7 +30,7 @@
   --ds-container-max: 80rem;
   --ds-gutter: clamp(1rem, 0.75rem + 1vw, 2rem);
 
-  /* ── Design System: Shadows ── */
+  /* â”€â”€ Design System: Shadows â”€â”€ */
   --ds-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --ds-shadow-md: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
   --ds-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.05);
@@ -38,19 +38,19 @@
   --ds-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
   --ds-shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.05);
 
-  /* ── Design System: Transitions ── */
+  /* â”€â”€ Design System: Transitions â”€â”€ */
   --ds-transition-fast: 150ms ease;
   --ds-transition-base: 200ms ease;
   --ds-transition-slow: 300ms ease;
 
-  /* ── Design System: Border Radius ── */
+  /* â”€â”€ Design System: Border Radius â”€â”€ */
   --ds-radius-sm: 0.5rem;
   --ds-radius-md: 0.75rem;
   --ds-radius-lg: 1rem;
   --ds-radius-xl: 1.5rem;
   --ds-radius-full: 9999px;
 
-  /* ── Theme (legacy compat) ── */
+  /* â”€â”€ Theme (legacy compat) â”€â”€ */
   --theme-scrollbar-thumb: #9cc8d6;
   --theme-scrollbar-thumb-hover: #5faac2;
   --theme-glass-bg: rgba(255, 255, 255, 0.86);
@@ -125,7 +125,7 @@
   border: 1px solid rgba(31, 51, 71, 0.95);
 }
 
-/* Public responsive foundation — refined for readability */
+/* Public responsive foundation â€” refined for readability */
 :root {
   --public-fluid-display: clamp(2.25rem, 4.5vw, 3.75rem);
   --public-fluid-heading: clamp(1.875rem, 3vw, 2.75rem);
@@ -1442,7 +1442,7 @@ body.public-page-shell .dark .public-rich-text blockquote {
   color: rgb(148 163 184);
 }
 
-/* Public header and top-section alignment — refined */
+/* Public header and top-section alignment â€” refined */
 :root {
   --public-header-brand-size: clamp(1.08rem, 1.01rem + 0.28vw, 1.26rem);
   --public-header-tagline-size: clamp(0.52rem, 0.49rem + 0.08vw, 0.62rem);
@@ -4466,5 +4466,628 @@ body.public-page-shell.dark button.public-date-day:hover {
   .public-booking-intro .public-journey-tour-meta span,
   .public-booking-intro .public-journey-tour-meta a {
     min-height: 64px;
+  }
+}/* Booking Funnel Utility Overhaul */
+body.public-page-shell {
+  --journey-panel-gap: clamp(1rem, 0.8rem + 0.5vw, 1.35rem);
+  --journey-panel-pad: clamp(1rem, 0.82rem + 0.9vw, 1.5rem);
+  --journey-label-size: clamp(0.72rem, 0.7rem + 0.1vw, 0.8rem);
+  --journey-helper-size: clamp(0.82rem, 0.8rem + 0.12vw, 0.92rem);
+  --journey-body-size: clamp(0.96rem, 0.92rem + 0.16vw, 1.05rem);
+}
+
+body.public-page-shell .public-journey-shell {
+  background: linear-gradient(180deg, #eef7fa 0%, #e6f1f6 100%);
+}
+
+body.public-page-shell .public-journey-shell-inner {
+  max-width: 1380px;
+  padding-inline: clamp(1rem, 0.4rem + 2vw, 2rem);
+  padding-top: clamp(1.25rem, 0.9rem + 1vw, 2rem);
+  padding-bottom: clamp(2rem, 1.2rem + 1vw, 3rem);
+}
+
+body.public-page-shell .public-journey-header-block {
+  gap: 0.65rem;
+  padding: clamp(1rem, 0.7rem + 1vw, 1.5rem) 0 0.8rem;
+}
+
+body.public-page-shell .public-journey-heading-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+body.public-page-shell .public-journey-title {
+  max-width: 14ch;
+  font-size: clamp(1.75rem, 1.45rem + 1.25vw, 2.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+body.public-page-shell .public-journey-section-lead,
+body.public-page-shell .public-journey-description,
+body.public-page-shell .public-journey-note,
+body.public-page-shell .public-journey-status-description,
+body.public-page-shell .public-journey-support-copy {
+  max-width: 60ch;
+  font-size: var(--journey-body-size);
+  line-height: 1.65;
+  color: #425466;
+}
+
+body.public-page-shell .public-journey-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  min-width: 0;
+}
+
+body.public-page-shell .public-journey-card-eyebrow,
+body.public-page-shell .public-journey-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.82rem;
+  border-radius: 999px;
+  background: rgba(8, 145, 178, 0.1);
+  color: #0e7490;
+  font-size: clamp(0.68rem, 0.66rem + 0.08vw, 0.76rem);
+  letter-spacing: 0.14em;
+  white-space: normal;
+}
+
+body.public-page-shell .public-journey-status-hero {
+  gap: clamp(0.85rem, 0.7rem + 0.4vw, 1.2rem);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99) 0%, rgba(234, 247, 252, 0.97) 100%) !important;
+  border-color: rgba(14, 165, 233, 0.18) !important;
+}
+
+body.public-page-shell .public-journey-panel,
+body.public-page-shell .public-journey-card {
+  padding: var(--journey-panel-pad);
+  gap: var(--journey-panel-gap);
+  border-radius: clamp(1.25rem, 1.1rem + 0.5vw, 1.75rem);
+}
+
+body.public-page-shell .public-journey-panel-heading {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 0;
+  align-items: start;
+}
+
+body.public-page-shell .public-journey-main,
+body.public-page-shell .public-journey-rail {
+  gap: 1rem;
+}
+
+body.public-page-shell .public-journey-desk {
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: clamp(1rem, 0.6rem + 1vw, 1.5rem);
+  align-items: start;
+}
+
+body.public-page-shell .public-journey-summary {
+  top: 92px;
+}
+
+body.public-page-shell .public-journey-stagebar-list {
+  gap: 0.55rem;
+  padding: 0.4rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+body.public-page-shell .public-journey-stage {
+  min-height: 60px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.9rem 1rem;
+}
+
+body.public-page-shell .public-journey-stage-label-wrap {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+body.public-page-shell .public-journey-stage-label {
+  font-size: clamp(0.92rem, 0.88rem + 0.14vw, 1rem);
+  font-weight: 800;
+  color: #0f2940;
+}
+
+body.public-page-shell .public-journey-field-label {
+  display: block;
+  margin: 0;
+  font-size: var(--journey-label-size);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #0f2940;
+}
+
+body.public-page-shell .public-journey-field-hint,
+body.public-page-shell .public-journey-summary-note {
+  margin: 0;
+  font-size: var(--journey-helper-size);
+  line-height: 1.5;
+  color: #64748b;
+}
+
+body.public-page-shell .public-journey-info-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-journey-info-item {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(18, 50, 75, 0.08);
+}
+
+body.public-page-shell .public-journey-summary-row.public-journey-info-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+body.public-page-shell .public-journey-summary-row.public-journey-info-item dd {
+  text-align: right;
+}
+
+body.public-page-shell .public-journey-callout {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  background: linear-gradient(180deg, rgba(240, 249, 255, 0.95), rgba(255, 255, 255, 0.92));
+  color: #0f2940;
+  line-height: 1.6;
+}
+
+body.public-page-shell .public-journey-callout--info {
+  border-color: rgba(14, 165, 233, 0.24);
+}
+
+body.public-page-shell .public-journey-callout--warning {
+  border-color: rgba(245, 158, 11, 0.28);
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+body.public-page-shell .public-journey-callout--success {
+  border-color: rgba(22, 163, 74, 0.24);
+  background: linear-gradient(180deg, rgba(240, 253, 244, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+body.public-page-shell .public-journey-callout--danger {
+  border-color: rgba(220, 38, 38, 0.24);
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.96), rgba(255, 255, 255, 0.94));
+}
+
+body.public-page-shell .public-journey-support-meta {
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-journey-support-meta .public-journey-info-item a {
+  font-weight: 700;
+  color: #0f2940;
+  text-decoration: none;
+}
+
+body.public-page-shell .public-journey-choice,
+body.public-page-shell .public-journey-payment-option,
+body.public-page-shell .public-booking-glance-card,
+body.public-page-shell .public-booking-finance-grid > div,
+body.public-page-shell .public-tour-dossier-departure-card {
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(18, 50, 75, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+body.public-page-shell .public-journey-choice {
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-journey-choice-title {
+  font-size: clamp(1rem, 0.94rem + 0.2vw, 1.12rem);
+  font-weight: 800;
+  color: #0f2940;
+}
+
+body.public-page-shell .public-journey-choice-copy {
+  font-size: var(--journey-helper-size);
+  line-height: 1.55;
+}
+
+body.public-page-shell .public-journey-choice-price {
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.28rem);
+  line-height: 1.1;
+  color: #0f2940;
+}
+
+body.public-page-shell .public-journey-choice.is-selected,
+body.public-page-shell .public-journey-payment-option.is-selected,
+body.public-page-shell .public-journey-payment-body.is-active {
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12), var(--booking-shadow-soft);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(236, 248, 253, 0.96));
+}
+
+body.public-page-shell .public-booking-overview-grid {
+  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+  align-items: stretch;
+}
+
+body.public-page-shell .public-booking-intro-copy {
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-booking-intro-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-booking-intro .public-journey-tour-meta span,
+body.public-page-shell .public-booking-intro .public-journey-tour-meta a {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 0;
+  padding: 0.95rem 1rem;
+  align-content: end;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  color: #0f2940;
+  text-decoration: none;
+}
+
+body.public-page-shell .public-booking-departure-matrix {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.public-page-shell .public-booking-finance-panel .public-journey-choice-grid--plans {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.public-page-shell .public-booking-finance-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+body.public-page-shell .public-booking-finance-grid > div {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 100%;
+}
+
+body.public-page-shell .public-booking-finance-grid span {
+  font-size: clamp(0.7rem, 0.68rem + 0.08vw, 0.78rem);
+}
+
+body.public-page-shell .public-booking-finance-grid strong {
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.4rem);
+  line-height: 1.08;
+}
+
+body.public-page-shell .public-booking-party-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+body.public-page-shell .public-booking-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+body.public-page-shell .public-booking-field,
+body.public-page-shell .public-booking-field--full,
+body.public-page-shell .public-journey-form-grid label,
+body.public-page-shell .public-journey-field-block {
+  align-content: start;
+}
+
+body.public-page-shell .public-booking-party-grid label {
+  gap: 0.45rem;
+  padding: 1rem;
+}
+
+body.public-page-shell .public-booking-party-grid input,
+body.public-page-shell .public-booking-field input,
+body.public-page-shell .public-booking-field textarea,
+body.public-page-shell .public-journey-upload-form input,
+body.public-page-shell .public-journey-upload-form textarea,
+body.public-page-shell .public-journey-form-grid input,
+body.public-page-shell .public-journey-form-grid textarea {
+  font-size: clamp(0.95rem, 0.92rem + 0.08vw, 1rem);
+}
+
+body.public-page-shell .public-booking-coupon-disclosure summary {
+  font-size: 0.92rem;
+}
+
+body.public-page-shell .public-booking-selection-card .public-journey-summary-list {
+  margin-top: 0;
+}
+
+body.public-page-shell .public-booking-payment-option-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.public-page-shell .public-booking-payment-option {
+  min-height: 126px;
+  align-content: start;
+}
+
+body.public-page-shell .public-booking-payment-copy strong {
+  font-size: 1.02rem;
+}
+
+body.public-page-shell .public-booking-payment-copy span {
+  font-size: var(--journey-helper-size);
+}
+
+body.public-page-shell .public-booking-payment-body {
+  gap: 0.75rem;
+}
+
+body.public-page-shell .public-journey-upload-form {
+  gap: 1rem;
+}
+
+body.public-page-shell .public-tour-dossier-shell {
+  max-width: 1360px;
+  padding: clamp(1.25rem, 0.8rem + 1vw, 2rem);
+}
+
+body.public-page-shell .public-tour-dossier-booking-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.4rem;
+}
+
+body.public-page-shell .public-tour-dossier-booking-bar article {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+body.public-page-shell .public-tour-dossier-detail-list {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+body.public-page-shell .public-tour-dossier-detail-list li,
+body.public-page-shell .public-tour-dossier-detail-list > div {
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  background: rgba(240, 247, 250, 0.85);
+  border: 1px solid rgba(18, 50, 75, 0.08);
+}
+
+body.public-page-shell .public-tour-dossier-detail-list dt {
+  margin: 0;
+  font-size: var(--journey-label-size);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5f7388;
+}
+
+body.public-page-shell .public-tour-dossier-detail-list dd {
+  margin: 0;
+  font-weight: 700;
+  color: #0f2940;
+}
+
+body.public-page-shell .public-tour-dossier-content-list {
+  display: grid;
+  gap: 1rem;
+}
+
+body.public-page-shell .public-tour-dossier-content-list :where(p, ul, ol) {
+  margin: 0;
+}
+
+body.public-page-shell .public-tour-dossier-content-list :where(ul, ol) {
+  display: grid;
+  gap: 0.75rem;
+  padding-left: 1.2rem;
+}
+
+body.public-page-shell .public-tour-dossier-content-list li {
+  padding-left: 0.15rem;
+}
+
+body.public-page-shell .public-tour-dossier-departure-card {
+  gap: 0.9rem;
+}
+
+body.public-page-shell .public-tour-card-grid {
+  grid-auto-rows: 1fr;
+}
+
+body.public-page-shell .public-tour-card {
+  max-width: none !important;
+  min-height: 100%;
+}
+
+body.public-page-shell .tour-card-badge-stack {
+  gap: 0.45rem;
+}
+
+body.public-page-shell .tour-card-badge {
+  padding: 0.48rem 0.72rem;
+  font-size: clamp(0.66rem, 0.64rem + 0.1vw, 0.74rem);
+  line-height: 1.1;
+  white-space: normal;
+}
+
+body.public-page-shell .tour-card-title {
+  font-size: clamp(1.02rem, 0.98rem + 0.22vw, 1.2rem);
+}
+
+body.public-page-shell .tour-card-meta-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.85rem;
+}
+
+body.public-page-shell .tour-card-meta-row {
+  align-items: flex-start;
+}
+
+body.public-page-shell .tour-card-current-price {
+  font-size: clamp(1.1rem, 1rem + 0.28vw, 1.35rem);
+}
+
+body.public-page-shell .tour-card-booking {
+  min-height: 48px;
+  padding-block: 0.78rem;
+}
+
+html.dark body.public-page-shell .public-journey-status-hero,
+body.public-page-shell.dark .public-journey-status-hero,
+html.dark body.public-page-shell .public-journey-callout,
+body.public-page-shell.dark .public-journey-callout,
+html.dark body.public-page-shell .public-journey-info-item,
+body.public-page-shell.dark .public-journey-info-item,
+html.dark body.public-page-shell .public-booking-intro .public-journey-tour-meta span,
+html.dark body.public-page-shell .public-booking-intro .public-journey-tour-meta a,
+body.public-page-shell.dark .public-booking-intro .public-journey-tour-meta span,
+body.public-page-shell.dark .public-booking-intro .public-journey-tour-meta a,
+html.dark body.public-page-shell .public-tour-dossier-detail-list li,
+html.dark body.public-page-shell .public-tour-dossier-detail-list > div,
+body.public-page-shell.dark .public-tour-dossier-detail-list li,
+body.public-page-shell.dark .public-tour-dossier-detail-list > div {
+  background: rgba(13, 27, 42, 0.9) !important;
+  border-color: rgba(51, 95, 121, 0.55) !important;
+  color: #e2e8f0;
+}
+
+html.dark body.public-page-shell .public-journey-section-lead,
+html.dark body.public-page-shell .public-journey-description,
+html.dark body.public-page-shell .public-journey-note,
+html.dark body.public-page-shell .public-journey-status-description,
+html.dark body.public-page-shell .public-journey-field-hint,
+html.dark body.public-page-shell .public-journey-summary-note,
+html.dark body.public-page-shell .public-tour-dossier-detail-list dt,
+body.public-page-shell.dark .public-journey-section-lead,
+body.public-page-shell.dark .public-journey-description,
+body.public-page-shell.dark .public-journey-note,
+body.public-page-shell.dark .public-journey-status-description,
+body.public-page-shell.dark .public-journey-field-hint,
+body.public-page-shell.dark .public-journey-summary-note,
+body.public-page-shell.dark .public-tour-dossier-detail-list dt {
+  color: #cbd5e1;
+}
+
+html.dark body.public-page-shell .public-journey-field-label,
+html.dark body.public-page-shell .public-journey-stage-label,
+html.dark body.public-page-shell .public-tour-dossier-detail-list dd,
+body.public-page-shell.dark .public-journey-field-label,
+body.public-page-shell.dark .public-journey-stage-label,
+body.public-page-shell.dark .public-tour-dossier-detail-list dd {
+  color: #f8fafc;
+}
+
+@media (min-width: 1280px) {
+  body.public-page-shell .public-tour-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.public-page-shell .public-tour-card {
+    max-width: none !important;
+  }
+}
+
+@media (min-width: 1680px) {
+  body.public-page-shell .public-tour-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  body.public-page-shell .public-booking-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023.98px) {
+  body.public-page-shell .public-journey-desk,
+  body.public-page-shell .public-booking-overview-grid,
+  body.public-page-shell .public-tour-dossier-grid,
+  body.public-page-shell .public-booking-glance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.public-page-shell .public-booking-payment-option-list,
+  body.public-page-shell .public-booking-finance-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.public-page-shell .public-journey-summary {
+    position: static;
+  }
+
+  body.public-page-shell .public-tour-dossier-booking-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  body.public-page-shell .public-journey-stagebar-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.public-page-shell .public-journey-stage {
+    border-radius: 1rem;
+  }
+
+  body.public-page-shell .public-booking-departure-matrix,
+  body.public-page-shell .public-journey-choice-grid--plans,
+  body.public-page-shell .public-booking-finance-grid,
+  body.public-page-shell .public-booking-glance-grid,
+  body.public-page-shell .public-booking-payment-option-list,
+  body.public-page-shell .public-booking-party-grid,
+  body.public-page-shell .public-booking-field-grid,
+  body.public-page-shell .public-journey-form-grid,
+  body.public-page-shell .public-tour-dossier-booking-bar,
+  body.public-page-shell .public-tour-dossier-departure-grid,
+  body.public-page-shell .tour-card-meta-split {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.public-page-shell .public-journey-action-row > * {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+
+  body.public-page-shell .public-badge,
+  body.public-page-shell .tour-card-badge {
+    white-space: normal;
+  }
+
+  body.public-page-shell .public-journey-title {
+    max-width: 100%;
+  }
+
+  body.public-page-shell .public-booking-intro .public-journey-tour-meta span,
+  body.public-page-shell .public-booking-intro .public-journey-tour-meta a {
+    min-height: 0;
   }
 }

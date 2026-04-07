@@ -1,4 +1,4 @@
-@model PublicTourDetailsPageViewModel
+﻿@model PublicTourDetailsPageViewModel
 @{
     var tour = Model.Tour;
     var dossier = Model.Dossier;
@@ -60,7 +60,10 @@
     <div class="public-tour-dossier-strip">
         @foreach (var fact in dossier.Facts)
         {
-            <article><span>@fact.Label</span><strong>@fact.Value</strong></article>
+            <article>
+                <span>@fact.Label</span>
+                <strong>@fact.Value</strong>
+            </article>
         }
     </div>
 
@@ -69,7 +72,7 @@
             <section class="public-tour-dossier-chapter">
                 <p class="public-tour-dossier-chapter-eyebrow">Tổng quan</p>
                 <h2>Tổng quan hành trình</h2>
-                <div class="public-rich-text">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.Description))</div>
+                <div class="public-rich-text public-tour-dossier-content-list">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.Description))</div>
             </section>
 
             <section class="public-tour-dossier-chapter public-tour-dossier-departures">
@@ -80,23 +83,17 @@
                     {
                         var isLowCapacity = departure.LowAvailability;
                         var isConfirmed = departure.ConfirmationText?.Contains("Xác nhận tức thì") ?? false;
-                        
+
                         <article class="public-tour-dossier-departure-card">
-                            <div class="public-tour-dossier-departure-card-badges">
-                                <span class="public-badge @(isConfirmed ? "is-success" : "is-info")">
-                                    <i class="fa-solid @(isConfirmed ? "fa-circle-check" : "fa-clock")"></i>
-                                    @departure.ConfirmationText
-                                </span>
-                                <span class="public-badge @(isLowCapacity ? "is-warning" : "is-cyan")">
-                                    <i class="fa-solid fa-user-group"></i>
-                                    @departure.RemainingCapacityText
-                                </span>
+                            <div class="public-tour-dossier-departure-card-badges public-journey-badge-group">
+                                <span class="public-badge @(isConfirmed ? "is-success" : "is-info")">@departure.ConfirmationText</span>
+                                <span class="public-badge @(isLowCapacity ? "is-warning" : "is-cyan")">@departure.RemainingCapacityText</span>
                             </div>
-                            
+
                             <div class="public-tour-dossier-departure-card-header">
                                 <strong class="public-tour-dossier-departure-card-date">@departure.StartDateText</strong>
                             </div>
-                            
+
                             <div class="public-tour-dossier-departure-card-footer">
                                 <div class="public-tour-dossier-departure-card-price">
                                     <span>Giá tour từ</span>
@@ -114,7 +111,7 @@
 
             <section class="public-tour-dossier-chapter">
                 <p class="public-tour-dossier-chapter-eyebrow">Lịch trình</p>
-                <h2>Lịch trình theo chương</h2>
+                <h2>Lịch trình theo chặng</h2>
                 @if (schedule.Any())
                 {
                     <div class="public-tour-dossier-itinerary-timeline">
@@ -127,7 +124,7 @@
                                         <span class="public-badge is-day">Ngày @item.Day</span>
                                         <h3>@item.Title</h3>
                                     </div>
-                                    <div class="public-rich-text">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))</div>
+                                    <div class="public-rich-text public-tour-dossier-content-list">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))</div>
                                 </div>
                             </article>
                         }
@@ -145,7 +142,7 @@
                     <h2>Dịch vụ bao gồm</h2>
                     @if (inclusions.Any())
                     {
-                        <ul>
+                        <ul class="public-tour-dossier-detail-list">
                             @foreach (var item in inclusions)
                             {
                                 <li>@item</li>
@@ -162,7 +159,7 @@
                     <h2>Chi phí không bao gồm</h2>
                     @if (exclusions.Any())
                     {
-                        <ul>
+                        <ul class="public-tour-dossier-detail-list">
                             @foreach (var item in exclusions)
                             {
                                 <li>@item</li>
@@ -181,7 +178,7 @@
             <section class="public-tour-dossier-rail-card">
                 <p class="public-tour-dossier-chapter-eyebrow">Giữ chỗ</p>
                 <h2>@dossier.StartingPriceDisplay</h2>
-                <dl>
+                <dl class="public-tour-dossier-detail-list public-tour-dossier-detail-list--dense">
                     <div><dt>Điểm đến</dt><dd>@dossier.DestinationText</dd></div>
                     <div><dt>Thời lượng</dt><dd>@dossier.DurationText</dd></div>
                     <div><dt>Khởi hành gần nhất</dt><dd>@dossier.NextDepartureText</dd></div>

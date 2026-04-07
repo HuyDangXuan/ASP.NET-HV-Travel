@@ -4,9 +4,9 @@ namespace HVTravel.Web.Models
 {
     public class CustomerIndexViewModel
     {
-        public IEnumerable<Customer> Customers { get; set; }
-        public PaginationMetadata Pagination { get; set; }
-        public CustomerStatsSummary Stats { get; set; }
+        public IEnumerable<Customer> Customers { get; set; } = Enumerable.Empty<Customer>();
+        public PaginationMetadata Pagination { get; set; } = new();
+        public CustomerStatsSummary Stats { get; set; } = new();
     }
 
     public class PaginationMetadata
@@ -23,6 +23,6 @@ namespace HVTravel.Web.Models
     {
         public int TotalCustomers { get; set; }
         public int NewCustomersCount { get; set; } // Customers added recently or with "New" segment
-        public Dictionary<string, double> SegmentPercentages { get; set; }
+        public Dictionary<string, double> SegmentPercentages { get; set; } = new();
     }
 }

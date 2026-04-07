@@ -126,6 +126,7 @@ public class PublicFunnelMarkupTests
         Assert.Contains("tour.Slug", content);
         Assert.Contains("data-tour-wishlist-toggle", content);
         Assert.Contains("tour-card-heart", content);
+        Assert.Contains("public-badge", content);
         Assert.Contains("tour-card-code", content);
         Assert.Contains("tour-card-departure", content);
         Assert.Contains("tour-card-duration", content);
@@ -160,6 +161,10 @@ public class PublicFunnelMarkupTests
         Assert.Contains("public-booking-section", content);
         Assert.Contains("public-booking-finance-panel", content);
         Assert.Contains("public-booking-coupon-disclosure", content);
+        Assert.Contains("public-journey-badge-group", content);
+        Assert.Contains("public-journey-field-label", content);
+        Assert.Contains("public-journey-field-hint", content);
+        Assert.Contains("public-journey-callout", content);
         Assert.Contains("public-booking-field", content);
         Assert.Contains("public-booking-party-grid", content);
         Assert.Contains("data-booking-selected-date", content);
@@ -192,6 +197,8 @@ public class PublicFunnelMarkupTests
         Assert.Contains("PartialAsync(\"_JourneyPaymentMethodSwitcher\"", payment);
         Assert.Contains("public-journey-payment-switcher", payment);
         Assert.Contains("public-booking-payment-shell", payment);
+        Assert.Contains("public-journey-status-hero", payment);
+        Assert.Contains("public-journey-callout", payment);
         Assert.Contains("public-booking-payment-glance", payment);
         Assert.Contains("public-booking-glance-card", payment);
         Assert.Contains("booking.PaymentSessions", payment);
@@ -204,20 +211,24 @@ public class PublicFunnelMarkupTests
         Assert.Contains("PartialAsync(\"_JourneyTimeline\"", success);
         Assert.Contains("public-journey-status-panel", success);
         Assert.Contains("public-booking-status-shell", success);
+        Assert.Contains("public-journey-status-hero", success);
         Assert.Contains("public-booking-status-intro", success);
 
         Assert.Contains("PartialAsync(\"_JourneyStatusPanel\"", failed);
         Assert.Contains("public-journey-status-panel", failed);
         Assert.Contains("public-booking-status-shell", failed);
+        Assert.Contains("public-journey-status-hero", failed);
         Assert.Contains("public-booking-status-intro", failed);
 
         Assert.Contains("public-booking-lookup-shell", lookup);
+        Assert.Contains("public-journey-field-label", lookup);
         Assert.Contains("public-booking-lookup-intro", lookup);
         Assert.Contains("public-journey-status-panel", lookup);
         Assert.Contains("public-journey-timeline", lookup);
         Assert.Contains("Tra cứu booking", lookup);
 
         Assert.Contains("public-booking-support-shell", consultation);
+        Assert.Contains("public-journey-field-label", consultation);
         Assert.Contains("public-journey-support", consultation);
         Assert.Contains("public-journey-panel", consultation);
         Assert.Contains("TourInterest", consultation);
@@ -237,6 +248,9 @@ public class PublicFunnelMarkupTests
         Assert.Contains("public-tour-dossier-strip", content);
         Assert.Contains("public-tour-dossier-chapter", content);
         Assert.Contains("public-tour-dossier-departures", content);
+        Assert.Contains("public-tour-dossier-detail-list", content);
+        Assert.Contains("public-tour-dossier-content-list", content);
+        Assert.Contains("public-journey-badge-group", content);
         Assert.Contains("public-tour-dossier-booking-bar", content);
         Assert.Contains("asp-route-departureId", content);
         Assert.Contains("asp-route-startDate", content);
@@ -324,6 +338,7 @@ public class PublicFunnelMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
 
 
 

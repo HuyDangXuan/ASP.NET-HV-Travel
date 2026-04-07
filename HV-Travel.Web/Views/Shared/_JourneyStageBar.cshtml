@@ -20,7 +20,9 @@
                         : string.Empty;
                 <li class="public-journey-stage @stateClass">
                     <span class="public-journey-stage-index">@stage.Index</span>
-                    <span class="public-journey-stage-label">@stage.Label</span>
+                    <span class="public-journey-stage-label-wrap">
+                        <span class="public-journey-stage-label">@stage.Label</span>
+                    </span>
                 </li>
             }
         </ol>

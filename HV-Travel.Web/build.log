@@ -1,0 +1,54 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  HV-Travel.Domain -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Domain\bin\Debug\net8.0\HV-Travel.Domain.dll
+  HV-Travel.Application -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Application\bin\Debug\net8.0\HV-Travel.Application.dll
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(303,89): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(303,130): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(304,89): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(304,129): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+  HV-Travel.Infrastructure -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\bin\Debug\net8.0\HV-Travel.Infrastructure.dll
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(224,123): warning CS8625: Cannot convert null literal to non-nullable reference type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(25,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(35,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(161,39): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Views\Shared\_Layout.cshtml(559,101): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Inspiration\Details.cshtml(23,139): error CS1061: 'TravelArticle' does not contain a definition for 'PublishedDate' and no accessible extension method 'PublishedDate' accepting a first argument of type 'TravelArticle' could be found (are you missing a using directive or an assembly reference?) [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Inspiration\Details.cshtml(24,131): error CS1061: 'TravelArticle' does not contain a definition for 'Author' and no accessible extension method 'Author' accepting a first argument of type 'TravelArticle' could be found (are you missing a using directive or an assembly reference?) [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Views\Users\Index.cshtml(6,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(26,22): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(48,174): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(88,167): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(113,173): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(34,22): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(59,180): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(104,175): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Index.cshtml(111,170): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Index.cshtml(210,185): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+
+Build FAILED.
+
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(303,89): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(303,130): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(304,89): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\Data\DbInitializer.cs(304,129): warning CS8601: Possible null reference assignment. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\HV-Travel.Infrastructure.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(224,123): warning CS8625: Cannot convert null literal to non-nullable reference type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(25,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(35,17): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Controllers\AuthController.cs(161,39): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Views\Shared\_Layout.cshtml(559,101): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Areas\Admin\Views\Users\Index.cshtml(6,26): warning CS8600: Converting null literal or possible null value to non-nullable type. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(26,22): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(48,174): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(88,167): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Promotions\Index.cshtml(113,173): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(34,22): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(59,180): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Contact.cshtml(104,175): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Index.cshtml(111,170): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Home\Index.cshtml(210,185): warning CS8602: Dereference of a possibly null reference. [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Inspiration\Details.cshtml(23,139): error CS1061: 'TravelArticle' does not contain a definition for 'PublishedDate' and no accessible extension method 'PublishedDate' accepting a first argument of type 'TravelArticle' could be found (are you missing a using directive or an assembly reference?) [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\Views\Inspiration\Details.cshtml(24,131): error CS1061: 'TravelArticle' does not contain a definition for 'Author' and no accessible extension method 'Author' accepting a first argument of type 'TravelArticle' could be found (are you missing a using directive or an assembly reference?) [E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\HV-Travel.Web.csproj]
+    19 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:03.97

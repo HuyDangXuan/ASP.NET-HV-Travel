@@ -2,11 +2,14 @@
 @using HVTravel.Web.Services
 @model HVTravel.Web.Models.ServicesHubViewModel
 @{
-    var request = Model.Request ?? new HVTravel.Web.Models.AncillaryLeadRequestViewModel();
+    var request = Model?.Request ?? new HVTravel.Web.Models.AncillaryLeadRequestViewModel();
     var sections = await ContentService.GetPageSectionsAsync("services");
     var hero = sections.GetSection("hero");
+    var heroFields = hero?.Fields;
     var serviceCards = sections.GetSection("serviceCards");
+    var serviceCardsFields = serviceCards?.Fields;
     var quoteFormIntro = sections.GetSection("quoteFormIntro");
+    var quoteFormIntroFields = quoteFormIntro?.Fields;
     var showServiceCards = serviceCards?.IsEnabled != false;
     var showQuoteForm = quoteFormIntro?.IsEnabled != false;
     var servicesGridClass = showServiceCards && showQuoteForm
@@ -34,7 +37,7 @@
         var key = ResolveServiceFieldKey(serviceType, fieldSuffix);
         return string.IsNullOrWhiteSpace(key)
             ? fallback
-            : serviceCards?.Fields.GetFieldValue(key, fallback) ?? fallback;
+            : serviceCardsFields?.GetFieldValue(key, fallback) ?? fallback;
     }
 
     string ResolveServiceTypeLabel(string? serviceType) => serviceType switch
@@ -53,7 +56,7 @@
     var departureDateLabel = ResolveDateLabel(request.DepartureDate, "Chọn ngày đi");
     var returnDateLabel = ResolveDateLabel(request.ReturnDate, "Chọn ngày về");
 
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
+    ViewData["Description"] = heroFields?.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.")
         ?? "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý.";
 }
 
@@ -68,11 +71,11 @@
             <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
                 <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">package_2</span>
-                    @hero.Fields.GetFieldValue("eyebrowText", "Hệ sinh thái dịch vụ")
+                    @heroFields?.GetFieldValue("eyebrowText", "Hệ sinh thái dịch vụ")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Báo giá vé, khách sạn, combo, visa trong một màn hình.")</h1>
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@heroFields?.GetFieldValue("title", "Báo giá vé, khách sạn, combo, visa trong một màn hình.")</h1>
                 <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                    @Html.Raw(hero.Fields.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý."))
+                    @Html.Raw(heroFields?.GetFieldValue("description", "Mô hình mới theo hướng ecosystem: khách để brief nhanh, sales nhận lead ngay, portal vẫn giữ lịch sử yêu cầu và trạng thái xử lý."))
                 </div>
             </div>
         </div>
@@ -90,7 +93,7 @@
             @if (showServiceCards)
             {
                 <div class="space-y-6 @ContentPresentationViewHelper.GetSectionTextClass(serviceCards) @ContentPresentationViewHelper.GetSectionBackgroundClass(serviceCards)" style="@ContentPresentationViewHelper.GetSectionStyle(serviceCards)" data-animate="fade-in" data-stagger>
-                    @foreach (var card in Model.ServiceCards)
+                    @foreach (var card in Model!.ServiceCards)
                     {
                         var titleKey = ResolveServiceFieldKey(card.ServiceType, "Title");
                         var descriptionKey = ResolveServiceFieldKey(card.ServiceType, "Description");
@@ -116,10 +119,10 @@
             {
                 <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(quoteFormIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(quoteFormIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(quoteFormIntro)" data-animate="slide-right">
                     <div class="mb-6">
-                        <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "eyebrowText")">@quoteFormIntro.Fields.GetFieldValue("eyebrowText", "Quick Brief")</p>
-                        <h2 class="public-section-title mt-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "title")">@quoteFormIntro.Fields.GetFieldValue("title", "Yêu cầu báo giá")</h2>
+                        <p class="text-sm font-bold uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "eyebrowText")">@quoteFormIntroFields?.GetFieldValue("eyebrowText", "Quick Brief")</p>
+                        <h2 class="public-section-title mt-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "title")">@quoteFormIntroFields?.GetFieldValue("title", "Yêu cầu báo giá")</h2>
                         <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(quoteFormIntro, "description")">
-                            @Html.Raw(quoteFormIntro.Fields.GetFieldValue("description", "Lead được gắn SLA, phân tuyến admin và giữ lịch sử cho các đợt chăm sóc sau."))
+                            @Html.Raw(quoteFormIntroFields?.GetFieldValue("description", "Lead được gắn SLA, phân tuyến admin và giữ lịch sử cho các đợt chăm sóc sau."))
                         </div>
                     </div>
 
@@ -230,7 +233,7 @@
                         </div>
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary-dark">
                             <span class="material-symbols-outlined text-[18px]">send</span>
-                            @quoteFormIntro.Fields.GetFieldValue("submitText", "Gửi yêu cầu báo giá")
+                            @quoteFormIntroFields?.GetFieldValue("submitText", "Gửi yêu cầu báo giá")
                         </button>
                     </form>
                 </div>

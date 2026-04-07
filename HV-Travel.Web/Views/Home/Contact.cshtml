@@ -10,6 +10,10 @@
     var contactGroup = siteSettings.GetGroup("contactInfo");
     var success = TempData["ContactSuccess"] != null;
 
+    var heroFields = hero?.Fields;
+    var cardsFields = cards?.Fields;
+    var formIntroFields = formIntro?.Fields;
+
     var contactAddress = contactGroup?.Fields.GetFieldValue("address", "123 Đường Nguyễn Huệ, Quận 1, TP.HCM") ?? "123 Đường Nguyễn Huệ, Quận 1, TP.HCM";
     var contactPhone = contactGroup?.Fields.GetFieldValue("phoneNumber", "+84 (28) 3822 9999") ?? "+84 (28) 3822 9999";
     var contactEmail = contactGroup?.Fields.GetFieldValue("email", "info@hvtravel.vn") ?? "info@hvtravel.vn";
@@ -31,13 +35,13 @@
             <div class="@($"public-top-section-content public-page-hero-content is-centered {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
                 <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">call</span>
-                    @hero.Fields.GetFieldValue("badgeText", "Liên hệ HV Travel")
+                    @heroFields.GetVisibleFieldValue("badgeText", "Liên hệ HV Travel")
                 </span>
                 <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">
-                    @hero.Fields.GetFieldValue("title", "Chúng tôi luôn sẵn sàng lắng nghe")
+                    @heroFields.GetVisibleFieldValue("title", "Chúng tôi luôn sẵn sàng lắng nghe")
                 </h1>
                 <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                    @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
+                    @Html.Raw(heroFields.GetVisibleFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
                 </div>
             </div>
         </div>
@@ -56,7 +60,7 @@
                                 <span class="material-symbols-outlined text-[24px]">location_on</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "addressTitle")">@cards.Fields.GetFieldValue("addressTitle", "Địa Chỉ")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "addressTitle")">@cardsFields.GetVisibleFieldValue("addressTitle", "Địa Chỉ")</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">@contactAddress</p>
                             </div>
                         </div>
@@ -67,7 +71,7 @@
                                 <span class="material-symbols-outlined text-[24px]">call</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "phoneTitle")">@cards.Fields.GetFieldValue("phoneTitle", "Điện Thoại")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "phoneTitle")">@cardsFields.GetVisibleFieldValue("phoneTitle", "Điện Thoại")</h3>
                                 <a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="tel:@contactPhone">@contactPhone</a>
                             </div>
                         </div>
@@ -78,7 +82,7 @@
                                 <span class="material-symbols-outlined text-[24px]">mail</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "emailTitle")">@cards.Fields.GetFieldValue("emailTitle", "Email")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "emailTitle")">@cardsFields.GetVisibleFieldValue("emailTitle", "Email")</h3>
                                 <a class="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors" href="mailto:@contactEmail">@contactEmail</a>
                             </div>
                         </div>
@@ -89,7 +93,7 @@
                                 <span class="material-symbols-outlined text-[24px]">schedule</span>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "hoursTitle")">@cards.Fields.GetFieldValue("hoursTitle", "Giờ Làm Việc")</h3>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-1" style="@ContentPresentationViewHelper.GetFieldTextStyle(cards, "hoursTitle")">@cardsFields.GetVisibleFieldValue("hoursTitle", "Giờ Làm Việc")</h3>
                                 <p class="text-sm text-slate-500 dark:text-slate-400">@businessHours</p>
                             </div>
                         </div>
@@ -101,9 +105,9 @@
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
                     <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8 {ContentPresentationViewHelper.GetSectionTextClass(formIntro)} {ContentPresentationViewHelper.GetSectionBackgroundClass(formIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(formIntro)">
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "title")">@formIntro.Fields.GetFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "title")">@formIntroFields.GetVisibleFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
                         <div class="text-sm text-slate-500 dark:text-slate-400 mb-8" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "description")">
-                            @Html.Raw(formIntro.Fields.GetFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."))
+                            @Html.Raw(formIntroFields.GetVisibleFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."))
                         </div>
 
                         @if (success)
@@ -181,7 +185,7 @@
                             </div>
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all active:scale-95">
                                 <span class="material-symbols-outlined text-[18px]">send</span>
-                                @formIntro.Fields.GetFieldValue("submitText", "Gửi Tin Nhắn")
+                                @formIntroFields.GetVisibleFieldValue("submitText", "Gửi Tin Nhắn")
                             </button>
                         </form>
                     </div>

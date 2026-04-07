@@ -5,17 +5,33 @@
         <span class="sr-only">Trang chủ</span>
         @await Html.PartialAsync("_JourneyHeader", Model.Journey)
         <div class="public-journey-desk public-journey-desk--lookup">
-            <section class="public-journey-panel public-booking-section public-booking-lookup-intro">
+            <section class="public-journey-panel public-booking-section public-booking-lookup-intro public-journey-status-hero">
                 <div class="public-journey-panel-heading">
-                    <p class="public-journey-card-eyebrow">Tra cứu booking</p>
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Tra cứu booking</p>
+                        <span class="public-badge is-info">Tự phục vụ 24/7</span>
+                    </div>
                     <h2 class="public-journey-panel-title">Nhập mã booking và thông tin liên hệ</h2>
+                    <p class="public-journey-note public-journey-section-lead">Điền đúng mã booking cùng email hoặc số điện thoại đã dùng khi đặt để xem trạng thái mới nhất.</p>
                 </div>
                 <form asp-action="Lookup" method="post" class="public-journey-form-grid">
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="public-journey-validation"></div>
-                    <label class="public-booking-field"><span class="sr-only">Mã booking</span><input name="bookingCode" value="@Model.QueryBookingCode" placeholder="Mã booking" /></label>
-                    <label class="public-booking-field"><span class="sr-only">Email</span><input name="email" value="@Model.QueryEmail" placeholder="Email đã dùng khi đặt" /></label>
-                    <label class="public-booking-field"><span class="sr-only">Số điện thoại</span><input name="phone" value="@Model.QueryPhone" placeholder="Hoặc số điện thoại liên hệ" /></label>
+                    <label class="public-booking-field">
+                        <span class="public-journey-field-label">Mã booking</span>
+                        <span class="public-journey-field-hint">Ví dụ: HV20260405001</span>
+                        <input name="bookingCode" value="@Model.QueryBookingCode" placeholder="Mã booking" />
+                    </label>
+                    <label class="public-booking-field">
+                        <span class="public-journey-field-label">Email</span>
+                        <span class="public-journey-field-hint">Email đã dùng khi đặt tour.</span>
+                        <input name="email" value="@Model.QueryEmail" placeholder="Email đã dùng khi đặt" />
+                    </label>
+                    <label class="public-booking-field">
+                        <span class="public-journey-field-label">Số điện thoại</span>
+                        <span class="public-journey-field-hint">Hoặc nhập số điện thoại liên hệ.</span>
+                        <input name="phone" value="@Model.QueryPhone" placeholder="Hoặc số điện thoại liên hệ" />
+                    </label>
                     <button type="submit" class="public-journey-submit">Tra cứu booking</button>
                 </form>
             </section>
@@ -36,9 +52,11 @@
                 else
                 {
                     <section class="public-journey-panel public-journey-status-panel public-booking-section public-booking-lookup-intro-card">
-                        <p class="public-journey-card-eyebrow">Sẵn sàng tra cứu</p>
+                        <div class="public-journey-badge-group">
+                            <p class="public-journey-card-eyebrow">Sẵn sàng tra cứu</p>
+                        </div>
                         <h2 class="public-journey-panel-title">Quản lý booking từ một màn hình</h2>
-                        <p class="public-journey-note">Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái, tiến trình và các hành động tiếp theo ngay tại đây.</p>
+                        <p class="public-journey-note public-journey-section-lead">Sau khi nhập đúng mã booking và thông tin liên hệ, bạn sẽ thấy trạng thái, tiến trình và các hành động tiếp theo ngay tại đây.</p>
                     </section>
                 }
                 <div class="public-journey-support">

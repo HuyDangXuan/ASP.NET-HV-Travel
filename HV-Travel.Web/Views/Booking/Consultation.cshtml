@@ -8,18 +8,24 @@
         @await Html.PartialAsync("_JourneyHeader", Model.Journey)
         <div class="public-journey-desk public-journey-desk--consultation">
             <div class="public-journey-main">
-                <section class="public-journey-panel public-booking-section">
-                    <p class="public-journey-card-eyebrow">Nhờ tư vấn theo cách của bạn</p>
+                <section class="public-journey-panel public-booking-section public-journey-status-hero">
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Nhờ tư vấn theo cách của bạn</p>
+                        <span class="public-badge is-info">Phản hồi trong giờ làm việc</span>
+                    </div>
                     <h2 class="public-journey-panel-title">Trao đổi với chuyên viên trước khi chốt</h2>
-                    <p class="public-journey-note">Gửi mô tả ngắn về lịch đi, ngân sách và số khách để đội ngũ đề xuất phương án phù hợp ngay trong cùng luồng đặt tour.</p>
+                    <p class="public-journey-note public-journey-section-lead">Gửi mô tả ngắn về lịch đi, ngân sách và số khách để đội ngũ đề xuất phương án phù hợp ngay trong cùng luồng đặt tour.</p>
                 </section>
                 <div class="public-journey-status-panel">
                     @if (success)
                     {
-                        <section class="public-journey-panel public-booking-section">
-                            <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn thành công</p>
+                        <section class="public-journey-panel public-booking-section public-journey-status-hero">
+                            <div class="public-journey-badge-group">
+                                <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn thành công</p>
+                                <span class="public-badge is-success">Đã tiếp nhận</span>
+                            </div>
                             <h2 class="public-journey-panel-title">Đội ngũ tư vấn đã nhận yêu cầu của bạn</h2>
-                            <p class="public-journey-note">Chúng tôi sẽ liên hệ lại theo khung giờ bạn mong muốn hoặc trong giờ làm việc kế tiếp.</p>
+                            <p class="public-journey-note public-journey-section-lead">Chúng tôi sẽ liên hệ lại theo khung giờ bạn mong muốn hoặc trong giờ làm việc kế tiếp.</p>
                         </section>
                     }
                     @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
@@ -28,19 +34,45 @@
                 {
                     <section class="public-journey-panel public-booking-section">
                         <div class="public-journey-panel-heading">
-                            <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn</p>
+                            <div class="public-journey-badge-group">
+                                <p class="public-journey-card-eyebrow">Gửi yêu cầu tư vấn</p>
+                            </div>
                             <h2 class="public-journey-panel-title">Điền mô tả ngắn để đội ngũ gọi lại</h2>
+                        </div>
+                        <div class="public-journey-callout public-journey-callout--info">
+                            Nêu rõ điểm đến, số khách, ngân sách và thời gian mong muốn để đội tư vấn phản hồi sát nhu cầu hơn.
                         </div>
                         <form asp-action="Consultation" method="post" class="public-journey-form-grid">
                             @Html.AntiForgeryToken()
                             <div asp-validation-summary="ModelOnly" class="public-journey-validation"></div>
-                            <label class="public-booking-field"><span class="sr-only">Họ và tên</span><input asp-for="FullName" placeholder="Họ và tên" /></label>
-                            <label class="public-booking-field"><span class="sr-only">Số điện thoại</span><input asp-for="Phone" placeholder="Số điện thoại" /></label>
-                            <label class="public-booking-field"><span class="sr-only">Email</span><input asp-for="Email" placeholder="Email (nếu có)" /></label>
-                            <label class="public-booking-field"><span class="sr-only">Tour quan tâm</span><input asp-for="TourInterest" placeholder="Tour hoặc điểm đến bạn quan tâm" /></label>
-                            <label class="public-booking-field"><span class="sr-only">Thời gian liên hệ mong muốn</span><input asp-for="PreferredContactTime" placeholder="Khung giờ liên hệ mong muốn" /></label>
+                            <label class="public-booking-field">
+                                <span class="public-journey-field-label">Họ và tên</span>
+                                <span class="public-journey-field-hint">Người chúng tôi sẽ liên hệ lại.</span>
+                                <input asp-for="FullName" placeholder="Nguyễn Văn A" />
+                            </label>
+                            <label class="public-booking-field">
+                                <span class="public-journey-field-label">Số điện thoại</span>
+                                <span class="public-journey-field-hint">Ưu tiên số có thể nghe máy trong giờ làm việc.</span>
+                                <input asp-for="Phone" placeholder="0901 234 567" />
+                            </label>
+                            <label class="public-booking-field">
+                                <span class="public-journey-field-label">Email</span>
+                                <span class="public-journey-field-hint">Không bắt buộc nhưng hữu ích để gửi phương án.</span>
+                                <input asp-for="Email" placeholder="guest@example.com" />
+                            </label>
+                            <label class="public-booking-field">
+                                <span class="public-journey-field-label">Tour hoặc điểm đến</span>
+                                <span class="public-journey-field-hint">Ví dụ: Đà Nẵng 3N2Đ, Nhật mùa lá đỏ.</span>
+                                <input asp-for="TourInterest" placeholder="Tour hoặc điểm đến bạn quan tâm" />
+                            </label>
+                            <label class="public-booking-field">
+                                <span class="public-journey-field-label">Thời gian liên hệ mong muốn</span>
+                                <span class="public-journey-field-hint">Ghi khung giờ thuận tiện cho bạn.</span>
+                                <input asp-for="PreferredContactTime" placeholder="Khung giờ liên hệ mong muốn" />
+                            </label>
                             <label class="public-booking-field public-booking-field--full">
-                                <span class="sr-only">Nội dung yêu cầu</span>
+                                <span class="public-journey-field-label">Nội dung yêu cầu</span>
+                                <span class="public-journey-field-hint">Nêu thêm ngân sách, số khách, yêu cầu về lịch hoặc dịch vụ.</span>
                                 <textarea asp-for="Message" rows="5" placeholder="Nội dung bạn cần tư vấn"></textarea>
                             </label>
                             <button type="submit" class="public-journey-submit">Gửi yêu cầu tư vấn</button>
@@ -60,5 +92,3 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-
-

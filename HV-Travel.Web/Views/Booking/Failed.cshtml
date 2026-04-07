@@ -13,10 +13,13 @@
 
         <div class="public-journey-desk public-journey-desk--status">
             <div class="public-journey-main">
-                <section class="public-journey-panel public-booking-section public-booking-status-intro">
-                    <p class="public-journey-card-eyebrow">Thanh toán chưa hoàn tất</p>
+                <section class="public-journey-panel public-booking-section public-booking-status-intro public-journey-status-hero">
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Thanh toán chưa hoàn tất</p>
+                        <span class="public-badge is-warning">@booking.BookingCode</span>
+                    </div>
                     <h2 class="public-journey-panel-title">Khôi phục bước thanh toán</h2>
-                    <p class="public-journey-note">Bạn có thể thử lại ngay, đổi phương thức khác hoặc nhờ đội ngũ vận hành hỗ trợ.</p>
+                    <p class="public-journey-note public-journey-section-lead">Bạn có thể thử lại ngay, đổi phương thức khác hoặc nhờ đội ngũ vận hành hỗ trợ.</p>
                 </section>
                 <div class="public-journey-status-panel">
                     @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
@@ -24,7 +27,7 @@
                 @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
                 {
                     <section class="public-journey-panel public-booking-section">
-                        <p class="public-journey-note">@Model.ErrorMessage</p>
+                        <div class="public-journey-callout public-journey-callout--warning">@Model.ErrorMessage</div>
                     </section>
                 }
             </div>

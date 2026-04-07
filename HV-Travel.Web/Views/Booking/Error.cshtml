@@ -6,10 +6,13 @@
         @await Html.PartialAsync("_JourneyHeader", Model.Journey)
         <div class="public-journey-desk public-journey-desk--status">
             <div class="public-journey-main">
-                <section class="public-journey-panel public-booking-section public-booking-status-intro">
-                    <p class="public-journey-card-eyebrow">Không thể hoàn tất thao tác</p>
+                <section class="public-journey-panel public-booking-section public-booking-status-intro public-journey-status-hero">
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Không thể hoàn tất thao tác</p>
+                        <span class="public-badge is-warning">Cần thử lại</span>
+                    </div>
                     <h2 class="public-journey-panel-title">Hệ thống đang cần thêm một lần thử lại</h2>
-                    <p class="public-journey-note">Bạn có thể tải lại trang, quay lại bước trước hoặc nhờ đội hỗ trợ tiếp tục xử lý thủ công.</p>
+                    <p class="public-journey-note public-journey-section-lead">Bạn có thể tải lại trang, quay lại bước trước hoặc nhờ đội hỗ trợ tiếp tục xử lý thủ công.</p>
                 </section>
                 <div class="public-journey-status-panel">
                     @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)

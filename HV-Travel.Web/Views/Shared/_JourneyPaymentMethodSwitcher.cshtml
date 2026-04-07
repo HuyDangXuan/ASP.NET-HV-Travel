@@ -35,9 +35,12 @@
             @foreach (var method in methods)
             {
                 <section class="public-journey-payment-body public-booking-payment-body @(method.Key == activeMethod ? "is-active" : string.Empty)" data-payment-panel="@method.Key">
-                    <p class="public-journey-card-eyebrow">@method.BodyTitle</p>
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">@method.BodyTitle</p>
+                        <span class="public-badge is-cyan">@method.Label</span>
+                    </div>
                     <h3>@method.Label</h3>
-                    <p>@method.BodyDescription</p>
+                    <p class="public-journey-section-lead">@method.BodyDescription</p>
                     @if (method.Key == "CreditCard")
                     {
                         <div class="public-journey-inline-meta">

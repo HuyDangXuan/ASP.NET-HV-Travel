@@ -33,9 +33,13 @@
 
                 <section class="public-journey-panel public-booking-intro public-booking-overview-grid">
                     <div class="public-booking-intro-copy">
-                        <p class="public-journey-card-eyebrow">Giữ chỗ theo nhịp chuyến đi</p>
+                        <div class="public-journey-badge-group">
+                            <p class="public-journey-card-eyebrow">Giữ chỗ theo nhịp chuyến đi</p>
+                            <span class="public-badge is-info">@selectedDateText</span>
+                            <span class="public-badge is-cyan" data-booking-selected-plan>@selectedPlanText</span>
+                        </div>
                         <h2 class="public-journey-panel-title">@tour.Name</h2>
-                        <p class="public-journey-note">Chốt ngày khởi hành, số khách và phương án thanh toán trước khi điền thông tin liên hệ.</p>
+                        <p class="public-journey-note public-journey-section-lead">Chốt ngày khởi hành, số khách và phương án thanh toán trước khi điền thông tin liên hệ.</p>
                     </div>
                     <div class="public-journey-tour-meta public-booking-intro-metrics">
                         <span>@(tour.Destination?.City ?? "HV Travel")</span>
@@ -52,7 +56,7 @@
                 <section class="public-journey-panel public-booking-section public-booking-section--departures">
                     <div class="public-journey-panel-heading">
                         <h2 class="public-journey-panel-title">Chọn lịch khởi hành</h2>
-                        <p class="public-journey-note">Mỗi lịch hiển thị ngay giá người lớn, kiểu xác nhận và số chỗ còn lại.</p>
+                        <p class="public-journey-note public-journey-section-lead">Mỗi lịch hiển thị ngay mức xác nhận, sức chứa và giá người lớn để bạn so nhanh trước khi giữ chỗ.</p>
                     </div>
                     @if (departures.Any())
                     {
@@ -60,6 +64,8 @@
                             @foreach (var departure in departures)
                             {
                                 var isSelected = string.Equals(Model.DepartureId, departure.Id, StringComparison.Ordinal) || (string.IsNullOrWhiteSpace(Model.DepartureId) && selectedDeparture?.Id == departure.Id);
+                                var isInstantConfirmation = string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase);
+                                var isLowCapacity = departure.RemainingCapacity is > 0 and <= 5;
                                 <label class="public-journey-choice @(isSelected ? "is-selected" : string.Empty)" data-departure-card>
                                     <input asp-for="DepartureId"
                                            type="radio"
@@ -68,8 +74,12 @@
                                            data-display-date="@departure.StartDate.ToString("dd/MM/yyyy")"
                                            data-remaining-capacity="@departure.RemainingCapacity"
                                            checked="@(isSelected ? "checked" : null)" />
+                                    <div class="public-journey-badge-group">
+                                        <span class="public-badge @(isInstantConfirmation ? "is-success" : "is-info")">@(isInstantConfirmation ? "Xác nhận tức thì" : "Chờ điều hành xác nhận")</span>
+                                        <span class="public-badge @(isLowCapacity ? "is-warning" : "is-cyan")">@departure.RemainingCapacity chỗ</span>
+                                    </div>
                                     <span class="public-journey-choice-title">@departure.StartDate.ToString("dd/MM/yyyy")</span>
-                                    <span class="public-journey-choice-copy">@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "Xác nhận tức thì" : "Chờ xác nhận từ điều hành")</span>
+                                    <span class="public-journey-choice-copy">Giá đã phản ánh theo lịch đi hiện tại.</span>
                                     <span class="public-journey-choice-meta">@departure.RemainingCapacity chỗ còn lại</span>
                                     <strong class="public-journey-choice-price">@((departure.AdultPrice > 0m ? departure.AdultPrice : tour.Price?.Adult ?? 0m).ToString("N0"))₫ / người lớn</strong>
                                 </label>
@@ -85,16 +95,24 @@
                 <section class="public-journey-panel public-booking-section public-journey-quote public-booking-finance-panel">
                     <div class="public-journey-panel-heading">
                         <h2 class="public-journey-panel-title">Chi phí và kế hoạch thanh toán</h2>
-                        <p class="public-journey-note">Chọn trả toàn bộ hoặc đặt cọc trước. Báo giá sẽ đổi theo lịch đi, số khách và mã ưu đãi.</p>
+                        <p class="public-journey-note public-journey-section-lead">Chọn trả toàn bộ hoặc đặt cọc trước. Báo giá đổi tức thì theo lịch đi, số khách và mã ưu đãi.</p>
                     </div>
                     <div class="public-journey-choice-grid public-journey-choice-grid--plans">
                         <label class="public-journey-choice @(string.Equals(Model.PaymentPlanType, "Full", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(Model.PaymentPlanType) ? "is-selected" : string.Empty)" data-payment-plan-card>
                             <input asp-for="PaymentPlanType" type="radio" value="Full" data-plan-label="Thanh toán toàn bộ" checked="@((string.Equals(Model.PaymentPlanType, "Full", StringComparison.OrdinalIgnoreCase) || string.IsNullOrWhiteSpace(Model.PaymentPlanType)) ? "checked" : null)" />
+                            <div class="public-journey-badge-group">
+                                <span class="public-badge is-info">Chốt ngay</span>
+                                <span class="public-badge is-cyan">1 lần thanh toán</span>
+                            </div>
                             <span class="public-journey-choice-title">Thanh toán toàn bộ</span>
                             <span class="public-journey-choice-copy">Chốt toàn bộ giá trị booking ngay ở bước kế tiếp.</span>
                         </label>
                         <label class="public-journey-choice @(string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "is-selected" : string.Empty)" data-payment-plan-card>
                             <input asp-for="PaymentPlanType" type="radio" value="Deposit" data-plan-label="Đặt cọc 30%" checked="@(string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? "checked" : null)" />
+                            <div class="public-journey-badge-group">
+                                <span class="public-badge is-warning">Giữ chỗ trước</span>
+                                <span class="public-badge is-info">30% hôm nay</span>
+                            </div>
                             <span class="public-journey-choice-title">Đặt cọc 30%</span>
                             <span class="public-journey-choice-copy">Giữ chỗ trước, phần còn lại xử lý sau cùng điều hành.</span>
                         </label>
@@ -106,7 +124,7 @@
                         <div><span>Thanh toán ngay</span><strong id="amountDueNow">@amountDueNow.ToString("N0")₫</strong></div>
                         <div><span>Còn lại</span><strong id="balanceDue">@balanceDue.ToString("N0")₫</strong></div>
                     </div>
-                    <p id="quote-status" class="public-journey-note">Báo giá sẽ được tính lại ngay khi bạn đổi lịch khởi hành, số khách hoặc mã ưu đãi.</p>
+                    <p id="quote-status" class="public-journey-callout public-journey-callout--info">Báo giá sẽ được tính lại ngay khi bạn đổi lịch khởi hành, số khách hoặc mã ưu đãi.</p>
                     <div class="public-journey-action-row">
                         <button form="booking-form" type="submit" id="submit-booking" class="public-journey-submit">Tiếp tục sang thanh toán</button>
                         <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="public-journey-action public-journey-action--secondary">Quay lại xem tour</a>
@@ -116,50 +134,58 @@
                 <section class="public-journey-panel public-booking-section public-booking-section--contact">
                     <div class="public-journey-panel-heading">
                         <h2 class="public-journey-panel-title">Thông tin liên hệ</h2>
-                        <p class="public-journey-note">Chỉ giữ lại phần dữ liệu cần để tạo booking và gửi xác nhận lại cho bạn.</p>
+                        <p class="public-journey-note public-journey-section-lead">Chỉ giữ lại dữ liệu cần để tạo booking, gửi xác nhận và giúp điều hành liên hệ khi cần.</p>
                     </div>
 
                     <div class="public-booking-party-grid">
                         <label>
-                            <span>Người lớn</span>
+                            <span class="public-journey-field-label">Người lớn</span>
+                            <span class="public-journey-field-hint">Từ 12 tuổi</span>
                             <input asp-for="AdultCount" type="number" min="1" class="traveller-input" />
                         </label>
                         <label>
-                            <span>Trẻ em</span>
+                            <span class="public-journey-field-label">Trẻ em</span>
+                            <span class="public-journey-field-hint">Từ 2 đến dưới 12 tuổi</span>
                             <input asp-for="ChildCount" type="number" min="0" class="traveller-input" />
                         </label>
                         <label>
-                            <span>Em bé</span>
+                            <span class="public-journey-field-label">Em bé</span>
+                            <span class="public-journey-field-hint">Dưới 2 tuổi</span>
                             <input asp-for="InfantCount" type="number" min="0" class="traveller-input" />
                         </label>
                     </div>
 
                     <div class="public-journey-field-grid public-booking-field-grid">
                         <label class="public-booking-field">
-                            <span class="sr-only">Họ và tên</span>
-                            <input asp-for="ContactName" placeholder="Họ và tên người liên hệ" />
+                            <span class="public-journey-field-label">Họ và tên</span>
+                            <span class="public-journey-field-hint">Người sẽ nhận xác nhận booking.</span>
+                            <input asp-for="ContactName" placeholder="Nguyễn Văn A" />
                         </label>
                         <label class="public-booking-field">
-                            <span class="sr-only">Email</span>
-                            <input asp-for="ContactEmail" placeholder="Email để nhận xác nhận" />
+                            <span class="public-journey-field-label">Email</span>
+                            <span class="public-journey-field-hint">Dùng để nhận hóa đơn và cập nhật.</span>
+                            <input asp-for="ContactEmail" placeholder="guest@example.com" />
                         </label>
                         <label class="public-booking-field">
-                            <span class="sr-only">Số điện thoại</span>
-                            <input asp-for="ContactPhone" placeholder="Số điện thoại liên hệ" />
+                            <span class="public-journey-field-label">Số điện thoại</span>
+                            <span class="public-journey-field-hint">Điều hành sẽ gọi khi cần xác nhận gấp.</span>
+                            <input asp-for="ContactPhone" placeholder="0901 234 567" />
                         </label>
                     </div>
 
                     <details class="public-booking-coupon-disclosure">
                         <summary>Có mã ưu đãi?</summary>
                         <label class="public-booking-field public-booking-field--compact">
-                            <span class="sr-only">Mã ưu đãi</span>
+                            <span class="public-journey-field-label">Mã ưu đãi</span>
+                            <span class="public-journey-field-hint">Nếu có, hệ thống sẽ tính lại báo giá ngay.</span>
                             <input asp-for="CouponCode" placeholder="Nhập mã nếu bạn đang có" />
                         </label>
                     </details>
 
                     <label class="public-booking-field public-booking-field--full">
-                        <span class="sr-only">Ghi chú cho điều hành</span>
-                        <textarea asp-for="SpecialRequests" rows="4" placeholder="Ghi chú cho điều hành (không bắt buộc)"></textarea>
+                        <span class="public-journey-field-label">Ghi chú cho điều hành</span>
+                        <span class="public-journey-field-hint">Ví dụ: yêu cầu ăn chay, thời gian gọi lại, nhu cầu ghép phòng.</span>
+                        <textarea asp-for="SpecialRequests" rows="4" placeholder="Ghi chú thêm nếu bạn muốn đội điều hành chuẩn bị trước"></textarea>
                     </label>
                 </section>
             </form>
@@ -169,11 +195,14 @@
                     @await Html.PartialAsync("_JourneySummaryRail", Model.Journey.Summary)
                 </div>
                 <section class="public-journey-panel public-booking-section public-booking-section--selection public-booking-selection-card">
-                    <p class="public-journey-card-eyebrow">Lựa chọn hiện tại</p>
-                    <dl class="public-journey-summary-list">
-                        <div class="public-journey-summary-row"><dt>Khởi hành</dt><dd data-booking-selected-date>@selectedDateText</dd></div>
-                        <div class="public-journey-summary-row"><dt>Sức chứa</dt><dd data-booking-selected-capacity>@selectedCapacityText</dd></div>
-                        <div class="public-journey-summary-row"><dt>Kế hoạch</dt><dd data-booking-selected-plan>@selectedPlanText</dd></div>
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Lựa chọn hiện tại</p>
+                        <span class="public-badge is-info" data-booking-selected-capacity>@selectedCapacityText</span>
+                    </div>
+                    <dl class="public-journey-summary-list public-journey-info-list">
+                        <div class="public-journey-summary-row public-journey-info-item"><dt>Khởi hành</dt><dd data-booking-selected-date>@selectedDateText</dd></div>
+                        <div class="public-journey-summary-row public-journey-info-item"><dt>Sức chứa</dt><dd data-booking-selected-capacity>@selectedCapacityText</dd></div>
+                        <div class="public-journey-summary-row public-journey-info-item"><dt>Kế hoạch</dt><dd data-booking-selected-plan>@selectedPlanText</dd></div>
                     </dl>
                 </section>
                 <div class="public-journey-support">

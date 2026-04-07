@@ -1,12 +1,20 @@
 ﻿@model BookingJourneyStatusVm
 
-<section class="public-journey-panel public-journey-status-card public-journey-status-card--@Model.Tone">
-    <p class="public-journey-card-eyebrow">@Model.Eyebrow</p>
-    <h2 class="public-journey-panel-title">@Model.Title</h2>
-    @if (!string.IsNullOrWhiteSpace(Model.Description))
-    {
-        <p class="public-journey-status-description">@Model.Description</p>
-    }
+<section class="public-journey-panel public-journey-status-card public-journey-status-card--@Model.Tone public-journey-status-hero">
+    <div class="public-journey-badge-group">
+        <p class="public-journey-card-eyebrow">@Model.Eyebrow</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Reference))
+        {
+            <span class="public-badge is-info">Mã @Model.Reference</span>
+        }
+    </div>
+    <div class="public-journey-status-copy">
+        <h2 class="public-journey-panel-title">@Model.Title</h2>
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="public-journey-status-description public-journey-section-lead">@Model.Description</p>
+        }
+    </div>
     @if (!string.IsNullOrWhiteSpace(Model.Reference))
     {
         <p class="public-journey-reference">Mã booking: <strong>@Model.Reference</strong></p>

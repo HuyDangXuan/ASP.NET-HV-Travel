@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  HV-Travel.Domain -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Domain\bin\Debug\net8.0\HV-Travel.Domain.dll
+  HV-Travel.Application -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Application\bin\Debug\net8.0\HV-Travel.Application.dll
+  HV-Travel.Infrastructure -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Infrastructure\bin\Debug\net8.0\HV-Travel.Infrastructure.dll
+  HV-Travel.Web -> E:\Clone Repo\ASP.NET-HV-Travel\HV-Travel.Web\bin\Debug\net8.0\HV-Travel.Web.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.71

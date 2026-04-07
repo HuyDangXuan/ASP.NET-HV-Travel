@@ -1,4 +1,4 @@
-@using System
+﻿@using System
 @using System.Linq
 @using HVTravel.Domain.Entities
 @model Tour
@@ -76,19 +76,19 @@
             <div class="tour-card-badge-stack">
                 @if (hasDiscount)
                 {
-                    <span class="tour-card-badge tour-card-badge--sale">Giảm @discountPercent.ToString("0")%</span>
+                    <span class="public-badge tour-card-badge tour-card-badge--sale">Giảm @discountPercent.ToString("0")%</span>
                 }
                 else if (lowAvailability)
                 {
-                    <span class="tour-card-badge tour-card-badge--warning">Còn ít chỗ</span>
+                    <span class="public-badge tour-card-badge tour-card-badge--warning">Còn ít chỗ</span>
                 }
                 else if (tour.CancellationPolicy?.IsFreeCancellation == true)
                 {
-                    <span class="tour-card-badge tour-card-badge--info">Hủy miễn phí</span>
+                    <span class="public-badge tour-card-badge tour-card-badge--info">Hủy miễn phí</span>
                 }
                 else if (isInstantConfirmation)
                 {
-                    <span class="tour-card-badge tour-card-badge--neutral">Xác nhận nhanh</span>
+                    <span class="public-badge tour-card-badge tour-card-badge--neutral">Xác nhận nhanh</span>
                 }
             </div>
 

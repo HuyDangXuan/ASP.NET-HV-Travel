@@ -31,13 +31,25 @@
                     <div class="public-journey-flash public-journey-flash--danger">@TempData["PaymentError"]</div>
                 }
 
+                <section class="public-journey-panel public-booking-section public-journey-status-hero">
+                    <div class="public-journey-badge-group">
+                        <p class="public-journey-card-eyebrow">Thanh toán booking</p>
+                        <span class="public-badge is-info">@booking.BookingCode</span>
+                        <span class="public-badge @(balanceDue > 0m ? "is-warning" : "is-success")">@planLabel</span>
+                    </div>
+                    <h2 class="public-journey-panel-title">Chọn phương thức và hoàn tất bước thanh toán</h2>
+                    <p class="public-journey-note public-journey-section-lead">Đọc nhanh số tiền cần xử lý, chọn phương thức phù hợp và hoàn tất ngay trong cùng một luồng.</p>
+                </section>
+
                 <div class="public-journey-status-panel">
                     @await Html.PartialAsync("_JourneyStatusPanel", Model.Journey.Status)
                 </div>
 
                 <section class="public-journey-panel public-booking-section public-booking-payment-glance">
                     <div class="public-journey-panel-heading">
-                        <p class="public-journey-card-eyebrow">Đọc nhanh trước khi chọn phương thức</p>
+                        <div class="public-journey-badge-group">
+                            <p class="public-journey-card-eyebrow">Đọc nhanh trước khi chọn phương thức</p>
+                        </div>
                         <h2 class="public-journey-panel-title">Thanh toán trong một lần nhìn</h2>
                     </div>
                     <div class="public-booking-glance-grid">
@@ -61,7 +73,9 @@
 
                 <section class="public-journey-panel public-journey-payment-switcher public-booking-section" data-session-count="@paymentSessionCount" data-checkout-session="@booking.CheckoutSessionId">
                     <div class="public-journey-panel-heading">
-                        <p class="public-journey-card-eyebrow">Chọn cách bạn muốn thanh toán</p>
+                        <div class="public-journey-badge-group">
+                            <p class="public-journey-card-eyebrow">Chọn cách bạn muốn thanh toán</p>
+                        </div>
                         <h2 class="public-journey-panel-title">Một bước chốt phương thức, một bước hoàn tất</h2>
                     </div>
                     @await Html.PartialAsync("_JourneyPaymentMethodSwitcher", Model)
@@ -69,15 +83,28 @@
 
                 <section class="public-journey-panel public-booking-section" data-transfer-proof-block hidden>
                     <div class="public-journey-panel-heading">
-                        <p class="public-journey-card-eyebrow">Tải minh chứng khi đã chuyển khoản</p>
+                        <div class="public-journey-badge-group">
+                            <p class="public-journey-card-eyebrow">Tải minh chứng khi đã chuyển khoản</p>
+                            <span class="public-badge is-info">Đối soát nhanh</span>
+                        </div>
                         <h2 class="public-journey-panel-title">Gửi minh chứng chuyển khoản</h2>
                     </div>
-                    <p class="public-journey-note">Nếu bạn chọn chuyển khoản ngân hàng, hãy tải minh chứng tại đây để đội vận hành đối soát nhanh hơn.</p>
-                    <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="public-journey-upload-form">
+                    <div class="public-journey-callout public-journey-callout--info">
+                        Nếu bạn chọn chuyển khoản ngân hàng, hãy tải minh chứng tại đây để đội vận hành đối soát và xác nhận nhanh hơn.
+                    </div>
+                    <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="public-journey-upload-form public-journey-form-grid">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="bookingId" value="@booking.Id" />
-                        <input type="file" name="proofFile" />
-                        <textarea name="note" rows="4" placeholder="Ghi chú mã giao dịch hoặc thông tin cần đội vận hành lưu ý"></textarea>
+                        <label class="public-journey-field-block public-journey-field-block--full">
+                            <span class="public-journey-field-label">Minh chứng chuyển khoản</span>
+                            <span class="public-journey-field-hint">Tải ảnh chụp hoặc file xác nhận giao dịch.</span>
+                            <input type="file" name="proofFile" />
+                        </label>
+                        <label class="public-journey-field-block public-journey-field-block--full">
+                            <span class="public-journey-field-label">Ghi chú giao dịch</span>
+                            <span class="public-journey-field-hint">Ví dụ: mã tham chiếu, thời gian chuyển khoản, ngân hàng gửi.</span>
+                            <textarea name="note" rows="4" placeholder="Ghi chú mã giao dịch hoặc thông tin cần đội vận hành lưu ý"></textarea>
+                        </label>
                         <button type="submit" class="public-journey-submit public-journey-submit--ghost">Gửi minh chứng</button>
                     </form>
                 </section>

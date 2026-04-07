@@ -1,13 +1,15 @@
 ﻿@model BookingJourneyPageVm
 
 <header class="public-journey-header-block">
-    <p class="public-journey-eyebrow">@Model.Eyebrow</p>
+    <div class="public-journey-badge-group">
+        <p class="public-journey-eyebrow">@Model.Eyebrow</p>
+    </div>
     <div class="public-journey-heading-row">
-        <div>
+        <div class="public-journey-heading-stack">
             <h1 class="public-journey-title">@Model.Title</h1>
             @if (!string.IsNullOrWhiteSpace(Model.Description))
             {
-                <p class="public-journey-description">@Model.Description</p>
+                <p class="public-journey-description public-journey-section-lead">@Model.Description</p>
             }
         </div>
     </div>

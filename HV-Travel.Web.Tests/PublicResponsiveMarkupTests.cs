@@ -212,6 +212,12 @@ public class PublicResponsiveMarkupTests
         AssertContains(@"HV-Travel.Web\Views\Booking\Success.cshtml", "public-journey-status-panel");
         AssertContains(@"HV-Travel.Web\Views\Booking\Failed.cshtml", "public-journey-status-panel");
         AssertContains(@"HV-Travel.Web\Views\Booking\Error.cshtml", "public-journey-status-panel");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-journey-badge-group");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Create.cshtml", "public-journey-field-label");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Payment.cshtml", "public-journey-status-hero");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Success.cshtml", "public-journey-status-hero");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Failed.cshtml", "public-journey-status-hero");
+        AssertContains(@"HV-Travel.Web\Views\Booking\Error.cshtml", "public-journey-status-hero");
     }
 
     [Fact]
@@ -288,6 +294,15 @@ public class PublicResponsiveMarkupTests
         Assert.Contains(".public-booking-payment-shell", content);
         Assert.Contains(".public-booking-status-shell", content);
         Assert.Contains(".public-booking-lookup-shell", content);
+        Assert.Contains(".public-journey-badge-group", content);
+        Assert.Contains(".public-journey-section-lead", content);
+        Assert.Contains(".public-journey-field-label", content);
+        Assert.Contains(".public-journey-field-hint", content);
+        Assert.Contains(".public-journey-info-list", content);
+        Assert.Contains(".public-journey-callout", content);
+        Assert.Contains(".public-journey-status-hero", content);
+        Assert.Contains(".public-tour-dossier-detail-list", content);
+        Assert.Contains(".public-tour-dossier-content-list", content);
         Assert.Contains("position: sticky;", content);
         Assert.Contains("@media (max-width: 1023.98px)", content);
     }
@@ -338,5 +353,6 @@ public class PublicResponsiveMarkupTests
         return Path.Combine(repoRoot, relativePath);
     }
 }
+
 
 

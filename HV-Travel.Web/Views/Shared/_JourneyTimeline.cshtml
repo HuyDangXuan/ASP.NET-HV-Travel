@@ -2,7 +2,9 @@
 
 <section class="public-journey-panel public-journey-timeline-card">
     <div class="public-journey-panel-heading">
-        <p class="public-journey-card-eyebrow">Tiến trình</p>
+        <div class="public-journey-badge-group">
+            <p class="public-journey-card-eyebrow">Tiến trình</p>
+        </div>
         <h2 class="public-journey-panel-title">@Model.Title</h2>
     </div>
     @if (Model.Items.Any())
@@ -16,7 +18,7 @@
                         <h3>@item.Title</h3>
                         @if (!string.IsNullOrWhiteSpace(item.Description))
                         {
-                            <p>@item.Description</p>
+                            <p class="public-journey-section-lead">@item.Description</p>
                         }
                         @if (!string.IsNullOrWhiteSpace(item.Meta))
                         {

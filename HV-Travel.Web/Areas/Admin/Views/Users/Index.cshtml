@@ -29,15 +29,15 @@
     <div class="flex items-center border-b border-slate-200/60 dark:border-slate-800 overflow-x-auto">
         <a href="@Url.Action("Index", new { status = "all" })" class="@GetTabClass("all")">
             Tất Cả
-            <span class="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">@Model.Stats.TotalUsers</span>
+            <span class="ml-2 text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">@Model!.Stats.TotalUsers</span>
         </a>
         <a href="@Url.Action("Index", new { status = "active" })" class="@GetTabClass("active")">
             Đang Hoạt Động
-            <span class="ml-2 text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full">@Model.Stats.ActiveCount</span>
+            <span class="ml-2 text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full">@Model!.Stats.ActiveCount</span>
         </a>
         <a href="@Url.Action("Index", new { status = "inactive" })" class="@GetTabClass("inactive")">
             Đã Vô Hiệu
-            <span class="ml-2 text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">@Model.Stats.InactiveCount</span>
+            <span class="ml-2 text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full">@Model!.Stats.InactiveCount</span>
         </a>
     </div>
 </div>
@@ -241,7 +241,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                @foreach (var user in Model.Users)
+                @foreach (var user in Model!.Users)
                 {
                     var roleClass = user.Role switch
                     {
@@ -327,35 +327,35 @@
     <!-- Pagination -->
     <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20">
         <p class="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
-            trong số <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> tài khoản
+            Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model!.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
+            trong số <span class="font-bold text-slate-900 dark:text-white">@Model!.Pagination.TotalCount</span> tài khoản
         </p>
 
         <div class="flex items-center gap-2">
-            <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, status = currentStatus })"
-               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasPrevious ? "" : "pointer-events-none opacity-50")">
+            <a href="@Url.Action("Index", new { page = Model!.Pagination.CurrentPage - 1, status = currentStatus })"
+               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model!.Pagination.HasPrevious ? "" : "pointer-events-none opacity-50")">
                 <span class="material-symbols-outlined text-lg">chevron_left</span>
             </a>
 
-            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+            @for (int i = 1; i <= Model!.Pagination.TotalPages; i++)
             {
-                if (i == Model.Pagination.CurrentPage)
+                if (i == Model!.Pagination.CurrentPage)
                 {
                     <span class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-xs font-bold shadow-sm shadow-primary/30">@i</span>
                 }
-                else if (i <= 3 || i == Model.Pagination.TotalPages || Math.Abs(i - Model.Pagination.CurrentPage) <= 1)
+                else if (i <= 3 || i == Model!.Pagination.TotalPages || Math.Abs(i - Model.Pagination.CurrentPage) <= 1)
                 {
                     <a href="@Url.Action("Index", new { page = i, status = currentStatus })"
                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">@i</a>
                 }
-                else if (i == 4 && Model.Pagination.TotalPages > 6)
+                else if (i == 4 && Model!.Pagination.TotalPages > 6)
                 {
                     <span class="text-slate-400 text-xs">...</span>
                 }
             }
 
-            <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, status = currentStatus })"
-               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasNext ? "" : "pointer-events-none opacity-50")">
+            <a href="@Url.Action("Index", new { page = Model!.Pagination.CurrentPage + 1, status = currentStatus })"
+               class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model!.Pagination.HasNext ? "" : "pointer-events-none opacity-50")">
                 <span class="material-symbols-outlined text-lg">chevron_right</span>
             </a>
         </div>

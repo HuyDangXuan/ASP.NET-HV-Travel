@@ -1,14 +1,22 @@
-﻿@inject IPublicContentService ContentService
+@inject IPublicContentService ContentService
 @using HVTravel.Web.Services
 @{
     var sections = await ContentService.GetPageSectionsAsync("about");
     var hero = sections.GetSection("hero");
+    var heroFields = hero?.Fields;
     var story = sections.GetSection("story");
-    var missionVision = sections.GetSection("missionVision");
+    var storyFields = story?.Fields;
+    var values = sections.GetSection("values");
+    var valuesFields = values?.Fields;
+    var stats = sections.GetSection("stats");
+    var statsFields = stats?.Fields;
     var team = sections.GetSection("team");
+    var teamFields = team?.Fields;
+    var cta = sections.GetSection("cta");
+    var ctaFields = cta?.Fields;
 
     ViewData["Title"] = "Giới Thiệu";
-    ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Tìm hiểu về HV Travel - Đơn vị du lịch hàng đầu Việt Nam")
+    ViewData["Description"] = heroFields?.GetFieldValue("description", "HV Travel là đối tác tin cậy trong hành trình khám phá thế giới của bạn, với 15+ năm kinh nghiệm.")
         ?? "Tìm hiểu về HV Travel - Đơn vị du lịch hàng đầu Việt Nam";
 }
 
@@ -23,14 +31,11 @@
             <div class="@($"public-top-section-content public-page-hero-content is-centered {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
                 <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">info</span>
-                    @hero.Fields.GetFieldValue("badgeText", "Về chúng tôi")
+                    @heroFields?.GetFieldValue("badgeText", "Về chúng tôi")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white">
-                    <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@hero.Fields.GetFieldValue("titleLine1", "Câu chuyện")</span>
-                    <span class="public-top-section-highlight public-page-hero-highlight" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@hero.Fields.GetFieldValue("titleHighlight", "HV Travel")</span>
-                </h1>
+                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@heroFields?.GetFieldValue("title", "Chúng tôi giúp bạn đi xa hơn, an tâm hơn.")</h1>
                 <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
-                    @Html.Raw(hero.Fields.GetFieldValue("description", "Đồng hành cùng bạn trên mọi hành trình khám phá vẻ đẹp Việt Nam"))
+                    @Html.Raw(heroFields?.GetFieldValue("description", "Hơn 15 năm qua, HV Travel giúp 50,000+ du khách khám phá 5 châu lục an toàn và trọn vẹn."))
                 </div>
             </div>
         </div>
@@ -46,30 +51,12 @@
                     <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-6 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(story, "eyebrow")">
                         <span class="material-symbols-outlined text-[16px]">history</span> Câu chuyện của chúng tôi
                     </span>
-                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight" style="@ContentPresentationViewHelper.GetFieldTextStyle(story, "title")">@story.Fields.GetFieldValue("title", "Hơn 10 năm kinh nghiệm trong ngành du lịch")</h2>
+                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight" style="@ContentPresentationViewHelper.GetFieldTextStyle(story, "title")">@storyFields?.GetFieldValue("title", "Hơn 10 năm kinh nghiệm trong ngành du lịch")</h2>
                     <div class="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(story, "description1")">
-                        @Html.Raw(story.Fields.GetFieldValue("description1", "HV Travel được thành lập với niềm đam mê mang đến những trải nghiệm du lịch tuyệt vời nhất cho du khách."))
+                        @Html.Raw(storyFields?.GetFieldValue("description1", "HV Travel được thành lập với niềm đam mê mang đến những trải nghiệm du lịch tuyệt vời nhất cho du khách."))
                     </div>
                     <div class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(story, "description2")">
-                        @Html.Raw(story.Fields.GetFieldValue("description2", "Chúng tôi tin rằng mỗi chuyến đi không chỉ là một hành trình đến nơi mới, mà còn là cơ hội để khám phá bản thân, kết nối với văn hóa và con người."))
-                    </div>
-                    <div class="public-card-grid grid grid-cols-2 gap-6" data-animate="fade-up" data-stagger data-delay="200">
-                        <div class="p-4 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark">
-                            <p class="text-3xl font-extrabold text-primary mb-1">10+</p>
-                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Năm hoạt động</p>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark">
-                            <p class="text-3xl font-extrabold text-primary mb-1">50+</p>
-                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Nhân viên</p>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark">
-                            <p class="text-3xl font-extrabold text-primary mb-1">10K+</p>
-                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Khách hàng</p>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-surface-light dark:bg-surface-dark shadow-sm border border-border-light dark:border-border-dark">
-                            <p class="text-3xl font-extrabold text-primary mb-1">4.9*</p>
-                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Đánh giá</p>
-                        </div>
+                        @Html.Raw(storyFields?.GetFieldValue("description2", "Chúng tôi tin rằng mỗi chuyến đi không chỉ là một hành trình đến nơi mới, mà còn là cơ hội để khám phá bản thân, kết nối với văn hóa và con người."))
                     </div>
                 </div>
                 <div class="relative" data-animate="slide-right">
@@ -93,40 +80,54 @@
     </section>
 }
 
-@if (missionVision?.IsEnabled != false)
+@if (stats?.IsEnabled != false)
 {
-    <section class="@($"py-20 bg-surface-light dark:bg-surface-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(missionVision)}")" style="@ContentPresentationViewHelper.GetSectionStyle(missionVision)">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(missionVision)">
+    <section class="@($"py-20 bg-surface-light dark:bg-surface-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(stats)}")" style="@ContentPresentationViewHelper.GetSectionStyle(stats)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(stats)">
+            <div class="public-card-grid grid md:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
+                <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
+                    <p class="text-[3rem] font-black text-teal-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s1_val")">@statsFields?.GetFieldValue("s1_val", "15+")</p>
+                    <p class="mt-2 text-sm font-semibold tracking-wide text-teal-800 dark:text-teal-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s1_label")">@statsFields?.GetFieldValue("s1_label", "Năm kinh nghiệm")</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
+                    <p class="text-[3rem] font-black text-teal-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s2_val")">@statsFields?.GetFieldValue("s2_val", "50K+")</p>
+                    <p class="mt-2 text-sm font-semibold tracking-wide text-teal-800 dark:text-teal-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s2_label")">@statsFields?.GetFieldValue("s2_label", "Khách hàng")</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
+                    <p class="text-[3rem] font-black text-teal-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s3_val")">@statsFields?.GetFieldValue("s3_val", "100+")</p>
+                    <p class="mt-2 text-sm font-semibold tracking-wide text-teal-800 dark:text-teal-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s3_label")">@statsFields?.GetFieldValue("s3_label", "Điểm đến")</p>
+                </div>
+                <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
+                    <p class="text-[3rem] font-black text-teal-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s4_val")">@statsFields?.GetFieldValue("s4_val", "98%")</p>
+                    <p class="mt-2 text-sm font-semibold tracking-wide text-teal-800 dark:text-teal-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(stats, "s4_label")">@statsFields?.GetFieldValue("s4_label", "Hài lòng dịch vụ")</p>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+@if (values?.IsEnabled != false)
+{
+    <section class="@($"py-20 bg-background-light dark:bg-background-dark {ContentPresentationViewHelper.GetSectionBackgroundClass(values)}")" style="@ContentPresentationViewHelper.GetSectionStyle(values)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(values)">
             <div class="text-center mb-14" data-animate="fade-up">
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "title")">@missionVision.Fields.GetFieldValue("title", "Sứ mệnh & Tầm nhìn")</h2>
+                <h2 class="public-section-title text-center" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "title")">@valuesFields?.GetFieldValue("title", "Giá trị cốt lõi")</h2>
+                <p class="mx-auto mt-4 max-w-2xl text-center text-sm leading-8 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "description")">
+                    @Html.Raw(valuesFields?.GetFieldValue("description", "Kim chỉ nam trong mọi quyết định và hành động của đội ngũ HV Travel."))
+                </p>
             </div>
             <div class="public-card-grid grid md:grid-cols-3 gap-8" data-animate="fade-in" data-stagger>
                 <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
-                    <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[28px]">flag</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "missionTitle")">@missionVision.Fields.GetFieldValue("missionTitle", "Sứ mệnh")</h3>
-                    <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "missionText")">
-                        @Html.Raw(missionVision.Fields.GetFieldValue("missionText", "Mang đến những hành trình được cá nhân hóa, an toàn và giàu cảm xúc cho mỗi du khách."))
-                    </div>
+                    <h3 class="mt-4 text-base font-black text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v1_title")">@valuesFields?.GetFieldValue("v1_title", "Trải nghiệm cá nhân hóa")</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v1_desc")">@valuesFields?.GetFieldValue("v1_desc", "Mỗi chuyến đi được thiết kế riêng phù hợp với gu du lịch của từng khách hàng.")</p>
                 </div>
                 <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
-                    <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[28px]">visibility</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "visionTitle")">@missionVision.Fields.GetFieldValue("visionTitle", "Tầm nhìn")</h3>
-                    <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "visionText")">
-                        @Html.Raw(missionVision.Fields.GetFieldValue("visionText", "Trở thành thương hiệu du lịch được tin yêu hàng đầu cho những chuyến đi khám phá Việt Nam."))
-                    </div>
+                    <h3 class="mt-4 text-base font-black text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v2_title")">@valuesFields?.GetFieldValue("v2_title", "An toàn tuyệt đối")</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v2_desc")">@valuesFields?.GetFieldValue("v2_desc", "Chúng tôi ưu tiên sự an toàn của khách hàng lên hàng đầu trong mọi hành trình.")</p>
                 </div>
                 <div class="p-8 rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark/70 border border-border-light dark:border-border-dark hover:border-primary/30 transition-all group text-center">
-                    <div class="size-16 mx-auto mb-6 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[28px]">favorite</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "valuesTitle")">@missionVision.Fields.GetFieldValue("valuesTitle", "Giá trị cốt lõi")</h3>
-                    <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(missionVision, "valuesText")">
-                        @Html.Raw(missionVision.Fields.GetFieldValue("valuesText", "Tận tâm, minh bạch, sáng tạo và luôn lấy trải nghiệm khách hàng làm trung tâm."))
-                    </div>
+                    <h3 class="mt-4 text-base font-black text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v3_title")">@valuesFields?.GetFieldValue("v3_title", "Tận tâm phục vụ")</h3>
+                    <p class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(values, "v3_desc")">@valuesFields?.GetFieldValue("v3_desc", "Đội ngũ hỗ trợ 24/7 luôn sẵn sàng đồng hành cùng bạn mọi lúc mọi nơi.")</p>
                 </div>
             </div>
         </div>
@@ -141,19 +142,19 @@
                 <span class="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(team, "eyebrow")">
                     <span class="material-symbols-outlined text-[16px]">groups</span> Đội ngũ
                 </span>
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(team, "title")">@team.Fields.GetFieldValue("title", "Những con người đằng sau HV Travel")</h2>
+                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(team, "title")">@teamFields?.GetFieldValue("title", "Những con người đằng sau HV Travel")</h2>
                 <div class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(team, "description")">
-                    @Html.Raw(team.Fields.GetFieldValue("description", "Đội ngũ tạo nên các hành trình chỉn chu và giàu cảm hứng cho từng chuyến đi."))
+                    @Html.Raw(teamFields?.GetFieldValue("description", "Đội ngũ tạo nên các hành trình chỉn chu và giàu cảm hứng cho từng chuyến đi."))
                 </div>
             </div>
             <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
                 @{
                     var teamMembers = new[]
                     {
-                        new { Name = team.Fields.GetFieldValue("member1Name", "Nguyen Hoang Vu"), Role = team.Fields.GetFieldValue("member1Role", "Nhà sáng lập"), Icon = "person", NameKey = "member1Name", RoleKey = "member1Role" },
-                        new { Name = team.Fields.GetFieldValue("member2Name", "Le Minh Duc"), Role = team.Fields.GetFieldValue("member2Role", "Trưởng phòng tour"), Icon = "manage_accounts", NameKey = "member2Name", RoleKey = "member2Role" },
-                        new { Name = team.Fields.GetFieldValue("member3Name", "Tran Khanh Linh"), Role = team.Fields.GetFieldValue("member3Role", "Chăm sóc khách hàng"), Icon = "support_agent", NameKey = "member3Name", RoleKey = "member3Role" },
-                        new { Name = team.Fields.GetFieldValue("member4Name", "Pham Gia Hung"), Role = team.Fields.GetFieldValue("member4Role", "Điều hành tour"), Icon = "map", NameKey = "member4Name", RoleKey = "member4Role" }
+                        new { Name = teamFields?.GetFieldValue("member1Name", "Nguyen Hoang Vu"), Role = teamFields?.GetFieldValue("member1Role", "Nhà sáng lập"), Icon = "person", NameKey = "member1Name", RoleKey = "member1Role" },
+                        new { Name = teamFields?.GetFieldValue("member2Name", "Le Minh Duc"), Role = teamFields?.GetFieldValue("member2Role", "Trưởng phòng tour"), Icon = "manage_accounts", NameKey = "member2Name", RoleKey = "member2Role" },
+                        new { Name = teamFields?.GetFieldValue("member3Name", "Tran Khanh Linh"), Role = teamFields?.GetFieldValue("member3Role", "Chăm sóc khách hàng"), Icon = "support_agent", NameKey = "member3Name", RoleKey = "member3Role" },
+                        new { Name = teamFields?.GetFieldValue("member4Name", "Pham Gia Hung"), Role = teamFields?.GetFieldValue("member4Role", "Điều hành tour"), Icon = "map", NameKey = "member4Name", RoleKey = "member4Role" }
                     };
                 }
                 @foreach (var member in teamMembers)
