@@ -480,10 +480,10 @@ public static class PublicContentDefaults
             Section("publicTourDetails", "bookingPanel", "Khối đặt tour", 8, new List<ContentField>
             {
                 Text("eyebrowText", "Eyebrow", "Sẵn sàng đặt tour"),
-                TextArea("priceHelperText", "Mô tả giá", "Mức giá tốt nhất theo departure hiện có."),
+                TextArea("priceHelperText", "Mô tả giá", "Mức giá tốt nhất theo lịch khởi hành hiện có."),
                 Text("confirmationLabel", "Nhãn xác nhận", "Xác nhận"),
                 Text("ratingLabel", "Nhãn đánh giá", "Đánh giá"),
-                Text("departureLabel", "Nhãn departure", "Departure gần nhất"),
+                Text("departureLabel", "Nhãn departure", "Ngày khởi hành"),
                 Text("bookNowText", "CTA đặt tour", "Đặt tour ngay"),
                 Text("callAdvisorText", "CTA gọi tư vấn", "Gọi tư vấn"),
                 Text("trustEyebrowText", "Eyebrow trust", "Khối tin cậy"),
@@ -558,12 +558,12 @@ public static class PublicContentDefaults
             }),
             Section("booking", "travellerForm", "Form hành khách", 6, new List<ContentField>
             {
-                Text("tourSnapshotEyebrow", "Eyebrow tour snapshot", "Tour snapshot"),
+                Text("tourSnapshotEyebrow", "Eyebrow tour snapshot", "Thông tin tour"),
                 Text("tourFallbackDestination", "Fallback điểm đến", "Việt Nam"),
                 Text("tourFallbackDuration", "Fallback thời lượng", "Liên hệ tư vấn"),
                 Text("viewDetailsText", "CTA xem chi tiết", "Xem chi tiết"),
                 Text("tourInfoTitle", "Tiêu đề thông tin tour", "Thông tin tour"),
-                Text("departureEyebrow", "Eyebrow departure", "Departure"),
+                Text("departureEyebrow", "Eyebrow departure", "Đợt khởi hành"),
                 Text("departureTitle", "Tiêu đề departure", "Chọn đợt khởi hành"),
                 Text("remainingCapacityFormat", "Định dạng còn chỗ", "{0} chỗ"),
                 Text("instantConfirmationLabel", "Nhãn xác nhận tức thì", "Xác nhận tức thì"),
@@ -575,7 +575,7 @@ public static class PublicContentDefaults
                 Text("freeCancellationFormat", "Định dạng hủy miễn phí", "Hủy miễn phí trước {0} giờ."),
                 Text("cancellationFallback", "Fallback chính sách hủy", "Chính sách hủy áp dụng theo điều kiện của tour."),
                 Text("departureEmptyText", "Thông báo không có departure", "Tour này hiện chưa có lịch khởi hành khả dụng."),
-                Text("travellerEyebrow", "Eyebrow hành khách", "Traveller"),
+                Text("travellerEyebrow", "Eyebrow hành khách", "Hành khách"),
                 Text("travellerTitle", "Tiêu đề hành khách", "Thông tin liên hệ và số khách"),
                 Text("contactNameLabel", "Nhãn họ tên", "Họ và tên"),
                 Text("contactNamePlaceholder", "Placeholder họ tên", "Nguyễn Văn A"),
@@ -588,24 +588,24 @@ public static class PublicContentDefaults
             }),
             Section("booking", "pricingPanel", "Panel báo giá", 7, new List<ContentField>
             {
-                Text("eyebrowText", "Eyebrow", "Pricing controls"),
+                Text("eyebrowText", "Eyebrow", "Tùy chọn thanh toán"),
                 Text("title", "Tiêu đề", "Coupon và kế hoạch thanh toán"),
-                Text("couponLabel", "Nhãn coupon", "Coupon"),
-                Text("couponPlaceholder", "Placeholder coupon", "WELCOME10"),
-                Text("paymentPlanLabel", "Nhãn payment plan", "Payment plan"),
-                Text("paymentPlanFullLabel", "Nhãn full", "Full"),
-                Text("paymentPlanDepositLabel", "Nhãn deposit", "Deposit"),
-                Text("quoteEyebrowText", "Eyebrow báo giá", "Quote"),
+                Text("couponLabel", "Nhãn coupon", "Mã ưu đãi"),
+                Text("couponPlaceholder", "Placeholder coupon", "Nhập nếu bạn có mã ưu đãi"),
+                Text("paymentPlanLabel", "Nhãn payment plan", "Hình thức thanh toán"),
+                Text("paymentPlanFullLabel", "Nhãn full", "Thanh toán toàn bộ"),
+                Text("paymentPlanDepositLabel", "Nhãn deposit", "Đặt cọc 30%"),
+                Text("quoteEyebrowText", "Eyebrow báo giá", "Báo giá"),
                 Text("quoteTitle", "Tiêu đề báo giá", "Xem báo giá trước khi giữ chỗ"),
                 Text("subtotalLabel", "Nhãn tạm tính", "Tạm tính"),
                 Text("discountLabel", "Nhãn giảm giá", "Giảm giá"),
                 Text("grandTotalLabel", "Nhãn tổng thanh toán", "Tổng thanh toán"),
                 Text("amountDueNowLabel", "Nhãn thanh toán ngay", "Thanh toán ngay"),
                 Text("balanceDueLabel", "Nhãn còn lại", "Còn lại"),
-                TextArea("quoteStatusText", "Thông báo trạng thái", "Máy chủ sẽ tính lại báo giá khi bạn đổi departure, số khách, coupon hoặc payment plan."),
+                TextArea("quoteStatusText", "Thông báo trạng thái", "Báo giá sẽ tự cập nhật khi bạn đổi ngày khởi hành, số khách, mã ưu đãi hoặc hình thức thanh toán."),
                 Text("submitText", "CTA tiếp tục", "Tiếp tục sang thanh toán"),
                 TextArea("submitHelperText", "Mô tả CTA", "Ghế chỉ được giữ khi máy chủ xác nhận báo giá và tạo booking thành công."),
-                Text("couponAppliedFormat", "Định dạng coupon đã áp dụng", "Đã áp dụng coupon {0}."),
+                Text("couponAppliedFormat", "Định dạng coupon đã áp dụng", "Đã áp dụng mã ưu đãi {0}."),
                 Text("quoteReadyText", "Thông báo báo giá hợp lệ", "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.")
             }),
             Section("booking", "paymentHero", "Hero thanh toán", 8, new List<ContentField>
@@ -622,31 +622,31 @@ public static class PublicContentDefaults
             }),
             Section("booking", "paymentMethods", "Phương thức thanh toán", 10, new List<ContentField>
             {
-                Text("eyebrowText", "Eyebrow", "Payment methods"),
+                Text("eyebrowText", "Eyebrow", "Phương thức thanh toán"),
                 Text("title", "Tiêu đề", "Chọn cách thu tiền cho booking này"),
                 Text("bankTransferTitle", "Phương thức chuyển khoản", "Chuyển khoản thủ công"),
                 TextArea("bankTransferDescription", "Mô tả chuyển khoản", "Tải minh chứng chuyển khoản để đội vận hành đối soát trên admin."),
-                Text("creditCardTitle", "Phương thức online", "Mock online gateway"),
+                Text("creditCardTitle", "Phương thức online", "Thanh toán online"),
                 TextArea("creditCardDescription", "Mô tả online", "Luồng demo nội bộ sẽ gọi callback idempotent để mô phỏng gateway online."),
-                Text("cashTitle", "Phương thức tiền mặt", "Cash hold"),
+                Text("cashTitle", "Phương thức tiền mặt", "Giữ chỗ thanh toán tiền mặt"),
                 TextArea("cashDescription", "Mô tả tiền mặt", "Giữ chỗ trước và thanh toán bằng tiền mặt tại văn phòng hoặc khi khởi hành."),
                 Text("submitText", "CTA xác nhận", "Xác nhận thanh toán")
             }),
             Section("booking", "transferProof", "Minh chứng chuyển khoản", 11, new List<ContentField>
             {
-                Text("eyebrowText", "Eyebrow", "Transfer proof"),
+                Text("eyebrowText", "Eyebrow", "Minh chứng chuyển khoản"),
                 Text("title", "Tiêu đề", "Tải minh chứng chuyển khoản"),
-                Text("resumeText", "CTA resume", "Resume checkout"),
+                Text("resumeText", "CTA resume", "Khôi phục checkout"),
                 Text("notePlaceholder", "Placeholder note", "Ghi chú đối soát hoặc mã tham chiếu giao dịch"),
                 Text("submitText", "CTA gửi minh chứng", "Gửi minh chứng")
             }),
             Section("booking", "orderSummary", "Tóm tắt đơn", 12, new List<ContentField>
             {
-                Text("eyebrowText", "Eyebrow", "Order summary"),
-                Text("titleFormat", "Định dạng tiêu đề", "Booking {0}"),
+                Text("eyebrowText", "Eyebrow", "Tóm tắt đơn hàng"),
+                Text("titleFormat", "Định dạng tiêu đề", "Đơn đặt {0}"),
                 Text("bookingCodeLabel", "Nhãn mã đơn", "Mã đơn"),
                 Text("departureLabel", "Nhãn khởi hành", "Khởi hành"),
-                Text("couponLabel", "Nhãn coupon", "Coupon"),
+                Text("couponLabel", "Nhãn coupon", "Mã ưu đãi"),
                 Text("paymentStatusLabel", "Nhãn trạng thái thanh toán", "Trạng thái thanh toán"),
                 Text("subtotalLabel", "Nhãn tạm tính", "Tạm tính"),
                 Text("discountLabel", "Nhãn giảm giá", "Giảm giá"),
@@ -654,14 +654,14 @@ public static class PublicContentDefaults
                 Text("paymentPlanLabel", "Nhãn kế hoạch", "Kế hoạch"),
                 Text("amountDueNowLabel", "Nhãn thanh toán ngay", "Thanh toán ngay"),
                 Text("balanceDueLabel", "Nhãn còn lại", "Còn lại"),
-                Text("checkoutSessionLabel", "Nhãn checkout session", "Checkout session"),
-                Text("paymentSessionLabel", "Nhãn payment session", "Payment session"),
-                Text("pendingLabel", "Fallback pending", "Pending")
+                Text("checkoutSessionLabel", "Nhãn checkout session", "Phiên checkout"),
+                Text("paymentSessionLabel", "Nhãn payment session", "Phiên thanh toán"),
+                Text("pendingLabel", "Fallback pending", "Đang chờ xử lý")
             }),
             Section("booking", "paymentTimeline", "Timeline thanh toán", 13, new List<ContentField>
             {
-                Text("eyebrowText", "Eyebrow", "Timeline"),
-                Text("title", "Tiêu đề", "Timeline thanh toán"),
+                Text("eyebrowText", "Eyebrow", "Tiến trình"),
+                Text("title", "Tiêu đề", "Tiến trình thanh toán"),
                 Text("emptyStateText", "Thông báo rỗng", "Booking chưa có mốc xử lý hiển thị cho khách hàng.")
             }),
             Section("customerLogin", "hero", "Hero đăng nhập", 1, new List<ContentField>

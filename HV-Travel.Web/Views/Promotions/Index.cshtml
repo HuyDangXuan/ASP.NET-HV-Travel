@@ -14,19 +14,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
-            <div class="absolute left-12 top-0 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl"></div>
-            <div class="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-rose-500/20 blur-3xl"></div>
+            <div class="absolute left-10 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-10 right-20 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto flex max-w-4xl flex-col items-center text-center max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
+            <div class="mx-auto flex max-w-4xl flex-col items-center text-center @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
                 <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">local_activity</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Ưu đãi theo chiến dịch")
                 </span>
-                <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Flash sale, voucher campaign và deal landing page cho HV Travel.")</h1>
-                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Flash sale, voucher campaign và deal landing page cho HV Travel.")</h1>
+                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment."))
                     @if (!string.IsNullOrWhiteSpace(Model.CustomerSegment))
                     {

@@ -116,7 +116,7 @@ public class PublicToursController : Controller
         ViewData["OpenGraphDescription"] = description;
         ViewData["OpenGraphImage"] = !string.IsNullOrWhiteSpace(tour.Seo?.OpenGraphImageUrl)
             ? tour.Seo.OpenGraphImageUrl
-            : tour.Images.FirstOrDefault();
+            : tour.Images?.FirstOrDefault();
 
         var searchContext = await _tourRepository.SearchAsync(new TourSearchRequest
         {

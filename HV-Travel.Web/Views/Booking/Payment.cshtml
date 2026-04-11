@@ -5,7 +5,6 @@
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
     var paymentHero = sections.GetSection("paymentHero");
-    var paymentStepper = sections.GetSection("paymentStepper");
     var paymentMethods = sections.GetSection("paymentMethods");
     var transferProof = sections.GetSection("transferProof");
     var orderSummary = sections.GetSection("orderSummary");
@@ -15,6 +14,22 @@
     var departure = tour?.ResolveDeparture(booking.DepartureId, booking.TourSnapshot?.StartDate);
     var activePaymentSession = booking.PaymentSessions.OrderByDescending(item => item.UpdatedAt).FirstOrDefault();
     var timeline = booking.Events ?? new List<BookingEvent>();
+    var paymentMethodsEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(paymentMethods?.Fields.GetVisibleFieldValue("eyebrowText", "Phương thức thanh toán"));
+    var bankTransferTitleText = BookingDisplayTextHelper.NormalizeCmsText(paymentMethods?.Fields.GetVisibleFieldValue("bankTransferTitle", "Chuyển khoản thủ công"));
+    var creditCardTitleText = BookingDisplayTextHelper.NormalizeCmsText(paymentMethods?.Fields.GetVisibleFieldValue("creditCardTitle", "Thanh toán online"));
+    var cashTitleText = BookingDisplayTextHelper.NormalizeCmsText(paymentMethods?.Fields.GetVisibleFieldValue("cashTitle", "Giữ chỗ thanh toán tiền mặt"));
+    var transferProofEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(transferProof?.Fields.GetVisibleFieldValue("eyebrowText", "Minh chứng chuyển khoản"));
+    var resumeText = BookingDisplayTextHelper.NormalizeCmsText(transferProof?.Fields.GetVisibleFieldValue("resumeText", "Khôi phục checkout"));
+    var orderSummaryEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("eyebrowText", "Tóm tắt đơn hàng"));
+    var orderSummaryTitleFormat = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("titleFormat", "Đơn đặt {0}"));
+    var couponLabelText = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("couponLabel", "Mã ưu đãi"));
+    var checkoutSessionLabelText = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("checkoutSessionLabel", "Phiên checkout"));
+    var paymentSessionLabelText = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("paymentSessionLabel", "Phiên thanh toán"));
+    var pendingLabelText = BookingDisplayTextHelper.NormalizeCmsText(orderSummary?.Fields.GetVisibleFieldValue("pendingLabel", "Đang chờ xử lý"));
+    var paymentTimelineEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(paymentTimeline?.Fields.GetVisibleFieldValue("eyebrowText", "Tiến trình"));
+    var paymentTimelineTitleText = BookingDisplayTextHelper.NormalizeCmsText(paymentTimeline?.Fields.GetVisibleFieldValue("title", "Tiến trình thanh toán"));
+    var paymentStatusText = BookingDisplayTextHelper.PaymentStatus(booking.PaymentStatus);
+    var paymentPlanText = BookingDisplayTextHelper.PaymentPlan(booking.PaymentPlan?.PlanType);
 }
 
 @if (paymentHero?.IsEnabled != false)
@@ -26,17 +41,6 @@
             <div class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "description")">@Html.Raw(paymentHero.Fields.GetVisibleFieldValue("description", "Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần."))</div>
         </div>
     </section>
-}
-
-@if (paymentStepper?.IsEnabled != false)
-{
-    <div class="border-b border-border-light bg-surface-light py-4 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentStepper) @ContentPresentationViewHelper.GetSectionBackgroundClass(paymentStepper)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentStepper)">
-        <div class="mx-auto flex max-w-5xl items-center justify-center gap-4 px-4 text-sm sm:px-6 lg:px-8">
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "detailsStepLabel")">1. @paymentStepper.Fields.GetVisibleFieldValue("detailsStepLabel", "Thông tin")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "paymentStepLabel")">2. @paymentStepper.Fields.GetVisibleFieldValue("paymentStepLabel", "Thanh toán")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentStepper, "completeStepLabel")">3. @paymentStepper.Fields.GetVisibleFieldValue("completeStepLabel", "Hoàn tất")</span>
-        </div>
-    </div>
 }
 
 <section class="bg-background-light py-10 dark:bg-background-dark">
@@ -52,24 +56,24 @@
             }
 
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentMethods)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentMethods)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "eyebrowText")">@paymentMethods?.Fields.GetVisibleFieldValue("eyebrowText", "Payment methods")</p>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "eyebrowText")">@paymentMethodsEyebrowText</p>
                 <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "title")">@paymentMethods?.Fields.GetVisibleFieldValue("title", "Chọn cách thu tiền cho booking này")</h2>
                 <form asp-action="ProcessPayment" method="post" class="mt-6 space-y-4">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="bookingId" value="@booking.Id" />
                     <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
                         <input type="radio" name="paymentMethod" value="BankTransfer" checked class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "bankTransferTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("bankTransferTitle", "Chuyển khoản thủ công")</strong>
+                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "bankTransferTitle")">@bankTransferTitleText</strong>
                         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "bankTransferDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("bankTransferDescription", "Tải minh chứng chuyển khoản để đội vận hành đối soát trên admin.")</p>
                     </label>
                     <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
                         <input type="radio" name="paymentMethod" value="CreditCard" class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "creditCardTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("creditCardTitle", "Mock online gateway")</strong>
+                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "creditCardTitle")">@creditCardTitleText</strong>
                         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "creditCardDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("creditCardDescription", "Luồng demo nội bộ sẽ gọi callback idempotent để mô phỏng gateway online.")</p>
                     </label>
                     <label class="block rounded-2xl border border-border-light p-4 dark:border-border-dark">
                         <input type="radio" name="paymentMethod" value="Cash" class="mr-2" />
-                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "cashTitle")">@paymentMethods?.Fields.GetVisibleFieldValue("cashTitle", "Cash hold")</strong>
+                        <strong style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "cashTitle")">@cashTitleText</strong>
                         <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "cashDescription")">@paymentMethods?.Fields.GetVisibleFieldValue("cashDescription", "Giữ chỗ trước và thanh toán bằng tiền mặt tại văn phòng hoặc khi khởi hành.")</p>
                     </label>
                     <button type="submit" class="w-full rounded-2xl bg-primary px-5 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentMethods, "submitText")">@paymentMethods?.Fields.GetVisibleFieldValue("submitText", "Xác nhận thanh toán")</button>
@@ -77,12 +81,12 @@
             </div>
 
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(transferProof)" style="@ContentPresentationViewHelper.GetSectionStyle(transferProof)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "eyebrowText")">@transferProof?.Fields.GetVisibleFieldValue("eyebrowText", "Transfer proof")</p>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "eyebrowText")">@transferProofEyebrowText</p>
                 <div class="mt-2 flex items-center justify-between gap-3">
                     <h3 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "title")">@transferProof?.Fields.GetVisibleFieldValue("title", "Tải minh chứng chuyển khoản")</h3>
                     @if (!string.IsNullOrWhiteSpace(booking.CheckoutSessionId))
                     {
-                        <a asp-action="Resume" asp-route-checkoutSessionId="@booking.CheckoutSessionId" class="text-sm font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "resumeText")">@transferProof?.Fields.GetVisibleFieldValue("resumeText", "Resume checkout")</a>
+                        <a asp-action="Resume" asp-route-checkoutSessionId="@booking.CheckoutSessionId" class="text-sm font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(transferProof, "resumeText")">@resumeText</a>
                     }
                 </div>
                 <form asp-action="UploadTransferProof" method="post" enctype="multipart/form-data" class="mt-5 space-y-4">
@@ -97,27 +101,27 @@
 
         <aside class="space-y-6">
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(orderSummary)" style="@ContentPresentationViewHelper.GetSectionStyle(orderSummary)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "eyebrowText")">@orderSummary?.Fields.GetVisibleFieldValue("eyebrowText", "Order summary")</p>
-                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "titleFormat")">@string.Format(orderSummary?.Fields.GetVisibleFieldValue("titleFormat", "Booking {0}") ?? "Booking {0}", booking.BookingCode)</h3>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "eyebrowText")">@orderSummaryEyebrowText</p>
+                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(orderSummary, "titleFormat")">@string.Format(orderSummaryTitleFormat, booking.BookingCode)</h3>
                 <div class="mt-4 space-y-2 text-sm">
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("bookingCodeLabel", "Mã đơn")</span><span class="font-mono text-primary">@booking.BookingCode</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("departureLabel", "Khởi hành")</span><span>@(departure?.StartDate.ToString("dd/MM/yyyy") ?? booking.TourSnapshot?.StartDate?.ToString("dd/MM/yyyy") ?? "-")</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("couponLabel", "Coupon")</span><span>@(string.IsNullOrWhiteSpace(booking.CouponCode) ? "-" : booking.CouponCode)</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentStatusLabel", "Trạng thái thanh toán")</span><span>@booking.PaymentStatus</span></div>
+                    <div class="flex justify-between"><span>@couponLabelText</span><span>@(string.IsNullOrWhiteSpace(booking.CouponCode) ? "-" : booking.CouponCode)</span></div>
+                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentStatusLabel", "Trạng thái thanh toán")</span><span>@paymentStatusText</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("subtotalLabel", "Tạm tính")</span><span>@booking.PricingBreakdown.Subtotal.ToString("N0")₫</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("discountLabel", "Giảm giá")</span><span>@booking.PricingBreakdown.DiscountTotal.ToString("N0")₫</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("grandTotalLabel", "Tổng thanh toán")</span><span>@booking.PricingBreakdown.GrandTotal.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentPlanLabel", "Kế hoạch")</span><span>@booking.PaymentPlan.PlanType</span></div>
+                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentPlanLabel", "Kế hoạch")</span><span>@paymentPlanText</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("amountDueNowLabel", "Thanh toán ngay")</span><span>@booking.PaymentPlan.AmountDueNow.ToString("N0")₫</span></div>
                     <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("balanceDueLabel", "Còn lại")</span><span>@booking.PaymentPlan.BalanceDue.ToString("N0")₫</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("checkoutSessionLabel", "Checkout session")</span><span class="font-mono text-xs">@(string.IsNullOrWhiteSpace(booking.CheckoutSessionId) ? "-" : booking.CheckoutSessionId)</span></div>
-                    <div class="flex justify-between"><span>@orderSummary?.Fields.GetVisibleFieldValue("paymentSessionLabel", "Payment session")</span><span class="font-mono text-xs">@(activePaymentSession?.Reference ?? activePaymentSession?.Id ?? (orderSummary?.Fields.GetVisibleFieldValue("pendingLabel", "Pending") ?? "Pending"))</span></div>
+                    <div class="flex justify-between"><span>@checkoutSessionLabelText</span><span class="font-mono text-xs">@(string.IsNullOrWhiteSpace(booking.CheckoutSessionId) ? "-" : booking.CheckoutSessionId)</span></div>
+                    <div class="flex justify-between"><span>@paymentSessionLabelText</span><span class="font-mono text-xs">@(activePaymentSession?.Reference ?? activePaymentSession?.Id ?? pendingLabelText)</span></div>
                 </div>
             </div>
 
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(paymentTimeline)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentTimeline)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "eyebrowText")">@paymentTimeline?.Fields.GetVisibleFieldValue("eyebrowText", "Timeline")</p>
-                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "title")">@paymentTimeline?.Fields.GetVisibleFieldValue("title", "Timeline thanh toán")</h3>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "eyebrowText")">@paymentTimelineEyebrowText</p>
+                <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentTimeline, "title")">@paymentTimelineTitleText</h3>
                 @if (timeline.Any())
                 {
                     <div class="mt-4 space-y-3">
