@@ -70,40 +70,40 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] py-20 sm:py-24" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute left-20 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
             <div class="absolute bottom-0 right-10 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl"></div>
         </div>
-        <div class="public-top-section-shell public-page-hero-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="@($"public-top-section-content public-page-hero-content is-centered {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="@($"mx-auto flex max-w-4xl flex-col items-center text-center {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
                 @if (!string.IsNullOrWhiteSpace(heroBadgeText))
                 {
-                    <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                         <span class="material-symbols-outlined text-[16px] text-primary">travel_explore</span>
                         @heroBadgeText
                     </span>
                 }
                 @if (!string.IsNullOrWhiteSpace(heroTitleLine1) || !string.IsNullOrWhiteSpace(heroTitleHighlight))
                 {
-                    <h1 class="public-top-section-title public-hero-title text-white">
+                    <h1 class="mt-6 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
                         @if (!string.IsNullOrWhiteSpace(heroTitleLine1))
                         {
                             <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@heroTitleLine1</span>
                         }
                         @if (!string.IsNullOrWhiteSpace(heroTitleHighlight))
                         {
-                            <span class="public-top-section-highlight public-page-hero-highlight" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@heroTitleHighlight</span>
+                            <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleHighlight")">@heroTitleHighlight</span>
                         }
                     </h1>
                 }
                 @if (!string.IsNullOrWhiteSpace(heroDescription))
                 {
-                    <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                    <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                         @Html.Raw(heroDescription)
                     </div>
                 }
-                <div class="public-top-section-actions public-page-hero-actions mt-2 w-full max-w-4xl">
+                <div class="mt-8 w-full max-w-4xl">
                     <form asp-controller="PublicTours" asp-action="Index" method="get" class="w-full">
                         <input type="hidden" name="sort" value="@currentSort" />
                         <input type="hidden" name="region" value="@currentRegion" />
@@ -112,7 +112,7 @@
                         <input type="hidden" name="travellers" value="@currentTravellers" />
                         <input type="hidden" name="confirmationType" value="@currentConfirmationType" />
                         <input type="hidden" name="cancellationType" value="@currentCancellationType" />
-                        <div class="public-search-shell flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-2xl shadow-slate-950/20 backdrop-blur-md sm:flex-row">
+                        <div class="flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-2xl shadow-slate-950/20 backdrop-blur-md sm:flex-row">
                             <input type="text" name="search" value="@currentSearch" placeholder="@heroSearchPlaceholder" class="min-w-0 w-full flex-1 bg-transparent px-6 py-4 text-sm text-white outline-none placeholder-white/60" />
                             @if (!string.IsNullOrWhiteSpace(searchButtonText))
                             {
@@ -173,14 +173,14 @@
                         }
                         @if (!string.IsNullOrWhiteSpace(resultsTitle))
                         {
-                            <h2 class="public-section-title mt-2">@resultsTitle</h2>
+                            <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">@resultsTitle</h2>
                         }
                     </div>
                 </div>
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="public-card-grid public-tour-card-grid grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
                         @foreach (var tour in Model)
                         {
                             @await Html.PartialAsync("_TourCard", tour)
@@ -245,7 +245,7 @@
                         }
                         @if (!string.IsNullOrWhiteSpace(wishlistTitle))
                         {
-                            <h2 class="public-section-title mt-2">@wishlistTitle</h2>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">@wishlistTitle</h2>
                         }
                         <div id="wishlist-shell" data-empty-text="@wishlistEmptyText" class="mt-5 grid gap-4"></div>
                     </section>
@@ -256,7 +256,7 @@
                         }
                         @if (!string.IsNullOrWhiteSpace(recentTitle))
                         {
-                            <h2 class="public-section-title mt-2">@recentTitle</h2>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">@recentTitle</h2>
                         }
                         <div id="recently-viewed-shell" data-empty-text="@recentEmptyText" class="mt-5 grid gap-4"></div>
                     </section>
@@ -267,9 +267,10 @@
 </section>
 
 @section Scripts {
-<script src="~/js/public-custom-select.js" asp-append-version="true"></script>
-<script src="~/js/public-tour-card.js" asp-append-version="true"></script>
+<script src="~/js/card-interactions.js" asp-append-version="true"></script>
 }
+
+
 
 
 

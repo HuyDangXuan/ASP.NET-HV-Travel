@@ -13,19 +13,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute left-10 top-10 h-72 w-72 rounded-full bg-amber-300/20 blur-3xl"></div>
             <div class="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-cyan-400/20 blur-3xl"></div>
         </div>
-        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto flex max-w-4xl flex-col items-center text-center max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">article</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Cẩm nang hành trình")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Cẩm nang, visa tips, mùa lễ hội và những landing SEO có thể tự quản trị.")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Cẩm nang, visa tips, mùa lễ hội và những landing SEO có thể tự quản trị.")</h1>
+                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Khu vực nội dung giúp đội marketing làm hub cho bài viết nổi bật, nhóm chủ đề và bài mới nhất."))
                 </div>
             </div>
@@ -40,7 +40,7 @@
             <div class="space-y-6 @ContentPresentationViewHelper.GetSectionTextClass(featuredIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(featuredIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(featuredIntro)">
                 <div>
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(featuredIntro, "eyebrowText")">@featuredIntro.Fields.GetFieldValue("eyebrowText", "Featured")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(featuredIntro, "title")">@featuredIntro.Fields.GetFieldValue("title", "Bài viết nổi bật")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(featuredIntro, "title")">@featuredIntro.Fields.GetFieldValue("title", "Bài viết nổi bật")</h2>
                     <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(featuredIntro, "description")">
                         @Html.Raw(featuredIntro.Fields.GetFieldValue("description", "Khối bài nổi bật giúp kéo traffic vào nội dung chủ lực và landing SEO quan trọng."))
                     </div>
@@ -65,7 +65,7 @@
             <div class="space-y-6 @ContentPresentationViewHelper.GetSectionTextClass(latestIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(latestIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(latestIntro)">
                 <div>
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(latestIntro, "eyebrowText")">@latestIntro.Fields.GetFieldValue("eyebrowText", "Latest stories")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(latestIntro, "title")">@latestIntro.Fields.GetFieldValue("title", "Bài viết mới nhất")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(latestIntro, "title")">@latestIntro.Fields.GetFieldValue("title", "Bài viết mới nhất")</h2>
                     <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(latestIntro, "description")">
                         @Html.Raw(latestIntro.Fields.GetFieldValue("description", "Danh sách bài mới hỗ trợ giữ nhịp xuất bản đều và mở rộng chiều sâu cho content hub."))
                     </div>
@@ -102,3 +102,4 @@
         }
     </div>
 </section>
+

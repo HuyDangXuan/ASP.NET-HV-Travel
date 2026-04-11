@@ -25,22 +25,22 @@
 
 @await Html.PartialAsync("_PublicBreadcrumb", breadcrumb)
 
-<section class="public-top-section public-top-section--compact hero-gradient relative overflow-hidden">
-    <div class="public-top-section-shell mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="public-top-section-content is-left" data-animate="fade-up">
-            <span class="public-badge public-top-section-badge">
+<section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl" data-animate="fade-up">
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md">
                 <span class="material-symbols-outlined text-[16px] text-primary">warning</span>
                 Cần hoàn tất bước thanh toán
             </span>
-            <h1 class="public-top-section-title text-white">Booking vẫn đang chờ thanh toán</h1>
-            <p class="public-top-section-lead">Bạn có thể thử lại thanh toán, đổi phương thức khác hoặc khôi phục phiên checkout hiện tại để tiếp tục.</p>
+            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white">Booking vẫn đang chờ thanh toán</h1>
+            <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300">Bạn có thể thử lại thanh toán, đổi phương thức khác hoặc khôi phục phiên checkout hiện tại để tiếp tục.</p>
         </div>
     </div>
 </section>
 
 <section class="bg-background-light py-12 dark:bg-background-dark">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div class="public-form-card rounded-[2rem] border border-border-light bg-surface-light p-8 text-center shadow-sm dark:border-border-dark dark:bg-surface-dark">
+        <div class="rounded-[2rem] border border-border-light bg-surface-light p-8 text-center shadow-sm dark:border-border-dark dark:bg-surface-dark">
             <p class="text-xs font-bold uppercase tracking-[0.25em] text-rose-500">Failed state</p>
             <h2 class="mt-2 text-3xl font-black text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedTitle")">@statusCopy?.Fields.GetFieldValue("failedTitle", "Thanh Toán Thất Bại")</h2>
             <div class="mt-4 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(statusCopy, "failedDescription")">
@@ -58,7 +58,7 @@
                 <p class="mt-2">Bạn có thể tiếp tục thanh toán hoặc liên hệ hotline <strong>@phone</strong> để được hỗ trợ nhanh.</p>
             </div>
 
-            <div class="public-action-stack mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
                 @if (!string.IsNullOrWhiteSpace(booking.Id))
                 {
                     <a asp-action="Payment" asp-route-bookingId="@booking.Id" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Thử Lại</a>
@@ -73,3 +73,4 @@
         </div>
     </div>
 </section>
+

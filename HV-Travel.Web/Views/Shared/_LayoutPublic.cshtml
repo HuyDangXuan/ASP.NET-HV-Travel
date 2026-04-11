@@ -110,31 +110,24 @@
         }
     }
 
-        string DesktopNavLinkClass(string pageKey)
+    string HeaderControlClass(bool active = false)
     {
-        var stateClass = IsActive(pageKey)
-            ? "is-active"
-            : string.Empty;
-
-        return $"public-nav-link public-header-control inline-flex items-center rounded-full border px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}".Trim();
+        var baseClass = "inline-flex items-center justify-center rounded-full border px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] whitespace-nowrap transition duration-200";
+        var idleClass = "border-slate-200/80 bg-white/90 text-slate-700 shadow-sm shadow-slate-200/40 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white hover:text-primary hover:shadow-lg hover:shadow-sky-200/30 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:bg-slate-900 dark:hover:text-primary";
+        var activeClass = "border-primary/30 bg-primary/10 text-primary shadow-lg shadow-sky-200/30 dark:border-primary/40 dark:bg-sky-500/10";
+        return $"{baseClass} {(active ? activeClass : idleClass)}";
     }
 
-        string MoreToggleClass()
+    string DesktopNavLinkClass(string pageKey) => HeaderControlClass(IsActive(pageKey));
+
+    string MoreToggleClass() => $"{HeaderControlClass(hasSecondaryActive)} gap-2";
+
+    string MobileNavLinkClass(string pageKey)
     {
-        var stateClass = hasSecondaryActive
-            ? "is-active"
-            : string.Empty;
-
-        return $"public-nav-more-toggle public-header-control inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[0.87rem] font-bold tracking-[0.01em] transition-all {stateClass}".Trim();
-    }
-
-        string MobileNavLinkClass(string pageKey)
-    {
-        var stateClass = IsActive(pageKey)
-            ? "is-active"
-            : string.Empty;
-
-        return $"public-mobile-nav-link flex items-center gap-3 rounded-2xl px-4 py-3 text-[0.9rem] font-semibold transition-all {stateClass}".Trim();
+        var baseClass = "flex items-center gap-3 rounded-[1.4rem] px-4 py-3 text-sm font-semibold transition duration-200";
+        var idleClass = "text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 dark:hover:bg-sky-500/10";
+        var activeClass = "bg-primary/10 text-primary dark:bg-sky-500/10";
+        return $"{baseClass} {(IsActive(pageKey) ? activeClass : idleClass)}";
     }
 }
 <!DOCTYPE html>
@@ -162,85 +155,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
     <script src="~/js/tailwind.theme.js" asp-append-version="true"></script>
-    <link rel="stylesheet" href="~/css/theme-ocean.css" asp-append-version="true" />
-    <style>
-        .tour-card:hover .tour-card-img {
-            transform: scale(1.08);
-        }
-        .nav-link {
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #14B8D4, #1D4ED8);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-        .nav-link:hover::after, .nav-link.active::after {
-            width: 100%;
-        }
-
-        [data-animate] {
-            opacity: 0;
-            transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);
-            will-change: opacity, transform;
-        }
-        [data-animate="fade-up"] { transform: translateY(40px); }
-        [data-animate="fade-down"] { transform: translateY(-40px); }
-        [data-animate="fade-in"] { transform: none; }
-        [data-animate="slide-left"] { transform: translateX(-60px); }
-        [data-animate="slide-right"] { transform: translateX(60px); }
-        [data-animate="scale-in"] { transform: scale(0.9); }
-        [data-animate="zoom-in"] { transform: scale(0.85); }
-        [data-animate].is-visible {
-            opacity: 1;
-            transform: none;
-        }
-        [data-stagger] > * { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
-        [data-stagger].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
-        [data-stagger].is-visible > *:nth-child(2) { transition-delay: 0.12s; }
-        [data-stagger].is-visible > *:nth-child(3) { transition-delay: 0.19s; }
-        [data-stagger].is-visible > *:nth-child(4) { transition-delay: 0.26s; }
-        [data-stagger].is-visible > *:nth-child(5) { transition-delay: 0.33s; }
-        [data-stagger].is-visible > *:nth-child(6) { transition-delay: 0.40s; }
-        [data-stagger].is-visible > *:nth-child(n+7) { transition-delay: 0.47s; }
-        .nav-link:hover::after, .nav-link.active::after {
-            width: 100%;
-        }
-
-        [data-animate] {
-            opacity: 0;
-            transition: opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1);
-            will-change: opacity, transform;
-        }
-        [data-animate="fade-up"] { transform: translateY(40px); }
-        [data-animate="fade-down"] { transform: translateY(-40px); }
-        [data-animate="fade-in"] { transform: none; }
-        [data-animate="slide-left"] { transform: translateX(-60px); }
-        [data-animate="slide-right"] { transform: translateX(60px); }
-        [data-animate="scale-in"] { transform: scale(0.9); }
-        [data-animate="zoom-in"] { transform: scale(0.85); }
-        [data-animate].is-visible {
-            opacity: 1;
-            transform: none;
-        }
-        [data-stagger] > * { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
-        [data-stagger].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
-        [data-stagger].is-visible > *:nth-child(2) { transition-delay: 0.12s; }
-        [data-stagger].is-visible > *:nth-child(3) { transition-delay: 0.19s; }
-        [data-stagger].is-visible > *:nth-child(4) { transition-delay: 0.26s; }
-        [data-stagger].is-visible > *:nth-child(5) { transition-delay: 0.33s; }
-        [data-stagger].is-visible > *:nth-child(6) { transition-delay: 0.40s; }
-        [data-stagger].is-visible > *:nth-child(n+7) { transition-delay: 0.47s; }
-        [data-stagger].is-visible > * { opacity: 1; transform: none; }
-    </style>
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -251,33 +167,35 @@
         }
     </script>
 </head>
-<body class="public-page-shell bg-background-light dark:bg-background-dark text-text-strong-light dark:text-text-strong-dark font-display min-h-screen flex flex-col selection:bg-primary selection:text-white">
-    <header class="public-site-header sticky top-0 z-50 backdrop-blur-xl transition-all duration-300" id="site-header">
-        <div class="mx-auto max-w-7xl">
-            <div class="public-header-shell public-header-compact flex h-[3.9rem] items-center gap-3 sm:h-[4.4rem] xl:gap-5">
-                <a asp-controller="Home" asp-action="Index" class="public-brand-lockup flex min-w-0 shrink-0 items-center gap-2.5 group">
+<body class="min-h-screen overflow-x-clip bg-background-light text-text-strong-light font-display selection:bg-primary selection:text-white dark:bg-background-dark dark:text-text-strong-dark">
+    <div class="flex min-h-screen flex-col">
+    <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl transition-shadow duration-300 dark:border-slate-800/80 dark:bg-slate-950/85" id="site-header">
+        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-full bg-[radial-gradient(circle_at_top_left,rgba(20,184,212,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(29,78,216,0.12),transparent_35%)]"></div>
+            <div class="relative flex h-[4.25rem] items-center gap-3 sm:h-[4.75rem] xl:gap-5">
+                <a asp-controller="Home" asp-action="Index" class="group flex min-w-0 shrink-0 items-center gap-2.5">
                     <div class="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30 transition-all group-hover:scale-105 group-hover:shadow-primary/50">
                         <span class="material-symbols-outlined">flight_takeoff</span>
                     </div>
                     <div class="min-w-0">
-                        <h1 class="public-brand-title truncate text-base font-extrabold leading-none tracking-tight">@brandName</h1>
-                        <p class="public-brand-tagline truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">@brandTagline</p>
+                        <h1 class="truncate text-base font-extrabold leading-none tracking-tight text-slate-950 dark:text-white">@brandName</h1>
+                        <p class="truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">@brandTagline</p>
                     </div>
                 </a>
 
-                <nav class="public-primary-nav hidden xl:flex" aria-label="&#272;i&#7873;u h&#432;&#7899;ng ch&#237;nh">
+                <nav class="hidden min-w-0 flex-1 items-center justify-center gap-2 xl:flex" aria-label="Điều hướng chính">
                     @foreach (var item in primaryNavItems)
                     {
                         <a asp-controller="@item.Controller" asp-action="@item.Action" class="@DesktopNavLinkClass(item.ActivePage)">@item.Label</a>
                     }
                     @if (!string.IsNullOrWhiteSpace(moreLabel) && secondaryNavItems.Any())
                     {
-                        <div class="public-secondary-nav relative">
-                            <button id="public-nav-more-toggle" type="button" class="@MoreToggleClass()" aria-expanded="false" aria-controls="public-nav-more-panel">
+                        <div class="relative">
+                            <button id="nav-more-toggle" type="button" class="@MoreToggleClass()" aria-expanded="false" aria-controls="nav-more-panel">
                                 <span>@moreLabel</span>
-                                <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                                <span class="material-symbols-outlined text-[18px] transition-transform" data-chevron>expand_more</span>
                             </button>
-                            <div id="public-nav-more-panel" class="public-secondary-nav-panel public-header-panel hidden absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 rounded-3xl p-3 backdrop-blur">
+                            <div id="nav-more-panel" class="absolute left-1/2 top-full z-[60] mt-3 hidden w-72 -translate-x-1/2 rounded-[1.75rem] border border-slate-200/80 bg-white/95 p-3 shadow-2xl shadow-slate-200/60 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 dark:shadow-black/40">
                                 <div class="space-y-1">
                                     @foreach (var item in secondaryNavItems)
                                     {
@@ -292,15 +210,15 @@
                     }
                 </nav>
 
-                <div class="public-nav-actions ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-3">
-                    <button id="theme-toggle-public" class="public-header-icon-button public-header-control group inline-flex size-9 items-center justify-center rounded-full font-medium transition-all" aria-label="Chuy&#7875;n ch&#7871; &#273;&#7897; t&#7889;i">
-                        <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200 group-hover:rotate-12">dark_mode</span>
-                        <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200 group-hover:-rotate-12">light_mode</span>
+                <div class="ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 sm:gap-3">
+                    <button id="theme-toggle-public" class="inline-flex size-10 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-slate-700 shadow-sm shadow-slate-200/40 transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-lg hover:shadow-sky-200/30 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:text-primary" aria-label="Chuyển chế độ tối">
+                        <span class="material-symbols-outlined dark:hidden text-[20px] leading-none transition-transform duration-200">dark_mode</span>
+                        <span class="material-symbols-outlined hidden dark:block text-[20px] leading-none transition-transform duration-200">light_mode</span>
                     </button>
-                    <div class="hidden xl:flex items-center gap-2 2xl:gap-3">
+                    <div class="hidden items-center gap-2 2xl:gap-3 xl:flex">
 @if (!string.IsNullOrWhiteSpace(bookingLookupLabel))
                         {
-                            <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[0.86rem] font-bold transition-all">
+                            <a asp-controller="BookingLookup" asp-action="Index" class="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-3.5 py-2 text-[0.86rem] font-bold text-slate-700 shadow-sm shadow-slate-200/40 transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-lg hover:shadow-sky-200/30 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:text-primary">
                                 <span class="material-symbols-outlined text-[18px]">search</span>
                                 <span>@bookingLookupLabel</span>
                             </a>
@@ -311,27 +229,27 @@
                             customerName = string.IsNullOrWhiteSpace(customerName) ? customerFallbackLabel : customerName.Trim();
                             var customerCode = User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel;
                             var customerInitial = customerName.Substring(0, 1).ToUpperInvariant();
-                            <div class="public-account-menu relative">
-                                <button id="public-account-toggle" type="button" class="public-account-toggle public-header-control inline-flex items-center gap-2.5 rounded-2xl border px-3 py-1.5 text-left transition-all" aria-expanded="false" aria-controls="public-account-panel">
+                            <div class="relative">
+                                <button id="account-toggle" type="button" class="inline-flex items-center gap-2.5 rounded-[1.3rem] border border-slate-200/80 bg-white/90 px-3 py-1.5 text-left text-slate-700 shadow-sm shadow-slate-200/40 transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-lg hover:shadow-sky-200/30 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:text-primary" aria-expanded="false" aria-controls="account-panel">
                                     <span class="flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-xs font-extrabold text-white">@customerInitial</span>
-                                    <span class="min-w-0 hidden 2xl:block">
-                                        <span class="block truncate text-[0.83rem] font-bold text-slate-900 dark:text-white">@customerName</span>
+                                    <span class="hidden min-w-0 2xl:block">
+                                        <span class="block truncate text-[0.83rem] font-bold text-slate-950 dark:text-white">@customerName</span>
                                         <span class="block truncate text-xs text-slate-500 dark:text-slate-400">@customerCode</span>
                                     </span>
-                                    <span class="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-300">expand_more</span>
+                                    <span class="material-symbols-outlined text-[18px] text-slate-500 transition-transform dark:text-slate-300" data-chevron>expand_more</span>
                                 </button>
-                                <div id="public-account-panel" class="public-account-panel public-header-panel hidden absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl p-4 backdrop-blur">
-                                    <div class="flex items-center gap-3 rounded-2xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
+                                <div id="account-panel" class="absolute right-0 top-full z-[60] mt-3 hidden w-80 rounded-[1.75rem] border border-slate-200/80 bg-white/95 p-4 shadow-2xl shadow-slate-200/60 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 dark:shadow-black/40">
+                                    <div class="flex items-center gap-3 rounded-[1.35rem] bg-slate-100/85 px-4 py-4 dark:bg-slate-900/90">
                                         <span class="flex size-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-base font-extrabold text-white">@customerInitial</span>
                                         <div class="min-w-0">
-                                            <p class="truncate text-sm font-bold text-slate-900 dark:text-white">@customerName</p>
+                                            <p class="truncate text-sm font-bold text-slate-950 dark:text-white">@customerName</p>
                                             <p class="truncate text-xs text-slate-500 dark:text-slate-400">@customerCode</p>
                                         </div>
                                     </div>
                                     <div class="mt-4 space-y-2">
                                         @if (!string.IsNullOrWhiteSpace(openPortalLabel))
                                         {
-                                            <a asp-controller="CustomerPortal" asp-action="Index" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary/10 dark:hover:bg-primary/10">
+                                            <a asp-controller="CustomerPortal" asp-action="Index" class="flex items-center gap-3 rounded-[1.2rem] px-4 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10 dark:hover:bg-sky-500/10">
                                                 <span class="material-symbols-outlined text-[20px]">account_circle</span>
                                                 <span>@openPortalLabel</span>
                                             </a>
@@ -340,7 +258,7 @@
                                         {
                                             <form asp-controller="CustomerAuth" asp-action="Logout" method="post">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-700/70 dark:hover:text-white">
+                                                <button type="submit" class="flex w-full items-center gap-3 rounded-[1.2rem] px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white">
                                                     <span class="material-symbols-outlined text-[20px]">logout</span>
                                                     <span>@logoutLabel</span>
                                                 </button>
@@ -354,21 +272,21 @@
                         {
                             @if (!string.IsNullOrWhiteSpace(loginLabel))
                             {
-                                <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-[0.86rem] font-bold text-white shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40 active:scale-95">
+                                <a asp-controller="CustomerAuth" asp-action="Login" class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-[0.86rem] font-bold text-white shadow-lg shadow-primary/25 transition duration-200 hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/40 active:scale-95">
                                     <span class="material-symbols-outlined text-[18px]">login</span>
                                     @loginLabel
                                 </a>
                             }
                         }
                     </div>
-                    <button id="mobile-menu-btn" type="button" class="public-header-icon-button public-header-control rounded-xl p-2 transition-all xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
+                    <button id="mobile-menu-btn" type="button" class="inline-flex size-10 items-center justify-center rounded-full border border-slate-200/80 bg-white/90 text-slate-700 shadow-sm shadow-slate-200/40 transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-lg hover:shadow-sky-200/30 dark:border-slate-800 dark:bg-slate-900/90 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:text-primary xl:hidden" aria-expanded="false" aria-controls="mobile-menu">
                         <span class="material-symbols-outlined text-[24px]">menu</span>
                     </button>
                 </div>
             </div>
-            <div id="mobile-menu" class="public-mobile-drawer hidden xl:hidden">
+            <div id="mobile-menu" class="hidden border-t border-slate-200/70 py-4 dark:border-slate-800 xl:hidden">
                 <div class="py-4">
-                    <nav class="space-y-1" aria-label="&#272;i&#7873;u h&#432;&#7899;ng di &#273;&#7897;ng">
+                    <nav class="space-y-1" aria-label="Điều hướng di động">
                         @foreach (var item in mobileNavItems)
                         {
                             <a asp-controller="@item.Controller" asp-action="@item.Action" class="@MobileNavLinkClass(item.ActivePage)">
@@ -377,10 +295,10 @@
                             </a>
                         }
                     </nav>
-                    <div class="mt-4 border-t border-border-light pt-4 dark:border-border-dark">
+                    <div class="mt-4 border-t border-slate-200/70 pt-4 dark:border-slate-800">
                         @if (!string.IsNullOrWhiteSpace(bookingLookupLabel))
                         {
-                            <a asp-controller="BookingLookup" asp-action="Index" class="public-nav-utility-link public-header-control flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-bold transition-all">
+                            <a asp-controller="BookingLookup" asp-action="Index" class="flex items-center justify-center gap-2 rounded-[1.35rem] border border-slate-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm shadow-slate-200/30 transition hover:border-primary/30 hover:text-primary dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-primary/40 dark:hover:text-primary">
                                 <span class="material-symbols-outlined text-[18px]">search</span>
                                 <span>@bookingLookupLabel</span>
                             </a>
@@ -389,12 +307,12 @@
                         {
                             var mobileCustomerName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? customerFallbackLabel;
                             mobileCustomerName = string.IsNullOrWhiteSpace(mobileCustomerName) ? customerFallbackLabel : mobileCustomerName.Trim();
-                            <div class="mt-3 rounded-3xl bg-surface-muted-light px-4 py-4 dark:bg-surface-elevated-dark">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white">@mobileCustomerName</p>
+                            <div class="mt-3 rounded-[1.6rem] bg-slate-100/90 px-4 py-4 dark:bg-slate-900/90">
+                                <p class="text-sm font-bold text-slate-950 dark:text-white">@mobileCustomerName</p>
                                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(User.FindFirst("CustomerCode")?.Value ?? customerCodeFallbackLabel)</p>
                                 @if (!string.IsNullOrWhiteSpace(openPortalLabel))
                                 {
-                                    <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-border-light px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/10 dark:border-border-dark dark:hover:bg-primary/10">
+                                    <a asp-controller="CustomerPortal" asp-action="Index" class="mt-4 flex items-center justify-center gap-2 rounded-[1.2rem] border border-slate-200 px-4 py-3 text-sm font-bold text-primary transition hover:bg-primary/10 dark:border-slate-700 dark:hover:bg-sky-500/10">
                                         <span class="material-symbols-outlined text-[18px]">account_circle</span>
                                         <span>@openPortalLabel</span>
                                     </a>
@@ -403,7 +321,7 @@
                                 {
                                     <form asp-controller="CustomerAuth" asp-action="Logout" method="post" class="mt-2">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-surface-dark to-surface-elevated-dark px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
+                                        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-[1.2rem] bg-gradient-to-r from-slate-900 to-slate-700 px-4 py-3 text-sm font-bold text-white dark:from-primary dark:to-accent">
                                             <span class="material-symbols-outlined text-[18px]">logout</span>
                                             <span>@logoutLabel</span>
                                         </button>
@@ -418,11 +336,11 @@
                                 <div class="mt-3 grid grid-cols-2 gap-2">
                                     @if (!string.IsNullOrWhiteSpace(registerLabel))
                                     {
-                                        <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 rounded-2xl bg-surface-muted-light px-4 py-3 text-sm font-bold text-slate-600 transition-all dark:bg-surface-elevated-dark dark:text-slate-300">@registerLabel</a>
+                                        <a asp-controller="CustomerAuth" asp-action="Register" class="flex items-center justify-center gap-2 rounded-[1.2rem] bg-slate-100 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">@registerLabel</a>
                                     }
                                     @if (!string.IsNullOrWhiteSpace(loginLabel))
                                     {
-                                        <a asp-controller="CustomerAuth" asp-action="Login" class="public-nav-action-cta flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all">@loginLabel</a>
+                                        <a asp-controller="CustomerAuth" asp-action="Login" class="flex items-center justify-center gap-2 rounded-[1.2rem] bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:bg-primary-dark">@loginLabel</a>
                                     }
                                 </div>
                             }
@@ -433,13 +351,13 @@
         </div>
     </header>
 
-    <main class="public-page-main flex-1">
+    <main class="flex-1">
         @RenderBody()
     </main>
 
-    <footer class="bg-surface-dark dark:bg-background-dark text-white">
+    <footer class="bg-slate-950 text-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="public-footer-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" data-animate="fade-up" data-stagger>
+            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4" data-animate="fade-up" data-stagger>
                 <div class="lg:col-span-1">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="bg-gradient-to-br from-primary to-accent text-white rounded-xl size-10 flex items-center justify-center shadow-lg shadow-primary/30">
@@ -463,13 +381,13 @@
                         </div>
                     }
                     <div class="flex gap-3">
-                        <a href="@facebookUrl" class="size-10 rounded-xl bg-surface-elevated-dark hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
+                        <a href="@facebookUrl" class="size-10 rounded-xl bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
-                        <a href="@instagramUrl" class="size-10 rounded-xl bg-surface-elevated-dark hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
+                        <a href="@instagramUrl" class="size-10 rounded-xl bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                         </a>
-                        <a href="@youtubeUrl" class="size-10 rounded-xl bg-surface-elevated-dark hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
+                        <a href="@youtubeUrl" class="size-10 rounded-xl bg-slate-800 hover:bg-primary text-slate-400 hover:text-white flex items-center justify-center transition-all" target="_blank" rel="noopener noreferrer">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
                         </a>
                     </div>
@@ -540,7 +458,7 @@
             </div>
         </div>
 
-        <div class="border-t border-border-dark">
+        <div class="border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                                 <p class="text-slate-500 text-xs">
                     &copy; @DateTime.Now.Year @brandName
@@ -569,113 +487,173 @@
             </div>
         </div>
     </footer>
+    </div>
 
     @await Html.PartialAsync("_SupportChatWidget")
 
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
-        const themeToggle = document.getElementById('theme-toggle-public');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            });
-        }
+        (() => {
+            const root = document.documentElement;
+            const header = document.getElementById('site-header');
+            const themeToggle = document.getElementById('theme-toggle-public');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const dropdownPairs = [
+                { toggleId: 'nav-more-toggle', panelId: 'nav-more-panel' },
+                { toggleId: 'account-toggle', panelId: 'account-panel' }
+            ];
 
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => {
+            const setTheme = (isDark) => {
+                root.classList.toggle('dark', isDark);
+                root.classList.toggle('light', !isDark);
+                localStorage.theme = isDark ? 'dark' : 'light';
+                window.dispatchEvent(new Event('themechange'));
+            };
+
+            themeToggle?.addEventListener('click', () => {
+                setTheme(!root.classList.contains('dark'));
+            });
+
+            mobileMenuBtn?.addEventListener('click', () => {
                 const willOpen = mobileMenu.classList.contains('hidden');
-                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('hidden', !willOpen);
                 mobileMenuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
             });
-        }
 
-        const dropdownPairs = [
-            { toggleId: 'public-nav-more-toggle', panelId: 'public-nav-more-panel' },
-            { toggleId: 'public-account-toggle', panelId: 'public-account-panel' }
-        ];
+            const syncDropdownIcon = (toggle, expanded) => {
+                toggle?.querySelectorAll('[data-chevron]').forEach((icon) => {
+                    icon.classList.toggle('rotate-180', expanded);
+                });
+            };
 
-        function closeDropdowns(exceptPanelId) {
+            const closeDropdowns = (exceptPanelId) => {
+                dropdownPairs.forEach(({ toggleId, panelId }) => {
+                    if (exceptPanelId && panelId === exceptPanelId) {
+                        return;
+                    }
+
+                    const toggle = document.getElementById(toggleId);
+                    const panel = document.getElementById(panelId);
+                    if (!toggle || !panel) {
+                        return;
+                    }
+
+                    panel.classList.add('hidden');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    syncDropdownIcon(toggle, false);
+                });
+            };
+
             dropdownPairs.forEach(({ toggleId, panelId }) => {
-                if (exceptPanelId && panelId === exceptPanelId) {
-                    return;
-                }
-
                 const toggle = document.getElementById(toggleId);
                 const panel = document.getElementById(panelId);
                 if (!toggle || !panel) {
                     return;
                 }
 
-                panel.classList.add('hidden');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
-        }
+                toggle.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const shouldOpen = panel.classList.contains('hidden');
+                    closeDropdowns(shouldOpen ? panelId : null);
+                    panel.classList.toggle('hidden', !shouldOpen);
+                    toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+                    syncDropdownIcon(toggle, shouldOpen);
+                });
 
-        dropdownPairs.forEach(({ toggleId, panelId }) => {
-            const toggle = document.getElementById(toggleId);
-            const panel = document.getElementById(panelId);
-            if (!toggle || !panel) {
+                panel.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                });
+            });
+
+            document.addEventListener('click', () => {
+                closeDropdowns();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeDropdowns();
+                }
+            });
+
+            const syncHeaderScrollState = () => {
+                const isDarkMode = root.classList.contains('dark');
+                const elevated = window.scrollY > 10;
+                header?.classList.toggle('shadow-xl', elevated);
+                header?.classList.toggle('shadow-slate-200/60', elevated && !isDarkMode);
+                header?.classList.toggle('shadow-black/40', elevated && isDarkMode);
+            };
+
+            window.addEventListener('scroll', syncHeaderScrollState);
+            window.addEventListener('themechange', syncHeaderScrollState);
+            syncHeaderScrollState();
+
+            const animationTransforms = {
+                'fade-up': 'translateY(40px)',
+                'fade-down': 'translateY(-40px)',
+                'fade-in': 'none',
+                'slide-left': 'translateX(-60px)',
+                'slide-right': 'translateX(60px)',
+                'scale-in': 'scale(0.9)',
+                'zoom-in': 'scale(0.85)'
+            };
+
+            const animatedElements = document.querySelectorAll('[data-animate]');
+            animatedElements.forEach((element) => {
+                element.style.opacity = '0';
+                element.style.transform = animationTransforms[element.dataset.animate] || 'none';
+                element.style.transition = 'opacity 1.1s cubic-bezier(.22,1,.36,1), transform 1.1s cubic-bezier(.22,1,.36,1)';
+                element.style.willChange = 'opacity, transform';
+            });
+
+            const staggerGroups = document.querySelectorAll('[data-stagger]');
+            staggerGroups.forEach((group) => {
+                Array.from(group.children).forEach((child) => {
+                    child.style.opacity = '0';
+                    child.style.transform = 'translateY(24px)';
+                    child.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                });
+            });
+
+            const observedNodes = document.querySelectorAll('[data-animate], [data-stagger]');
+            if (!observedNodes.length) {
                 return;
             }
 
-            toggle.addEventListener('click', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                const shouldOpen = panel.classList.contains('hidden');
-                closeDropdowns(shouldOpen ? panelId : null);
-                panel.classList.toggle('hidden', !shouldOpen);
-                toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-            });
-
-            panel.addEventListener('click', (event) => {
-                event.stopPropagation();
-            });
-        });
-
-        document.addEventListener('click', () => {
-            closeDropdowns();
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeDropdowns();
-            }
-        });
-        const header = document.getElementById('site-header');
-        const syncHeaderScrollState = () => {
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            if (window.scrollY > 10 && !isDarkMode) {
-                header.classList.add('shadow-lg', 'shadow-slate-200/20');
-            } else {
-                header.classList.remove('shadow-lg', 'shadow-slate-200/20', 'dark:shadow-slate-900/30');
-            }
-        };
-
-        window.addEventListener('scroll', syncHeaderScrollState);
-        window.addEventListener('themechange', syncHeaderScrollState);
-        syncHeaderScrollState();
-
-        (function() {
-            const els = document.querySelectorAll('[data-animate], [data-stagger]');
-            if (!els.length) return;
             const io = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        const delay = e.target.dataset.delay || 0;
-                        setTimeout(() => e.target.classList.add('is-visible'), delay);
-                        io.unobserve(e.target);
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) {
+                        return;
                     }
+
+                    const delay = Number(entry.target.dataset.delay || 0);
+                    window.setTimeout(() => {
+                        if (entry.target.hasAttribute('data-animate')) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'none';
+                        }
+
+                        if (entry.target.hasAttribute('data-stagger')) {
+                            Array.from(entry.target.children).forEach((child, index) => {
+                                child.style.transitionDelay = `${0.05 + (Math.min(index, 6) * 0.07)}s`;
+                                child.style.opacity = '1';
+                                child.style.transform = 'none';
+                            });
+                        }
+                    }, delay);
+
+                    io.unobserve(entry.target);
                 });
             }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-            els.forEach(el => io.observe(el));
+
+            observedNodes.forEach((node) => io.observe(node));
         })();
     </script>
 </body>
 </html>
+
 
 
 

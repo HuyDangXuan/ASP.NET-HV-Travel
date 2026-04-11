@@ -22,21 +22,21 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="@($"public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] py-20 sm:py-24 {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute bottom-10 left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
             <div class="absolute top-0 right-12 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl"></div>
         </div>
-        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="@($"public-top-section-content public-page-hero-content is-centered {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="@($"mx-auto flex max-w-4xl flex-col items-center text-center {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">call</span>
                     @hero.Fields.GetFieldValue("badgeText", "Liên hệ HV Travel")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">
+                <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">
                     @hero.Fields.GetFieldValue("title", "Chúng tôi luôn sẵn sàng lắng nghe")
                 </h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Liên hệ với HV Travel để được tư vấn hành trình phù hợp và nhận hỗ trợ nhanh chóng."))
                 </div>
             </div>
@@ -46,7 +46,7 @@
 
 <section class="py-20 bg-background-light dark:bg-background-dark">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="public-card-grid grid lg:grid-cols-5 gap-12">
+        <div class="grid gap-12 lg:grid-cols-5">
             @if (cards?.IsEnabled != false)
             {
                 <div class="@($"lg:col-span-2 space-y-6 {ContentPresentationViewHelper.GetSectionTextClass(cards)} {ContentPresentationViewHelper.GetSectionBackgroundClass(cards)}")" style="@ContentPresentationViewHelper.GetSectionStyle(cards)" data-animate="slide-left" data-stagger>
@@ -100,7 +100,7 @@
             @if (formIntro?.IsEnabled != false)
             {
                 <div class="lg:col-span-3" data-animate="slide-right">
-                    <div class="@($"public-form-card bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm border border-border-light dark:border-border-dark p-8 {ContentPresentationViewHelper.GetSectionTextClass(formIntro)} {ContentPresentationViewHelper.GetSectionBackgroundClass(formIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(formIntro)">
+                    <div class="@($"rounded-2xl border border-border-light bg-surface-light p-8 shadow-sm dark:border-border-dark dark:bg-surface-dark {ContentPresentationViewHelper.GetSectionTextClass(formIntro)} {ContentPresentationViewHelper.GetSectionBackgroundClass(formIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(formIntro)">
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "title")">@formIntro.Fields.GetFieldValue("title", "Gửi Tin Nhắn Cho Chúng Tôi")</h2>
                         <div class="text-sm text-slate-500 dark:text-slate-400 mb-8" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "description")">
                             @Html.Raw(formIntro.Fields.GetFieldValue("description", "Điền thông tin của bạn và đội ngũ HV Travel sẽ phản hồi trong thời gian sớm nhất."))

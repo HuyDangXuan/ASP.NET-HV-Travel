@@ -10,11 +10,11 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
-        <div class="public-top-section-shell mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
-            <p class="public-top-section-badge text-xs uppercase tracking-[0.3em] text-cyan-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">@Model.Category</p>
-            <h1 class="public-top-section-title mt-4 text-white">@Model.Title</h1>
-            <p class="public-top-section-lead mt-5 text-slate-200">@Model.Summary</p>
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+        <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
+            <p class="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-4 py-2 font-bold backdrop-blur-md text-xs uppercase tracking-[0.3em] text-cyan-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">@Model.Category</p>
+            <h1 class="text-4xl font-extrabold tracking-tight mt-4 text-white">@Model.Title</h1>
+            <p class="max-w-2xl text-base leading-relaxed mt-5 text-slate-200">@Model.Summary</p>
             <p class="mt-4 text-sm text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero.Fields.GetVisibleFieldValue("description", "Bài viết giữ nội dung động từ hệ thống, còn hero copy và helper text có thể chỉnh trong CMS.")</p>
         </div>
     </section>
@@ -58,3 +58,4 @@
         </section>
     </div>
 </section>
+

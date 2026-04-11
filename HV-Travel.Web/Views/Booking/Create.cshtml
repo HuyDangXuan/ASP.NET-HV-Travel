@@ -26,11 +26,11 @@
 
 @if (createHero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(createHero)" style="@ContentPresentationViewHelper.GetSectionStyle(createHero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(createHero)">
-            <span class="public-badge public-top-section-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "badgeText")">@createHero.Fields.GetVisibleFieldValue("badgeText", "Bước 1 trong hành trình đặt tour")</span>
-            <h1 class="public-top-section-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "title")">@createHero.Fields.GetVisibleFieldValue("title", "Đặt tour và xác nhận hành khách")</h1>
-            <div class="public-top-section-lead" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "description")">@Html.Raw(createHero.Fields.GetVisibleFieldValue("description", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán."))</div>
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(createHero)" style="@ContentPresentationViewHelper.GetSectionStyle(createHero)">
+        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(createHero)">
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "badgeText")">@createHero.Fields.GetVisibleFieldValue("badgeText", "Bước 1 trong hành trình đặt tour")</span>
+            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "title")">@createHero.Fields.GetVisibleFieldValue("title", "Đặt tour và xác nhận hành khách")</h1>
+            <div class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "description")">@Html.Raw(createHero.Fields.GetVisibleFieldValue("description", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán."))</div>
         </div>
     </section>
 }
@@ -62,7 +62,7 @@
                     </div>
                     <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="text-sm font-bold text-primary">@travellerForm?.Fields.GetVisibleFieldValue("viewDetailsText", "Xem chi tiết")</a>
                 </div>
-                <div class="public-rich-text mt-4 text-sm">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription ?? tour.Description))</div>
+                <div class="prose prose-slate max-w-none dark:prose-invert mt-4 text-sm">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription ?? tour.Description))</div>
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div asp-validation-summary="All" class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
@@ -191,3 +191,4 @@
         })();
     </script>
 }
+

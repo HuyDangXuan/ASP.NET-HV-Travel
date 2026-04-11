@@ -19,11 +19,11 @@
 
 @if (paymentHero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(paymentHero)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentHero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(paymentHero)">
-            <span class="public-badge public-top-section-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "badgeText")">@paymentHero.Fields.GetVisibleFieldValue("badgeText", "Bước 2 trong hành trình đặt tour")</span>
-            <h1 class="public-top-section-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "title")">@paymentHero.Fields.GetVisibleFieldValue("title", "Xác nhận thanh toán booking")</h1>
-            <div class="public-top-section-lead" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "description")">@Html.Raw(paymentHero.Fields.GetVisibleFieldValue("description", "Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần."))</div>
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(paymentHero)" style="@ContentPresentationViewHelper.GetSectionStyle(paymentHero)">
+        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(paymentHero)">
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "badgeText")">@paymentHero.Fields.GetVisibleFieldValue("badgeText", "Bước 2 trong hành trình đặt tour")</span>
+            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "title")">@paymentHero.Fields.GetVisibleFieldValue("title", "Xác nhận thanh toán booking")</h1>
+            <div class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(paymentHero, "description")">@Html.Raw(paymentHero.Fields.GetVisibleFieldValue("description", "Chọn phương thức thanh toán, tải minh chứng nếu chuyển khoản và tiếp tục từ phiên checkout hiện tại khi cần."))</div>
         </div>
     </section>
 }
@@ -138,3 +138,4 @@
         </aside>
     </div>
 </section>
+
