@@ -1,5 +1,0 @@
-﻿<Project>
-  <ItemGroup>
-    <ProjectReference Include="..\HV-Travel.Application\HV-Travel.Application.csproj" />
-  </ItemGroup>
-</Project>

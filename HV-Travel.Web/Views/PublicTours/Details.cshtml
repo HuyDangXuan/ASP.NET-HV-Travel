@@ -26,194 +26,428 @@
         ["description"] = headlineDescription,
         ["image"] = Model.Images
     });
+    var galleryImages = (Model.Images ?? new List<string>()).Where(image => !string.IsNullOrWhiteSpace(image)).ToList();
+    var heroImage = galleryImages.FirstOrDefault() ?? ViewData["OpenGraphImage"]?.ToString() ?? string.Empty;
+    var gallerySlots = new List<string?>
+    {
+        galleryImages.ElementAtOrDefault(0) ?? heroImage,
+        galleryImages.ElementAtOrDefault(1) ?? heroImage,
+        galleryImages.ElementAtOrDefault(2) ?? heroImage,
+        galleryImages.ElementAtOrDefault(3) ?? heroImage
+    };
+    var locationParts = new[] { Model.Destination?.City, Model.Destination?.Country }
+        .Where(value => !string.IsNullOrWhiteSpace(value))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
+    var locationLabel = locationParts.Any()
+        ? string.Join(", ", locationParts)
+        : hero?.Fields.GetVisibleFieldValue("locationFallback", "Vietnam") ?? "Vietnam";
+    var durationLabel = Model.Duration?.Text ?? hero?.Fields.GetVisibleFieldValue("durationFallback", "Contact for itinerary") ?? "Contact for itinerary";
+    var reviewFormat = hero?.Fields.GetVisibleFieldValue("reviewFormat", "{0} reviews") ?? "{0} reviews";
+    var reviewLabel = string.Format(reviewFormat, Model.ReviewCount);
+    var selectedDeparture = featuredDeparture;
+    var adultPrice = selectedDeparture?.AdultPrice > 0m ? selectedDeparture.AdultPrice : Model.Price?.Adult ?? 0m;
+    var childPrice = selectedDeparture?.ChildPrice > 0m ? selectedDeparture.ChildPrice : Model.Price?.Child ?? 0m;
+    var infantPrice = selectedDeparture?.InfantPrice > 0m ? selectedDeparture.InfantPrice : Model.Price?.Infant ?? 0m;
+    var supportTitle = bookingPanel?.Fields.GetVisibleFieldValue("supportTitle", "Support after booking") ?? "Support after booking";
+    var supportDescription = bookingPanel?.Fields.GetVisibleFieldValue("supportDescription", "Customer portal, payment timeline, and booking lookup stay available after checkout.")
+        ?? "Customer portal, payment timeline, and booking lookup stay available after checkout.";
+    var voucherTitle = bookingPanel?.Fields.GetVisibleFieldValue("voucherTitle", "Voucher and invoice") ?? "Voucher and invoice";
+    var voucherDescription = bookingPanel?.Fields.GetVisibleFieldValue("voucherDescription", "After payment, the booking can extend into voucher, invoice, and fulfillment status updates.")
+        ?? "After payment, the booking can extend into voucher, invoice, and fulfillment status updates.";
+
     string ConfirmationText(string? value) => string.Equals(value, "Instant", StringComparison.OrdinalIgnoreCase)
-        ? hero?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Xác nhận tức thì") ?? "Xác nhận tức thì"
-        : hero?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "Chờ xác nhận") ?? "Chờ xác nhận";
+        ? hero?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Instant confirmation") ?? "Instant confirmation"
+        : hero?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "On-request confirmation") ?? "On-request confirmation";
+
+    decimal DepartureAdultPrice(TourDeparture? departure) => departure?.AdultPrice > 0m ? departure.AdultPrice : Model.Price?.Adult ?? 0m;
+    decimal DepartureChildPrice(TourDeparture? departure) => departure?.ChildPrice > 0m ? departure.ChildPrice : Model.Price?.Child ?? 0m;
+    decimal DepartureInfantPrice(TourDeparture? departure) => departure?.InfantPrice > 0m ? departure.InfantPrice : Model.Price?.Infant ?? 0m;
+    string SeatsRemainingText(TourDeparture? departure) => string.Format(
+        departuresSection?.Fields.GetVisibleFieldValue("seatsRemainingFormat", "{0} seats left") ?? "{0} seats left",
+        departure?.RemainingCapacity ?? 0);
+
+    var confirmationLabel = ConfirmationText(selectedDeparture?.ConfirmationType ?? Model.ConfirmationType);
+    var seatsLabel = SeatsRemainingText(selectedDeparture);
+    var selectedDepartureText = selectedDeparture?.StartDate.ToString("dd/MM/yyyy") ?? "TBD";
 }
 
 <script type="application/ld+json">@Html.Raw(structuredData)</script>
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
-            <div class="flex flex-wrap gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/80">
-                <span class="rounded-full bg-white/10 px-3 py-1.5" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "instantConfirmationLabel")">@ConfirmationText(Model.ConfirmationType)</span>
-                @if (Model.CancellationPolicy?.IsFreeCancellation == true)
+    <section class="public-top-section public-top-section--compact public-page-hero hero-gradient relative overflow-hidden public-detail-intro" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+                <div class="absolute inset-0 opacity-20">
+            <div class="absolute left-20 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl"></div>
+            <div class="absolute bottom-0 right-10 h-80 w-80 rounded-full bg-cyan-400/20 blur-3xl"></div>
+        </div>
+        <div class="public-top-section-shell public-page-hero-shell mx-auto max-w-7xl px-4 pb-6 pt-10 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
+            <div class="public-detail-intro-shell" data-animate="fade-up">
+                <div class="public-detail-badges">
+                    <span class="public-detail-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "instantConfirmationLabel")">@ConfirmationText(Model.ConfirmationType)</span>
+                    @if (Model.CancellationPolicy?.IsFreeCancellation == true)
+                    {
+                        <span class="public-detail-badge is-success" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "freeCancellationLabel")">@hero.Fields.GetVisibleFieldValue("freeCancellationLabel", "Free cancellation")</span>
+                    }
+                    @if (featuredDeparture?.RemainingCapacity is > 0 and <= 5)
+                    {
+                        <span class="public-detail-badge is-warning" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "lowAvailabilityLabel")">@hero.Fields.GetVisibleFieldValue("lowAvailabilityLabel", "Limited seats")</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Status))
+                    {
+                        <span class="public-detail-badge is-muted">@Model.Status</span>
+                    }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Code))
                 {
-                    <span class="rounded-full bg-emerald-400/20 px-3 py-1.5 text-emerald-100" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "freeCancellationLabel")">@hero.Fields.GetVisibleFieldValue("freeCancellationLabel", "Hủy miễn phí")</span>
+                    <p class="public-detail-kicker">@Model.Code</p>
                 }
-                @if (featuredDeparture?.RemainingCapacity is > 0 and <= 5)
-                {
-                    <span class="rounded-full bg-amber-300/20 px-3 py-1.5 text-amber-50" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "lowAvailabilityLabel")">@hero.Fields.GetVisibleFieldValue("lowAvailabilityLabel", "Còn ít chỗ")</span>
-                }
-            </div>
-            <h1 class="public-top-section-title mt-4 text-white">@Model.Name</h1>
-            <p class="public-top-section-lead">@headlineDescription</p>
-            <div class="mt-4 flex flex-wrap gap-4 text-sm text-slate-200">
-                <span>@(Model.Destination?.City ?? (hero.Fields.GetVisibleFieldValue("locationFallback", "Việt Nam")))</span>
-                <span>@(Model.Duration?.Text ?? (hero.Fields.GetVisibleFieldValue("durationFallback", "Liên hệ tư vấn")))</span>
-                <span>@string.Format(hero.Fields.GetVisibleFieldValue("reviewFormat", "{0} đánh giá") ?? "{0} đánh giá", Model.ReviewCount)</span>
+                <h1 class="public-top-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@Model.Name</h1>
+                <p class="public-top-section-lead public-detail-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@headlineDescription</p>
+                <div class="public-detail-meta">
+                    <span class="public-detail-meta-item"><span class="material-symbols-outlined">location_on</span><span>@locationLabel</span></span>
+                    <span class="public-detail-meta-item"><span class="material-symbols-outlined">schedule</span><span>@durationLabel</span></span>
+                    <span class="public-detail-meta-item"><span class="material-symbols-outlined">star</span><span>@reviewLabel</span></span>
+                </div>
             </div>
         </div>
     </section>
 }
 
-<section class="bg-background-light py-10 dark:bg-background-dark">
-    <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-        <div class="space-y-6">
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                @if (Model.Images != null && Model.Images.Any())
+<section class="public-detail-gallery bg-background-light pb-4 pt-4 dark:bg-background-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="public-detail-gallery-grid" data-animate="fade-up">
+            @for (var index = 0; index < gallerySlots.Count; index++)
+            {
+                var image = gallerySlots[index];
+                var itemClass = index switch
                 {
-                    <img src="@Model.Images.First()" alt="@Model.Name" class="h-80 w-full rounded-3xl object-cover" />
-                }
-            </section>
-
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(highlights)" style="@ContentPresentationViewHelper.GetSectionStyle(highlights)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "eyebrowText")">@highlights?.Fields.GetVisibleFieldValue("eyebrowText", "Highlights")</p>
-                <div class="mt-2 flex items-center justify-between gap-4">
-                    <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "title")">@highlights?.Fields.GetVisibleFieldValue("title", "Điểm nổi bật của hành trình")</h2>
-                    <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "badgeText")">@highlights?.Fields.GetVisibleFieldValue("badgeText", "Tour bán tốt")</span>
-                </div>
-                @if (Model.Highlights != null && Model.Highlights.Any())
-                {
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        @foreach (var item in Model.Highlights)
-                        {
-                            <div class="rounded-2xl bg-surface-muted-light px-4 py-3 text-sm dark:bg-surface-elevated-dark">@item</div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@highlights?.Fields.GetVisibleFieldValue("emptyStateText", "Tour này chưa có danh sách highlights hiển thị.")</p>
-                }
-            </section>
-
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(overview)" style="@ContentPresentationViewHelper.GetSectionStyle(overview)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "eyebrowText")">@overview?.Fields.GetVisibleFieldValue("eyebrowText", "Tổng quan")</p>
-                <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "title")">@overview?.Fields.GetVisibleFieldValue("title", "Tổng quan hành trình")</h2>
-                <div class="public-rich-text mt-4">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))</div>
-            </section>
-
-            <section class="grid gap-6 sm:grid-cols-2 @ContentPresentationViewHelper.GetSectionTextClass(inclusions)" style="@ContentPresentationViewHelper.GetSectionStyle(inclusions)">
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <h2 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "includedTitle")">@inclusions?.Fields.GetVisibleFieldValue("includedTitle", "Bao gồm")</h2>
-                    @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
+                    0 => "public-detail-gallery-item is-feature",
+                    3 => "public-detail-gallery-item is-wide",
+                    _ => "public-detail-gallery-item"
+                };
+                var altText = index == 0 ? $"{Model.Name} main" : $"{Model.Name} gallery {index + 1}";
+                <figure class="@itemClass">
+                    @if (!string.IsNullOrWhiteSpace(image))
                     {
-                        <ul class="mt-4 space-y-2 text-sm">@foreach (var item in Model.GeneratedInclusions) { <li>@item</li> }</ul>
+                        <img src="@image" alt="@altText" class="public-detail-gallery-image" />
                     }
                     else
                     {
-                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@inclusions?.Fields.GetVisibleFieldValue("includedEmptyText", "Thông tin dịch vụ bao gồm đang được cập nhật.")</p>
-                    }
-                </div>
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <h2 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "excludedTitle")">@inclusions?.Fields.GetVisibleFieldValue("excludedTitle", "Không bao gồm")</h2>
-                    @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
-                    {
-                        <ul class="mt-4 space-y-2 text-sm">@foreach (var item in Model.GeneratedExclusions) { <li>@item</li> }</ul>
-                    }
-                    else
-                    {
-                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@inclusions?.Fields.GetVisibleFieldValue("excludedEmptyText", "Thông tin dịch vụ không bao gồm đang được cập nhật.")</p>
-                    }
-                </div>
-            </section>
-
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(schedule)" style="@ContentPresentationViewHelper.GetSectionStyle(schedule)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "eyebrowText")">@schedule?.Fields.GetVisibleFieldValue("eyebrowText", "Lịch trình")</p>
-                <h2 class="mt-2 text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "title")">@schedule?.Fields.GetVisibleFieldValue("title", "Lịch trình chi tiết")</h2>
-                @if (Model.Schedule != null && Model.Schedule.Any())
-                {
-                    <div class="mt-4 space-y-4">
-                        @foreach (var item in Model.Schedule)
-                        {
-                            <article class="rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                                <strong>Ngày @item.Day - @item.Title</strong>
-                                @if (!string.IsNullOrWhiteSpace(item.Description))
-                                {
-                                    <div class="public-rich-text mt-2">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))</div>
-                                }
-                            </article>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@schedule?.Fields.GetVisibleFieldValue("emptyStateText", "Lịch trình chi tiết sẽ được cập nhật gần ngày khởi hành.")</p>
-                }
-            </section>
-
-            <section class="grid gap-6 sm:grid-cols-2 @ContentPresentationViewHelper.GetSectionTextClass(policies)" style="@ContentPresentationViewHelper.GetSectionStyle(policies)">
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">@policies?.Fields.GetVisibleFieldValue("cancellationEyebrowText", "Cancellation")</p>
-                    <h2 class="mt-2 text-2xl font-black">@policies?.Fields.GetVisibleFieldValue("cancellationTitle", "Chính sách hủy và hoàn")</h2>
-                    <p class="mt-4 text-sm">@(string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? (policies?.Fields.GetVisibleFieldValue("cancellationSummaryFallback", "Liên hệ tư vấn để kiểm tra chính sách theo từng departure.")) : Model.CancellationPolicy.Summary)</p>
-                </div>
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">@policies?.Fields.GetVisibleFieldValue("meetingPointEyebrowText", "Meeting point")</p>
-                    <h2 class="mt-2 text-2xl font-black">@policies?.Fields.GetVisibleFieldValue("meetingPointTitle", "Điểm đón và hướng dẫn check-in")</h2>
-                    <p class="mt-4 text-sm">@(string.IsNullOrWhiteSpace(Model.MeetingPoint) ? (policies?.Fields.GetVisibleFieldValue("meetingPointFallback", "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận.")) : Model.MeetingPoint)</p>
-                </div>
-            </section>
-
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(departuresSection)" style="@ContentPresentationViewHelper.GetSectionStyle(departuresSection)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "eyebrowText")">@departuresSection?.Fields.GetVisibleFieldValue("eyebrowText", "Price calendar")</p>
-                <div class="mt-2 flex items-center justify-between gap-4">
-                    <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "title")">@departuresSection?.Fields.GetVisibleFieldValue("title", "Lịch khởi hành và chỗ trống")</h2>
-                    <span class="text-sm text-primary">@string.Format(departuresSection?.Fields.GetVisibleFieldValue("countFormat", "{0} đợt khởi hành") ?? "{0} đợt khởi hành", departures.Count)</span>
-                </div>
-                <div class="mt-4 space-y-3 text-sm">
-                    @foreach (var departure in departures)
-                    {
-                        <div class="rounded-2xl border border-border-light px-4 py-3 dark:border-border-dark">
-                            <div class="flex items-center justify-between gap-4">
-                                <span>@departure.StartDate.ToString("dd/MM/yyyy")</span>
-                                <span>@((departure.AdultPrice > 0m ? departure.AdultPrice : Model.Price?.Adult ?? 0m).ToString("N0"))₫</span>
-                                <span>@ConfirmationText(departure.ConfirmationType)</span>
-                                <span>@string.Format(departuresSection?.Fields.GetVisibleFieldValue("seatsRemainingFormat", "{0} còn lại") ?? "{0} còn lại", departure.RemainingCapacity)</span>
-                            </div>
+                        <div class="public-detail-gallery-fallback">
+                            <span class="material-symbols-outlined">image</span>
+                            <span>@Model.Name</span>
                         </div>
                     }
-                </div>
-            </section>
+                    @if (index == 3 && galleryImages.Count > 4)
+                    {
+                        <span class="public-detail-gallery-overlay">
+                            <span class="material-symbols-outlined">grid_view</span>
+                            <span>View @galleryImages.Count photos</span>
+                        </span>
+                    }
+                </figure>
+            }
         </div>
-
-        <aside class="space-y-6">
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(bookingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(bookingPanel)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "eyebrowText")">@bookingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Sẵn sàng đặt tour")</p>
-                <p class="mt-3 text-4xl font-extrabold text-primary">@startingPrice.ToString("N0")₫</p>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "priceHelperText")">@bookingPanel?.Fields.GetVisibleFieldValue("priceHelperText", "Mức giá tốt nhất theo departure hiện có.")</p>
-                <div class="mt-4 space-y-2 text-sm">
-                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("confirmationLabel", "Xác nhận")</span><span>@Model.ConfirmationType</span></div>
-                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("ratingLabel", "Đánh giá")</span><span>@Model.Rating.ToString("0.0") / 5</span></div>
-                    <div class="flex justify-between"><span>@bookingPanel?.Fields.GetVisibleFieldValue("departureLabel", "Departure gần nhất")</span><span>@(featuredDeparture?.StartDate.ToString("dd/MM") ?? "TBD")</span></div>
-                </div>
-                <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-4 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "bookNowText")">@bookingPanel?.Fields.GetVisibleFieldValue("bookNowText", "Đặt tour ngay")</a>
-                <a href="tel:+842838229999" class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-border-light px-4 py-3 font-bold dark:border-border-dark" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "callAdvisorText")">@bookingPanel?.Fields.GetVisibleFieldValue("callAdvisorText", "Gọi tư vấn")</a>
-            </section>
-
-            <section class="rounded-3xl border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(relatedToursSection)" style="@ContentPresentationViewHelper.GetSectionStyle(relatedToursSection)">
-                <h2 class="text-2xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(relatedToursSection, "title")">@relatedToursSection?.Fields.GetVisibleFieldValue("title", "Tour liên quan")</h2>
-                @if (relatedTours.Any())
-                {
-                    <div class="mt-4 space-y-3">
-                        @foreach (var tour in relatedTours)
-                        {
-                            var relatedPrice = tour.EffectiveDepartures.FirstOrDefault()?.AdultPrice ?? tour.Price?.Adult ?? 0m;
-                            <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@(string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug)" class="block rounded-2xl border border-border-light px-4 py-3 dark:border-border-dark">
-                                <p class="font-bold">@tour.Name</p>
-                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@relatedPrice.ToString("N0")₫</p>
-                            </a>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">@relatedToursSection?.Fields.GetVisibleFieldValue("emptyStateText", "Chưa có tour liên quan phù hợp để hiển thị.")</p>
-                }
-            </section>
-        </aside>
     </div>
 </section>
+
+<section class="bg-background-light pb-16 pt-4 dark:bg-background-dark">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="public-detail-layout">
+            <div class="public-detail-main">
+                <section class="public-detail-section @ContentPresentationViewHelper.GetSectionTextClass(overview)" style="@ContentPresentationViewHelper.GetSectionStyle(overview)">
+                    <div class="public-detail-section-heading">
+                        <p class="public-detail-section-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "eyebrowText")">@overview?.Fields.GetVisibleFieldValue("eyebrowText", "Overview")</p>
+                        <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(overview, "title")">@overview?.Fields.GetVisibleFieldValue("title", "Tour overview")</h2>
+                    </div>
+                    <div class="public-rich-text public-detail-copy">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))</div>
+                </section>
+
+                <section class="public-detail-section @ContentPresentationViewHelper.GetSectionTextClass(highlights)" style="@ContentPresentationViewHelper.GetSectionStyle(highlights)">
+                    <div class="public-detail-section-heading is-inline">
+                        <div>
+                            <p class="public-detail-section-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "eyebrowText")">@highlights?.Fields.GetVisibleFieldValue("eyebrowText", "Highlights")</p>
+                            <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "title")">@highlights?.Fields.GetVisibleFieldValue("title", "Journey highlights")</h2>
+                        </div>
+                        <span class="public-detail-chip" style="@ContentPresentationViewHelper.GetFieldTextStyle(highlights, "badgeText")">@highlights?.Fields.GetVisibleFieldValue("badgeText", "Editor pick")</span>
+                    </div>
+                    @if (Model.Highlights != null && Model.Highlights.Any())
+                    {
+                        <div class="public-detail-highlights">
+                            @foreach (var item in Model.Highlights)
+                            {
+                                <article class="public-detail-highlight-card">
+                                    <span class="material-symbols-outlined">auto_awesome</span>
+                                    <p>@item</p>
+                                </article>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="public-detail-empty">@highlights?.Fields.GetVisibleFieldValue("emptyStateText", "Highlights will be updated soon.")</p>
+                    }
+                </section>
+
+                <section class="public-detail-section @ContentPresentationViewHelper.GetSectionTextClass(schedule)" style="@ContentPresentationViewHelper.GetSectionStyle(schedule)">
+                    <div class="public-detail-section-heading">
+                        <p class="public-detail-section-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "eyebrowText")">@schedule?.Fields.GetVisibleFieldValue("eyebrowText", "Itinerary")</p>
+                        <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(schedule, "title")">@schedule?.Fields.GetVisibleFieldValue("title", "Detailed itinerary")</h2>
+                    </div>
+                    @if (Model.Schedule != null && Model.Schedule.Any())
+                    {
+                        <div class="public-detail-timeline">
+                            @foreach (var item in Model.Schedule.OrderBy(entry => entry.Day))
+                            {
+                                <article class="public-detail-timeline-item">
+                                    <div class="public-detail-timeline-marker">@item.Day.ToString("00")</div>
+                                    <div class="public-detail-timeline-card">
+                                        <h3 class="public-detail-timeline-title">@item.Title</h3>
+                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                        {
+                                            <div class="public-rich-text public-detail-timeline-copy">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))</div>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="public-detail-empty">@schedule?.Fields.GetVisibleFieldValue("emptyStateText", "Detailed itinerary will be shared closer to departure.")</p>
+                    }
+                </section>
+
+                <section class="public-detail-info-grid @ContentPresentationViewHelper.GetSectionTextClass(inclusions) @ContentPresentationViewHelper.GetSectionTextClass(policies)">
+                    <article class="public-detail-section public-detail-info-card" style="@ContentPresentationViewHelper.GetSectionStyle(inclusions)">
+                        <div class="public-detail-section-heading compact">
+                            <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "includedTitle")">@inclusions?.Fields.GetVisibleFieldValue("includedTitle", "Included")</h2>
+                        </div>
+                        @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any())
+                        {
+                            <ul class="public-detail-list">
+                                @foreach (var item in Model.GeneratedInclusions)
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="public-detail-empty">@inclusions?.Fields.GetVisibleFieldValue("includedEmptyText", "Included services will be updated soon.")</p>
+                        }
+                    </article>
+
+                    <article class="public-detail-section public-detail-info-card" style="@ContentPresentationViewHelper.GetSectionStyle(inclusions)">
+                        <div class="public-detail-section-heading compact">
+                            <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(inclusions, "excludedTitle")">@inclusions?.Fields.GetVisibleFieldValue("excludedTitle", "Excluded")</h2>
+                        </div>
+                        @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Any())
+                        {
+                            <ul class="public-detail-list">
+                                @foreach (var item in Model.GeneratedExclusions)
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="public-detail-empty">@inclusions?.Fields.GetVisibleFieldValue("excludedEmptyText", "Excluded services will be updated soon.")</p>
+                        }
+                    </article>
+
+                    <article class="public-detail-section public-detail-info-card" style="@ContentPresentationViewHelper.GetSectionStyle(policies)">
+                        <div class="public-detail-section-heading compact">
+                            <p class="public-detail-section-eyebrow">@policies?.Fields.GetVisibleFieldValue("cancellationEyebrowText", "Cancellation")</p>
+                            <h2 class="public-detail-section-title">@policies?.Fields.GetVisibleFieldValue("cancellationTitle", "Cancellation policy")</h2>
+                        </div>
+                        <p class="public-detail-copy-small">@(string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary)
+                            ? policies?.Fields.GetVisibleFieldValue("cancellationSummaryFallback", "Contact our team to confirm the cancellation policy for each departure.")
+                            : Model.CancellationPolicy.Summary)</p>
+                    </article>
+
+                    <article class="public-detail-section public-detail-info-card" style="@ContentPresentationViewHelper.GetSectionStyle(policies)">
+                        <div class="public-detail-section-heading compact">
+                            <p class="public-detail-section-eyebrow">@policies?.Fields.GetVisibleFieldValue("meetingPointEyebrowText", "Meeting point")</p>
+                            <h2 class="public-detail-section-title">@policies?.Fields.GetVisibleFieldValue("meetingPointTitle", "Meeting point and check-in")</h2>
+                        </div>
+                        <p class="public-detail-copy-small">@(string.IsNullOrWhiteSpace(Model.MeetingPoint)
+                            ? policies?.Fields.GetVisibleFieldValue("meetingPointFallback", "HV Travel will send the detailed meeting point in the confirmation voucher.")
+                            : Model.MeetingPoint)</p>
+                    </article>
+                </section>
+
+                <section class="public-detail-section @ContentPresentationViewHelper.GetSectionTextClass(departuresSection)" style="@ContentPresentationViewHelper.GetSectionStyle(departuresSection)">
+                    <div class="public-detail-section-heading is-inline">
+                        <div>
+                            <p class="public-detail-section-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "eyebrowText")">@departuresSection?.Fields.GetVisibleFieldValue("eyebrowText", "Price calendar")</p>
+                            <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(departuresSection, "title")">@departuresSection?.Fields.GetVisibleFieldValue("title", "Departure dates and availability")</h2>
+                        </div>
+                        <span class="public-detail-chip">@string.Format(departuresSection?.Fields.GetVisibleFieldValue("countFormat", "{0} departures") ?? "{0} departures", departures.Count)</span>
+                    </div>
+                    @if (departures.Any())
+                    {
+                        <div class="public-detail-departures">
+                            @foreach (var departure in departures)
+                            {
+                                <article class="public-detail-departure-card">
+                                    <div>
+                                        <p class="public-detail-departure-date">@departure.StartDate.ToString("dd/MM/yyyy")</p>
+                                        <p class="public-detail-departure-policy">@ConfirmationText(departure.ConfirmationType)</p>
+                                    </div>
+                                    <div class="public-detail-departure-stats">
+                                        <div><span>@departuresSection?.Fields.GetVisibleFieldValue("adultPriceColumnLabel", "Adult")</span><strong>@DepartureAdultPrice(departure).ToString("N0") VND</strong></div>
+                                        <div><span>@departuresSection?.Fields.GetVisibleFieldValue("seatsColumnLabel", "Seats left")</span><strong>@SeatsRemainingText(departure)</strong></div>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="public-detail-empty">No active departures are available for this tour yet.</p>
+                    }
+                </section>
+
+                <section class="public-detail-section @ContentPresentationViewHelper.GetSectionTextClass(relatedToursSection)" style="@ContentPresentationViewHelper.GetSectionStyle(relatedToursSection)">
+                    <div class="public-detail-section-heading">
+                        <h2 class="public-detail-section-title" style="@ContentPresentationViewHelper.GetFieldTextStyle(relatedToursSection, "title")">@relatedToursSection?.Fields.GetVisibleFieldValue("title", "Related tours")</h2>
+                    </div>
+                    @if (relatedTours.Any())
+                    {
+                        <div class="public-detail-related-grid">
+                            @foreach (var tour in relatedTours)
+                            {
+                                var relatedPrice = tour.EffectiveDepartures.FirstOrDefault()?.AdultPrice ?? tour.Price?.Adult ?? 0m;
+                                <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@(string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug)" class="public-detail-related-card">
+                                    <p class="public-detail-related-title">@tour.Name</p>
+                                    <p class="public-detail-related-meta">@(tour.Destination?.City ?? "Vietnam")</p>
+                                    <p class="public-detail-related-price">@relatedPrice.ToString("N0") VND</p>
+                                </a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="public-detail-empty">@relatedToursSection?.Fields.GetVisibleFieldValue("emptyStateText", "No related tours are available right now.")</p>
+                    }
+                </section>
+
+                <section class="public-detail-section public-detail-reviews">
+                    <div class="public-detail-section-heading is-inline">
+                        <div>
+                            <p class="public-detail-section-eyebrow">Traveler Chronicles</p>
+                            <h2 class="public-detail-section-title">Traveler reviews</h2>
+                        </div>
+                        @if (Model.ReviewCount > 0 && Model.Rating > 0)
+                        {
+                            <span class="public-detail-rating-pill">@Model.Rating.ToString("0.0") / 5</span>
+                        }
+                    </div>
+                    @if (Model.ReviewCount > 0 && Model.Rating > 0)
+                    {
+                        <div class="public-detail-review-summary">
+                            <div>
+                                <p class="public-detail-review-score">@Model.Rating.ToString("0.0")</p>
+                                <p class="public-detail-review-count">@reviewLabel</p>
+                            </div>
+                            <p class="public-detail-copy-small">Verified traveler feedback will appear here after tours are completed.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="public-detail-review-empty">
+                            <span class="material-symbols-outlined">rate_review</span>
+                            <p>This tour does not have any public reviews yet.</p>
+                        </div>
+                    }
+                </section>
+            </div>
+
+            <aside class="public-detail-sidebar">
+                <section class="public-detail-booking-card @ContentPresentationViewHelper.GetSectionTextClass(bookingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(bookingPanel)">
+                    <div class="public-detail-booking-head">
+                        <div>
+                            <p class="public-detail-section-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "eyebrowText")">@bookingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Ready to book")</p>
+                            <div class="public-detail-price-row">
+                                <p class="public-detail-price" data-detail-price-starting>@startingPrice.ToString("N0")</p>
+                                <span class="public-detail-price-currency">VND</span>
+                            </div>
+                        </div>
+                        <span class="public-detail-chip is-strong" data-detail-confirmation>@confirmationLabel</span>
+                    </div>
+                    <p class="public-detail-booking-helper" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "priceHelperText")">@bookingPanel?.Fields.GetVisibleFieldValue("priceHelperText", "Lowest available price for the selected departure.")</p>
+                    @if (departures.Any())
+                    {
+                        <div class="public-detail-booking-field">
+                            <label class="public-detail-booking-label">Select departure date</label>
+                            <select class="public-detail-booking-select" data-detail-departure-select>
+                                @foreach (var departure in departures)
+                                {
+                                    var departureConfirmation = ConfirmationText(departure.ConfirmationType);
+                                    <option value="@departure.Id" selected="@(selectedDeparture?.Id == departure.Id ? "selected" : null)" data-departure-text="@departure.StartDate.ToString("dd/MM/yyyy")" data-adult-price="@DepartureAdultPrice(departure)" data-child-price="@DepartureChildPrice(departure)" data-infant-price="@DepartureInfantPrice(departure)" data-confirmation="@departureConfirmation" data-seats="@SeatsRemainingText(departure)">@departure.StartDate.ToString("dd/MM/yyyy")</option>
+                                }
+                            </select>
+                            <p class="public-detail-booking-note" data-detail-seats-text>@seatsLabel</p>
+                        </div>
+                    }
+                    <div class="public-detail-booking-breakdown">
+                        <div class="public-detail-booking-row"><span>Adult</span><strong data-detail-price-adult>@adultPrice.ToString("N0") VND</strong></div>
+                        <div class="public-detail-booking-row"><span>Child</span><strong data-detail-price-child>@childPrice.ToString("N0") VND</strong></div>
+                        <div class="public-detail-booking-row"><span>Infant</span><strong data-detail-price-infant>@infantPrice.ToString("N0") VND</strong></div>
+                        <div class="public-detail-booking-row is-muted"><span>@bookingPanel?.Fields.GetVisibleFieldValue("departureLabel", "Selected departure")</span><strong data-detail-departure-text>@selectedDepartureText</strong></div>
+                        <div class="public-detail-booking-row is-muted"><span>@bookingPanel?.Fields.GetVisibleFieldValue("ratingLabel", "Rating")</span><strong>@(Model.Rating > 0 ? Model.Rating.ToString("0.0") : "TBD")</strong></div>
+                    </div>
+                    <div class="public-detail-booking-total"><span>Estimated Total</span><strong data-detail-price-total>@adultPrice.ToString("N0") VND</strong></div>
+                    <a asp-controller="Booking" asp-action="Create" asp-route-tourId="@Model.Id" class="public-detail-booking-cta" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "bookNowText")">@bookingPanel?.Fields.GetVisibleFieldValue("bookNowText", "Book this tour")</a>
+                    <a href="tel:+842838229999" class="public-detail-booking-secondary" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "callAdvisorText")">@bookingPanel?.Fields.GetVisibleFieldValue("callAdvisorText", "Call an advisor")</a>
+                </section>
+
+                <section class="public-detail-trust-card @ContentPresentationViewHelper.GetSectionTextClass(bookingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(bookingPanel)">
+                    <div class="public-detail-trust-eyebrow" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "trustEyebrowText")">@bookingPanel?.Fields.GetVisibleFieldValue("trustEyebrowText", "Verified booking")</div>
+                    <div class="public-detail-trust-item">
+                        <span class="material-symbols-outlined">verified_user</span>
+                        <div><h3>@supportTitle</h3><p>@supportDescription</p></div>
+                    </div>
+                    <div class="public-detail-trust-item">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                        <div><h3>@voucherTitle</h3><p>@voucherDescription</p></div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (() => {
+            const select = document.querySelector('[data-detail-departure-select]');
+            if (!select) return;
+            const formatCurrency = (value) => `${new Intl.NumberFormat('vi-VN').format(Number(value || 0))} VND`;
+            const confirmation = document.querySelector('[data-detail-confirmation]');
+            const seats = document.querySelector('[data-detail-seats-text]');
+            const departureText = document.querySelector('[data-detail-departure-text]');
+            const adultPrice = document.querySelector('[data-detail-price-adult]');
+            const childPrice = document.querySelector('[data-detail-price-child]');
+            const infantPrice = document.querySelector('[data-detail-price-infant]');
+            const totalPrice = document.querySelector('[data-detail-price-total]');
+            const syncDepartureSummary = () => {
+                const option = select.options[select.selectedIndex];
+                if (!option) return;
+                const adultValue = Number(option.dataset.adultPrice || 0);
+                if (confirmation) confirmation.textContent = option.dataset.confirmation || '';
+                if (seats) seats.textContent = option.dataset.seats || '';
+                if (departureText) departureText.textContent = option.dataset.departureText || '';
+                if (adultPrice) adultPrice.textContent = formatCurrency(adultValue);
+                if (childPrice) childPrice.textContent = formatCurrency(Number(option.dataset.childPrice || 0));
+                if (infantPrice) infantPrice.textContent = formatCurrency(Number(option.dataset.infantPrice || 0));
+                if (totalPrice) totalPrice.textContent = formatCurrency(adultValue);
+            };
+            select.addEventListener('change', syncDepartureSummary);
+            syncDepartureSummary();
+        })();
+    </script>
+}
