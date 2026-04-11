@@ -20,17 +20,7 @@ public class DestinationHubViewModel
 public class DestinationRegionViewModel
 {
     public string Region { get; set; } = string.Empty;
-    public IReadOnlyList<DestinationCardViewModel> Destinations { get; set; } = Array.Empty<DestinationCardViewModel>();
-}
-
-public class DestinationCardViewModel
-{
-    public string City { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
-    public int TourCount { get; set; }
-    public decimal StartingPrice { get; set; }
-    public double BestRating { get; set; }
-    public string RepresentativeImage { get; set; } = string.Empty;
+    public IReadOnlyList<Tour> Tours { get; set; } = Array.Empty<Tour>();
 }
 
 public class DestinationCollectionViewModel

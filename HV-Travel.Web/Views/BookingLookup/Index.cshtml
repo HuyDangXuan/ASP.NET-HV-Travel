@@ -45,19 +45,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
-            <div class="absolute top-10 left-10 h-72 w-72 rounded-full bg-primary/25 blur-3xl"></div>
-            <div class="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-400/18 blur-3xl"></div>
+            <div class="absolute left-10 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-10 right-20 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
         </div>
-        <div class="public-top-section-shell public-page-hero-shell max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
+            <div class="mx-auto flex max-w-4xl flex-col items-center text-center @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">confirmation_number</span>
                     @hero.Fields.GetFieldValue("badgeText", "Tra cứu đơn đặt tour")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Tra cứu booking trong vài giây")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Tra cứu booking trong vài giây")</h1>
+                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Nhập mã booking cùng email hoặc số điện thoại để xem tình trạng đơn, thanh toán và lịch khởi hành."))
                 </div>
             </div>
@@ -161,5 +161,6 @@
         </div>
     </div>
 </section>
+
 
 

@@ -13,13 +13,13 @@
     var focusBookingCode = ViewData["FocusBookingCode"]?.ToString();
 }
 
-<section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
-    <div class="public-top-section-shell relative z-10 mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
+<section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <div class="relative z-10 mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(hero)">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <p class="text-sm font-bold uppercase tracking-[0.35em] text-cyan-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">@hero?.Fields.GetVisibleFieldValue("eyebrowText", "Customer Portal")</p>
-                <h1 class="public-top-section-title mt-4 text-white">@string.Format(hero?.Fields.GetVisibleFieldValue("greetingFormat", "Xin chào {0}.") ?? "Xin chào {0}.", Model.Customer.FullName)</h1>
-                <p class="public-top-section-lead mt-5 max-w-2xl text-sm leading-7 text-slate-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero?.Fields.GetVisibleFieldValue("description", "Portal mới gom booking, thanh toán, loyalty, voucher, traveller profile và yêu cầu hậu mãi về cùng một nơi.")</p>
+                <h1 class="text-3xl font-extrabold tracking-tight mt-4 text-white">@string.Format(hero?.Fields.GetVisibleFieldValue("greetingFormat", "Xin chào {0}.") ?? "Xin chào {0}.", Model.Customer.FullName)</h1>
+                <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 mt-5 max-w-2xl text-sm leading-7 text-slate-200" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero?.Fields.GetVisibleFieldValue("description", "Portal mới gom booking, thanh toán, loyalty, voucher, traveller profile và yêu cầu hậu mãi về cùng một nơi.")</p>
             </div>
             <div class="rounded-[2rem] border border-white/20 bg-white/10 px-6 py-5 backdrop-blur-xl">
                 <p class="text-xs uppercase tracking-[0.3em] text-cyan-100" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "tierLabel")">@hero?.Fields.GetVisibleFieldValue("tierLabel", "Tier hiện tại")</p>
@@ -45,7 +45,7 @@
                     <div class="flex items-center justify-between gap-4">
                         <div>
                             <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "eyebrowText")">@bookingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Booking timeline")</p>
-                            <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "title")">@bookingPanel?.Fields.GetVisibleFieldValue("title", "Lịch sử booking")</h2>
+                            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(bookingPanel, "title")">@bookingPanel?.Fields.GetVisibleFieldValue("title", "Lịch sử booking")</h2>
                         </div>
                         @if (Model.UpcomingBooking != null)
                         {
@@ -85,7 +85,7 @@
 
                 <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(reviewPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(reviewPanel)">
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(reviewPanel, "eyebrowText")">@reviewPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Verified review")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(reviewPanel, "title")">@reviewPanel?.Fields.GetVisibleFieldValue("title", "Đánh giá chờ gửi")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(reviewPanel, "title")">@reviewPanel?.Fields.GetVisibleFieldValue("title", "Đánh giá chờ gửi")</h2>
                     @if (Model.ReviewRequests.Any())
                     {
                         <div class="mt-6 space-y-4">
@@ -112,7 +112,7 @@
             <div class="space-y-8">
                 <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(voucherPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(voucherPanel)">
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherPanel, "eyebrowText")">@voucherPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Voucher wallet")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherPanel, "title")">@voucherPanel?.Fields.GetVisibleFieldValue("title", "Ưu đãi cá nhân hóa")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherPanel, "title")">@voucherPanel?.Fields.GetVisibleFieldValue("title", "Ưu đãi cá nhân hóa")</h2>
                     @if (Model.ActiveVouchers.Any())
                     {
                         <div class="mt-5 space-y-3">@foreach (var voucher in Model.ActiveVouchers) { <article class="rounded-[1.5rem] bg-gradient-to-r from-slate-900 to-slate-700 px-5 py-5 text-white"><p class="text-xs uppercase tracking-[0.3em] text-white/60">@voucher.Code</p><h3 class="mt-2 text-lg font-black">@voucher.Title</h3></article> }</div>
@@ -125,7 +125,7 @@
 
                 <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(travellerPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(travellerPanel)">
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerPanel, "eyebrowText")">@travellerPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Traveller profiles")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerPanel, "title")">@travellerPanel?.Fields.GetVisibleFieldValue("title", "Lưu hồ sơ hành khách")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerPanel, "title")">@travellerPanel?.Fields.GetVisibleFieldValue("title", "Lưu hồ sơ hành khách")</h2>
                     <div class="mt-5 space-y-3">@foreach (var traveller in Model.SavedTravellers) { <div class="rounded-2xl border border-border-light px-4 py-4 dark:border-border-dark"><p class="text-sm font-black">@traveller.FullName</p><p class="mt-1 text-xs uppercase tracking-[0.3em] text-slate-400">@traveller.PassportNumber • @traveller.Nationality</p></div> }</div>
                     <form asp-action="SaveTraveller" method="post" class="mt-6 space-y-3">
                         @Html.AntiForgeryToken()
@@ -141,7 +141,7 @@
 
                 <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(notificationsPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(notificationsPanel)">
                     <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(notificationsPanel, "eyebrowText")">@notificationsPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Notifications")</p>
-                    <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(notificationsPanel, "title")">@notificationsPanel?.Fields.GetVisibleFieldValue("title", "Thông báo gần đây")</h2>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(notificationsPanel, "title")">@notificationsPanel?.Fields.GetVisibleFieldValue("title", "Thông báo gần đây")</h2>
                     @if (Model.RecentNotifications.Any())
                     {
                         <div class="mt-5 space-y-3">@foreach (var notification in Model.RecentNotifications) { <div class="rounded-2xl border border-border-light px-4 py-4 dark:border-border-dark"><p class="text-sm font-black">@notification.Title</p><p class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400">@notification.Message</p></div> }</div>
@@ -155,3 +155,4 @@
         </div>
     </div>
 </section>
+

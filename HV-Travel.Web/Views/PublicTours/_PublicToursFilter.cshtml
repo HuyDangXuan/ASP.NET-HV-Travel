@@ -1,5 +1,4 @@
-﻿@using System.Linq
-@using System.Text.Encodings.Web
+@using System.Linq
 @using HVTravel.Domain.Entities
 @using HVTravel.Domain.Models
 @using HVTravel.Web.Services
@@ -57,364 +56,190 @@
     var applyButtonText = CmsText("applyButtonText", "Áp dụng");
     var resetButtonText = CmsText("resetButtonText", "Reset");
 
-    string ResolveFacetLabel(IReadOnlyList<TourFacetOption> facets, string? value)
-        => string.IsNullOrWhiteSpace(value) ? allOptionLabel : facets.FirstOrDefault(facet => facet.Value == value)?.Value ?? value;
-
-    var regionSelectedLabel = ResolveFacetLabel(regionFacets, currentRegion);
-    var destinationSelectedLabel = ResolveFacetLabel(destinationFacets, currentDestination);
-    var confirmationSelectedLabel = ResolveFacetLabel(confirmationFacets, currentConfirmationType);
-    var cancellationSelectedLabel = ResolveFacetLabel(cancellationFacets, currentCancellationType);
-    var departureMonthSelectedLabel = string.IsNullOrWhiteSpace(currentDepartureMonth) ? allOptionLabel : $"{departureMonthPrefix} {currentDepartureMonth}";
-    var sortSelectedLabel = currentSort switch
-    {
-        "best_value" => sortBestValueLabel,
-        "price_asc" => sortPriceAscLabel,
-        "price_desc" => sortPriceDescLabel,
-        "departure" => sortDepartureLabel,
-        _ => sortRatingLabel
-    };
-
     var summaryRegionText = string.IsNullOrWhiteSpace(summaryRegionFormat) ? string.Empty : string.Format(summaryRegionFormat, regionFacets.Count);
     var summaryConfirmationText = string.IsNullOrWhiteSpace(summaryConfirmationFormat) ? string.Empty : string.Format(summaryConfirmationFormat, confirmationFacets.Count);
-    var allOptionLabelJs = JavaScriptEncoder.Default.Encode(allOptionLabel);
+
+    const string SectionClass = "space-y-5 rounded-[1.75rem] border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950/80";
+    const string FieldClass = "space-y-2";
+    const string LabelClass = "block text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400";
+    const string ControlClass = "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
 }
 
-<form asp-action="Index" method="get" class="public-filter-form">
+<form asp-action="Index" method="get" class="space-y-6">
     <input type="hidden" name="search" value="@currentSearch" />
     <input type="hidden" name="collection" value="@currentCollection" />
 
-    <div class="public-filter-heading">
-        @if (!string.IsNullOrWhiteSpace(headingTitle))
-        {
-            <p class="public-filter-heading-title">@headingTitle</p>
-        }
-    </div>
+    @if (!string.IsNullOrWhiteSpace(headingTitle))
+    {
+        <div>
+            <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-400 dark:text-slate-500">@headingTitle</p>
+        </div>
+    }
 
-    <div class="public-filter-shell">
-        <div class="public-filter-section">
-            <div class="public-filter-grid">
-                <div class="public-filter-row">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(regionLabelText))
-                        {
-                            <label class="public-filter-label" for="region-select">@regionLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="region">
-                            <select id="region-select" name="region" class="public-filter-control public-native-select">
-                                <option value="">@allOptionLabel</option>
-                                @foreach (var facet in regionFacets)
-                                {
-                                    <option value="@facet.Value" selected="@(currentRegion == facet.Value)">@facet.Value (@facet.Count)</option>
-                                }
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('region')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@regionSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentRegion) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('region', '', '@allOptionLabelJs')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@allOptionLabel</span></span>
-                                    </button>
-                                    @foreach (var facet in regionFacets)
-                                    {
-                                        var optionLabel = $"{facet.Value} ({facet.Count})";
-                                        var optionLabelJs = JavaScriptEncoder.Default.Encode(optionLabel);
-                                        <button type="button" class="public-custom-select-option @(currentRegion == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('region', '@facet.Value', '@optionLabelJs')">
-                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@optionLabel</span></span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <section class="@SectionClass">
+        <div class="grid gap-5">
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(regionLabelText))
+                {
+                    <label class="@LabelClass" for="region-select">@regionLabelText</label>
+                }
+                <select id="region-select" name="region" class="@ControlClass">
+                    <option value="">@allOptionLabel</option>
+                    @foreach (var facet in regionFacets)
+                    {
+                        <option value="@facet.Value" selected="@(currentRegion == facet.Value)">@facet.Value (@facet.Count)</option>
+                    }
+                </select>
+            </div>
 
-                <div class="public-filter-row">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(destinationLabelText))
-                        {
-                            <label class="public-filter-label" for="destination-select">@destinationLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="destination">
-                            <select id="destination-select" name="destination" class="public-filter-control public-native-select">
-                                <option value="">@allOptionLabel</option>
-                                @foreach (var facet in destinationFacets)
-                                {
-                                    <option value="@facet.Value" selected="@(currentDestination == facet.Value)">@facet.Value (@facet.Count)</option>
-                                }
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('destination')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@destinationSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentDestination) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('destination', '', '@allOptionLabelJs')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@allOptionLabel</span></span>
-                                    </button>
-                                    @foreach (var facet in destinationFacets)
-                                    {
-                                        var optionLabel = $"{facet.Value} ({facet.Count})";
-                                        var optionLabelJs = JavaScriptEncoder.Default.Encode(optionLabel);
-                                        <button type="button" class="public-custom-select-option @(currentDestination == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('destination', '@facet.Value', '@optionLabelJs')">
-                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@optionLabel</span></span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(destinationLabelText))
+                {
+                    <label class="@LabelClass" for="destination-select">@destinationLabelText</label>
+                }
+                <select id="destination-select" name="destination" class="@ControlClass">
+                    <option value="">@allOptionLabel</option>
+                    @foreach (var facet in destinationFacets)
+                    {
+                        <option value="@facet.Value" selected="@(currentDestination == facet.Value)">@facet.Value (@facet.Count)</option>
+                    }
+                </select>
             </div>
         </div>
+    </section>
 
-        <div class="public-filter-section">
-            <div class="public-filter-grid">
-                <div class="public-filter-row public-filter-row--pair">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(minPriceLabelText))
-                        {
-                            <label class="public-filter-label" for="min-price">@minPriceLabelText</label>
-                        }
-                        <input id="min-price" name="minPrice" value="@currentMinPrice" placeholder="@minPricePlaceholder" class="public-filter-control" />
-                    </div>
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(maxPriceLabelText))
-                        {
-                            <label class="public-filter-label" for="max-price">@maxPriceLabelText</label>
-                        }
-                        <input id="max-price" name="maxPrice" value="@currentMaxPrice" placeholder="@maxPricePlaceholder" class="public-filter-control" />
-                    </div>
-                </div>
-
-                <div class="public-filter-row public-filter-row--pair">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(departureMonthLabelText))
-                        {
-                            <label class="public-filter-label" for="departure-month-select">@departureMonthLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="departureMonth">
-                            <select id="departure-month-select" name="departureMonth" class="public-filter-control public-native-select">
-                                <option value="">@allOptionLabel</option>
-                                @for (var month = 1; month <= 12; month++)
-                                {
-                                    <option value="@month" selected="@(currentDepartureMonth == month.ToString())">@departureMonthPrefix @month</option>
-                                }
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('departureMonth')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@departureMonthSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentDepartureMonth) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('departureMonth', '', '@allOptionLabelJs')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@allOptionLabel</span></span>
-                                    </button>
-                                    @for (var month = 1; month <= 12; month++)
-                                    {
-                                        var optionLabel = $"{departureMonthPrefix} {month}";
-                                        var optionLabelJs = JavaScriptEncoder.Default.Encode(optionLabel);
-                                        <button type="button" class="public-custom-select-option @(currentDepartureMonth == month.ToString() ? "selected" : string.Empty)" data-value="@month" onclick="selectPublicCustomOption('departureMonth', '@month', '@optionLabelJs')">
-                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@optionLabel</span></span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(maxDaysLabelText))
-                        {
-                            <label class="public-filter-label" for="max-days">@maxDaysLabelText</label>
-                        }
-                        <input id="max-days" name="maxDays" value="@currentMaxDays" placeholder="@maxDaysPlaceholder" class="public-filter-control" />
-                    </div>
-                </div>
-
-                <div class="public-filter-row public-filter-row--pair">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(travellersLabelText))
-                        {
-                            <label class="public-filter-label" for="travellers">@travellersLabelText</label>
-                        }
-                        <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="@travellersPlaceholder" class="public-filter-control" />
-                    </div>
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(sortLabelText))
-                        {
-                            <label class="public-filter-label" for="sort-select">@sortLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="sort">
-                            <select id="sort-select" name="sort" class="public-filter-control public-native-select">
-                                <option value="rating" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating")">@sortRatingLabel</option>
-                                <option value="best_value" selected="@(currentSort == "best_value")">@sortBestValueLabel</option>
-                                <option value="price_asc" selected="@(currentSort == "price_asc")">@sortPriceAscLabel</option>
-                                <option value="price_desc" selected="@(currentSort == "price_desc")">@sortPriceDescLabel</option>
-                                <option value="departure" selected="@(currentSort == "departure")">@sortDepartureLabel</option>
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('sort')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@sortSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @((string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating") ? "selected" : string.Empty)" data-value="rating" onclick="selectPublicCustomOption('sort', 'rating', '@(JavaScriptEncoder.Default.Encode(sortRatingLabel))')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@sortRatingLabel</span></span>
-                                    </button>
-                                    <button type="button" class="public-custom-select-option @(currentSort == "best_value" ? "selected" : string.Empty)" data-value="best_value" onclick="selectPublicCustomOption('sort', 'best_value', '@(JavaScriptEncoder.Default.Encode(sortBestValueLabel))')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@sortBestValueLabel</span></span>
-                                    </button>
-                                    <button type="button" class="public-custom-select-option @(currentSort == "price_asc" ? "selected" : string.Empty)" data-value="price_asc" onclick="selectPublicCustomOption('sort', 'price_asc', '@(JavaScriptEncoder.Default.Encode(sortPriceAscLabel))')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@sortPriceAscLabel</span></span>
-                                    </button>
-                                    <button type="button" class="public-custom-select-option @(currentSort == "price_desc" ? "selected" : string.Empty)" data-value="price_desc" onclick="selectPublicCustomOption('sort', 'price_desc', '@(JavaScriptEncoder.Default.Encode(sortPriceDescLabel))')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@sortPriceDescLabel</span></span>
-                                    </button>
-                                    <button type="button" class="public-custom-select-option @(currentSort == "departure" ? "selected" : string.Empty)" data-value="departure" onclick="selectPublicCustomOption('sort', 'departure', '@(JavaScriptEncoder.Default.Encode(sortDepartureLabel))')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@sortDepartureLabel</span></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <section class="@SectionClass">
+        <div class="grid gap-5 sm:grid-cols-2">
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(minPriceLabelText))
+                {
+                    <label class="@LabelClass" for="min-price">@minPriceLabelText</label>
+                }
+                <input id="min-price" name="minPrice" value="@currentMinPrice" placeholder="@minPricePlaceholder" class="@ControlClass" />
+            </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(maxPriceLabelText))
+                {
+                    <label class="@LabelClass" for="max-price">@maxPriceLabelText</label>
+                }
+                <input id="max-price" name="maxPrice" value="@currentMaxPrice" placeholder="@maxPricePlaceholder" class="@ControlClass" />
+            </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(departureMonthLabelText))
+                {
+                    <label class="@LabelClass" for="departure-month-select">@departureMonthLabelText</label>
+                }
+                <select id="departure-month-select" name="departureMonth" class="@ControlClass">
+                    <option value="">@allOptionLabel</option>
+                    @for (var month = 1; month <= 12; month++)
+                    {
+                        <option value="@month" selected="@(currentDepartureMonth == month.ToString())">@departureMonthPrefix @month</option>
+                    }
+                </select>
+            </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(maxDaysLabelText))
+                {
+                    <label class="@LabelClass" for="max-days">@maxDaysLabelText</label>
+                }
+                <input id="max-days" name="maxDays" value="@currentMaxDays" placeholder="@maxDaysPlaceholder" class="@ControlClass" />
+            </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(travellersLabelText))
+                {
+                    <label class="@LabelClass" for="travellers">@travellersLabelText</label>
+                }
+                <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="@travellersPlaceholder" class="@ControlClass" />
+            </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(sortLabelText))
+                {
+                    <label class="@LabelClass" for="sort-select">@sortLabelText</label>
+                }
+                <select id="sort-select" name="sort" class="@ControlClass">
+                    <option value="rating" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating")">@sortRatingLabel</option>
+                    <option value="best_value" selected="@(currentSort == "best_value")">@sortBestValueLabel</option>
+                    <option value="price_asc" selected="@(currentSort == "price_asc")">@sortPriceAscLabel</option>
+                    <option value="price_desc" selected="@(currentSort == "price_desc")">@sortPriceDescLabel</option>
+                    <option value="departure" selected="@(currentSort == "departure")">@sortDepartureLabel</option>
+                </select>
             </div>
         </div>
+    </section>
 
-        <div class="public-filter-section">
-            <div class="public-filter-grid">
-                <div class="public-filter-row">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(confirmationLabelText))
-                        {
-                            <label class="public-filter-label" for="confirmation-type-select">@confirmationLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="confirmationType">
-                            <select id="confirmation-type-select" name="confirmationType" class="public-filter-control public-native-select">
-                                <option value="">@allOptionLabel</option>
-                                @foreach (var facet in confirmationFacets)
-                                {
-                                    <option value="@facet.Value" selected="@(currentConfirmationType == facet.Value)">@facet.Value (@facet.Count)</option>
-                                }
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('confirmationType')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@confirmationSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentConfirmationType) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('confirmationType', '', '@allOptionLabelJs')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@allOptionLabel</span></span>
-                                    </button>
-                                    @foreach (var facet in confirmationFacets)
-                                    {
-                                        var optionLabel = $"{facet.Value} ({facet.Count})";
-                                        var optionLabelJs = JavaScriptEncoder.Default.Encode(optionLabel);
-                                        <button type="button" class="public-custom-select-option @(currentConfirmationType == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('confirmationType', '@facet.Value', '@optionLabelJs')">
-                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@optionLabel</span></span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <section class="@SectionClass">
+        <div class="grid gap-5">
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(confirmationLabelText))
+                {
+                    <label class="@LabelClass" for="confirmation-type-select">@confirmationLabelText</label>
+                }
+                <select id="confirmation-type-select" name="confirmationType" class="@ControlClass">
+                    <option value="">@allOptionLabel</option>
+                    @foreach (var facet in confirmationFacets)
+                    {
+                        <option value="@facet.Value" selected="@(currentConfirmationType == facet.Value)">@facet.Value (@facet.Count)</option>
+                    }
+                </select>
+            </div>
 
-                <div class="public-filter-row">
-                    <div class="public-filter-field">
-                        @if (!string.IsNullOrWhiteSpace(cancellationLabelText))
-                        {
-                            <label class="public-filter-label" for="cancellation-type-select">@cancellationLabelText</label>
-                        }
-                        <div class="public-custom-select" data-public-select-id="cancellationType">
-                            <select id="cancellation-type-select" name="cancellationType" class="public-filter-control public-native-select">
-                                <option value="">@allOptionLabel</option>
-                                @foreach (var facet in cancellationFacets)
-                                {
-                                    <option value="@facet.Value" selected="@(currentCancellationType == facet.Value)">@facet.Value (@facet.Count)</option>
-                                }
-                            </select>
-                            <div class="public-custom-select-shell">
-                                <button type="button" class="public-custom-select-trigger" data-public-select-trigger onclick="togglePublicCustomSelect('cancellationType')">
-                                    <span class="public-custom-select-meta">
-                                        <span class="selected-label">@cancellationSelectedLabel</span>
-                                    </span>
-                                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                                </button>
-                                <div class="public-custom-select-menu">
-                                    <button type="button" class="public-custom-select-option @(string.IsNullOrWhiteSpace(currentCancellationType) ? "selected" : string.Empty)" data-value="" onclick="selectPublicCustomOption('cancellationType', '', '@allOptionLabelJs')">
-                                        <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@allOptionLabel</span></span>
-                                    </button>
-                                    @foreach (var facet in cancellationFacets)
-                                    {
-                                        var optionLabel = $"{facet.Value} ({facet.Count})";
-                                        var optionLabelJs = JavaScriptEncoder.Default.Encode(optionLabel);
-                                        <button type="button" class="public-custom-select-option @(currentCancellationType == facet.Value ? "selected" : string.Empty)" data-value="@facet.Value" onclick="selectPublicCustomOption('cancellationType', '@facet.Value', '@optionLabelJs')">
-                                            <span class="public-custom-select-option-main"><span class="public-custom-select-option-dot"></span><span>@optionLabel</span></span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(cancellationLabelText))
+                {
+                    <label class="@LabelClass" for="cancellation-type-select">@cancellationLabelText</label>
+                }
+                <select id="cancellation-type-select" name="cancellationType" class="@ControlClass">
+                    <option value="">@allOptionLabel</option>
+                    @foreach (var facet in cancellationFacets)
+                    {
+                        <option value="@facet.Value" selected="@(currentCancellationType == facet.Value)">@facet.Value (@facet.Count)</option>
+                    }
+                </select>
             </div>
         </div>
+    </section>
 
-        <div class="public-filter-section public-filter-section--compact">
-            <div class="public-filter-checkboxes rounded-2xl bg-surface-muted-light p-4 dark:bg-surface-elevated-dark">
-                @if (!string.IsNullOrWhiteSpace(availableOnlyLabelText))
-                {
-                    <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
-                        <input type="checkbox" name="availableOnly" value="true" checked="@currentAvailableOnly" class="rounded border-border-light dark:border-border-dark" />
-                        @availableOnlyLabelText
-                    </label>
-                }
-                @if (!string.IsNullOrWhiteSpace(promotionOnlyLabelText))
-                {
-                    <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
-                        <input type="checkbox" name="promotionOnly" value="true" checked="@currentPromotionOnly" class="rounded border-border-light dark:border-border-dark" />
-                        @promotionOnlyLabelText
-                    </label>
-                }
-            </div>
-
-            <div class="public-filter-summary rounded-2xl border border-dashed border-border-light p-4 text-xs text-slate-500 dark:border-border-dark dark:text-slate-400" data-facet-source="RegionFacets" data-confirmation-source="ConfirmationTypeFacets">
-                @if (!string.IsNullOrWhiteSpace(summaryRegionText))
-                {
-                    <div>@summaryRegionText</div>
-                }
-                @if (!string.IsNullOrWhiteSpace(summaryConfirmationText))
-                {
-                    <div>@summaryConfirmationText</div>
-                }
-            </div>
-
-            @if (!string.IsNullOrWhiteSpace(applyButtonText) || !string.IsNullOrWhiteSpace(resetButtonText))
+    <section class="@SectionClass">
+        <div class="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+            @if (!string.IsNullOrWhiteSpace(availableOnlyLabelText))
             {
-                <div class="public-filter-actions">
-                    @if (!string.IsNullOrWhiteSpace(applyButtonText))
-                    {
-                        <button type="submit" class="flex-1 rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">@applyButtonText</button>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(resetButtonText))
-                    {
-                        <a asp-action="Index" class="public-filter-reset rounded-2xl border border-border-light px-5 py-3 text-sm font-bold text-slate-600 dark:border-border-dark dark:text-slate-300">@resetButtonText</a>
-                    }
-                </div>
+                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" name="availableOnly" value="true" checked="@currentAvailableOnly" class="rounded border-border-light dark:border-border-dark" />
+                    @availableOnlyLabelText
+                </label>
+            }
+            @if (!string.IsNullOrWhiteSpace(promotionOnlyLabelText))
+            {
+                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                    <input type="checkbox" name="promotionOnly" value="true" checked="@currentPromotionOnly" class="rounded border-border-light dark:border-border-dark" />
+                    @promotionOnlyLabelText
+                </label>
             }
         </div>
-    </div>
-</form>
 
+        <div class="space-y-2 rounded-[1.5rem] border border-dashed border-slate-300 px-4 py-4 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400" data-facet-source="RegionFacets" data-confirmation-source="ConfirmationTypeFacets">
+            @if (!string.IsNullOrWhiteSpace(summaryRegionText))
+            {
+                <div>@summaryRegionText</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(summaryConfirmationText))
+            {
+                <div>@summaryConfirmationText</div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(applyButtonText) || !string.IsNullOrWhiteSpace(resetButtonText))
+        {
+            <div class="flex flex-col gap-3 sm:flex-row">
+                @if (!string.IsNullOrWhiteSpace(applyButtonText))
+                {
+                    <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/35">@applyButtonText</button>
+                }
+                @if (!string.IsNullOrWhiteSpace(resetButtonText))
+                {
+                    <a asp-action="Index" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-600 transition hover:border-primary/30 hover:text-primary dark:border-slate-700 dark:text-slate-300">@resetButtonText</a>
+                }
+            </div>
+        }
+    </section>
+</form>

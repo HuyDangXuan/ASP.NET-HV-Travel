@@ -28,19 +28,10 @@ public class DestinationsController : Controller
             .Select(group => new DestinationRegionViewModel
             {
                 Region = group.Key,
-                Destinations = group
-                    .GroupBy(t => new { City = t.Destination?.City ?? "Chưa xác định", Country = t.Destination?.Country ?? "Việt Nam" })
-                    .Select(cityGroup => new DestinationCardViewModel
-                    {
-                        City = cityGroup.Key.City,
-                        Country = cityGroup.Key.Country,
-                        TourCount = cityGroup.Count(),
-                        StartingPrice = cityGroup.Min(t => t.Price?.Adult ?? 0),
-                        BestRating = cityGroup.Max(t => t.Rating),
-                        RepresentativeImage = cityGroup.SelectMany(t => t.Images).FirstOrDefault() ?? string.Empty
-                    })
-                    .OrderByDescending(card => card.TourCount)
-                    .ThenBy(card => card.City)
+                Tours = group
+                    .OrderByDescending(t => t.Rating)
+                    .ThenByDescending(t => t.ReviewCount)
+                    .ThenBy(t => t.Name)
                     .ToList()
             })
             .OrderBy(region => region.Region)

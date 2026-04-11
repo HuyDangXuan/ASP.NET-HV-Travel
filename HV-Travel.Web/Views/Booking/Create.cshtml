@@ -6,7 +6,6 @@
 @{
     var sections = await ContentService.GetPageSectionsAsync("booking");
     var createHero = sections.GetSection("createHero");
-    var createStepper = sections.GetSection("createStepper");
     var travellerForm = sections.GetSection("travellerForm");
     var pricingPanel = sections.GetSection("pricingPanel");
     var tour = Model.Tour ?? new Tour();
@@ -20,30 +19,39 @@
     var amountDueNow = string.Equals(Model.PaymentPlanType, "Deposit", StringComparison.OrdinalIgnoreCase) ? Math.Round(subtotal * 0.30m, 0, MidpointRounding.AwayFromZero) : subtotal;
     var balanceDue = Math.Max(0m, subtotal - amountDueNow);
     var remainingCapacityFormat = travellerForm?.Fields.GetVisibleFieldValue("remainingCapacityFormat", "{0} chỗ") ?? "{0} chỗ";
-    var couponAppliedFormat = pricingPanel?.Fields.GetVisibleFieldValue("couponAppliedFormat", "Đã áp dụng coupon {0}.") ?? "Đã áp dụng coupon {0}.";
-    var quoteReadyText = pricingPanel?.Fields.GetVisibleFieldValue("quoteReadyText", "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.") ?? "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.";
+    var tourSnapshotEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("tourSnapshotEyebrow", "Thông tin tour"));
+    var departureTitleText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("departureTitle", "Chọn đợt khởi hành"));
+    var instantConfirmationText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Xác nhận tức thì"));
+    var requestConfirmationText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "Chờ xác nhận"));
+    var adultLabelText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("adultLabel", "Người lớn"));
+    var childLabelText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("childLabel", "Trẻ em"));
+    var infantLabelText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("infantLabel", "Em bé"));
+    var travellerEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(travellerForm?.Fields.GetVisibleFieldValue("travellerEyebrow", "Hành khách"));
+    var pricingEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Tùy chọn thanh toán"));
+    var couponLabelText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponLabel", "Mã giảm giá"));
+    var couponPlaceholderText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponPlaceholder", "Nhập nếu bạn có mã ưu đãi"));
+    var paymentPlanLabelText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanLabel", "Hình thức thanh toán"));
+    var paymentPlanFullLabelText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanFullLabel", "Thanh toán toàn bộ"));
+    var paymentPlanDepositLabelText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanDepositLabel", "Đặt cọc 30%"));
+    var couponUsageLabelText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponUsageLabel", "Sử dụng mã ưu đãi"));
+    var couponUsageYesText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponUsageYesLabel", "Có mã ưu đãi"));
+    var couponUsageNoText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponUsageNoLabel", "Không có mã ưu đãi"));
+    var quoteEyebrowText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("quoteEyebrowText", "Báo giá"));
+    var couponAppliedFormat = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("couponAppliedFormat", "Đã áp dụng mã ưu đãi {0}.")) ?? "Đã áp dụng mã ưu đãi {0}.";
+    var quoteReadyText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("quoteReadyText", "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.")) ?? "Báo giá hợp lệ, có thể tiếp tục giữ chỗ.";
+    var quoteStatusText = BookingDisplayTextHelper.NormalizeCmsText(pricingPanel?.Fields.GetVisibleFieldValue("quoteStatusText", "Báo giá sẽ tự cập nhật khi bạn đổi ngày khởi hành, số khách, mã ưu đãi hoặc hình thức thanh toán."));
+    var useCouponByDefault = !string.IsNullOrWhiteSpace(Model.CouponCode);
 }
 
 @if (createHero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--compact hero-gradient @ContentPresentationViewHelper.GetSectionBackgroundClass(createHero)" style="@ContentPresentationViewHelper.GetSectionStyle(createHero)">
-        <div class="public-top-section-shell mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(createHero)">
-            <span class="public-badge public-top-section-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "badgeText")">@createHero.Fields.GetVisibleFieldValue("badgeText", "Bước 1 trong hành trình đặt tour")</span>
-            <h1 class="public-top-section-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "title")">@createHero.Fields.GetVisibleFieldValue("title", "Đặt tour và xác nhận hành khách")</h1>
-            <div class="public-top-section-lead" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "description")">@Html.Raw(createHero.Fields.GetVisibleFieldValue("description", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán."))</div>
+    <section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(createHero)" style="@ContentPresentationViewHelper.GetSectionStyle(createHero)">
+        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 @ContentPresentationViewHelper.GetSectionTextClass(createHero)">
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "badgeText")">@createHero.Fields.GetVisibleFieldValue("badgeText", "Bước 1 trong hành trình đặt tour")</span>
+            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "title")">@createHero.Fields.GetVisibleFieldValue("title", "Đặt tour và xác nhận hành khách")</h1>
+            <div class="mt-4 max-w-2xl text-base leading-relaxed text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(createHero, "description")">@Html.Raw(createHero.Fields.GetVisibleFieldValue("description", "Chọn lịch khởi hành phù hợp, kiểm tra báo giá theo thời gian thực và xác nhận thông tin liên hệ trước khi chuyển sang thanh toán."))</div>
         </div>
     </section>
-}
-
-@if (createStepper?.IsEnabled != false)
-{
-    <div class="border-b border-border-light bg-surface-light py-4 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(createStepper) @ContentPresentationViewHelper.GetSectionBackgroundClass(createStepper)" style="@ContentPresentationViewHelper.GetSectionStyle(createStepper)">
-        <div class="mx-auto flex max-w-5xl items-center justify-center gap-4 px-4 text-sm sm:px-6 lg:px-8">
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "detailsStepLabel")">1. @createStepper.Fields.GetVisibleFieldValue("detailsStepLabel", "Thông tin")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "paymentStepLabel")">2. @createStepper.Fields.GetVisibleFieldValue("paymentStepLabel", "Thanh toán")</span>
-            <span style="@ContentPresentationViewHelper.GetFieldTextStyle(createStepper, "completeStepLabel")">3. @createStepper.Fields.GetVisibleFieldValue("completeStepLabel", "Hoàn tất")</span>
-        </div>
-    </div>
 }
 
 <section class="bg-background-light py-10 dark:bg-background-dark">
@@ -54,7 +62,7 @@
             <input asp-for="SelectedStartDate" type="hidden" />
 
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "tourSnapshotEyebrow")">@travellerForm?.Fields.GetVisibleFieldValue("tourSnapshotEyebrow", "Tour snapshot")</p>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "tourSnapshotEyebrow")">@tourSnapshotEyebrowText</p>
                 <div class="mt-2 flex items-start justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-black">@tour.Name</h2>
@@ -62,7 +70,7 @@
                     </div>
                     <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@detailId" class="text-sm font-bold text-primary">@travellerForm?.Fields.GetVisibleFieldValue("viewDetailsText", "Xem chi tiết")</a>
                 </div>
-                <div class="public-rich-text mt-4 text-sm">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription ?? tour.Description))</div>
+                <div class="prose prose-slate max-w-none dark:prose-invert mt-4 text-sm">@Html.Raw(RichTextContentFormatter.ToTrustedHtml(tour.ShortDescription ?? tour.Description))</div>
                 @if (!ViewData.ModelState.IsValid)
                 {
                     <div asp-validation-summary="All" class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"></div>
@@ -70,23 +78,46 @@
             </div>
 
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(travellerForm)" style="@ContentPresentationViewHelper.GetSectionStyle(travellerForm)">
-                <h3 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "departureTitle")">@travellerForm?.Fields.GetVisibleFieldValue("departureTitle", "Chọn đợt khởi hành")</h3>
+                <h3 class="text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "departureTitle")">@departureTitleText</h3>
                 @if (departures.Any())
                 {
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div class="mt-4 space-y-3">
                         @foreach (var departure in departures)
                         {
                             var isSelected = string.Equals(Model.DepartureId, departure.Id, StringComparison.Ordinal) || (string.IsNullOrWhiteSpace(Model.DepartureId) && selectedDeparture?.Id == departure.Id);
                             var confirmationText = string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase)
-                                ? travellerForm?.Fields.GetVisibleFieldValue("instantConfirmationLabel", "Xác nhận tức thì")
-                                : travellerForm?.Fields.GetVisibleFieldValue("requestConfirmationLabel", "Chờ xác nhận");
-                            <label class="rounded-2xl border border-border-light p-4 dark:border-border-dark">
-                                <input asp-for="DepartureId" type="radio" value="@departure.Id" checked="@isSelected" class="departure-choice sr-only" data-start-date="@departure.StartDate.ToString("yyyy-MM-dd")" data-remaining-capacity="@departure.RemainingCapacity" />
-                                <strong>@departure.StartDate.ToString("dd/MM/yyyy")</strong>
-                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@confirmationText</p>
-                                <p class="mt-2 text-sm">@string.Format(remainingCapacityFormat, departure.RemainingCapacity)</p>
-                                <p class="mt-2 text-sm">@departure.AdultPrice.ToString("N0")₫ / @departure.ChildPrice.ToString("N0")₫ / @departure.InfantPrice.ToString("N0")₫</p>
-                            </label>
+                                ? instantConfirmationText
+                                : requestConfirmationText;
+                            var departureInputId = $"departure-{departure.Id}";
+                            <div>
+                                <input asp-for="DepartureId" id="@departureInputId" type="radio" value="@departure.Id" checked="@(isSelected ? "checked" : null)" class="departure-choice peer sr-only" data-start-date="@departure.StartDate.ToString("yyyy-MM-dd")" data-remaining-capacity="@departure.RemainingCapacity" />
+                                <label for="@departureInputId" class="flex cursor-pointer flex-col gap-3 rounded-2xl border border-border-light px-4 py-4 transition hover:border-primary/40 hover:bg-primary/5 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:shadow-sm peer-focus:ring-2 peer-focus:ring-primary/20 dark:border-border-dark dark:hover:border-primary/50 dark:hover:bg-primary/10">
+                                    <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                        <div class="min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <strong class="text-base font-black text-slate-900 dark:text-white">@departure.StartDate.ToString("dd/MM/yyyy")</strong>
+                                                <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">@confirmationText</span>
+                                            </div>
+                                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@string.Format(remainingCapacityFormat, departure.RemainingCapacity)</p>
+                                        </div>
+                                        <span class="text-sm font-bold text-primary">@departure.AdultPrice.ToString("N0")₫</span>
+                                    </div>
+                                    <div class="grid gap-2 sm:grid-cols-3">
+                                        <div class="rounded-2xl bg-slate-50/90 px-3 py-3 dark:bg-slate-900/60">
+                                            <span class="block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">@adultLabelText</span>
+                                            <span class="mt-1 block text-sm font-bold text-slate-900 dark:text-white">@departure.AdultPrice.ToString("N0")₫</span>
+                                        </div>
+                                        <div class="rounded-2xl bg-slate-50/90 px-3 py-3 dark:bg-slate-900/60">
+                                            <span class="block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">@childLabelText</span>
+                                            <span class="mt-1 block text-sm font-bold text-slate-900 dark:text-white">@departure.ChildPrice.ToString("N0")₫</span>
+                                        </div>
+                                        <div class="rounded-2xl bg-slate-50/90 px-3 py-3 dark:bg-slate-900/60">
+                                            <span class="block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">@infantLabelText</span>
+                                            <span class="mt-1 block text-sm font-bold text-slate-900 dark:text-white">@departure.InfantPrice.ToString("N0")₫</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
                         }
                     </div>
                 }
@@ -96,9 +127,9 @@
                 }
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-2">
+            <div class="grid items-start gap-6 lg:grid-cols-2">
                 <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(travellerForm)" style="@ContentPresentationViewHelper.GetSectionStyle(travellerForm)">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "travellerEyebrow")">@travellerForm?.Fields.GetVisibleFieldValue("travellerEyebrow", "Traveller")</p>
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "travellerEyebrow")">@travellerEyebrowText</p>
                     <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(travellerForm, "travellerTitle")">@travellerForm?.Fields.GetVisibleFieldValue("travellerTitle", "Thông tin liên hệ và số khách")</h3>
                     <div class="mt-4 space-y-4">
                         <div>
@@ -113,23 +144,61 @@
                             <label class="mb-2 block text-sm font-semibold">@travellerForm?.Fields.GetVisibleFieldValue("contactPhoneLabel", "Số điện thoại")</label>
                             <input asp-for="ContactPhone" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("contactPhonePlaceholder", "0901 234 567"))" />
                         </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <input asp-for="AdultCount" type="number" min="1" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                            <input asp-for="ChildCount" type="number" min="0" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
-                            <input asp-for="InfantCount" type="number" min="0" class="traveller-input rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                        <div class="space-y-4">
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold">@adultLabelText</label>
+                                <input asp-for="AdultCount" type="number" min="1" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold">@childLabelText</label>
+                                <input asp-for="ChildCount" type="number" min="0" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-sm font-semibold">@infantLabelText</label>
+                                <input asp-for="InfantCount" type="number" min="0" class="traveller-input w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            </div>
                         </div>
                         <textarea asp-for="SpecialRequests" rows="3" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(travellerForm?.Fields.GetVisibleFieldValue("specialRequestsPlaceholder", "Ví dụ: ăn chay, ghế gần cửa sổ, hỗ trợ xe đón..."))"></textarea>
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(pricingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(pricingPanel)">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "eyebrowText")">@pricingPanel?.Fields.GetVisibleFieldValue("eyebrowText", "Pricing controls")</p>
+                <div class="self-start rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(pricingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(pricingPanel)">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "eyebrowText")">@pricingEyebrowText</p>
                     <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "title")">@pricingPanel?.Fields.GetVisibleFieldValue("title", "Coupon và kế hoạch thanh toán")</h3>
                     <div class="mt-4 space-y-4">
-                        <input asp-for="CouponCode" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" placeholder="@(pricingPanel?.Fields.GetVisibleFieldValue("couponPlaceholder", "WELCOME10"))" />
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm dark:border-border-dark"><input asp-for="PaymentPlanType" type="radio" value="Full" class="mr-2" />@pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanFullLabel", "Full")</label>
-                            <label class="rounded-2xl border border-border-light px-4 py-3 text-sm dark:border-border-dark"><input asp-for="PaymentPlanType" type="radio" value="Deposit" class="mr-2" />@pricingPanel?.Fields.GetVisibleFieldValue("paymentPlanDepositLabel", "Deposit")</label>
+                        <div>
+                            <p class="mb-2 text-sm font-semibold">@couponUsageLabelText</p>
+                            <div class="grid gap-3">
+                                <label class="flex w-full cursor-pointer items-start gap-3 rounded-2xl border border-border-light px-4 py-3 text-sm transition hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:hover:border-primary/50 dark:hover:bg-primary/10">
+                                    <input type="radio" name="UseCoupon" value="Yes" checked="@(useCouponByDefault ? "checked" : null)" class="mt-0.5 h-4 w-4 shrink-0" />
+                                    <span class="font-medium">@couponUsageYesText</span>
+                                </label>
+                                <label class="flex w-full cursor-pointer items-start gap-3 rounded-2xl border border-border-light px-4 py-3 text-sm transition hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:hover:border-primary/50 dark:hover:bg-primary/10">
+                                    <input type="radio" name="UseCoupon" value="No" checked="@(useCouponByDefault ? null : "checked")" class="mt-0.5 h-4 w-4 shrink-0" />
+                                    <span class="font-medium">@couponUsageNoText</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="coupon-code-group">
+                            <label for="CouponCode" class="mb-2 block text-sm font-semibold">
+                                @couponLabelText
+                                <span class="font-normal text-slate-500 dark:text-slate-400">(không bắt buộc)</span>
+                            </label>
+                            <input asp-for="CouponCode" disabled="@(!useCouponByDefault)" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm transition disabled:cursor-not-allowed disabled:bg-slate-100/80 disabled:text-slate-400 dark:border-border-dark dark:disabled:bg-slate-800/70 dark:disabled:text-slate-500" placeholder="@couponPlaceholderText" />
+                            <p id="coupon-helper" class="mt-2 text-xs text-slate-500 dark:text-slate-400">Có thể bỏ trống nếu bạn không có mã ưu đãi.</p>
+                        </div>
+                        <div>
+                            <p class="mb-2 text-sm font-semibold">@paymentPlanLabelText</p>
+                            <div class="grid gap-3">
+                                <label class="flex w-full cursor-pointer items-start gap-3 rounded-2xl border border-border-light px-4 py-3 text-sm transition hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:hover:border-primary/50 dark:hover:bg-primary/10">
+                                    <input asp-for="PaymentPlanType" type="radio" value="Full" class="mt-0.5 h-4 w-4 shrink-0" />
+                                    <span class="font-medium">@paymentPlanFullLabelText</span>
+                                </label>
+                                <label class="flex w-full cursor-pointer items-start gap-3 rounded-2xl border border-border-light px-4 py-3 text-sm transition hover:border-primary/40 hover:bg-primary/5 dark:border-border-dark dark:hover:border-primary/50 dark:hover:bg-primary/10">
+                                    <input asp-for="PaymentPlanType" type="radio" value="Deposit" class="mt-0.5 h-4 w-4 shrink-0" />
+                                    <span class="font-medium">@paymentPlanDepositLabelText</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,7 +207,7 @@
 
         <aside>
             <div class="rounded-3xl border border-border-light bg-surface-light p-6 dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(pricingPanel)" style="@ContentPresentationViewHelper.GetSectionStyle(pricingPanel)">
-                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "quoteEyebrowText")">@pricingPanel?.Fields.GetVisibleFieldValue("quoteEyebrowText", "Quote")</p>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "quoteEyebrowText")">@quoteEyebrowText</p>
                 <h3 class="mt-2 text-xl font-black" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "quoteTitle")">@pricingPanel?.Fields.GetVisibleFieldValue("quoteTitle", "Xem báo giá trước khi giữ chỗ")</h3>
                 <div id="quote-badges" class="mt-4 flex flex-wrap gap-2"></div>
                 <div class="mt-4 space-y-2 text-sm">
@@ -148,7 +217,7 @@
                     <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("amountDueNowLabel", "Thanh toán ngay")</span><span id="amountDueNow">@amountDueNow.ToString("N0")₫</span></div>
                     <div class="flex justify-between"><span>@pricingPanel?.Fields.GetVisibleFieldValue("balanceDueLabel", "Còn lại")</span><span id="balanceDue">@balanceDue.ToString("N0")₫</span></div>
                 </div>
-                <p id="quote-status" class="mt-4 text-sm text-slate-500 dark:text-slate-400">@pricingPanel?.Fields.GetVisibleFieldValue("quoteStatusText", "Máy chủ sẽ tính lại báo giá khi bạn đổi departure, số khách, coupon hoặc payment plan.")</p>
+                <p id="quote-status" class="mt-4 text-sm text-slate-500 dark:text-slate-400">@quoteStatusText</p>
                 <button form="booking-form" type="submit" id="submit-booking" class="mt-6 w-full rounded-2xl bg-primary px-4 py-3 font-bold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "submitText")">@pricingPanel?.Fields.GetVisibleFieldValue("submitText", "Tiếp tục sang thanh toán")</button>
                 <p class="mt-3 text-xs text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(pricingPanel, "submitHelperText")">@pricingPanel?.Fields.GetVisibleFieldValue("submitHelperText", "Ghế chỉ được giữ khi máy chủ xác nhận báo giá và tạo booking thành công.")</p>
             </div>
@@ -162,6 +231,9 @@
         (() => {
             const quoteUrl = '@Url.Action("Quote", "Booking")';
             const form = document.getElementById('booking-form');
+            const couponInput = document.getElementById('CouponCode');
+            const couponCodeGroup = document.getElementById('coupon-code-group');
+            const couponToggleInputs = Array.from(document.querySelectorAll('input[name="UseCoupon"]'));
             const selectedStartDate = document.getElementById('SelectedStartDate');
             const remainingCapacityFormat = @Html.Raw(JsonSerializer.Serialize(remainingCapacityFormat));
             const couponAppliedFormat = @Html.Raw(JsonSerializer.Serialize(couponAppliedFormat));
@@ -169,10 +241,34 @@
             const formatCurrency = (value) => `${new Intl.NumberFormat('vi-VN').format(value || 0)}₫`;
             const formatRemaining = (value) => remainingCapacityFormat.replace('{0}', value || 0);
             const formatCoupon = (value) => couponAppliedFormat.replace('{0}', value || '');
-            const renderBadges = (badges) => document.getElementById('quote-badges').innerHTML = (badges || []).map((badge) => `<span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">${badge}</span>`).join('');
+            const useCoupon = () => document.querySelector('input[name="UseCoupon"]:checked')?.value === 'Yes';
+            const translateBadge = (badge) => ({
+                Instant: 'Xác nhận tức thì',
+                OnRequest: 'Chờ xác nhận',
+                Request: 'Chờ xác nhận',
+                FreeCancellation: 'Hủy miễn phí',
+                LowAvailability: 'Sắp hết chỗ',
+                Deal: 'Ưu đãi'
+            }[badge] || badge);
+            const renderBadges = (badges) => document.getElementById('quote-badges').innerHTML = (badges || []).map((badge) => `<span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">${translateBadge(badge)}</span>`).join('');
+            const syncCouponInput = ({ clearValue = false } = {}) => {
+                const enabled = useCoupon();
+                couponInput.disabled = !enabled;
+                couponCodeGroup.classList.toggle('opacity-70', !enabled);
+
+                if (!enabled) {
+                    if (clearValue) {
+                        couponInput.value = '';
+                    }
+
+                    if (document.activeElement === couponInput) {
+                        couponInput.blur();
+                    }
+                }
+            };
             const collectParams = () => {
                 const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
-                return new URLSearchParams({ tourId: document.getElementById('TourId').value, departureId: activeDeparture ? activeDeparture.value : '', adultCount: document.getElementById('AdultCount').value || '1', childCount: document.getElementById('ChildCount').value || '0', infantCount: document.getElementById('InfantCount').value || '0', couponCode: document.getElementById('CouponCode').value || '', paymentPlanType: document.querySelector('input[name="PaymentPlanType"]:checked')?.value || 'Full' });
+                return new URLSearchParams({ tourId: document.getElementById('TourId').value, departureId: activeDeparture ? activeDeparture.value : '', adultCount: document.getElementById('AdultCount').value || '1', childCount: document.getElementById('ChildCount').value || '0', infantCount: document.getElementById('InfantCount').value || '0', couponCode: useCoupon() ? (couponInput.value || '') : '', paymentPlanType: document.querySelector('input[name="PaymentPlanType"]:checked')?.value || 'Full' });
             };
             const refreshQuote = async () => {
                 const activeDeparture = document.querySelector('input[name="DepartureId"]:checked');
@@ -186,8 +282,21 @@
                 document.getElementById('quote-status').textContent = data.errorMessage || (data.appliedCouponCode ? formatCoupon(data.appliedCouponCode) : quoteReadyText);
                 renderBadges(data.badges);
             };
-            form.querySelectorAll('input, textarea').forEach((element) => { if (element.type !== 'hidden' && element.name !== '__RequestVerificationToken') { element.addEventListener('change', refreshQuote); } });
+            form.querySelectorAll('input, textarea').forEach((element) => { if (element.type !== 'hidden' && element.name !== '__RequestVerificationToken' && element.name !== 'UseCoupon') { element.addEventListener('change', refreshQuote); } });
+            couponToggleInputs.forEach((element) => {
+                element.addEventListener('change', () => {
+                    syncCouponInput({ clearValue: element.value === 'No' });
+                    refreshQuote();
+                });
+            });
+            form.addEventListener('submit', () => {
+                if (document.activeElement === couponInput && form.checkValidity()) {
+                    couponInput.blur();
+                }
+            });
+            syncCouponInput();
             refreshQuote();
         })();
     </script>
 }
+

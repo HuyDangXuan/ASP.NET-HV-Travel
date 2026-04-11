@@ -1,4 +1,4 @@
-﻿@using System.Linq
+@using System.Linq
 @using HVTravel.Domain.Entities
 @using HVTravel.Web.Services
 @model ContentSection
@@ -18,27 +18,32 @@
 
 @if (slides.Any())
 {
-    <section class="home-carousel-section" data-animate="fade-up">
+    <section class="py-8 sm:py-10" data-animate="fade-up">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="home-carousel-shell @ContentPresentationViewHelper.GetSectionBackgroundClass(carousel)" style="@ContentPresentationViewHelper.GetSectionStyle(carousel)">
-                <div class="home-carousel" data-home-carousel data-autoplay-interval="5000">
-                    <div class="home-carousel-viewport">
-                        <div class="home-carousel-track" data-home-carousel-track>
+            <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/80 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.6)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/80 @ContentPresentationViewHelper.GetSectionBackgroundClass(carousel)" style="@ContentPresentationViewHelper.GetSectionStyle(carousel)">
+                <div class="relative" data-carousel data-autoplay-interval="5000">
+                    <div class="overflow-hidden">
+                        <div class="flex transition-transform duration-500 ease-out" data-carousel-track>
                             @foreach (var slide in slides)
                             {
                                 var alt = $"Carousel trang chủ {slide.Index}";
                                 var linkUrl = ContentAccessExtensions.NormalizeCarouselLink(slide.LinkUrl);
                                 var hasLink = !string.IsNullOrWhiteSpace(linkUrl);
+                                var slideClass = "block h-full w-full overflow-hidden";
                                 if (hasLink)
                                 {
-                                    <a href="@linkUrl" class="home-carousel-slide" data-home-carousel-slide aria-label="@alt">
-                                        <img src="@slide.ImageUrl" alt="@alt" class="home-carousel-image" loading="lazy" />
+                                    <a href="@linkUrl" class="relative block min-w-full bg-slate-100 dark:bg-slate-900" data-carousel-slide aria-label="@alt">
+                                        <div class="@slideClass">
+                                            <img src="@slide.ImageUrl" alt="@alt" class="h-[280px] w-full object-cover sm:h-[360px] lg:h-[440px]" loading="lazy" />
+                                        </div>
                                     </a>
                                 }
                                 else
                                 {
-                                    <div class="home-carousel-slide" data-home-carousel-slide>
-                                        <img src="@slide.ImageUrl" alt="@alt" class="home-carousel-image" loading="lazy" />
+                                    <div class="relative min-w-full bg-slate-100 dark:bg-slate-900" data-carousel-slide>
+                                        <div class="@slideClass">
+                                            <img src="@slide.ImageUrl" alt="@alt" class="h-[280px] w-full object-cover sm:h-[360px] lg:h-[440px]" loading="lazy" />
+                                        </div>
                                     </div>
                                 }
                             }
@@ -47,17 +52,27 @@
 
                     @if (slides.Count > 1)
                     {
-                        <button type="button" class="home-carousel-nav home-carousel-nav--prev" data-home-carousel-prev aria-label="Slide trước">
-                            <span class="material-symbols-outlined">arrow_back_ios_new</span>
+                        <button type="button"
+                                class="absolute left-4 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-slate-950/40 text-white shadow-lg shadow-slate-950/20 backdrop-blur transition hover:bg-slate-950/60"
+                                data-carousel-prev
+                                aria-label="Slide trước">
+                            <span class="material-symbols-outlined text-[18px]">arrow_back_ios_new</span>
                         </button>
-                        <button type="button" class="home-carousel-nav home-carousel-nav--next" data-home-carousel-next aria-label="Slide tiếp theo">
-                            <span class="material-symbols-outlined">arrow_forward_ios</span>
+                        <button type="button"
+                                class="absolute right-4 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-slate-950/40 text-white shadow-lg shadow-slate-950/20 backdrop-blur transition hover:bg-slate-950/60"
+                                data-carousel-next
+                                aria-label="Slide tiếp theo">
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward_ios</span>
                         </button>
 
-                        <div class="home-carousel-dots" data-home-carousel-dots>
+                        <div class="absolute inset-x-0 bottom-5 flex items-center justify-center gap-2" data-carousel-dots>
                             @for (var index = 0; index < slides.Count; index++)
                             {
-                                <button type="button" class="home-carousel-dot" data-home-carousel-dot data-slide-index="@index" aria-label="Đi đến slide @(index + 1)"></button>
+                                <button type="button"
+                                        class="h-2.5 w-8 rounded-full bg-white/35 transition-all hover:bg-white/60"
+                                        data-carousel-dot
+                                        data-slide-index="@index"
+                                        aria-label="Đi đến slide @(index + 1)"></button>
                             }
                         </div>
                     }
@@ -66,4 +81,3 @@
         </div>
     </section>
 }
-

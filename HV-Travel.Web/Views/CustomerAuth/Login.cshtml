@@ -10,13 +10,13 @@
     var registerPrompt = sections.GetSection("registerPrompt");
 }
 
-<section class="public-top-section public-top-section--compact relative overflow-hidden bg-slate-950 @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
-    <div class="public-top-section-shell relative mx-auto flex min-h-[calc(100vh-9rem)] max-w-7xl items-center px-4 py-14 sm:px-6 lg:px-8">
+<section class="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_60%,#020617_100%)] @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <div class="relative mx-auto flex min-h-[calc(100vh-9rem)] max-w-7xl items-center px-4 py-14 sm:px-6 lg:px-8">
         <div class="grid w-full gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-            <div class="public-top-section-content is-left flex flex-col justify-center text-white @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="slide-left">
-                <span class="public-badge public-top-section-badge inline-flex w-fit rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em]" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">@hero?.Fields.GetVisibleFieldValue("badgeText", "Tài khoản HV Travel")</span>
-                <h1 class="public-top-section-title mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">@hero?.Fields.GetVisibleFieldValue("title", "Đăng nhập để tiếp tục hành trình của bạn.")</h1>
-                <p class="public-top-section-lead mt-5 max-w-xl text-base leading-8 text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero?.Fields.GetVisibleFieldValue("description", "Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.")</p>
+            <div class="max-w-2xl flex flex-col justify-center text-white @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="slide-left">
+                <span class="inline-flex w-fit rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.3em]" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">@hero?.Fields.GetVisibleFieldValue("badgeText", "Tài khoản HV Travel")</span>
+                <h1 class="mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">@hero?.Fields.GetVisibleFieldValue("title", "Đăng nhập để tiếp tục hành trình của bạn.")</h1>
+                <p class="mt-5 max-w-xl text-base leading-8 text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@hero?.Fields.GetVisibleFieldValue("description", "Sử dụng email khách hàng để xem thông tin tài khoản, theo dõi trạng thái đặt tour và giữ mọi trải nghiệm du lịch ở cùng một nơi.")</p>
                 <div class="mt-10 grid gap-4 sm:grid-cols-3 @ContentPresentationViewHelper.GetSectionTextClass(featureCards)" style="@ContentPresentationViewHelper.GetSectionStyle(featureCards)">
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5"><p class="text-2xl font-extrabold">@featureCards?.Fields.GetVisibleFieldValue("card1Value", "24/7")</p><p class="mt-2 text-sm text-slate-300">@featureCards?.Fields.GetVisibleFieldValue("card1Description", "Hỗ trợ cập nhật booking mọi lúc")</p></div>
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5"><p class="text-2xl font-extrabold">@featureCards?.Fields.GetVisibleFieldValue("card2Value", "1 tài khoản")</p><p class="mt-2 text-sm text-slate-300">@featureCards?.Fields.GetVisibleFieldValue("card2Description", "Quản lý email, hồ sơ và điểm thưởng")</p></div>
@@ -74,3 +74,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+

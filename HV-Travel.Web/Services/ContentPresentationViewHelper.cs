@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using HVTravel.Domain.Entities;
 
@@ -7,23 +8,11 @@ public static class ContentPresentationViewHelper
 {
     public static string GetSectionClass(ContentSection? section)
     {
-        if (section == null)
+        var classes = new[]
         {
-            return string.Empty;
-        }
-
-        ContentPresentationDefaults.EnsureSection(section);
-
-        var classes = new List<string> { "cms-managed-section" };
-        if (!string.IsNullOrWhiteSpace(section.Presentation.Container.Align))
-        {
-            classes.Add($"cms-text-{section.Presentation.Container.Align.ToLowerInvariant()}");
-        }
-
-        if (HasSectionBackground(section.Presentation.Container))
-        {
-            classes.Add("cms-managed-section--bg");
-        }
+            GetSectionTextClass(section),
+            GetSectionBackgroundClass(section)
+        }.Where(value => !string.IsNullOrWhiteSpace(value));
 
         return string.Join(" ", classes);
     }
@@ -36,9 +25,13 @@ public static class ContentPresentationViewHelper
         }
 
         ContentPresentationDefaults.EnsureSection(section);
-        return string.IsNullOrWhiteSpace(section.Presentation.Container.Align)
-            ? string.Empty
-            : $"cms-text-{section.Presentation.Container.Align.ToLowerInvariant()}";
+        return section.Presentation.Container.Align?.ToLowerInvariant() switch
+        {
+            "left" => "text-left",
+            "right" => "text-right",
+            "center" => "text-center",
+            _ => string.Empty
+        };
     }
 
     public static string GetSectionBackgroundClass(ContentSection? section)
@@ -50,8 +43,71 @@ public static class ContentPresentationViewHelper
 
         ContentPresentationDefaults.EnsureSection(section);
         return HasSectionBackground(section.Presentation.Container)
-            ? "cms-managed-section cms-managed-section--bg"
+            ? "bg-[var(--cms-section-bg)]"
             : string.Empty;
+    }
+
+    public static string GetActionAlignmentClass(ContentSection? section)
+    {
+        if (section == null)
+        {
+            return string.Empty;
+        }
+
+        ContentPresentationDefaults.EnsureSection(section);
+        return section.Presentation.Container.Align?.ToLowerInvariant() switch
+        {
+            "left" => "justify-start",
+            "right" => "justify-end",
+            "center" => "justify-center",
+            _ => string.Empty
+        };
+    }
+
+    public static string GetCrossAxisAlignmentClass(ContentSection? section)
+    {
+        if (section == null)
+        {
+            return string.Empty;
+        }
+
+        ContentPresentationDefaults.EnsureSection(section);
+        return section.Presentation.Container.Align?.ToLowerInvariant() switch
+        {
+            "left" => "items-start",
+            "right" => "items-end",
+            "center" => "items-center",
+            _ => string.Empty
+        };
+    }
+
+    public static string GetRichTextClass(bool compact = false)
+    {
+        var classes = new List<string>
+        {
+            compact ? "prose prose-sm sm:prose-base" : "prose prose-slate",
+            "max-w-none",
+            "prose-headings:font-extrabold",
+            "prose-headings:text-slate-900",
+            "prose-p:text-slate-600",
+            "prose-p:leading-7",
+            "prose-li:text-slate-600",
+            "prose-strong:text-slate-900",
+            "prose-a:font-semibold",
+            "prose-a:text-primary",
+            "prose-blockquote:border-primary/40",
+            "prose-blockquote:text-slate-500",
+            "prose-img:rounded-3xl",
+            "prose-img:shadow-sm",
+            "dark:prose-invert",
+            "dark:prose-p:text-slate-300",
+            "dark:prose-li:text-slate-300",
+            "dark:prose-strong:text-white",
+            "dark:prose-a:text-primary",
+            "dark:prose-blockquote:text-slate-300"
+        };
+
+        return string.Join(" ", classes);
     }
 
     public static string GetSectionStyle(ContentSection? section)

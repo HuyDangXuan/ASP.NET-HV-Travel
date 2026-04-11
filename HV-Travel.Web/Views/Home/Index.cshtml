@@ -37,18 +37,18 @@
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "HV Travel - Khám phá vẻ đẹp Việt Nam với những tour du lịch được thiết kế riêng cho bạn");
 }
 
-<section class="@($"hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+<section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
     <div class="absolute inset-0 opacity-20">
         <div class="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse"></div>
         <div class="absolute bottom-10 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40 relative z-10">
-        <div class="@($"public-top-section-content is-centered max-w-4xl mx-auto {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
+        <div class="@($"mx-auto flex max-w-4xl flex-col items-center text-center {ContentPresentationViewHelper.GetSectionTextClass(hero)}")" data-animate="fade-up">
             @if (hero?.IsEnabled != false)
             {
                 @if (!string.IsNullOrWhiteSpace(heroBadgeText))
                 {
-                    <div class="public-badge inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-white/10" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
+                    <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "badgeText")">
                         <span class="material-symbols-outlined text-primary text-[16px]">travel_explore</span>
                         @heroBadgeText
                     </div>
@@ -56,7 +56,7 @@
 
                 @if (!string.IsNullOrWhiteSpace(heroTitleLine1) || !string.IsNullOrWhiteSpace(heroTitleHighlight) || !string.IsNullOrWhiteSpace(heroTitleLine2))
                 {
-                    <h1 class="public-hero-title text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+                    <h1 class="mb-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
                         @if (!string.IsNullOrWhiteSpace(heroTitleLine1))
                         {
                             <span style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "titleLine1")">@heroTitleLine1</span>
@@ -75,14 +75,14 @@
 
                 @if (!string.IsNullOrWhiteSpace(heroDescription))
                 {
-                    <div class="public-body-copy text-lg sm:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                    <div class="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                         @Html.Raw(heroDescription)
                     </div>
                 }
 
                 @if (!string.IsNullOrWhiteSpace(heroPrimaryCtaText) || !string.IsNullOrWhiteSpace(heroSecondaryCtaText))
                 {
-                    <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
+                    <div class="flex flex-col justify-center gap-4 sm:flex-row">
                         @if (!string.IsNullOrWhiteSpace(heroPrimaryCtaText))
                         {
                             <a asp-controller="PublicTours" asp-action="Index" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-2xl text-base font-bold shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all active:scale-95 hover:-translate-y-0.5">
@@ -104,7 +104,7 @@
 
         @if (stats?.IsEnabled != false)
         {
-            <div class="@($"public-card-grid mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto {ContentPresentationViewHelper.GetSectionTextClass(stats)} {ContentPresentationViewHelper.GetSectionBackgroundClass(stats)}")" style="@ContentPresentationViewHelper.GetSectionStyle(stats)" data-animate="fade-up" data-stagger data-delay="300">
+            <div class="@($"mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-6 md:grid-cols-4 {ContentPresentationViewHelper.GetSectionTextClass(stats)} {ContentPresentationViewHelper.GetSectionBackgroundClass(stats)}")" style="@ContentPresentationViewHelper.GetSectionStyle(stats)" data-animate="fade-up" data-stagger data-delay="300">
                 @for (var index = 1; index <= 4; index++)
                 {
                     <div class="text-center">
@@ -129,13 +129,13 @@
             <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(featured)} {ContentPresentationViewHelper.GetSectionBackgroundClass(featured)}")" style="@ContentPresentationViewHelper.GetSectionStyle(featured)" data-animate="fade-up">
                 @if (!string.IsNullOrWhiteSpace(featuredBadgeText))
                 {
-                    <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "badgeText")">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "badgeText")">
                         <span class="material-symbols-outlined text-[16px]">star</span> @featuredBadgeText
                     </span>
                 }
                 @if (!string.IsNullOrWhiteSpace(featuredTitle))
                 {
-                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "title")">@featuredTitle</h2>
+                    <h2 class="mb-4 text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(featured, "title")">@featuredTitle</h2>
                 }
                 @if (!string.IsNullOrWhiteSpace(featuredDescription))
                 {
@@ -148,7 +148,7 @@
 
         @if (Model != null && Model.Any())
         {
-            <div class="public-card-grid public-tour-card-grid grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
                 @foreach (var tour in Model)
                 {
                     @await Html.PartialAsync("~/Views/PublicTours/_TourCard.cshtml", tour)
@@ -182,13 +182,13 @@
             <div class="@($"text-center mb-14 {ContentPresentationViewHelper.GetSectionTextClass(commitments)}")" data-animate="fade-up">
                 @if (!string.IsNullOrWhiteSpace(commitmentsEyebrowText))
                 {
-                    <span class="public-badge inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-4 uppercase tracking-wider" style="@ContentPresentationViewHelper.GetRoleTextStyle(commitments, "eyebrow")">
+                    <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary" style="@ContentPresentationViewHelper.GetRoleTextStyle(commitments, "eyebrow")">
                         <span class="material-symbols-outlined text-[16px]">verified</span> @commitmentsEyebrowText
                     </span>
                 }
                 @if (!string.IsNullOrWhiteSpace(commitmentsTitle))
                 {
-                    <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "title")">@commitmentsTitle</h2>
+                    <h2 class="mb-4 text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(commitments, "title")">@commitmentsTitle</h2>
                 }
                 @if (!string.IsNullOrWhiteSpace(commitmentsDescription))
                 {
@@ -197,7 +197,7 @@
                     </div>
                 }
             </div>
-            <div class="public-card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-animate="fade-in" data-stagger>
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4" data-animate="fade-in" data-stagger>
                 @{
                     var icons = new[] { "shield", "diamond", "support_agent", "payments" };
                 }
@@ -220,24 +220,24 @@
 
 @if (finalCta?.IsEnabled != false)
 {
-    <section class="@($"py-20 hero-gradient relative overflow-hidden {ContentPresentationViewHelper.GetSectionBackgroundClass(finalCta)}")" style="@ContentPresentationViewHelper.GetSectionStyle(finalCta)">
+    <section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.22),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_48%,#1e3a8a_100%)] py-20 {ContentPresentationViewHelper.GetSectionBackgroundClass(finalCta)}")" style="@ContentPresentationViewHelper.GetSectionStyle(finalCta)">
         <div class="absolute inset-0 opacity-15">
             <div class="absolute top-0 right-0 w-96 h-96 bg-primary/40 rounded-full blur-3xl"></div>
         </div>
         <div class="@($"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 {ContentPresentationViewHelper.GetSectionTextClass(finalCta)}")" data-animate="scale-in">
-            @if (!string.IsNullOrWhiteSpace(finalCtaTitle))
-            {
-                <h2 class="public-section-title text-3xl sm:text-4xl font-extrabold text-white mb-6" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "title")">@finalCtaTitle</h2>
-            }
-            @if (!string.IsNullOrWhiteSpace(finalCtaDescription))
-            {
-                <div class="public-body-copy text-lg text-slate-300 mb-10 max-w-2xl mx-auto" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "description")">
-                    @Html.Raw(finalCtaDescription)
-                </div>
-            }
-            @if (!string.IsNullOrWhiteSpace(finalCtaPrimaryText) || !string.IsNullOrWhiteSpace(finalCtaSecondaryText))
-            {
-                <div class="public-action-stack flex flex-col sm:flex-row gap-4 justify-center">
+                @if (!string.IsNullOrWhiteSpace(finalCtaTitle))
+                {
+                    <h2 class="mb-6 text-3xl font-extrabold text-white sm:text-4xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "title")">@finalCtaTitle</h2>
+                }
+                @if (!string.IsNullOrWhiteSpace(finalCtaDescription))
+                {
+                    <div class="mx-auto mb-10 max-w-2xl text-lg text-slate-300" style="@ContentPresentationViewHelper.GetFieldTextStyle(finalCta, "description")">
+                        @Html.Raw(finalCtaDescription)
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(finalCtaPrimaryText) || !string.IsNullOrWhiteSpace(finalCtaSecondaryText))
+                {
+                    <div class="flex flex-col justify-center gap-4 sm:flex-row">
                     @if (!string.IsNullOrWhiteSpace(finalCtaPrimaryText))
                     {
                         <a asp-controller="Home" asp-action="Contact" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-2xl text-base font-bold shadow-2xl transition-all active:scale-95 hover:-translate-y-0.5">
@@ -259,7 +259,9 @@
 }
 @section Scripts {
 <script src="~/js/home-carousel.js" asp-append-version="true"></script>
-<script src="~/js/public-tour-card.js" asp-append-version="true"></script>
+<script src="~/js/card-interactions.js" asp-append-version="true"></script>
 }
+
+
 
 

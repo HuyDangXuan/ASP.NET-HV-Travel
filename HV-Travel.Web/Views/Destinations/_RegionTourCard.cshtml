@@ -1,0 +1,163 @@
+@using System
+@using System.Linq
+@using HVTravel.Domain.Entities
+@model Tour
+@{
+    var tour = Model;
+    var departures = tour.EffectiveDepartures
+        .Where(item => item.StartDate >= DateTime.UtcNow.Date)
+        .OrderBy(item => item.StartDate)
+        .ToList();
+
+    if (!departures.Any())
+    {
+        departures = tour.EffectiveDepartures.OrderBy(item => item.StartDate).ToList();
+    }
+
+    var featuredDeparture = departures.FirstOrDefault() ?? tour.ResolveDeparture(null);
+    var startingPrice = featuredDeparture?.AdultPrice > 0m ? featuredDeparture.AdultPrice : tour.Price?.Adult ?? 0m;
+    var remainingCapacity = featuredDeparture?.RemainingCapacity ?? tour.RemainingSpots;
+    var discountPercent = featuredDeparture?.DiscountPercentage ?? (decimal)(tour.Price?.Discount ?? 0d);
+    var hasDiscount = discountPercent > 0m && discountPercent < 100m && startingPrice > 0m;
+    var originalPrice = hasDiscount
+        ? Math.Round(startingPrice / (1m - (discountPercent / 100m)), 0, MidpointRounding.AwayFromZero)
+        : 0m;
+
+    if (originalPrice <= startingPrice)
+    {
+        hasDiscount = false;
+        originalPrice = 0m;
+    }
+
+    var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
+    var detailUrl = Url.Action("Details", "PublicTours", new { id = detailId }) ?? "#";
+    var bookingUrl = Url.Action("Create", "Booking", new { tourId = tour.Id }) ?? detailUrl;
+    var coverImage = tour.Images.FirstOrDefault();
+    var locationText = string.Join(", ", new[] { tour.Destination?.City, tour.Destination?.Region }.Where(part => !string.IsNullOrWhiteSpace(part)));
+    if (string.IsNullOrWhiteSpace(locationText))
+    {
+        locationText = "Việt Nam";
+    }
+
+    var durationLabel = !string.IsNullOrWhiteSpace(tour.Duration?.Text)
+        ? tour.Duration.Text
+        : tour.Duration?.Days > 0 && tour.Duration?.Nights >= 0
+            ? $"{tour.Duration.Days}N{tour.Duration.Nights}Đ"
+            : null;
+
+    var descriptionText = !string.IsNullOrWhiteSpace(tour.ShortDescription)
+        ? tour.ShortDescription
+        : tour.Description;
+
+    var isInstantConfirmation = string.Equals(featuredDeparture?.ConfirmationType ?? tour.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase);
+    var lowAvailability = remainingCapacity is > 0 and <= 5;
+    var departureLabel = featuredDeparture?.StartDate.ToString("dd/MM/yyyy") ?? "Đang cập nhật";
+    var secondaryMetaLabel = remainingCapacity >= 0
+        ? $"{remainingCapacity} chỗ trống"
+        : !string.IsNullOrWhiteSpace(tour.Code)
+            ? $"Mã {tour.Code}"
+            : "Lịch trình đang cập nhật";
+}
+
+<article class="group flex h-full w-full min-w-0 max-w-none flex-col overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white shadow-[0_24px_70px_-52px_rgba(15,23,42,0.6)] transition duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_30px_90px_-45px_rgba(14,165,233,0.45)] dark:border-slate-800 dark:bg-slate-950"
+         data-tour-card
+         data-tour-id="@tour.Id"
+         data-tour-name="@tour.Name"
+         data-tour-price="@startingPrice"
+         data-tour-location="@locationText"
+         data-tour-url="@detailUrl"
+         data-tour-image="@(coverImage ?? string.Empty)">
+    <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <a href="@detailUrl" class="record-view block h-full w-full" aria-label="Xem chi tiết tour @tour.Name">
+            @if (!string.IsNullOrWhiteSpace(coverImage))
+            {
+                <img src="@coverImage"
+                     alt="@tour.Name"
+                     class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                     onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden'); this.nextElementSibling?.classList.add('flex');" />
+                <div class="hidden h-full w-full items-center justify-center bg-gradient-to-br from-slate-200 via-white to-slate-100 text-slate-400 dark:from-slate-900 dark:via-slate-950 dark:to-slate-800 dark:text-slate-600" aria-hidden="true">
+                    <span class="material-symbols-outlined text-[64px]">landscape</span>
+                </div>
+            }
+            else
+            {
+                <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-200 via-white to-slate-100 text-slate-400 dark:from-slate-900 dark:via-slate-950 dark:to-slate-800 dark:text-slate-600" aria-hidden="true">
+                    <span class="material-symbols-outlined text-[64px]">landscape</span>
+                </div>
+            }
+        </a>
+
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-x-0 top-0 flex flex-wrap items-start gap-2 p-4">
+            @if (hasDiscount)
+            {
+                <span class="inline-flex items-center rounded-full bg-rose-500 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-lg shadow-rose-500/30">Giảm @discountPercent.ToString("0")%</span>
+            }
+            else if (lowAvailability)
+            {
+                <span class="inline-flex items-center rounded-full bg-amber-400 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-slate-950 shadow-lg shadow-amber-500/30">Còn ít chỗ</span>
+            }
+            else if (tour.CancellationPolicy?.IsFreeCancellation == true)
+            {
+                <span class="inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-lg shadow-emerald-500/30">Hủy miễn phí</span>
+            }
+            else if (isInstantConfirmation)
+            {
+                <span class="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-slate-900 shadow-lg shadow-slate-950/10 dark:bg-slate-950/85 dark:text-white">Xác nhận nhanh</span>
+            }
+        </div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 p-4">
+            <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/90">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 backdrop-blur">
+                    <span class="material-symbols-outlined text-[14px]">location_on</span>
+                    <span>@locationText</span>
+                </span>
+                @if (!string.IsNullOrWhiteSpace(durationLabel))
+                {
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 backdrop-blur">
+                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                        <span>@durationLabel</span>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-1 flex-col gap-4 p-5">
+        <div class="space-y-3">
+            <a href="@detailUrl" class="record-view block" aria-label="Xem chi tiết tour @tour.Name">
+                <h4 class="line-clamp-2 text-xl font-black tracking-tight text-slate-900 transition group-hover:text-primary dark:text-white">@tour.Name</h4>
+            </a>
+            @if (!string.IsNullOrWhiteSpace(descriptionText))
+            {
+                <p class="line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">@descriptionText</p>
+            }
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="rounded-[1.3rem] bg-slate-50 px-3.5 py-3 dark:bg-slate-900/70">
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Khởi hành</p>
+                <p class="mt-1 font-semibold text-slate-700 dark:text-slate-200">@departureLabel</p>
+            </div>
+            <div class="rounded-[1.3rem] bg-slate-50 px-3.5 py-3 dark:bg-slate-900/70">
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thông tin</p>
+                <p class="mt-1 font-semibold text-slate-700 dark:text-slate-200">@secondaryMetaLabel</p>
+            </div>
+        </div>
+
+        <div class="mt-auto flex items-end justify-between gap-4 rounded-[1.5rem] bg-slate-50 px-4 py-4 dark:bg-slate-900/85">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">Giá từ</p>
+                @if (hasDiscount)
+                {
+                    <p class="mt-1 text-xs text-slate-400 line-through dark:text-slate-500">@originalPrice.ToString("N0") ₫</p>
+                }
+                <p class="mt-1 text-2xl font-black tracking-tight text-primary">@startingPrice.ToString("N0") ₫</p>
+            </div>
+
+            <a href="@bookingUrl" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white shadow-lg shadow-primary/25 transition hover:-translate-y-0.5 hover:bg-primary-dark hover:shadow-primary/35">
+                Đặt ngay
+            </a>
+        </div>
+    </div>
+</article>

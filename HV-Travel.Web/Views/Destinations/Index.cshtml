@@ -13,19 +13,19 @@
 
 @if (hero?.IsEnabled != false)
 {
-    <section class="public-top-section public-top-section--hero public-page-hero hero-gradient relative overflow-hidden @ContentPresentationViewHelper.GetSectionBackgroundClass(hero)" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
+    <section class="@($"relative overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.24),transparent_36%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#1e3a8a_100%)] {ContentPresentationViewHelper.GetSectionBackgroundClass(hero)}")" style="@ContentPresentationViewHelper.GetSectionStyle(hero)">
         <div class="absolute inset-0 opacity-20">
-            <div class="absolute left-0 top-20 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
-            <div class="absolute right-10 bottom-0 h-96 w-96 rounded-full bg-sky-500/20 blur-3xl"></div>
+            <div class="absolute left-10 top-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-10 right-20 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
         </div>
-        <div class="public-top-section-shell public-page-hero-shell max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="public-top-section-content public-page-hero-content is-centered max-w-4xl @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
-                <span class="public-badge public-top-section-badge public-page-hero-badge" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
+            <div class="mx-auto flex max-w-4xl flex-col items-center text-center @ContentPresentationViewHelper.GetSectionTextClass(hero)" data-animate="fade-up">
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white/90 backdrop-blur-md" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "eyebrowText")">
                     <span class="material-symbols-outlined text-[16px] text-primary">globe_asia</span>
                     @hero.Fields.GetFieldValue("eyebrowText", "Điểm đến nổi bật")
                 </span>
-                <h1 class="public-top-section-title public-hero-title text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá.")</h1>
-                <div class="public-top-section-lead public-body-copy public-page-hero-copy" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
+                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@hero.Fields.GetFieldValue("title", "Từ điểm đến đến bộ sưu tập tour, tất cả được gom về một hub khám phá.")</h1>
+                <div class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300 sm:text-xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">
                     @Html.Raw(hero.Fields.GetFieldValue("description", "Trang này hỗ trợ marketing mở landing theo vùng, theo nhu cầu và theo mức giá thay vì chỉ có danh sách tour phẳng."))
                 </div>
             </div>
@@ -39,29 +39,49 @@
         {
             <div class="@($"{ContentPresentationViewHelper.GetSectionBackgroundClass(collectionsIntro)} {ContentPresentationViewHelper.GetSectionTextClass(collectionsIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(collectionsIntro)">
                 <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "eyebrowText")">@collectionsIntro.Fields.GetFieldValue("eyebrowText", "Collections")</p>
-                <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "title")">@collectionsIntro.Fields.GetFieldValue("title", "Bộ sưu tập nổi bật")</h2>
+                <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "title")">@collectionsIntro.Fields.GetFieldValue("title", "Bộ sưu tập nổi bật")</h2>
                 <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(collectionsIntro, "description")">
                     @Html.Raw(collectionsIntro.Fields.GetFieldValue("description", "Nhóm các collection giúp marketing đẩy nhanh trang đích theo nhu cầu và mức ngân sách."))
                 </div>
                 <div class="mt-6 grid gap-6 lg:grid-cols-2">
                     @foreach (var collection in Model.Collections)
                     {
-                        <article class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@collection.Key</p>
-                            <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">@collection.Title</h3>
-                            <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@collection.Description</p>
-                            <div class="mt-5 space-y-3">
-                                @foreach (var tour in collection.Tours)
-                                {
-                                    <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="flex items-center justify-between gap-4 rounded-2xl border border-border-light px-4 py-4 transition hover:border-primary dark:border-border-dark">
-                                        <div>
-                                            <p class="text-sm font-black text-slate-900 dark:text-white">@tour.Name</p>
-                                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text)</p>
-                                        </div>
-                                        <span class="text-base font-black text-primary">@(tour.Price?.Adult.ToString("N0"))₫</span>
-                                    </a>
-                                }
+                        <article class="flex h-full flex-col rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm shadow-slate-200/40 dark:border-border-dark dark:bg-surface-dark dark:shadow-none">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0">
+                                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">@collection.Key</p>
+                                    <h3 class="mt-3 text-[2rem] font-black tracking-tight text-slate-900 dark:text-white">@collection.Title</h3>
+                                </div>
+                                <span class="inline-flex shrink-0 items-center rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">@(collection.Tours.Count) tour</span>
                             </div>
+                            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400">@collection.Description</p>
+
+                            @if (collection.Tours.Any())
+                            {
+                                <div class="mt-6 flex flex-1 flex-col gap-3">
+                                    @foreach (var tour in collection.Tours)
+                                    {
+                                        <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="group flex items-center justify-between gap-4 rounded-[1.5rem] border border-slate-200/85 bg-slate-50/80 px-4 py-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:bg-white hover:shadow-sm dark:border-slate-700/80 dark:bg-slate-900/40 dark:hover:border-primary/40 dark:hover:bg-slate-900/70">
+                                            <div class="min-w-0">
+                                                <p class="text-base font-black tracking-tight text-slate-900 transition-colors group-hover:text-primary dark:text-white">@tour.Name</p>
+                                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text ?? "Lịch trình đang cập nhật")</p>
+                                            </div>
+                                            <div class="shrink-0 text-right">
+                                                <span class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Giá từ</span>
+                                                <span class="mt-1 block text-xl font-black tracking-tight text-primary">@(tour.Price?.Adult.ToString("N0"))₫</span>
+                                            </div>
+                                        </a>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mt-6 flex min-h-[16rem] flex-1 flex-col items-start justify-center rounded-[1.75rem] border border-dashed border-slate-200 bg-slate-50/65 px-6 py-6 dark:border-slate-700 dark:bg-slate-900/30">
+                                    <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 shadow-sm dark:bg-slate-800 dark:text-slate-300">Đang cập nhật</span>
+                                    <h4 class="mt-4 text-xl font-black tracking-tight text-slate-900 dark:text-white">Chưa có hành trình phù hợp lúc này</h4>
+                                    <p class="mt-2 max-w-md text-sm leading-7 text-slate-500 dark:text-slate-400">Collection này chưa có tour khớp với dữ liệu hiện tại. Nội dung sẽ tự đầy lên khi có hành trình phù hợp hơn.</p>
+                                </div>
+                            }
                         </article>
                     }
                 </div>
@@ -72,38 +92,69 @@
         {
             <div class="@($"{ContentPresentationViewHelper.GetSectionBackgroundClass(regionsIntro)} {ContentPresentationViewHelper.GetSectionTextClass(regionsIntro)}")" style="@ContentPresentationViewHelper.GetSectionStyle(regionsIntro)">
                 <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "eyebrowText")">@regionsIntro.Fields.GetFieldValue("eyebrowText", "Regions")</p>
-                <h2 class="public-section-title mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "title")">@regionsIntro.Fields.GetFieldValue("title", "Khám phá theo vùng")</h2>
+                <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "title")">@regionsIntro.Fields.GetFieldValue("title", "Khám phá theo vùng")</h2>
                 <div class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(regionsIntro, "description")">
                     @Html.Raw(regionsIntro.Fields.GetFieldValue("description", "Trình bày điểm đến theo vùng để mở rộng landing page bán theo khu vực và nhóm thành phố nổi bật."))
                 </div>
                 <div class="mt-6 space-y-8">
                     @foreach (var region in Model.Regions)
                     {
-                        <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark">
-                            <div>
-                                <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Region</p>
-                                <h3 class="mt-2 text-2xl font-black text-slate-900 dark:text-white">@region.Region</h3>
+                        <section class="overflow-hidden rounded-[2.2rem] border border-slate-200/80 bg-white p-6 shadow-[0_24px_70px_-55px_rgba(15,23,42,0.55)] dark:border-slate-800/80 dark:bg-slate-950/80 dark:shadow-black/25 sm:p-7">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.26em] text-slate-400 dark:text-slate-500">
+                                        <span>Region</span>
+                                        <span class="inline-flex items-center rounded-full bg-sky-50 px-3 py-1 text-[10px] tracking-[0.22em] text-primary dark:bg-sky-500/10">@(region.Tours.Count) tour</span>
+                                    </div>
+                                    <h3 class="mt-3 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-[2rem]">@region.Region</h3>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                    <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 font-semibold dark:border-slate-800 dark:bg-slate-900/70">
+                                        <span class="material-symbols-outlined text-[18px] text-primary">swipe</span>
+                                        <span>Kéo hoặc vuốt để xem thêm</span>
+                                    </span>
+                                    <div class="hidden items-center gap-2" data-region-carousel-controls>
+                                        <button type="button"
+                                                class="inline-flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:text-primary disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-35 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-primary/40"
+                                                data-region-carousel-prev
+                                                aria-label="Nhóm tour trước của vùng @region.Region">
+                                            <span class="material-symbols-outlined text-[18px]">arrow_back_ios_new</span>
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:text-primary disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-35 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-primary/40"
+                                                data-region-carousel-next
+                                                aria-label="Nhóm tour tiếp theo của vùng @region.Region">
+                                            <span class="material-symbols-outlined text-[18px]">arrow_forward_ios</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                                @foreach (var destination in region.Destinations)
-                                {
-                                    <article class="overflow-hidden rounded-[1.5rem] border border-border-light bg-white dark:border-border-dark dark:bg-slate-900/40">
-                                        @if (!string.IsNullOrWhiteSpace(destination.RepresentativeImage))
-                                        {
-                                            <img src="@destination.RepresentativeImage" alt="@destination.City" class="h-44 w-full object-cover" />
-                                        }
-                                        <div class="p-5">
-                                            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@destination.Country</p>
-                                            <h4 class="mt-2 text-xl font-black text-slate-900 dark:text-white">@destination.City</h4>
-                                            <div class="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-                                                <span>@destination.TourCount tour</span>
-                                                <span>Rating @destination.BestRating.ToString("0.0")</span>
+
+                            @if (region.Tours.Any())
+                            {
+                                <div class="relative mt-7" data-region-carousel aria-label="Danh sách tour vùng @region.Region">
+                                    <div class="px-4 pb-4 sm:px-5 lg:px-6">
+                                        <div class="overflow-hidden cursor-grab rounded-[1.9rem] [touch-action:pan-y]" data-region-carousel-viewport>
+                                            <div class="flex gap-5 will-change-transform" data-region-carousel-track>
+                                            @foreach (var tour in region.Tours)
+                                            {
+                                                <div class="min-w-0 shrink-0 basis-full md:basis-[calc((100%-1.25rem)/2)] xl:basis-[calc((100%-2.5rem)/3)]" data-region-carousel-item>
+                                                    @await Html.PartialAsync("_RegionTourCard", tour)
+                                                </div>
+                                            }
                                             </div>
-                                            <p class="mt-3 text-lg font-black text-primary">Từ @destination.StartingPrice.ToString("N0")₫</p>
                                         </div>
-                                    </article>
-                                }
-                            </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mt-6 rounded-[1.8rem] border border-dashed border-slate-200 bg-slate-50/80 px-6 py-8 dark:border-slate-700 dark:bg-slate-900/40">
+                                    <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">Đang cập nhật</p>
+                                    <h4 class="mt-3 text-xl font-black tracking-tight text-slate-900 dark:text-white">Chưa có tour phù hợp trong vùng này</h4>
+                                    <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">Danh sách tour sẽ tự làm đầy khi có hành trình khớp với vùng và trạng thái hiển thị hiện tại.</p>
+                                </div>
+                            }
                         </section>
                     }
                 </div>
@@ -111,3 +162,8 @@
         }
     </div>
 </section>
+
+@section Scripts {
+    <script src="~/js/destinations-region-carousel.js" asp-append-version="true"></script>
+}
+
