@@ -19,12 +19,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<IGroqChatClient, GroqChatClient>();
+builder.Services.AddSingleton<ITourAiJobQueue, TourAiJobQueue>();
+builder.Services.AddSingleton<ITourAiPendingTracker, TourAiPendingTracker>();
+builder.Services.AddHostedService<TourAiReplyWorker>();
 
 // Add Layered Services
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddScoped<IPublicContentService, PublicContentService>();
 builder.Services.AddScoped<ISupportChatService, SupportChatService>();
+builder.Services.AddScoped<ITourAiChatService, TourAiChatService>();
 builder.Services.AddScoped<CustomerPortalService>();
 builder.Services.AddScoped<BookingWorkflowService>();
 
@@ -109,6 +114,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<SupportChatHub>("/supportChatHub");
+app.MapHub<TourAiChatHub>("/tourAiChatHub");
 
 // Seed Data
 using (var scope = app.Services.CreateScope())

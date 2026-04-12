@@ -84,12 +84,16 @@ public class SupportChatController : Controller
         {
             Id = conversation.Id,
             ConversationCode = conversation.ConversationCode,
+            Channel = conversation.Channel,
             Status = conversation.Status,
             ParticipantType = conversation.ParticipantType,
             DisplayName = conversation.ParticipantType == "customer"
                 ? (conversation.GuestProfile.DisplayName ?? "Khách hàng")
                 : (string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName) ? "Khách truy cập" : conversation.GuestProfile.DisplayName),
             SourcePage = conversation.SourcePage,
+            ContextType = conversation.ContextType ?? string.Empty,
+            ContextId = conversation.ContextId ?? string.Empty,
+            ContextLabel = conversation.ContextLabel ?? string.Empty,
             LastMessagePreview = conversation.LastMessagePreview,
             LastMessageAt = conversation.LastMessageAt,
             UnreadForAdminCount = conversation.UnreadForAdminCount,
@@ -103,6 +107,7 @@ public class SupportChatController : Controller
         {
             Id = message.Id,
             ConversationId = message.ConversationId,
+            ClientMessageId = message.ClientMessageId,
             SenderType = message.SenderType,
             SenderDisplayName = message.SenderDisplayName,
             Content = message.Content,

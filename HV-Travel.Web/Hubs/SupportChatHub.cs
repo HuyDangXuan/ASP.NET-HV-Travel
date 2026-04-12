@@ -90,6 +90,7 @@ public class SupportChatHub : Hub
         {
             Id = message.Id,
             ConversationId = message.ConversationId,
+            ClientMessageId = message.ClientMessageId,
             SenderType = message.SenderType,
             SenderDisplayName = message.SenderDisplayName,
             Content = message.Content,
@@ -104,10 +105,14 @@ public class SupportChatHub : Hub
         {
             Id = conversation.Id,
             ConversationCode = conversation.ConversationCode,
+            Channel = conversation.Channel,
             Status = conversation.Status,
             ParticipantType = conversation.ParticipantType,
             DisplayName = string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName) ? "Khách truy cập" : conversation.GuestProfile.DisplayName,
             SourcePage = conversation.SourcePage,
+            ContextType = conversation.ContextType ?? string.Empty,
+            ContextId = conversation.ContextId ?? string.Empty,
+            ContextLabel = conversation.ContextLabel ?? string.Empty,
             LastMessagePreview = conversation.LastMessagePreview,
             LastMessageAt = conversation.LastMessageAt,
             UnreadForAdminCount = conversation.UnreadForAdminCount,

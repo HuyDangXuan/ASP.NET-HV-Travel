@@ -37,6 +37,15 @@ public class ChatConversation
     [BsonElement("sourcePage")]
     public string SourcePage { get; set; } = "/";
 
+    [BsonElement("contextType")]
+    public string? ContextType { get; set; }
+
+    [BsonElement("contextId")]
+    public string? ContextId { get; set; }
+
+    [BsonElement("contextLabel")]
+    public string? ContextLabel { get; set; }
+
     [BsonElement("lastMessagePreview")]
     public string LastMessagePreview { get; set; } = string.Empty;
 

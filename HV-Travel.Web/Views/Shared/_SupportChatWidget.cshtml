@@ -101,13 +101,14 @@
     </button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 <script>
     (() => {
         const root = document.getElementById('support-chat-widget');
         if (!root || typeof signalR === 'undefined') {
             return;
         }
+
+        const widgetId = 'support-chat';
 
         const panelEl = document.getElementById('support-chat-panel');
         const toggleEl = document.getElementById('support-chat-toggle');
@@ -450,6 +451,9 @@
             panelEl.classList.remove('hidden');
             panelEl.classList.add('flex');
             toggleEl.classList.add('hidden');
+            window.dispatchEvent(new CustomEvent('hvtravel:chat-widget-open', {
+                detail: { id: widgetId }
+            }));
             syncPanelState();
 
             if (state.bootstrapped) {
@@ -518,6 +522,16 @@
 
         toggleEl.addEventListener('click', openPanel);
         closeEl.addEventListener('click', closePanel);
+
+        window.addEventListener('hvtravel:chat-widget-open', (event) => {
+            if (event.detail?.id && event.detail.id !== widgetId) {
+                closePanel();
+            }
+        });
+
+        window.addEventListener('hvtravel:open-support-chat', () => {
+            openPanel();
+        });
 
         profileFormEl.addEventListener('submit', async (event) => {
             event.preventDefault();

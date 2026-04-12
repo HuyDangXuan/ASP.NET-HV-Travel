@@ -1,0 +1,580 @@
+using System.Security.Claims;
+using System.Text;
+using HVTravel.Domain.Entities;
+using HVTravel.Domain.Interfaces;
+using HVTravel.Web.Models;
+using Microsoft.Extensions.Logging;
+
+namespace HVTravel.Web.Services;
+
+public sealed class TourAiChatService : ITourAiChatService
+{
+    private const string TourAiChannel = "tour-ai";
+    private const string TourContextType = "tour";
+    private const string AssistantDisplayName = "HV Travel AI";
+    private const int PromptHistoryLimit = 12;
+
+    private readonly IRepository<ChatConversation> _conversationRepository;
+    private readonly IRepository<ChatMessage> _messageRepository;
+    private readonly ITourRepository _tourRepository;
+    private readonly IGroqChatClient _groqChatClient;
+    private readonly ITourAiJobQueue _jobQueue;
+    private readonly ITourAiPendingTracker _pendingTracker;
+    private readonly ILogger<TourAiChatService> _logger;
+
+    public TourAiChatService(
+        IRepository<ChatConversation> conversationRepository,
+        IRepository<ChatMessage> messageRepository,
+        ITourRepository tourRepository,
+        IGroqChatClient groqChatClient,
+        ITourAiJobQueue jobQueue,
+        ITourAiPendingTracker pendingTracker,
+        ILogger<TourAiChatService> logger)
+    {
+        _conversationRepository = conversationRepository;
+        _messageRepository = messageRepository;
+        _tourRepository = tourRepository;
+        _groqChatClient = groqChatClient;
+        _jobQueue = jobQueue;
+        _pendingTracker = pendingTracker;
+        _logger = logger;
+    }
+
+    public async Task<ChatConversation> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user)
+    {
+        var tourId = request.TourId.Trim();
+        if (string.IsNullOrWhiteSpace(tourId))
+        {
+            throw new ArgumentException("TourId is required.", nameof(request));
+        }
+
+        var tour = await GetPublicTourAsync(tourId);
+        var participant = ResolveParticipant(user, request.VisitorSessionId);
+
+        var conversation = await FindConversationAsync(tour.Id, participant.CustomerId, participant.VisitorSessionId);
+        if (conversation == null)
+        {
+            conversation = new ChatConversation
+            {
+                ConversationCode = $"TAI{DateTime.UtcNow:yyyyMMddHHmmss}{Random.Shared.Next(100, 999)}",
+                Channel = TourAiChannel,
+                Status = "open",
+                ParticipantType = participant.ParticipantType,
+                CustomerId = participant.CustomerId,
+                VisitorSessionId = participant.VisitorSessionId,
+                GuestProfile = participant.Profile,
+                SourcePage = ResolveSourcePage(request.SourcePage),
+                ContextType = TourContextType,
+                ContextId = tour.Id,
+                ContextLabel = tour.Name,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                LastMessageAt = DateTime.UtcNow
+            };
+
+            await _conversationRepository.AddAsync(conversation);
+        }
+        else
+        {
+            conversation.Channel = TourAiChannel;
+            conversation.Status = "open";
+            conversation.SourcePage = ResolveSourcePage(request.SourcePage);
+            conversation.ContextType = TourContextType;
+            conversation.ContextId = tour.Id;
+            conversation.ContextLabel = tour.Name;
+            conversation.CustomerId ??= participant.CustomerId;
+            conversation.VisitorSessionId ??= participant.VisitorSessionId;
+            conversation.GuestProfile = MergeProfile(conversation.GuestProfile, participant.Profile);
+            conversation.UpdatedAt = DateTime.UtcNow;
+            await _conversationRepository.UpdateAsync(conversation.Id, conversation);
+        }
+
+        var messages = await GetMessagesAsync(conversation.Id, 1);
+        if (messages.Count == 0)
+        {
+            var welcomeMessage = new ChatMessage
+            {
+                ConversationId = conversation.Id,
+                SenderType = "assistant",
+                SenderDisplayName = AssistantDisplayName,
+                MessageType = "system",
+                ClientMessageId = CreateClientMessageId(),
+                Content = BuildWelcomeMessage(tour),
+                IsRead = true,
+                ReadAt = DateTime.UtcNow,
+                SentAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _messageRepository.AddAsync(welcomeMessage);
+            await UpdateConversationSummaryAsync(conversation, welcomeMessage);
+        }
+
+        return conversation;
+    }
+
+    public async Task<ChatConversation?> GetConversationAsync(string conversationId)
+    {
+        var conversation = await _conversationRepository.GetByIdAsync(conversationId);
+        if (conversation == null || !string.Equals(conversation.Channel, TourAiChannel, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return conversation;
+    }
+
+    public async Task<List<ChatMessage>> GetMessagesAsync(string conversationId, int take = 100)
+    {
+        return (await _messageRepository.FindAsync(message => message.ConversationId == conversationId))
+            .OrderBy(message => message.SentAt)
+            .TakeLast(take)
+            .ToList();
+    }
+
+    public async Task<TourAiChatSendAcceptedResult> EnqueueMessageAsync(
+        TourAiSendMessageRequest request,
+        ClaimsPrincipal user,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.ConversationId))
+        {
+            throw new ArgumentException("ConversationId is required.", nameof(request));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Content))
+        {
+            throw new ArgumentException("Content is required.", nameof(request));
+        }
+
+        var conversation = await RequireConversationAsync(request.ConversationId);
+        EnsureConversationAccess(conversation, user, request.VisitorSessionId);
+
+        var clientMessageId = ResolveClientMessageId(request.ClientMessageId);
+        var existingMessage = await FindMessageByClientMessageIdAsync(conversation.Id, clientMessageId);
+        if (existingMessage != null)
+        {
+            return new TourAiChatSendAcceptedResult
+            {
+                Conversation = conversation,
+                UserMessage = existingMessage,
+                IsAssistantPending = _pendingTracker.IsPending(conversation.Id)
+            };
+        }
+
+        if (!_pendingTracker.TryStart(conversation.Id))
+        {
+            throw new InvalidOperationException("AI dang xu ly cau hoi truoc do. Vui long doi them mot chut.");
+        }
+
+        var participant = ResolveParticipant(user, conversation.VisitorSessionId ?? request.VisitorSessionId);
+        var userMessage = new ChatMessage
+        {
+            ConversationId = conversation.Id,
+            SenderType = participant.IsCustomer ? "customer" : "guest",
+            SenderUserId = participant.CustomerId,
+            SenderDisplayName = participant.IsCustomer
+                ? (!string.IsNullOrWhiteSpace(participant.Profile.DisplayName) ? participant.Profile.DisplayName : "Ban")
+                : "Ban",
+            MessageType = "text",
+            ClientMessageId = clientMessageId,
+            Content = request.Content.Trim(),
+            IsRead = true,
+            ReadAt = DateTime.UtcNow,
+            SentAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        try
+        {
+            await _messageRepository.AddAsync(userMessage);
+
+            conversation.GuestProfile = MergeProfile(conversation.GuestProfile, participant.Profile);
+            conversation.CustomerId ??= participant.CustomerId;
+            conversation.VisitorSessionId ??= participant.VisitorSessionId;
+            await UpdateConversationSummaryAsync(conversation, userMessage);
+
+            await _jobQueue.EnqueueAsync(
+                new TourAiReplyJob(conversation.Id, userMessage.Id, conversation.VisitorSessionId ?? request.VisitorSessionId, DateTime.UtcNow),
+                cancellationToken);
+
+            return new TourAiChatSendAcceptedResult
+            {
+                Conversation = conversation,
+                UserMessage = userMessage,
+                IsAssistantPending = true
+            };
+        }
+        catch
+        {
+            _pendingTracker.Complete(conversation.Id);
+            throw;
+        }
+    }
+
+    public async Task<TourAiAssistantReplyResult?> GenerateAssistantReplyAsync(
+        string conversationId,
+        string userMessageId,
+        CancellationToken cancellationToken = default)
+    {
+        var conversation = await GetConversationAsync(conversationId);
+        if (conversation == null)
+        {
+            return null;
+        }
+
+        var userMessage = await _messageRepository.GetByIdAsync(userMessageId);
+        if (userMessage == null || !string.Equals(userMessage.ConversationId, conversationId, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var assistantContent = await BuildAssistantReplyAsync(conversation, cancellationToken);
+        var assistantMessage = new ChatMessage
+        {
+            ConversationId = conversation.Id,
+            SenderType = "assistant",
+            SenderDisplayName = AssistantDisplayName,
+            MessageType = "text",
+            ClientMessageId = CreateClientMessageId(),
+            Content = assistantContent,
+            IsRead = true,
+            ReadAt = DateTime.UtcNow,
+            SentAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _messageRepository.AddAsync(assistantMessage);
+        await UpdateConversationSummaryAsync(conversation, assistantMessage);
+
+        return new TourAiAssistantReplyResult
+        {
+            Conversation = conversation,
+            AssistantMessage = assistantMessage
+        };
+    }
+
+    private async Task<ChatConversation?> FindConversationAsync(string tourId, string? customerId, string visitorSessionId)
+    {
+        IEnumerable<ChatConversation> conversations;
+        if (!string.IsNullOrWhiteSpace(customerId))
+        {
+            conversations = await _conversationRepository.FindAsync(conversation =>
+                conversation.CustomerId == customerId
+                && conversation.Channel == TourAiChannel
+                && conversation.ContextType == TourContextType
+                && conversation.ContextId == tourId
+                && conversation.Status != "closed");
+        }
+        else
+        {
+            conversations = await _conversationRepository.FindAsync(conversation =>
+                conversation.VisitorSessionId == visitorSessionId
+                && conversation.Channel == TourAiChannel
+                && conversation.ContextType == TourContextType
+                && conversation.ContextId == tourId
+                && conversation.Status != "closed");
+        }
+
+        return conversations.OrderByDescending(conversation => conversation.UpdatedAt).FirstOrDefault();
+    }
+
+    private async Task<ChatMessage?> FindMessageByClientMessageIdAsync(string conversationId, string clientMessageId)
+    {
+        var messages = await _messageRepository.FindAsync(message =>
+            message.ConversationId == conversationId && message.ClientMessageId == clientMessageId);
+
+        return messages.OrderByDescending(message => message.SentAt).FirstOrDefault();
+    }
+
+    private async Task<string> BuildAssistantReplyAsync(ChatConversation conversation, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(conversation.ContextId))
+            {
+                return BuildFallbackReply();
+            }
+
+            var tour = await _tourRepository.GetByIdAsync(conversation.ContextId);
+            if (tour == null || !IsPubliclyVisible(tour.Status))
+            {
+                return BuildUnavailableTourReply();
+            }
+
+            var recentMessages = await GetMessagesAsync(conversation.Id, PromptHistoryLimit);
+            var promptMessages = BuildPromptMessages(tour, recentMessages);
+            return await _groqChatClient.CompleteChatAsync(promptMessages, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to generate a Groq response for AI tour chat conversation {ConversationId}.", conversation.Id);
+            return BuildFallbackReply();
+        }
+    }
+
+    private static List<GroqChatMessage> BuildPromptMessages(Tour tour, IReadOnlyList<ChatMessage> recentMessages)
+    {
+        var promptMessages = new List<GroqChatMessage>
+        {
+            new(
+                "system",
+                """
+                Ban la tro ly AI tu van tour cua HV Travel tren trang chi tiet tour.
+                Hay tra loi bang tieng Viet, giong cham soc khach hang, ro rang va tu nhien.
+                Chi duoc dung du lieu tour va lich su hoi thoai da cung cap.
+                Neu du lieu khong co thong tin nguoi dung hoi, phai noi ro ban chua thay du lieu do trong tour hien tai.
+                Khong bia them gia, lich trinh, dieu khoan, gio giac, dich vu, khach san, phuong tien hoac uu dai.
+                Neu can xac nhan sau hon hoac du lieu dang thieu, hay moi nguoi dung mo khung chat ho tro ben duoi de gap tu van vien that.
+                """),
+            new("system", BuildTourSnapshot(tour))
+        };
+
+        foreach (var message in recentMessages)
+        {
+            var role = message.SenderType switch
+            {
+                "assistant" => "assistant",
+                "system" => "system",
+                "guest" or "customer" => "user",
+                _ => string.Empty
+            };
+
+            if (string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(message.Content))
+            {
+                continue;
+            }
+
+            promptMessages.Add(new GroqChatMessage(role, message.Content));
+        }
+
+        return promptMessages;
+    }
+
+    private static string BuildTourSnapshot(Tour tour)
+    {
+        var departures = (tour.Departures?.Count > 0 ? tour.Departures : tour.EffectiveDepartures.ToList())
+            .OrderBy(item => item.StartDate)
+            .Take(6)
+            .ToList();
+
+        var builder = new StringBuilder();
+        builder.AppendLine("Du lieu tour hien tai:");
+        builder.AppendLine($"- Ten tour: {tour.Name}");
+        builder.AppendLine($"- Ma tour: {ValueOrFallback(tour.Code)}");
+        builder.AppendLine($"- Diem den: {BuildDestinationLabel(tour)}");
+        builder.AppendLine($"- Thoi luong: {ValueOrFallback(tour.Duration?.Text)}");
+        builder.AppendLine($"- Mo ta ngan: {ValueOrFallback(RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 320))}");
+        builder.AppendLine($"- Mo ta chi tiet: {ValueOrFallback(RichTextContentFormatter.ToPlainText(tour.Description))}");
+        builder.AppendLine($"- Diem noi bat: {BuildListLine(tour.Highlights)}");
+        builder.AppendLine($"- Bao gom: {BuildListLine(tour.GeneratedInclusions)}");
+        builder.AppendLine($"- Khong bao gom: {BuildListLine(tour.GeneratedExclusions)}");
+        builder.AppendLine($"- Diem hen: {ValueOrFallback(tour.MeetingPoint)}");
+        builder.AppendLine($"- Huy tour: {ValueOrFallback(tour.CancellationPolicy?.Summary)}");
+        builder.AppendLine($"- Xac nhan: {ValueOrFallback(tour.ConfirmationType)}");
+        builder.AppendLine($"- Gia nguoi lon mac dinh: {FormatCurrency(tour.Price?.Adult)}");
+        builder.AppendLine($"- Gia tre em mac dinh: {FormatCurrency(tour.Price?.Child)}");
+        builder.AppendLine($"- Gia em be mac dinh: {FormatCurrency(tour.Price?.Infant)}");
+        builder.AppendLine("- Lich trinh:");
+
+        if (tour.Schedule != null && tour.Schedule.Count > 0)
+        {
+            foreach (var item in tour.Schedule.OrderBy(entry => entry.Day).Take(8))
+            {
+                builder.AppendLine($"  * Ngay {item.Day:00}: {ValueOrFallback(item.Title)}. {ValueOrFallback(RichTextContentFormatter.ToPlainText(item.Description))}");
+            }
+        }
+        else
+        {
+            builder.AppendLine("  * Chua co lich trinh chi tiet.");
+        }
+
+        builder.AppendLine("- Cac dot khoi hanh:");
+        if (departures.Count > 0)
+        {
+            foreach (var departure in departures)
+            {
+                builder.AppendLine(
+                    $"  * {departure.StartDate:dd/MM/yyyy}: nguoi lon {FormatCurrency(departure.AdultPrice)}, tre em {FormatCurrency(departure.ChildPrice)}, em be {FormatCurrency(departure.InfantPrice)}, con {departure.RemainingCapacity} cho, xac nhan {ValueOrFallback(departure.ConfirmationType)}");
+            }
+        }
+        else
+        {
+            builder.AppendLine("  * Chua co lich khoi hanh dang mo ban.");
+        }
+
+        return builder.ToString().Trim();
+    }
+
+    private async Task<Tour> GetPublicTourAsync(string tourId)
+    {
+        var tour = await _tourRepository.GetByIdAsync(tourId);
+        if (tour == null || !IsPubliclyVisible(tour.Status))
+        {
+            throw new KeyNotFoundException("Tour not found.");
+        }
+
+        return tour;
+    }
+
+    private async Task<ChatConversation> RequireConversationAsync(string conversationId)
+    {
+        var conversation = await GetConversationAsync(conversationId);
+        if (conversation == null)
+        {
+            throw new KeyNotFoundException("Conversation not found.");
+        }
+
+        return conversation;
+    }
+
+    private static void EnsureConversationAccess(ChatConversation conversation, ClaimsPrincipal user, string visitorSessionId)
+    {
+        if (user.Identity?.IsAuthenticated == true && user.IsInRole("Customer"))
+        {
+            var customerId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrWhiteSpace(customerId) && conversation.CustomerId == customerId)
+            {
+                return;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(visitorSessionId) && conversation.VisitorSessionId == visitorSessionId)
+        {
+            return;
+        }
+
+        throw new UnauthorizedAccessException("Conversation not found.");
+    }
+
+    private async Task UpdateConversationSummaryAsync(ChatConversation conversation, ChatMessage lastMessage)
+    {
+        conversation.LastMessagePreview = BuildPreview(lastMessage.Content);
+        conversation.LastMessageAt = lastMessage.SentAt;
+        conversation.UpdatedAt = lastMessage.SentAt;
+        conversation.UnreadForAdminCount = 0;
+        conversation.UnreadForCustomerCount = 0;
+        await _conversationRepository.UpdateAsync(conversation.Id, conversation);
+    }
+
+    private static string BuildPreview(string content)
+    {
+        return content.Length <= 120 ? content : $"{content[..117]}...";
+    }
+
+    private static string ResolveClientMessageId(string clientMessageId)
+    {
+        return string.IsNullOrWhiteSpace(clientMessageId) ? CreateClientMessageId() : clientMessageId.Trim();
+    }
+
+    private static string CreateClientMessageId()
+    {
+        return Guid.NewGuid().ToString("N");
+    }
+
+    private static string BuildWelcomeMessage(Tour tour)
+    {
+        return $"Chao ban, minh la AI tu van cua HV Travel. Minh dang doc du lieu cua tour \"{tour.Name}\" va co the ho tro ban hoi nhanh ve lich trinh, gia, khoi hanh, dich vu bao gom hoac chinh sach hien co.";
+    }
+
+    private static string BuildFallbackReply()
+    {
+        return "Minh chua the phan hoi chinh xac tu du lieu tour ngay luc nay. Ban vui long mo khung chat ho tro ben duoi de tu van vien HV Travel kiem tra truc tiep giup ban nhe.";
+    }
+
+    private static string BuildUnavailableTourReply()
+    {
+        return "Minh chua doc duoc du lieu tour nay vao luc nay hoac tour khong con hien thi cong khai. Ban vui long mo khung chat ho tro ben duoi de doi ngu HV Travel ho tro truc tiep nhe.";
+    }
+
+    private static ParticipantContext ResolveParticipant(ClaimsPrincipal user, string visitorSessionId)
+    {
+        var isCustomer = user.Identity?.IsAuthenticated == true && user.IsInRole("Customer");
+        var customerId = isCustomer ? user.FindFirst(ClaimTypes.NameIdentifier)?.Value?.Trim() : null;
+        var resolvedVisitorSessionId = !string.IsNullOrWhiteSpace(visitorSessionId)
+            ? visitorSessionId.Trim()
+            : $"visitor-{Guid.NewGuid():N}";
+
+        var displayName = user.FindFirst("FullName")?.Value?.Trim()
+            ?? user.Identity?.Name?.Trim()
+            ?? (isCustomer ? "Khach hang" : "Khach xem tour");
+        var email = user.FindFirst(ClaimTypes.Email)?.Value?.Trim()
+            ?? user.FindFirst(ClaimTypes.Name)?.Value?.Trim()
+            ?? string.Empty;
+        var phoneNumber = user.FindFirst("PhoneNumber")?.Value?.Trim()
+            ?? user.FindFirst(ClaimTypes.MobilePhone)?.Value?.Trim()
+            ?? string.Empty;
+
+        return new ParticipantContext
+        {
+            IsCustomer = isCustomer,
+            CustomerId = customerId,
+            VisitorSessionId = resolvedVisitorSessionId,
+            ParticipantType = isCustomer ? "customer" : "guest",
+            Profile = new GuestChatProfile
+            {
+                DisplayName = displayName,
+                Email = email,
+                PhoneNumber = phoneNumber
+            }
+        };
+    }
+
+    private static GuestChatProfile MergeProfile(GuestChatProfile current, GuestChatProfile incoming)
+    {
+        return new GuestChatProfile
+        {
+            DisplayName = !string.IsNullOrWhiteSpace(incoming.DisplayName) ? incoming.DisplayName : current.DisplayName,
+            Email = !string.IsNullOrWhiteSpace(incoming.Email) ? incoming.Email : current.Email,
+            PhoneNumber = !string.IsNullOrWhiteSpace(incoming.PhoneNumber) ? incoming.PhoneNumber : current.PhoneNumber
+        };
+    }
+
+    private static string ResolveSourcePage(string? sourcePage)
+    {
+        return string.IsNullOrWhiteSpace(sourcePage) ? "/" : sourcePage.Trim();
+    }
+
+    private static bool IsPubliclyVisible(string? status)
+    {
+        return status is "Active" or "ComingSoon" or "SoldOut";
+    }
+
+    private static string BuildDestinationLabel(Tour tour)
+    {
+        var parts = new[] { tour.Destination?.City, tour.Destination?.Country }
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToList();
+        return parts.Count > 0 ? string.Join(", ", parts) : "Chua co du lieu";
+    }
+
+    private static string BuildListLine(IEnumerable<string>? values)
+    {
+        var items = values?.Where(value => !string.IsNullOrWhiteSpace(value)).ToList() ?? [];
+        return items.Count > 0 ? string.Join("; ", items) : "Chua co du lieu";
+    }
+
+    private static string ValueOrFallback(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? "Chua co du lieu" : value.Trim();
+    }
+
+    private static string FormatCurrency(decimal? value)
+    {
+        var amount = value.GetValueOrDefault();
+        return amount > 0m ? $"{amount:N0} VND" : "Chua co du lieu";
+    }
+
+    private sealed class ParticipantContext
+    {
+        public bool IsCustomer { get; init; }
+
+        public string? CustomerId { get; init; }
+
+        public string VisitorSessionId { get; init; } = string.Empty;
+
+        public string ParticipantType { get; init; } = "guest";
+
+        public GuestChatProfile Profile { get; init; } = new();
+    }
+}

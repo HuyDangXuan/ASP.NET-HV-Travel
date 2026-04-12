@@ -25,6 +25,9 @@ public class ChatMessage
     [BsonElement("messageType")]
     public string MessageType { get; set; } = "text";
 
+    [BsonElement("clientMessageId")]
+    public string ClientMessageId { get; set; } = Guid.NewGuid().ToString("N");
+
     [BsonElement("content")]
     public string Content { get; set; } = string.Empty;
 

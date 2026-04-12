@@ -8,6 +8,7 @@ namespace HVTravel.Web.Services;
 
 public class SupportChatService : ISupportChatService
 {
+    private const string TourAiChannel = "tour-ai";
     private readonly IRepository<ChatConversation> _conversationRepository;
     private readonly IRepository<ChatMessage> _messageRepository;
 
@@ -31,13 +32,13 @@ public class SupportChatService : ISupportChatService
 
         if (isCustomer && !string.IsNullOrWhiteSpace(customerId))
         {
-            conversation = (await _conversationRepository.FindAsync(c => c.CustomerId == customerId && c.Status != "closed"))
+            conversation = (await _conversationRepository.FindAsync(c => c.CustomerId == customerId && c.Status != "closed" && c.Channel != TourAiChannel))
                 .OrderByDescending(c => c.UpdatedAt)
                 .FirstOrDefault();
         }
         else if (!string.IsNullOrWhiteSpace(request.VisitorSessionId))
         {
-            conversation = (await _conversationRepository.FindAsync(c => c.VisitorSessionId == request.VisitorSessionId && c.Status != "closed"))
+            conversation = (await _conversationRepository.FindAsync(c => c.VisitorSessionId == request.VisitorSessionId && c.Status != "closed" && c.Channel != TourAiChannel))
                 .OrderByDescending(c => c.UpdatedAt)
                 .FirstOrDefault();
         }
@@ -47,6 +48,7 @@ public class SupportChatService : ISupportChatService
             conversation = new ChatConversation
             {
                 ConversationCode = $"CHAT{DateTime.UtcNow:yyyyMMddHHmmss}{Random.Shared.Next(100, 999)}",
+                Channel = "web",
                 ParticipantType = isCustomer ? "customer" : "guest",
                 CustomerId = customerId,
                 VisitorSessionId = request.VisitorSessionId,
@@ -70,6 +72,7 @@ public class SupportChatService : ISupportChatService
                 SenderType = "system",
                 SenderDisplayName = "HV Travel",
                 MessageType = "system",
+                ClientMessageId = CreateClientMessageId(),
                 Content = "Cuộc trò chuyện đã được tạo. Đội ngũ HV Travel sẽ phản hồi sớm nhất có thể.",
                 SentAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
@@ -106,7 +109,7 @@ public class SupportChatService : ISupportChatService
 
     public async Task<List<ChatConversation>> GetAdminConversationsAsync()
     {
-        return (await _conversationRepository.GetAllAsync())
+        return (await _conversationRepository.FindAsync(c => c.Channel != TourAiChannel))
             .OrderByDescending(c => c.LastMessageAt)
             .ToList();
     }
@@ -125,6 +128,7 @@ public class SupportChatService : ISupportChatService
             SenderType = isCustomer ? "customer" : "guest",
             SenderUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value,
             SenderDisplayName = displayName,
+            ClientMessageId = CreateClientMessageId(),
             Content = content.Trim(),
             MessageType = "text",
             SentAt = DateTime.UtcNow,
@@ -158,6 +162,7 @@ public class SupportChatService : ISupportChatService
             SenderType = "staff",
             SenderUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? user.Identity?.Name,
             SenderDisplayName = senderDisplayName,
+            ClientMessageId = CreateClientMessageId(),
             Content = content.Trim(),
             MessageType = "text",
             SentAt = DateTime.UtcNow,
@@ -230,6 +235,11 @@ public class SupportChatService : ISupportChatService
     private static string BuildPreview(string content)
     {
         return content.Length <= 120 ? content : $"{content[..117]}...";
+    }
+
+    private static string CreateClientMessageId()
+    {
+        return Guid.NewGuid().ToString("N");
     }
 
     private static GuestChatProfile ResolveProfile(ChatBootstrapRequest request, ClaimsPrincipal user)

@@ -1,0 +1,597 @@
+@model Tour
+
+<div id="tour-ai-chat-widget"
+     data-tour-id="@Model.Id"
+     data-tour-name="@Model.Name"
+     class="fixed bottom-[5.75rem] left-2 right-2 z-[71] sm:bottom-[6.5rem] sm:left-auto sm:right-4">
+    <div id="tour-ai-chat-panel" class="hidden h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_28px_90px_-45px_rgba(15,23,42,0.7)] sm:h-[min(52rem,calc(100dvh-1.5rem))] sm:w-[min(100vw-1.5rem,34rem)] sm:rounded-[2rem] lg:h-[min(54rem,calc(100dvh-2rem))] lg:w-[min(100vw-2rem,36rem)] dark:border-slate-800 dark:bg-slate-950">
+        <div class="shrink-0 bg-gradient-to-r from-cyan-600 via-sky-600 to-slate-950 px-5 py-4 text-white sm:px-6">
+            <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-black uppercase tracking-[0.32em] text-white/70">AI tư vấn tour</p>
+                    <h3 class="mt-2 text-[1.45rem] font-black leading-[1.08] text-white sm:text-[1.6rem]">Hỏi nhanh về tour bạn đang xem</h3>
+                    <p class="mt-3 line-clamp-2 text-sm text-white/80">@Model.Name</p>
+                </div>
+                <button id="tour-ai-chat-close" type="button" class="inline-flex size-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white backdrop-blur transition hover:bg-white/20">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </div>
+
+        <section class="min-h-0 flex flex-1 flex-col">
+            <div id="tour-ai-chat-messages" class="min-h-0 flex flex-1 flex-col overflow-y-auto bg-slate-50/60 px-4 py-4 dark:bg-slate-900/50 sm:px-5 sm:py-5">
+                <div id="tour-ai-chat-thread" class="flex flex-1 flex-col gap-4"></div>
+            </div>
+
+            <div class="shrink-0 border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950 sm:px-5 sm:py-4">
+                <div class="mb-3 flex flex-col gap-3 rounded-[1.35rem] border border-cyan-100 bg-cyan-50/70 px-4 py-3 text-sm text-slate-600 dark:border-cyan-900/40 dark:bg-cyan-950/20 dark:text-slate-300">
+                    <p id="tour-ai-chat-status">AI đang sẵn sàng đọc dữ liệu tour hiện tại.</p>
+                    <button id="tour-ai-open-support" type="button" class="inline-flex items-center justify-center gap-2 self-start rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold uppercase tracking-[0.16em] text-slate-700 transition hover:border-primary/30 hover:text-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                        <span class="material-symbols-outlined text-[16px]">support_agent</span>
+                        <span>Chat với tư vấn viên</span>
+                    </button>
+                </div>
+
+                <form id="tour-ai-chat-form">
+                    <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-3 py-3 shadow-inner shadow-slate-200/20 dark:border-slate-800 dark:bg-slate-900 sm:px-4">
+                        <div class="flex items-end gap-3">
+                            <textarea id="tour-ai-chat-input" rows="1" class="h-12 min-h-[3rem] max-h-36 w-full resize-none border-0 bg-transparent px-1 py-2 text-[15px] text-slate-900 focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 dark:text-white" placeholder="Hỏi AI về lịch trình, giá, khởi hành, dịch vụ..."></textarea>
+                            <button id="tour-ai-chat-send" type="submit" class="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 text-sm font-black text-white shadow-lg shadow-cyan-500/30 transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5">
+                                <span class="material-symbols-outlined text-[18px]">send</span>
+                                <span>Gửi</span>
+                            </button>
+                        </div>
+                        <p id="tour-ai-chat-hint" class="mt-2 px-1 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">Enter để gửi, Shift+Enter để xuống dòng.</p>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <button id="tour-ai-chat-toggle" type="button" class="ml-auto inline-flex items-center gap-3 rounded-full border border-cyan-200 bg-white/95 px-5 py-4 text-sm font-black text-slate-900 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.55)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-cyan-400/40 dark:border-cyan-900/40 dark:bg-slate-950/95 dark:text-white">
+        <span class="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30">
+            <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+        </span>
+        <span class="hidden sm:inline">Hỏi AI về tour này</span>
+    </button>
+</div>
+
+<script>
+    (() => {
+        const root = document.getElementById('tour-ai-chat-widget');
+        if (!root || typeof signalR === 'undefined') {
+            return;
+        }
+
+        const widgetId = 'tour-ai-chat';
+        const panelEl = document.getElementById('tour-ai-chat-panel');
+        const toggleEl = document.getElementById('tour-ai-chat-toggle');
+        const closeEl = document.getElementById('tour-ai-chat-close');
+        const statusEl = document.getElementById('tour-ai-chat-status');
+        const openSupportEl = document.getElementById('tour-ai-open-support');
+        const messagesEl = document.getElementById('tour-ai-chat-messages');
+        const threadEl = document.getElementById('tour-ai-chat-thread');
+        const formEl = document.getElementById('tour-ai-chat-form');
+        const inputEl = document.getElementById('tour-ai-chat-input');
+        const sendButtonEl = document.getElementById('tour-ai-chat-send');
+        const hintEl = document.getElementById('tour-ai-chat-hint');
+
+        const bubbleToneClasses = {
+            user: 'bg-primary text-white shadow-lg shadow-primary/20',
+            userFailed: 'border border-red-200 bg-red-50 text-red-700 shadow-sm dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-200',
+            assistant: 'border border-cyan-100 bg-white text-slate-700 shadow-sm dark:border-cyan-900/40 dark:bg-slate-950 dark:text-slate-200',
+            system: 'border border-dashed border-slate-300 bg-slate-100 text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300',
+            empty: 'border border-dashed border-slate-300 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300'
+        };
+
+        const metaToneClasses = {
+            user: 'text-white/70',
+            userFailed: 'text-red-500/80 dark:text-red-300/80',
+            assistant: 'text-slate-400 dark:text-slate-500',
+            system: 'text-slate-400 dark:text-slate-500'
+        };
+
+        const deliveryToneClasses = {
+            sending: 'text-white/75',
+            failed: 'text-red-500 dark:text-red-300'
+        };
+
+        const createSessionId = () => {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+                return window.crypto.randomUUID();
+            }
+
+            return `visitor-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+        };
+
+        const createClientMessageId = () => {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+                return window.crypto.randomUUID();
+            }
+
+            return `msg-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+        };
+
+        const state = {
+            bootstrapped: false,
+            conversation: null,
+            messages: [],
+            connection: null,
+            joinedConversationId: '',
+            visitorSessionId: localStorage.getItem('hvtravel.supportChat.visitorSessionId') || createSessionId(),
+            errorMessage: '',
+            isBootstrapping: false,
+            isSending: false,
+            isAssistantPending: false
+        };
+
+        localStorage.setItem('hvtravel.supportChat.visitorSessionId', state.visitorSessionId);
+
+        const escapeHtml = (value) => (value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const formatTime = (value) => {
+            if (!value) {
+                return '';
+            }
+
+            return new Intl.DateTimeFormat('vi-VN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit'
+            }).format(new Date(value));
+        };
+
+        const getMessageSortTime = (message) => {
+            const timestamp = Date.parse(message.sentAt || '');
+            return Number.isFinite(timestamp) ? timestamp : 0;
+        };
+
+        const adjustComposerHeight = () => {
+            inputEl.style.height = 'auto';
+            const nextHeight = Math.max(48, Math.min(inputEl.scrollHeight, 144));
+            inputEl.style.height = `${nextHeight}px`;
+        };
+
+        const setStatus = (message) => {
+            statusEl.textContent = message;
+        };
+
+        const updateComposerState = () => {
+            const isLocked = !state.bootstrapped || state.isBootstrapping || state.isSending || state.isAssistantPending;
+            inputEl.disabled = isLocked;
+            sendButtonEl.disabled = isLocked;
+
+            if (state.isBootstrapping) {
+                hintEl.textContent = 'AI đang tải dữ liệu tour và lịch sử trò chuyện...';
+                return;
+            }
+
+            if (state.isSending) {
+                hintEl.textContent = 'Đang gửi câu hỏi tới AI...';
+                return;
+            }
+
+            if (state.isAssistantPending) {
+                hintEl.textContent = 'AI đang xử lý câu hỏi hiện tại. Bạn sẽ có thể gửi tiếp sau khi có phản hồi.';
+                return;
+            }
+
+            if (!state.bootstrapped) {
+                hintEl.textContent = 'Mở khung chat để bắt đầu hội thoại với AI.';
+                return;
+            }
+
+            hintEl.textContent = 'Enter để gửi, Shift+Enter để xuống dòng.';
+        };
+
+        const sortMessages = () => {
+            const typingIndicators = state.messages.filter((message) => message.isTypingIndicator);
+            const regularMessages = state.messages
+                .filter((message) => !message.isTypingIndicator)
+                .sort((left, right) => getMessageSortTime(left) - getMessageSortTime(right));
+
+            state.messages = [...regularMessages, ...typingIndicators];
+        };
+
+        const normalizeServerMessage = (message) => ({
+            ...message,
+            clientMessageId: message.clientMessageId || '',
+            deliveryState: 'sent',
+            isLocalOnly: false,
+            isTypingIndicator: false
+        });
+
+        const upsertServerMessage = (message) => {
+            if (!message) {
+                return;
+            }
+
+            const normalized = normalizeServerMessage(message);
+            const index = state.messages.findIndex((item) => !item.isTypingIndicator && (
+                (normalized.id && item.id === normalized.id) ||
+                (normalized.clientMessageId && item.clientMessageId === normalized.clientMessageId)
+            ));
+
+            if (index >= 0) {
+                state.messages[index] = {
+                    ...state.messages[index],
+                    ...normalized
+                };
+            } else {
+                state.messages.push(normalized);
+            }
+
+            sortMessages();
+        };
+
+        const ensureTypingIndicator = () => {
+            state.messages = state.messages.filter((message) => !message.isTypingIndicator);
+
+            if (!state.isAssistantPending) {
+                return;
+            }
+
+            state.messages.push({
+                id: 'typing-indicator',
+                conversationId: state.conversation?.id || '',
+                clientMessageId: '',
+                senderType: 'assistant',
+                senderDisplayName: 'HV Travel AI',
+                content: '',
+                sentAt: new Date().toISOString(),
+                isTypingIndicator: true,
+                deliveryState: 'typing'
+            });
+        };
+
+        const markMessageFailed = (clientMessageId) => {
+            const index = state.messages.findIndex((message) => message.clientMessageId === clientMessageId);
+            if (index < 0) {
+                return;
+            }
+
+            state.messages[index] = {
+                ...state.messages[index],
+                deliveryState: 'failed'
+            };
+            sortMessages();
+        };
+
+        const syncConversationState = (payload) => {
+            if (payload?.conversation) {
+                state.conversation = payload.conversation;
+            }
+
+            (payload?.messages || []).forEach(upsertServerMessage);
+            state.isAssistantPending = !!payload?.isAssistantPending;
+            ensureTypingIndicator();
+            renderMessages();
+            updateComposerState();
+        };
+
+        const renderMessages = () => {
+            if (!state.messages.length) {
+                const emptyMessage = state.errorMessage || 'AI sẽ trả lời dựa trên dữ liệu tour hiện tại. Nếu cần kiểm tra sâu hơn, bạn có thể mở chat với tư vấn viên ở bên dưới.';
+                threadEl.innerHTML = `
+                    <div class="flex flex-1 items-start">
+                        <div class="max-w-[90%] rounded-[1.6rem] px-4 py-3.5 text-[15px] leading-7 sm:max-w-[82%] sm:px-5 ${bubbleToneClasses.empty}">
+                            ${escapeHtml(emptyMessage)}
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            threadEl.innerHTML = state.messages.map((message) => {
+                if (message.isTypingIndicator) {
+                    return `
+                        <div class="flex flex-col items-start">
+                            <div class="max-w-[92%] rounded-[1.6rem] px-4 py-3.5 text-[15px] leading-7 sm:max-w-[85%] sm:px-5 ${bubbleToneClasses.assistant}">
+                                <p class="${metaToneClasses.assistant} text-[10px] font-bold uppercase tracking-[0.18em]">HV Travel AI</p>
+                                <div class="mt-3 flex items-center gap-1.5">
+                                    <span class="size-2.5 rounded-full bg-cyan-500/70 animate-bounce"></span>
+                                    <span class="size-2.5 rounded-full bg-cyan-500/70 animate-bounce [animation-delay:120ms]"></span>
+                                    <span class="size-2.5 rounded-full bg-cyan-500/70 animate-bounce [animation-delay:240ms]"></span>
+                                </div>
+                                <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">AI đang trả lời dựa trên dữ liệu tour hiện tại...</p>
+                            </div>
+                        </div>`;
+                }
+
+                const isUser = message.senderType === 'guest' || message.senderType === 'customer';
+                const isSystem = message.senderType === 'system';
+                const tone = isSystem ? 'system' : isUser ? (message.deliveryState === 'failed' ? 'userFailed' : 'user') : 'assistant';
+                const alignment = isUser ? 'items-end' : 'items-start';
+                const senderDisplayName = message.senderDisplayName || (isUser ? 'Bạn' : 'HV Travel AI');
+
+                let deliveryStatus = '';
+                if (isUser && message.deliveryState === 'sending') {
+                    deliveryStatus = `<p class="mt-2 text-[11px] font-semibold ${deliveryToneClasses.sending}">Đang gửi...</p>`;
+                } else if (isUser && message.deliveryState === 'failed') {
+                    deliveryStatus = `<p class="mt-2 text-[11px] font-semibold ${deliveryToneClasses.failed}">Chưa gửi được. Bạn hãy gửi lại thủ công.</p>`;
+                }
+
+                return `
+                    <div class="flex flex-col ${alignment}">
+                        <div class="max-w-[92%] rounded-[1.6rem] px-4 py-3.5 text-[15px] leading-7 sm:max-w-[85%] sm:px-5 ${bubbleToneClasses[tone]}">
+                            <p class="${metaToneClasses[tone]} text-[10px] font-bold uppercase tracking-[0.18em]">${escapeHtml(senderDisplayName)}</p>
+                            <p class="mt-2 whitespace-pre-wrap break-words">${escapeHtml(message.content || '')}</p>
+                            ${deliveryStatus}
+                        </div>
+                        <p class="mt-1 px-1 text-[11px] text-slate-400 dark:text-slate-500">${escapeHtml(formatTime(message.sentAt))}</p>
+                    </div>`;
+            }).join('');
+
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        };
+
+        const bootstrapConversation = async () => {
+            const response = await fetch('/TourAiChat/bootstrap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tourId: root.dataset.tourId,
+                    visitorSessionId: state.visitorSessionId,
+                    sourcePage: `${window.location.pathname}${window.location.search}`
+                })
+            });
+
+            if (!response.ok) {
+                let errorMessage = 'Không thể tải hội thoại AI cho tour này.';
+                try {
+                    const payload = await response.json();
+                    errorMessage = payload.message || errorMessage;
+                } catch {
+                    // Ignore JSON parse failure and fall back to the default message.
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            const payload = await response.json();
+            state.bootstrapped = true;
+            state.errorMessage = '';
+            syncConversationState(payload);
+        };
+
+        const joinConversation = async (forceSync = false) => {
+            if (!state.connection || !state.conversation) {
+                return;
+            }
+
+            if (!forceSync && state.joinedConversationId === state.conversation.id) {
+                return;
+            }
+
+            const payload = await state.connection.invoke('JoinConversation', state.conversation.id, state.visitorSessionId);
+            state.joinedConversationId = state.conversation.id;
+            syncConversationState(payload);
+        };
+
+        const ensureConnection = async () => {
+            if (state.connection) {
+                return;
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/tourAiChatHub')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('ReceiveMessage', (message) => {
+                if (!state.conversation || message.conversationId !== state.conversation.id) {
+                    return;
+                }
+
+                state.errorMessage = '';
+                state.isAssistantPending = false;
+                upsertServerMessage(message);
+                ensureTypingIndicator();
+                renderMessages();
+                updateComposerState();
+                setStatus('AI vừa phản hồi dựa trên dữ liệu tour hiện tại.');
+
+                if (!panelEl.classList.contains('hidden')) {
+                    requestAnimationFrame(() => inputEl.focus());
+                }
+            });
+
+            connection.onreconnecting(() => {
+                state.joinedConversationId = '';
+                if (state.isAssistantPending) {
+                    setStatus('Đang kết nối lại để nhận phản hồi của AI...');
+                }
+            });
+
+            connection.onreconnected(async () => {
+                state.joinedConversationId = '';
+                try {
+                    await joinConversation(true);
+                } catch {
+                    setStatus('Không thể đồng bộ lại hội thoại AI.');
+                }
+            });
+
+            await connection.start();
+            state.connection = connection;
+        };
+
+        const ensureRealtimeReady = async () => {
+            await ensureConnection();
+            await joinConversation(true);
+        };
+
+        const ensureBootstrapped = async () => {
+            if (state.bootstrapped) {
+                await ensureRealtimeReady();
+                return;
+            }
+
+            state.isBootstrapping = true;
+            updateComposerState();
+            setStatus('AI đang đọc dữ liệu tour và tải lịch sử trò chuyện...');
+
+            try {
+                await bootstrapConversation();
+                await ensureRealtimeReady();
+                setStatus(state.isAssistantPending
+                    ? 'AI đang phân tích dữ liệu tour để trả lời...'
+                    : 'AI đang sẵn sàng tư vấn theo dữ liệu tour hiện tại.');
+            } catch (error) {
+                state.errorMessage = error.message || 'Không thể tải hội thoại AI.';
+                renderMessages();
+                setStatus(state.errorMessage);
+                throw error;
+            } finally {
+                state.isBootstrapping = false;
+                updateComposerState();
+                adjustComposerHeight();
+            }
+        };
+
+        const openPanel = async () => {
+            panelEl.classList.remove('hidden');
+            panelEl.classList.add('flex');
+            toggleEl.classList.add('hidden');
+            window.dispatchEvent(new CustomEvent('hvtravel:chat-widget-open', {
+                detail: { id: widgetId }
+            }));
+
+            renderMessages();
+
+            try {
+                await ensureBootstrapped();
+                requestAnimationFrame(() => inputEl.focus());
+            } catch {
+                // Status message was already updated.
+            }
+        };
+
+        const closePanel = () => {
+            panelEl.classList.add('hidden');
+            panelEl.classList.remove('flex');
+            toggleEl.classList.remove('hidden');
+        };
+
+        toggleEl.addEventListener('click', () => {
+            openPanel().catch(() => { });
+        });
+
+        closeEl.addEventListener('click', closePanel);
+
+        openSupportEl.addEventListener('click', () => {
+            window.dispatchEvent(new Event('hvtravel:open-support-chat'));
+        });
+
+        window.addEventListener('hvtravel:chat-widget-open', (event) => {
+            if (event.detail?.id && event.detail.id !== widgetId) {
+                closePanel();
+            }
+        });
+
+        formEl.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const content = inputEl.value.trim();
+            if (!content || state.isSending || state.isAssistantPending) {
+                return;
+            }
+
+            try {
+                await ensureBootstrapped();
+            } catch {
+                return;
+            }
+
+            const clientMessageId = createClientMessageId();
+            state.messages.push({
+                id: `local-${clientMessageId}`,
+                conversationId: state.conversation.id,
+                clientMessageId,
+                senderType: state.conversation.participantType === 'customer' ? 'customer' : 'guest',
+                senderDisplayName: 'Bạn',
+                content,
+                isRead: true,
+                sentAt: new Date().toISOString(),
+                deliveryState: 'sending',
+                isLocalOnly: true,
+                isTypingIndicator: false
+            });
+
+            sortMessages();
+            renderMessages();
+            state.errorMessage = '';
+            inputEl.value = '';
+            adjustComposerHeight();
+            state.isSending = true;
+            updateComposerState();
+            setStatus('Đang gửi câu hỏi tới AI...');
+
+            try {
+                const response = await fetch('/TourAiChat/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        conversationId: state.conversation.id,
+                        visitorSessionId: state.visitorSessionId,
+                        clientMessageId,
+                        content
+                    })
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Không thể gửi câu hỏi tới AI.';
+                    try {
+                        const payload = await response.json();
+                        errorMessage = payload.message || errorMessage;
+                    } catch {
+                        // Ignore JSON parse failure and keep the default message.
+                    }
+
+                    throw new Error(errorMessage);
+                }
+
+                const payload = await response.json();
+                state.conversation = payload.conversation;
+                upsertServerMessage(payload.userMessage);
+                state.isAssistantPending = !!payload.isAssistantPending;
+                ensureTypingIndicator();
+                renderMessages();
+                setStatus(state.isAssistantPending
+                    ? 'AI đang phân tích dữ liệu tour để trả lời...'
+                    : 'Tin nhắn đã được gửi.');
+            } catch (error) {
+                markMessageFailed(clientMessageId);
+                renderMessages();
+                inputEl.value = content;
+                setStatus(error.message || 'Không thể gửi câu hỏi tới AI.');
+            } finally {
+                state.isSending = false;
+                updateComposerState();
+                adjustComposerHeight();
+                inputEl.focus();
+            }
+        });
+
+        inputEl.addEventListener('input', adjustComposerHeight);
+        inputEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+                event.preventDefault();
+                formEl.requestSubmit();
+            }
+        });
+
+        renderMessages();
+        adjustComposerHeight();
+        updateComposerState();
+    })();
+</script>
