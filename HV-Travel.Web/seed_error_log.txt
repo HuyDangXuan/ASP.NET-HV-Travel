@@ -1,4 +1,4 @@
 === SEED ERROR ===
-[System.TypeInitializationException] The type initializer for 'HVTravel.Domain.Utils.TextEncodingRepair' threw an exception.
-[System.NotSupportedException] No data is available for encoding 1252. For information on defining a custom encoding, see the documentation for the Encoding.RegisterProvider method.
+[MongoDB.Bson.BsonSerializationException] An error occurred while serializing the BookingId property of class HVTravel.Domain.Entities.Review: '' is not a valid 24 digit hex string.
+[System.FormatException] '' is not a valid 24 digit hex string.
 === END SEED ERROR ===

@@ -1,6 +1,9 @@
-@model IEnumerable<HVTravel.Domain.Entities.Booking>
+@model HVTravel.Domain.Models.PaginatedResult<HVTravel.Domain.Entities.Booking>
 @{
     ViewData["Title"] = "Thanh Toán";
+    var refundBookings = ViewBag.RefundBookings as IEnumerable<HVTravel.Domain.Entities.Booking> ?? new List<HVTravel.Domain.Entities.Booking>();
+    var filteredBookingsCount = (int?)(ViewBag.FilteredBookingsCount) ?? Model.TotalCount;
+    var successfulPaymentsCount = (int?)(ViewBag.SuccessfulPaymentsCount) ?? 0;
 }
 
 @functions {
@@ -116,11 +119,11 @@
         <div class="flex flex-col gap-3">
             <div class="flex justify-between items-center text-sm border-b border-primary/10 pb-2">
                 <span class="text-slate-500">Đơn Đặt Đã Ghi Nhận</span>
-                <span class="font-bold text-slate-900 dark:text-white">@Model.Count()</span>
+                <span class="font-bold text-slate-900 dark:text-white">@filteredBookingsCount</span>
             </div>
             <div class="flex justify-between items-center text-sm border-b border-primary/10 pb-2">
                 <span class="text-slate-500">Thanh Toán Đã Nhận</span>
-                <span class="font-bold text-slate-900 dark:text-white">@Model.Count(x => x.Status == "Success" || x.Status == "Paid")</span>
+                <span class="font-bold text-slate-900 dark:text-white">@successfulPaymentsCount</span>
             </div>
             <div class="flex items-center gap-2 mt-1">
                 <span class="material-symbols-outlined text-orange-500 text-[16px]">warning</span>
@@ -151,6 +154,7 @@
     <div id="tab-transactions" class="tab-content mt-4 px-6 pb-6">
         <form method="get" id="filter-form-transactions" class="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
             <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+            <input type="hidden" name="pageSize" value="@ViewData["CurrentPageSize"]" />
             <div class="flex-1 min-w-[200px]">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
@@ -371,7 +375,7 @@
                        </tr>
                    </thead>
                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
-                       @foreach (var item in Model)
+                       @foreach (var item in Model.Items)
                        {
                             <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                 <td class="p-4 pl-6 col-trans-id"><span class="text-primary font-bold text-sm">#@GetShortId(item.Id)</span></td>
@@ -413,6 +417,56 @@
                    </tbody>
                 </table>
         </div>
+
+        <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20">
+            @{
+                var startItem = Model.TotalCount == 0 ? 0 : (Model.PageIndex - 1) * Model.PageSize + 1;
+                var endItem = Model.TotalCount == 0 ? 0 : Math.Min(Model.PageIndex * Model.PageSize, Model.TotalCount);
+                int[] pageSizes = { 10, 15, 20, 50, 100 };
+                int currentPageSize = (int?)ViewData["CurrentPageSize"] ?? 10;
+            }
+            <div class="flex items-center gap-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span> trong số <span class="font-bold text-slate-900 dark:text-white">@Model.TotalCount</span> giao dịch</p>
+                <div class="flex items-center gap-2">
+                    <label for="pageSize" class="text-xs font-medium text-slate-500 dark:text-slate-400">Hiển thị:</label>
+                    <div class="relative group">
+                        <select id="pageSize" onchange="changePageSize(this.value)"
+                                class="appearance-none h-9 pl-3 pr-10 py-1 text-xs font-bold bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all cursor-pointer shadow-sm hover:border-primary/50">
+                            @foreach (var size in pageSizes)
+                            {
+                                <option value="@size" selected="@(size == currentPageSize)">@size</option>
+                            }
+                        </select>
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-primary transition-colors flex items-center">
+                            <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex - 1, pageSize = currentPageSize, sortOrder = ViewBag.CurrentSort, bookingStatusFilter = ViewBag.CurrentBookingStatusFilter, paymentStatusFilter = ViewBag.CurrentPaymentStatusFilter, searchString = ViewData["CurrentSearch"] })'" @(Model.HasPreviousPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-lg">chevron_left</span>
+                </button>
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (Math.Abs(i - Model.PageIndex) <= 2 || i == 1 || i == Model.TotalPages)
+                    {
+                        <button onclick="location.href='@Url.Action("Index", new { page = i, pageSize = currentPageSize, sortOrder = ViewBag.CurrentSort, bookingStatusFilter = ViewBag.CurrentBookingStatusFilter, paymentStatusFilter = ViewBag.CurrentPaymentStatusFilter, searchString = ViewData["CurrentSearch"] })'"
+                                class="w-8 h-8 rounded-lg @(i == Model.PageIndex ? "bg-primary text-white shadow-sm shadow-primary/30" : "hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400") text-xs font-bold transition-colors">@i</button>
+                    }
+                    else if (Math.Abs(i - Model.PageIndex) == 3)
+                    {
+                        <span class="text-slate-400 text-xs">...</span>
+                    }
+                }
+
+                <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex + 1, pageSize = currentPageSize, sortOrder = ViewBag.CurrentSort, bookingStatusFilter = ViewBag.CurrentBookingStatusFilter, paymentStatusFilter = ViewBag.CurrentPaymentStatusFilter, searchString = ViewData["CurrentSearch"] })'" @(Model.HasNextPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-lg">chevron_right</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Content: Khoản Chi (Static) -->
@@ -451,7 +505,7 @@
                     </tr>
                 </thead>
                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                    @foreach (var item in Model.Where(x => x.Status == "Refunded" && x.PaymentStatus == "Refunded"))
+                    @foreach (var item in refundBookings)
                     {
                          <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="p-4 pl-6"><a class="text-primary font-bold text-sm hover:underline" href="#">#@item.BookingCode</a></td>
@@ -462,7 +516,7 @@
                             <td class="p-4 text-center"><button class="text-slate-500 hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">more_vert</span></button></td>
                         </tr>
                     }
-                    @if(!Model.Any(x => x.Status == "Refunded" && x.PaymentStatus == "Refunded"))
+                    @if(!refundBookings.Any())
                     {
                         <tr>
                             <td colspan="6" class="p-8 text-center text-slate-500">Không có dữ liệu hoàn tiền</td>
@@ -502,6 +556,13 @@
 
         function applyFilters() {
             document.getElementById('filter-form-transactions').submit();
+        }
+
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('pageSize', size);
+            url.searchParams.set('page', 1);
+            window.location.href = url.toString();
         }
 
         // Close dropdowns when clicking outside
