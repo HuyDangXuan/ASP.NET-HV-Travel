@@ -622,6 +622,26 @@ body.public-page-shell .public-action-stack > * {
   min-width: min(100%, 13.5rem);
 }
 
+body.public-page-shell.public-chat-active {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.public-page-shell .public-chat-scroll-region {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.public-chat-active {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body .public-chat-scroll-region {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 body.public-page-shell .public-chat-panel {
   border-radius: clamp(1.5rem, 1.1rem + 1vw, 2rem);
 }
@@ -995,6 +1015,52 @@ body.public-page-shell.dark .public-chat-toggle-icon {
 
   body.public-page-shell .public-action-stack > * {
     width: 100%;
+  }
+
+  body.public-page-shell .public-chat-widget {
+    left: max(0.5rem, env(safe-area-inset-left));
+    right: max(0.5rem, env(safe-area-inset-right));
+  }
+
+  body.public-page-shell .public-chat-widget[data-state="open"] {
+    bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  body.public-page-shell .public-chat-widget[data-state="open"] .public-chat-panel {
+    width: 100%;
+    height: min(46rem, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem)) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem);
+  }
+
+  body.public-page-shell .public-chat-composer {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+
+  body.public-page-shell.public-chat-active .public-chat-widget[data-state="closed"] {
+    display: none;
+  }
+
+  body .public-chat-widget {
+    left: max(0.5rem, env(safe-area-inset-left));
+    right: max(0.5rem, env(safe-area-inset-right));
+  }
+
+  body .public-chat-widget[data-state="open"] {
+    bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  body .public-chat-widget[data-state="open"] .public-chat-panel {
+    width: 100%;
+    height: min(46rem, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem)) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem);
+  }
+
+  body .public-chat-composer {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
+
+  body.public-chat-active .public-chat-widget[data-state="closed"] {
+    display: none;
   }
 }
 
