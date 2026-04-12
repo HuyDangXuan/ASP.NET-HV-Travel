@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using HVTravel.Domain.Utils;
 using Microsoft.Extensions.Configuration;
 
 namespace HVTravel.Web.Services;
@@ -76,7 +77,7 @@ public sealed class GroqChatClient : IGroqChatClient
             throw new InvalidOperationException("Groq response content was empty.");
         }
 
-        return content;
+        return TextEncodingRepair.NormalizeText(content).Trim();
     }
 
     private string? ReadSetting(string key, string? legacyKey = null)
