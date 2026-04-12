@@ -43,7 +43,7 @@
                         <td class="py-4">
                             <form asp-action="UpdateStatus" method="post" class="flex flex-wrap items-center gap-2">
                                 <input type="hidden" name="id" value="@lead.Id" />
-                                <select name="status" class="rounded-xl border border-slate-200 bg-transparent px-3 py-2 text-sm dark:border-slate-700">
+                                <select name="status" class="w-[168px]" data-admin-select="compact">
                                     <option value="New" selected="@(lead.Status == "New")">New</option>
                                     <option value="Qualified" selected="@(lead.Status == "Qualified")">Qualified</option>
                                     <option value="Quoted" selected="@(lead.Status == "Quoted")">Quoted</option>

@@ -1,4 +1,4 @@
-@model HVTravel.Domain.Entities.Booking
+﻿@model HVTravel.Domain.Entities.Booking
 @{
     ViewData["Title"] = "Chỉnh sửa Đơn đặt vé";
 }
@@ -271,7 +271,6 @@
 </form>
 
 @section Scripts {
-    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script>
         function selectCustomOptionAndRefreshBadge(id, value, text) {
             selectCustomOption(id, value, text);

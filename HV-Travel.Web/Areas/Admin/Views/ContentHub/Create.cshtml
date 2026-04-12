@@ -1,6 +1,6 @@
-﻿@model HVTravel.Domain.Entities.TravelArticle
+@model HVTravel.Domain.Entities.TravelArticle
 @{
-    ViewData["Title"] = "Article Form";
+    ViewData["Title"] = "T\u1EA1o b\u00E0i vi\u1EBFt";
 }
 
 <div class="max-w-5xl">
@@ -8,18 +8,20 @@
     {
         Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
         {
-            new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
+            new() { Label = "Trang ch\u1EE7", Url = Url.Action("Index", "Dashboard") },
             new() { Label = "Content hub", Url = Url.Action("Index") },
-            new() { Label = "Biểu mẫu", IsCurrent = true }
+            new() { Label = "T\u1EA1o b\u00E0i vi\u1EBFt", IsCurrent = true }
         }
     })
 
     <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
         <form method="post" class="space-y-5">
-            @Html.AntiForgeryToken()`r`n            <input asp-for="Id" type="hidden" />
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Title</label>
+                    <label class="mb-2 block text-sm font-semibold">Ti&#234;u &#273;&#7873;</label>
                     <input asp-for="Title" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
@@ -27,42 +29,50 @@
                     <input asp-for="Slug" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
             </div>
+
             <div class="grid gap-5 md:grid-cols-3">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Category</label>
+                    <label class="mb-2 block text-sm font-semibold">Danh m&#7909;c</label>
                     <input asp-for="Category" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Destination</label>
+                    <label class="mb-2 block text-sm font-semibold">&#272;i&#7875;m &#273;&#7871;n</label>
                     <input asp-for="Destination" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">HeroImageUrl</label>
+                    <label class="mb-2 block text-sm font-semibold">&#7842;nh b&#236;a (URL)</label>
                     <input asp-for="HeroImageUrl" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
             </div>
+
             <div>
-                <label class="mb-2 block text-sm font-semibold">Summary</label>
+                <label class="mb-2 block text-sm font-semibold">T&#243;m t&#7855;t</label>
                 <textarea asp-for="Summary" rows="3" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700"></textarea>
             </div>
+
             <div>
-                <label class="mb-2 block text-sm font-semibold">Body</label>
+                <label class="mb-2 block text-sm font-semibold">N&#7897;i dung</label>
                 <textarea asp-for="Body" rows="12" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700"></textarea>
             </div>
+
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">PublishedAt</label>
-                    <input asp-for="PublishedAt" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <label class="mb-2 block text-sm font-semibold">Ng&#224;y xu&#7845;t b&#7843;n</label>
+                    <div class="admin-datetime-field">
+                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
+                        <input asp-for="PublishedAt" type="datetime-local" class="date-field-custom admin-datetime-input" />
+                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    </div>
                 </div>
-                <label class="inline-flex items-center gap-3 text-sm font-semibold mt-8">
-                    <input asp-for="IsPublished" class="rounded border-slate-300" /> Xuất bản
+                <label class="mt-8 inline-flex items-center gap-3 text-sm font-semibold">
+                    <input asp-for="IsPublished" class="rounded border-slate-300" /> Xu&#7845;t b&#7843;n
                 </label>
             </div>
+
             <div class="flex items-center gap-3">
-                <button type="submit" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Lưu bài viết</button>
-                <a asp-action="Index" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold dark:border-slate-700">Quay lại</a>
+                <button type="submit" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">L&#432;u b&#224;i vi&#7871;t</button>
+                <a asp-action="Index" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold dark:border-slate-700">Quay l&#7841;i</a>
             </div>
         </form>
     </div>
 </div>
-

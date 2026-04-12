@@ -30,7 +30,7 @@
     <div class="grid gap-4 xl:grid-cols-2">
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
             <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Căn lề</span>
-            <select name="@(Model.Prefix).Align" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+            <select name="@(Model.Prefix).Align" class="w-full" data-admin-select="default">
                 @foreach (var option in alignOptions)
                 {
                     <option value="@option.Value" selected="@(string.Equals(Model.Style.Align, option.Value, StringComparison.OrdinalIgnoreCase))">@option.Label</option>
@@ -39,7 +39,7 @@
         </label>
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
             <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Font preset</span>
-            <select name="@(Model.Prefix).FontPreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+            <select name="@(Model.Prefix).FontPreset" class="w-full" data-admin-select="default">
                 <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.FontPreset)">Mặc định</option>
                 @foreach (var fontPreset in ContentPresentationSchema.FontPresets)
                 {
@@ -53,7 +53,7 @@
         </label>
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
             <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Cỡ chữ</span>
-            <select name="@(Model.Prefix).SizePreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+            <select name="@(Model.Prefix).SizePreset" class="w-full" data-admin-select="default">
                 <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.SizePreset)">Mặc định</option>
                 @foreach (var sizePreset in ContentPresentationSchema.SizePresets.Where(value => !string.IsNullOrWhiteSpace(value)))
                 {
@@ -68,7 +68,7 @@
             </label>
             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                 <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Unit</span>
-                <select name="@(Model.Prefix).CustomSizeUnit" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                <select name="@(Model.Prefix).CustomSizeUnit" class="w-full" data-admin-select="default">
                     <option value="" selected="@string.IsNullOrWhiteSpace(Model.Style.CustomSizeUnit)">Mặc định</option>
                     @foreach (var unit in ContentPresentationSchema.SizeUnits)
                     {
@@ -79,7 +79,7 @@
         </div>
         <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
             <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Màu chữ</span>
-            <select name="@(Model.Prefix).ColorPreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+            <select name="@(Model.Prefix).ColorPreset" class="w-full" data-admin-select="default">
                 @foreach (var colorPreset in ContentPresentationSchema.ColorPresets)
                 {
                     var label = string.IsNullOrWhiteSpace(colorPreset) ? "Mặc định" : colorPreset;

@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "Thêm Khách Hàng";
 }
 @model HVTravel.Domain.Entities.Customer
@@ -236,7 +236,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script>
         // Live Preview Logic
         const inputs = {
@@ -309,6 +308,5 @@
                 updatePreview();
             });
         }
-        
     </script>
 }

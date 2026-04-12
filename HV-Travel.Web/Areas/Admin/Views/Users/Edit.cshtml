@@ -1,4 +1,4 @@
-@using HVTravel.Domain.Entities
+﻿@using HVTravel.Domain.Entities
 @model User
 @{
     ViewData["Title"] = "Tài Khoản";
@@ -189,7 +189,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script>
         (function () {
             const avatarInput = document.querySelector('input[name="AvatarUrl"]');
@@ -236,5 +235,3 @@
         })();
     </script>
 }
-
-

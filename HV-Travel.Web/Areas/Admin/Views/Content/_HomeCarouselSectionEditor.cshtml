@@ -59,7 +59,7 @@
                 <div class="mt-5 grid gap-4">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                         <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Nguồn ảnh</span>
-                        <select name="@InputName(sectionIndex, sourceIndex)" class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" data-source-select>
+                        <select name="@InputName(sectionIndex, sourceIndex)" class="w-full" data-source-select data-admin-select="default">
                             <option value="external" selected="@(string.Equals(sourceType, "external", StringComparison.OrdinalIgnoreCase))">Link trực tiếp</option>
                             <option value="cloudinary" selected="@(string.Equals(sourceType, "cloudinary", StringComparison.OrdinalIgnoreCase))">Cloudinary</option>
                         </select>

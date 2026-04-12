@@ -315,7 +315,7 @@
                                         <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_200px]">
                                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                                                 <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Align section</span>
-                                                <select name="Sections[@i].Presentation.Container.Align" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                                                <select name="Sections[@i].Presentation.Container.Align" class="w-full" data-admin-select="default">
                                                     @foreach (var option in sectionAlignmentOptions)
                                                     {
                                                         <option value="@option.Value" selected="@(string.Equals(presentation.Container.Align, option.Value, StringComparison.OrdinalIgnoreCase))">@option.Label</option>
@@ -324,7 +324,7 @@
                                             </label>
                                             <label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
                                                 <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Background preset</span>
-                                                <select name="Sections[@i].Presentation.Container.BackgroundPreset" class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                                                <select name="Sections[@i].Presentation.Container.BackgroundPreset" class="w-full" data-admin-select="default">
                                                     @foreach (var preset in ContentPresentationSchema.BackgroundPresets)
                                                     {
                                                         var label = string.IsNullOrWhiteSpace(preset) ? "Mặc định" : preset;
