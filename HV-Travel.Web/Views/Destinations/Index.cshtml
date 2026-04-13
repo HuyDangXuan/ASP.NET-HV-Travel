@@ -113,16 +113,16 @@
                                         <span class="material-symbols-outlined text-[18px] text-primary">swipe</span>
                                         <span>Kéo hoặc vuốt để xem thêm</span>
                                     </span>
-                                    <div class="hidden items-center gap-2" data-region-carousel-controls>
+                                    <div class="hidden items-center gap-2" data-tour-card-carousel-controls>
                                         <button type="button"
                                                 class="inline-flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:text-primary disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-35 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-primary/40"
-                                                data-region-carousel-prev
+                                                data-tour-card-carousel-prev
                                                 aria-label="Nhóm tour trước của vùng @region.Region">
                                             <span class="material-symbols-outlined text-[18px]">arrow_back_ios_new</span>
                                         </button>
                                         <button type="button"
                                                 class="inline-flex size-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:text-primary disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-35 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-100 dark:hover:border-primary/40"
-                                                data-region-carousel-next
+                                                data-tour-card-carousel-next
                                                 aria-label="Nhóm tour tiếp theo của vùng @region.Region">
                                             <span class="material-symbols-outlined text-[18px]">arrow_forward_ios</span>
                                         </button>
@@ -132,14 +132,14 @@
 
                             @if (region.Tours.Any())
                             {
-                                <div class="relative mt-7" data-region-carousel aria-label="Danh sách tour vùng @region.Region">
+                                <div class="relative mt-7" data-tour-card-carousel aria-label="Danh sách tour vùng @region.Region">
                                     <div class="px-4 pb-4 sm:px-5 lg:px-6">
-                                        <div class="overflow-hidden cursor-grab rounded-[1.9rem] [touch-action:pan-y]" data-region-carousel-viewport>
-                                            <div class="flex gap-5 will-change-transform" data-region-carousel-track>
+                                        <div class="overflow-hidden cursor-grab rounded-[1.9rem] [touch-action:pan-y]" data-tour-card-carousel-viewport>
+                                            <div class="flex gap-5 will-change-transform" data-tour-card-carousel-track>
                                             @foreach (var tour in region.Tours)
                                             {
-                                                <div class="min-w-0 shrink-0 basis-full md:basis-[calc((100%-1.25rem)/2)] xl:basis-[calc((100%-2.5rem)/3)]" data-region-carousel-item>
-                                                    @await Html.PartialAsync("_RegionTourCard", tour)
+                                                <div class="min-w-0 shrink-0 basis-full md:basis-[calc((100%-1.25rem)/2)] xl:basis-[calc((100%-2.5rem)/3)]" data-tour-card-carousel-item>
+                                                    @await Html.PartialAsync("_CarouselTourCard", tour)
                                                 </div>
                                             }
                                             </div>
@@ -164,6 +164,6 @@
 </section>
 
 @section Scripts {
-    <script src="~/js/destinations-region-carousel.js" asp-append-version="true"></script>
+    <script src="~/js/tour-card-carousel.js" asp-append-version="true"></script>
 }
 

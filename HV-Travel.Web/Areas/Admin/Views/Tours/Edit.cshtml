@@ -1,4 +1,4 @@
-@model HVTravel.Domain.Entities.Tour
+﻿@model HVTravel.Domain.Entities.Tour
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
     
@@ -842,7 +842,6 @@
     if (discountInput) discountInput.addEventListener('input', calculateActualPrice);
 </script>
 @section Scripts {
-    <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script src="~/js/admin-tour-date-picker.js" asp-append-version="true"></script>
 }
 

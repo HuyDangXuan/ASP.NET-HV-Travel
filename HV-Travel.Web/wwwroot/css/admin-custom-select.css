@@ -27,6 +27,8 @@
     box-shadow: 0 14px 30px rgb(15 23 42 / 0.08);
     cursor: pointer;
     transition: all 0.2s ease;
+    appearance: none;
+    text-align: left;
 }
 
 .custom-select-trigger:hover {
@@ -58,6 +60,13 @@
     min-width: 0;
 }
 
+.custom-select-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
 .custom-select-caption {
     font-size: 0.625rem;
     line-height: 0.875rem;
@@ -74,6 +83,11 @@
     line-height: 1.25rem;
     font-weight: 700;
     color: rgb(17 23 24);
+}
+
+.custom-select-container.no-caption .selected-label {
+    font-size: 0.9rem;
+    line-height: 1.25rem;
 }
 
 .custom-select-container .arrow-icon {
@@ -142,6 +156,13 @@
     color: var(--color-primary, #0ea5e9);
 }
 
+.custom-option.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
+}
+
 .custom-option-main {
     display: flex;
     align-items: center;
@@ -199,6 +220,21 @@
 
 .dark .custom-option-dot {
     background: rgb(100 116 139);
+}
+
+.admin-native-select-input {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
 }
 
 .custom-select-container.bulk-select .custom-select-trigger {
@@ -293,4 +329,77 @@
 .dark .custom-select-container.bulk-select .custom-option:hover {
     background: rgb(51 65 85 / 0.8);
     color: rgb(255 255 255);
+}
+
+.custom-select-container.compact-select .custom-select-trigger {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, rgb(255 255 255), rgb(248 250 252));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.85), 0 10px 24px rgb(15 23 42 / 0.08);
+}
+
+.custom-select-container.compact-select .custom-select-trigger:hover {
+    transform: translateY(0);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.95), 0 12px 28px rgb(15 23 42 / 0.1);
+}
+
+.custom-select-container.compact-select .custom-select-main {
+    gap: 0.5rem;
+}
+
+.custom-select-container.compact-select .custom-select-meta {
+    gap: 0;
+}
+
+.custom-select-container.compact-select .custom-select-caption {
+    font-size: 0.55rem;
+    line-height: 0.75rem;
+    margin-bottom: 0;
+}
+
+.custom-select-container.compact-select .selected-label,
+.custom-select-container.compact-select.no-caption .selected-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 800;
+}
+
+.custom-select-container.compact-select .options-menu {
+    border-radius: 1rem;
+    padding: 0.35rem;
+}
+
+.custom-select-container.compact-select .custom-option {
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.8rem;
+    font-size: 0.8rem;
+}
+
+.custom-select-container.compact-select .custom-option-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+}
+
+.custom-select-container.disabled .custom-select-trigger,
+.custom-select-container .custom-select-trigger:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
+}
+
+.dark .custom-select-container.compact-select .custom-select-trigger {
+    border-color: rgb(71 85 105 / 0.95);
+    background: linear-gradient(135deg, rgb(15 23 42), rgb(15 23 42 / 0.96));
+    box-shadow: inset 0 1px 0 rgb(148 163 184 / 0.08), 0 14px 30px rgb(2 6 23 / 0.36);
+}
+
+.dark .custom-select-container.compact-select .custom-select-trigger:hover {
+    box-shadow: inset 0 1px 0 rgb(148 163 184 / 0.12), 0 16px 34px rgb(2 6 23 / 0.42);
+}
+
+.dark .custom-select-container.compact-select.active .custom-select-trigger {
+    border-color: rgb(56 189 248 / 0.55);
+    box-shadow: 0 0 0 3px rgb(56 189 248 / 0.14), 0 18px 36px rgb(2 6 23 / 0.44);
 }

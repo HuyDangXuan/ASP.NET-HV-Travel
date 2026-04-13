@@ -1,6 +1,6 @@
-﻿@model HVTravel.Domain.Entities.Promotion
+@model HVTravel.Domain.Entities.Promotion
 @{
-    ViewData["Title"] = "Promotion Form";
+    ViewData["Title"] = "T\u1EA1o khuy\u1EBFn m\u00E3i";
 }
 
 <div class="max-w-4xl">
@@ -8,58 +8,71 @@
     {
         Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
         {
-            new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
-            new() { Label = "Promotions", Url = Url.Action("Index") },
-            new() { Label = "Biểu mẫu", IsCurrent = true }
+            new() { Label = "Trang ch\u1EE7", Url = Url.Action("Index", "Dashboard") },
+            new() { Label = "Khuy\u1EBFn m\u00E3i", Url = Url.Action("Index") },
+            new() { Label = "T\u1EA1o khuy\u1EBFn m\u00E3i", IsCurrent = true }
         }
     })
 
     <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
         <form method="post" class="space-y-5">
-            @Html.AntiForgeryToken()`r`n            <input asp-for="Id" type="hidden" />
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Code</label>
+                    <label class="mb-2 block text-sm font-semibold">M&#227; khuy&#7871;n m&#227;i</label>
                     <input asp-for="Code" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Title</label>
+                    <label class="mb-2 block text-sm font-semibold">Ti&#234;u &#273;&#7873;</label>
                     <input asp-for="Title" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
             </div>
+
             <div class="grid gap-5 md:grid-cols-3">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">CampaignType</label>
+                    <label class="mb-2 block text-sm font-semibold">Lo&#7841;i chi&#7871;n d&#7883;ch</label>
                     <input asp-for="CampaignType" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">Discount %</label>
+                    <label class="mb-2 block text-sm font-semibold">Gi&#7843;m gi&#225; (%)</label>
                     <input asp-for="DiscountPercentage" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">MinimumSpend</label>
+                    <label class="mb-2 block text-sm font-semibold">Chi ti&#234;u t&#7889;i thi&#7875;u</label>
                     <input asp-for="MinimumSpend" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
                 </div>
             </div>
+
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">ValidFrom</label>
-                    <input asp-for="ValidFrom" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <label class="mb-2 block text-sm font-semibold">Hi&#7879;u l&#7921;c t&#7915;</label>
+                    <div class="admin-datetime-field">
+                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
+                        <input asp-for="ValidFrom" type="datetime-local" class="date-field-custom admin-datetime-input" />
+                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    </div>
                 </div>
                 <div>
-                    <label class="mb-2 block text-sm font-semibold">ValidTo</label>
-                    <input asp-for="ValidTo" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" />
+                    <label class="mb-2 block text-sm font-semibold">Hi&#7879;u l&#7921;c &#273;&#7871;n</label>
+                    <div class="admin-datetime-field">
+                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
+                        <input asp-for="ValidTo" type="datetime-local" class="date-field-custom admin-datetime-input" />
+                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    </div>
                 </div>
             </div>
+
             <div>
-                <label class="mb-2 block text-sm font-semibold">Description</label>
+                <label class="mb-2 block text-sm font-semibold">M&#244; t&#7843;</label>
                 <textarea asp-for="Description" rows="5" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700"></textarea>
             </div>
+
             <div class="flex items-center gap-3">
-                <button type="submit" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Lưu promotion</button>
-                <a asp-action="Index" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold dark:border-slate-700">Quay lại</a>
+                <button type="submit" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">L&#432;u khuy&#7871;n m&#227;i</button>
+                <a asp-action="Index" class="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold dark:border-slate-700">Quay l&#7841;i</a>
             </div>
         </form>
     </div>
 </div>
-

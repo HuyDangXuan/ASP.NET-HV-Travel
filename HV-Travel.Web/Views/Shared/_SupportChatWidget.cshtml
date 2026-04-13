@@ -7,12 +7,49 @@
     var customerPhone = User.FindFirst("PhoneNumber")?.Value ?? string.Empty;
 }
 
-<div id="support-chat-widget" class="fixed bottom-2 left-2 right-2 z-[70] sm:bottom-4 sm:left-auto sm:right-4">
+<style>
+    body.public-chat-active {
+        overflow: hidden;
+        overscroll-behavior: none;
+    }
+
+    .public-chat-scroll-region {
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @@media (max-width: 639.98px) {
+        .public-chat-widget {
+            left: max(0.5rem, env(safe-area-inset-left));
+            right: max(0.5rem, env(safe-area-inset-right));
+        }
+
+        .public-chat-widget[data-state="open"] {
+            bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+        }
+
+        .public-chat-widget[data-state="open"] .public-chat-panel {
+            width: 100%;
+            height: min(46rem, calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem)) !important;
+            max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1.25rem);
+        }
+
+        .public-chat-composer {
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+        }
+
+        body.public-chat-active .public-chat-widget[data-state="closed"] {
+            display: none !important;
+        }
+    }
+</style>
+
+<div id="support-chat-widget" data-state="closed" class="public-chat-widget public-chat-widget--support fixed bottom-2 left-2 right-2 z-[70] sm:bottom-4 sm:left-auto sm:right-4">
     <form id="chat-antiforgery-form" class="hidden">
         @Html.AntiForgeryToken()
     </form>
 
-    <div id="support-chat-panel" class="hidden h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_28px_90px_-45px_rgba(15,23,42,0.7)] sm:h-[min(52rem,calc(100dvh-1.5rem))] sm:w-[min(100vw-1.5rem,34rem)] sm:rounded-[2rem] lg:h-[min(54rem,calc(100dvh-2rem))] lg:w-[min(100vw-2rem,36rem)] dark:border-slate-800 dark:bg-slate-950">
+    <div id="support-chat-panel" class="public-chat-panel hidden h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_28px_90px_-45px_rgba(15,23,42,0.7)] sm:h-[min(52rem,calc(100dvh-1.5rem))] sm:w-[min(100vw-1.5rem,34rem)] sm:rounded-[2rem] lg:h-[min(54rem,calc(100dvh-2rem))] lg:w-[min(100vw-2rem,36rem)] dark:border-slate-800 dark:bg-slate-950">
         <div class="shrink-0 bg-gradient-to-r from-slate-950 via-slate-900 to-primary px-5 py-4 text-white sm:px-6">
             <div class="flex items-start justify-between gap-4">
                 <div class="min-w-0">
@@ -25,7 +62,7 @@
             </div>
         </div>
 
-        <section id="support-chat-onboarding-step" class="hidden min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+        <section id="support-chat-onboarding-step" class="public-chat-scroll-region hidden min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
             <div class="flex flex-1 flex-col justify-center gap-6">
                 <div class="space-y-4">
                     <div class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.24em] text-primary dark:bg-primary/20">
@@ -74,12 +111,12 @@
                 <p id="support-chat-chat-status"></p>
             </div>
 
-            <div id="support-chat-messages" class="min-h-0 flex flex-1 flex-col overflow-y-auto bg-slate-50/60 px-4 py-4 dark:bg-slate-900/50 sm:px-5 sm:py-5">
-                <div id="support-chat-thread" class="flex flex-1 flex-col gap-4"></div>
+            <div id="support-chat-messages" class="public-chat-thread-surface public-chat-scroll-region min-h-0 flex flex-1 flex-col overflow-y-auto bg-slate-50/60 px-4 py-4 dark:bg-slate-900/50 sm:px-5 sm:py-5">
+                <div id="support-chat-thread" class="public-chat-thread flex flex-1 flex-col gap-4"></div>
             </div>
 
-            <form id="support-chat-form" class="shrink-0 border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950 sm:px-5 sm:py-4">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-3 py-3 shadow-inner shadow-slate-200/20 dark:border-slate-800 dark:bg-slate-900 sm:px-4">
+            <form id="support-chat-form" class="public-chat-composer shrink-0 border-t border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950 sm:px-5 sm:py-4">
+                <div class="public-chat-input-shell rounded-[1.5rem] border border-slate-200 bg-slate-50 px-3 py-3 shadow-inner shadow-slate-200/20 dark:border-slate-800 dark:bg-slate-900 sm:px-4">
                     <div class="flex items-end gap-3">
                         <textarea id="support-chat-input" rows="1" class="h-12 min-h-[3rem] max-h-36 w-full resize-none border-0 bg-transparent px-1 py-2 text-[15px] text-slate-900 focus:ring-0 disabled:cursor-not-allowed disabled:opacity-60 dark:text-white" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
                         <button id="support-chat-send" type="submit" class="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary to-accent px-4 text-sm font-black text-white shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5">
@@ -93,8 +130,8 @@
         </section>
     </div>
 
-    <button id="support-chat-toggle" type="button" class="ml-auto inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/95 px-5 py-4 text-sm font-black text-slate-900 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.55)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-primary/30 dark:border-slate-800 dark:bg-slate-950/95 dark:text-white">
-        <span class="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30">
+    <button id="support-chat-toggle" type="button" class="public-chat-toggle ml-auto inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/95 px-5 py-4 text-sm font-black text-slate-900 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.55)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-primary/30 dark:border-slate-800 dark:bg-slate-950/95 dark:text-white">
+        <span class="public-chat-toggle-icon flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30">
             <span class="material-symbols-outlined text-[20px]">chat</span>
         </span>
         <span class="hidden sm:inline">Tin nhắn</span>
@@ -198,6 +235,26 @@
             inputEl.style.height = 'auto';
             const nextHeight = Math.max(48, Math.min(inputEl.scrollHeight, 144));
             inputEl.style.height = `${nextHeight}px`;
+        };
+
+        const mobileChatViewport = window.matchMedia('(max-width: 639.98px)');
+
+        const syncBodyChatState = () => {
+            const widgets = Array.from(document.querySelectorAll('.public-chat-widget'));
+            const hasOpenWidget = widgets.some((widget) => widget.dataset.state === 'open');
+
+            document.body.classList.toggle('public-chat-active', hasOpenWidget);
+
+            widgets.forEach((widget) => {
+                const shouldHideWidget = mobileChatViewport.matches && hasOpenWidget && widget.dataset.state === 'closed';
+                widget.classList.toggle('hidden', shouldHideWidget);
+                widget.setAttribute('aria-hidden', shouldHideWidget ? 'true' : 'false');
+            });
+        };
+
+        const setWidgetOpenState = (isOpen) => {
+            root.dataset.state = isOpen ? 'open' : 'closed';
+            syncBodyChatState();
         };
 
         const getProfile = () => ({
@@ -448,9 +505,12 @@
         };
 
         const openPanel = () => {
+            root.classList.remove('hidden');
+            root.setAttribute('aria-hidden', 'false');
             panelEl.classList.remove('hidden');
             panelEl.classList.add('flex');
             toggleEl.classList.add('hidden');
+            setWidgetOpenState(true);
             window.dispatchEvent(new CustomEvent('hvtravel:chat-widget-open', {
                 detail: { id: widgetId }
             }));
@@ -481,6 +541,7 @@
             panelEl.classList.add('hidden');
             panelEl.classList.remove('flex');
             toggleEl.classList.remove('hidden');
+            setWidgetOpenState(false);
         };
 
         const bootstrapAndOpenChat = async (skipValidation = false) => {
@@ -571,6 +632,12 @@
             }
         });
 
+        if (typeof mobileChatViewport.addEventListener === 'function') {
+            mobileChatViewport.addEventListener('change', syncBodyChatState);
+        } else if (typeof mobileChatViewport.addListener === 'function') {
+            mobileChatViewport.addListener(syncBodyChatState);
+        }
+
         [displayNameEl, emailEl, phoneEl].forEach((field) => {
             field.addEventListener('input', () => {
                 updateSummary();
@@ -586,6 +653,7 @@
         updateSummary();
         adjustComposerHeight();
         setChatStatus(state.isCustomer ? 'Hệ thống chat đang sẵn sàng.' : 'Điền thông tin để bắt đầu cuộc trò chuyện với đội ngũ tư vấn.');
+        syncBodyChatState();
     })();
 </script>
 

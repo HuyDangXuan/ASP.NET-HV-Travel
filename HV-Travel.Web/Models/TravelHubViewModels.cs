@@ -36,4 +36,13 @@ public class ContentHubIndexViewModel
     public TravelArticle? FeaturedArticle { get; set; }
     public IReadOnlyList<TravelArticle> LatestArticles { get; set; } = Array.Empty<TravelArticle>();
     public IReadOnlyList<string> Categories { get; set; } = Array.Empty<string>();
+    public IReadOnlyList<ArticleCategoryCarouselViewModel> CategoryCarousels { get; set; } = Array.Empty<ArticleCategoryCarouselViewModel>();
+}
+
+public class ArticleCategoryCarouselViewModel
+{
+    public string AnchorId { get; set; } = string.Empty;
+    public string CategoryName { get; set; } = string.Empty;
+    public int ArticleCount { get; set; }
+    public IReadOnlyList<TravelArticle> Articles { get; set; } = Array.Empty<TravelArticle>();
 }

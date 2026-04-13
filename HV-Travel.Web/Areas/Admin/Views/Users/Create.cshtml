@@ -1,4 +1,4 @@
-@using HVTravel.Domain.Entities
+﻿@using HVTravel.Domain.Entities
 @model User
 @{
     ViewData["Title"] = "Tài Khoản";
@@ -73,16 +73,13 @@
         <!-- Role -->
         <div>
             <label for="Role" class="label-text">Vai Trò <span class="text-red-500">*</span></label>
-            <div class="relative">
-                <select asp-for="Role" class="input-field appearance-none cursor-pointer">
+            <div>
+                <select asp-for="Role" class="input-field" data-admin-select="default">
                     <option value="Staff">Nhân viên</option>
                     <option value="Manager">Quản lý</option>
                     <option value="Guide">Hướng dẫn viên</option>
                     <option value="Admin">Quản trị viên</option>
                 </select>
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
-                </span>
             </div>
         </div>
 
@@ -172,5 +169,3 @@
         })();
     </script>
 }
-
-

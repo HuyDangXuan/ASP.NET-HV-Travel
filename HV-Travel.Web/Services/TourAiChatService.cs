@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
+using HVTravel.Domain.Utils;
 using HVTravel.Web.Models;
 using Microsoft.Extensions.Logging;
 
@@ -164,7 +165,7 @@ public sealed class TourAiChatService : ITourAiChatService
 
         if (!_pendingTracker.TryStart(conversation.Id))
         {
-            throw new InvalidOperationException("AI dang xu ly cau hoi truoc do. Vui long doi them mot chut.");
+            throw new InvalidOperationException("AI đang xử lý câu hỏi trước đó. Vui lòng đợi thêm một chút.");
         }
 
         var participant = ResolveParticipant(user, conversation.VisitorSessionId ?? request.VisitorSessionId);
@@ -174,8 +175,8 @@ public sealed class TourAiChatService : ITourAiChatService
             SenderType = participant.IsCustomer ? "customer" : "guest",
             SenderUserId = participant.CustomerId,
             SenderDisplayName = participant.IsCustomer
-                ? (!string.IsNullOrWhiteSpace(participant.Profile.DisplayName) ? participant.Profile.DisplayName : "Ban")
-                : "Ban",
+                ? (!string.IsNullOrWhiteSpace(participant.Profile.DisplayName) ? participant.Profile.DisplayName : "Bạn")
+                : "Bạn",
             MessageType = "text",
             ClientMessageId = clientMessageId,
             Content = request.Content.Trim(),
@@ -237,7 +238,7 @@ public sealed class TourAiChatService : ITourAiChatService
             SenderDisplayName = AssistantDisplayName,
             MessageType = "text",
             ClientMessageId = CreateClientMessageId(),
-            Content = assistantContent,
+            Content = NormalizeAssistantContent(assistantContent),
             IsRead = true,
             ReadAt = DateTime.UtcNow,
             SentAt = DateTime.UtcNow,
@@ -320,12 +321,13 @@ public sealed class TourAiChatService : ITourAiChatService
             new(
                 "system",
                 """
-                Ban la tro ly AI tu van tour cua HV Travel tren trang chi tiet tour.
-                Hay tra loi bang tieng Viet, giong cham soc khach hang, ro rang va tu nhien.
-                Chi duoc dung du lieu tour va lich su hoi thoai da cung cap.
-                Neu du lieu khong co thong tin nguoi dung hoi, phai noi ro ban chua thay du lieu do trong tour hien tai.
-                Khong bia them gia, lich trinh, dieu khoan, gio giac, dich vu, khach san, phuong tien hoac uu dai.
-                Neu can xac nhan sau hon hoac du lieu dang thieu, hay moi nguoi dung mo khung chat ho tro ben duoi de gap tu van vien that.
+                Bạn là trợ lý AI tư vấn tour của HV Travel trên trang chi tiết tour.
+                Luôn trả lời bằng tiếng Việt tự nhiên, đầy đủ dấu, rõ ràng và đúng ngữ cảnh chăm sóc khách hàng.
+                Tuyệt đối không viết tiếng Việt không dấu, không dùng kiểu telex, không dùng ASCII fallback.
+                Chỉ được dùng dữ liệu tour và lịch sử hội thoại đã cung cấp.
+                Nếu dữ liệu không có thông tin người dùng hỏi, phải nói rõ bạn chưa thấy dữ liệu đó trong tour hiện tại.
+                Không bịa thêm giá, lịch trình, điều khoản, giờ giấc, dịch vụ, khách sạn, phương tiện hoặc ưu đãi.
+                Nếu cần xác nhận sâu hơn hoặc dữ liệu đang thiếu, hãy mời người dùng mở khung chat hỗ trợ bên dưới để gặp tư vấn viên thật.
                 """),
             new("system", BuildTourSnapshot(tour))
         };
@@ -359,48 +361,48 @@ public sealed class TourAiChatService : ITourAiChatService
             .ToList();
 
         var builder = new StringBuilder();
-        builder.AppendLine("Du lieu tour hien tai:");
-        builder.AppendLine($"- Ten tour: {tour.Name}");
-        builder.AppendLine($"- Ma tour: {ValueOrFallback(tour.Code)}");
-        builder.AppendLine($"- Diem den: {BuildDestinationLabel(tour)}");
-        builder.AppendLine($"- Thoi luong: {ValueOrFallback(tour.Duration?.Text)}");
-        builder.AppendLine($"- Mo ta ngan: {ValueOrFallback(RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 320))}");
-        builder.AppendLine($"- Mo ta chi tiet: {ValueOrFallback(RichTextContentFormatter.ToPlainText(tour.Description))}");
-        builder.AppendLine($"- Diem noi bat: {BuildListLine(tour.Highlights)}");
-        builder.AppendLine($"- Bao gom: {BuildListLine(tour.GeneratedInclusions)}");
-        builder.AppendLine($"- Khong bao gom: {BuildListLine(tour.GeneratedExclusions)}");
-        builder.AppendLine($"- Diem hen: {ValueOrFallback(tour.MeetingPoint)}");
-        builder.AppendLine($"- Huy tour: {ValueOrFallback(tour.CancellationPolicy?.Summary)}");
-        builder.AppendLine($"- Xac nhan: {ValueOrFallback(tour.ConfirmationType)}");
-        builder.AppendLine($"- Gia nguoi lon mac dinh: {FormatCurrency(tour.Price?.Adult)}");
-        builder.AppendLine($"- Gia tre em mac dinh: {FormatCurrency(tour.Price?.Child)}");
-        builder.AppendLine($"- Gia em be mac dinh: {FormatCurrency(tour.Price?.Infant)}");
-        builder.AppendLine("- Lich trinh:");
+        builder.AppendLine("Dữ liệu tour hiện tại:");
+        builder.AppendLine($"- Tên tour: {tour.Name}");
+        builder.AppendLine($"- Mã tour: {ValueOrFallback(tour.Code)}");
+        builder.AppendLine($"- Điểm đến: {BuildDestinationLabel(tour)}");
+        builder.AppendLine($"- Thời lượng: {ValueOrFallback(tour.Duration?.Text)}");
+        builder.AppendLine($"- Mô tả ngắn: {ValueOrFallback(RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 320))}");
+        builder.AppendLine($"- Mô tả chi tiết: {ValueOrFallback(RichTextContentFormatter.ToPlainText(tour.Description))}");
+        builder.AppendLine($"- Điểm nổi bật: {BuildListLine(tour.Highlights)}");
+        builder.AppendLine($"- Bao gồm: {BuildListLine(tour.GeneratedInclusions)}");
+        builder.AppendLine($"- Không bao gồm: {BuildListLine(tour.GeneratedExclusions)}");
+        builder.AppendLine($"- Điểm hẹn: {ValueOrFallback(tour.MeetingPoint)}");
+        builder.AppendLine($"- Hủy tour: {ValueOrFallback(tour.CancellationPolicy?.Summary)}");
+        builder.AppendLine($"- Xác nhận: {ValueOrFallback(tour.ConfirmationType)}");
+        builder.AppendLine($"- Giá người lớn mặc định: {FormatCurrency(tour.Price?.Adult)}");
+        builder.AppendLine($"- Giá trẻ em mặc định: {FormatCurrency(tour.Price?.Child)}");
+        builder.AppendLine($"- Giá em bé mặc định: {FormatCurrency(tour.Price?.Infant)}");
+        builder.AppendLine("- Lịch trình:");
 
         if (tour.Schedule != null && tour.Schedule.Count > 0)
         {
             foreach (var item in tour.Schedule.OrderBy(entry => entry.Day).Take(8))
             {
-                builder.AppendLine($"  * Ngay {item.Day:00}: {ValueOrFallback(item.Title)}. {ValueOrFallback(RichTextContentFormatter.ToPlainText(item.Description))}");
+                builder.AppendLine($"  * Ngày {item.Day:00}: {ValueOrFallback(item.Title)}. {ValueOrFallback(RichTextContentFormatter.ToPlainText(item.Description))}");
             }
         }
         else
         {
-            builder.AppendLine("  * Chua co lich trinh chi tiet.");
+            builder.AppendLine("  * Chưa có lịch trình chi tiết.");
         }
 
-        builder.AppendLine("- Cac dot khoi hanh:");
+        builder.AppendLine("- Các đợt khởi hành:");
         if (departures.Count > 0)
         {
             foreach (var departure in departures)
             {
                 builder.AppendLine(
-                    $"  * {departure.StartDate:dd/MM/yyyy}: nguoi lon {FormatCurrency(departure.AdultPrice)}, tre em {FormatCurrency(departure.ChildPrice)}, em be {FormatCurrency(departure.InfantPrice)}, con {departure.RemainingCapacity} cho, xac nhan {ValueOrFallback(departure.ConfirmationType)}");
+                    $"  * {departure.StartDate:dd/MM/yyyy}: người lớn {FormatCurrency(departure.AdultPrice)}, trẻ em {FormatCurrency(departure.ChildPrice)}, em bé {FormatCurrency(departure.InfantPrice)}, còn {departure.RemainingCapacity} chỗ, xác nhận {ValueOrFallback(departure.ConfirmationType)}");
             }
         }
         else
         {
-            builder.AppendLine("  * Chua co lich khoi hanh dang mo ban.");
+            builder.AppendLine("  * Chưa có lịch khởi hành đang mở bán.");
         }
 
         return builder.ToString().Trim();
@@ -474,17 +476,17 @@ public sealed class TourAiChatService : ITourAiChatService
 
     private static string BuildWelcomeMessage(Tour tour)
     {
-        return $"Chao ban, minh la AI tu van cua HV Travel. Minh dang doc du lieu cua tour \"{tour.Name}\" va co the ho tro ban hoi nhanh ve lich trinh, gia, khoi hanh, dich vu bao gom hoac chinh sach hien co.";
+        return $"Chào bạn, mình là AI tư vấn của HV Travel. Mình đang đọc dữ liệu của tour \"{tour.Name}\" và có thể hỗ trợ bạn hỏi nhanh về lịch trình, giá, khởi hành, dịch vụ bao gồm hoặc chính sách hiện có.";
     }
 
     private static string BuildFallbackReply()
     {
-        return "Minh chua the phan hoi chinh xac tu du lieu tour ngay luc nay. Ban vui long mo khung chat ho tro ben duoi de tu van vien HV Travel kiem tra truc tiep giup ban nhe.";
+        return "Mình chưa thể phản hồi chính xác từ dữ liệu tour ngay lúc này. Bạn vui lòng mở khung chat hỗ trợ bên dưới để tư vấn viên HV Travel kiểm tra trực tiếp giúp bạn nhé.";
     }
 
     private static string BuildUnavailableTourReply()
     {
-        return "Minh chua doc duoc du lieu tour nay vao luc nay hoac tour khong con hien thi cong khai. Ban vui long mo khung chat ho tro ben duoi de doi ngu HV Travel ho tro truc tiep nhe.";
+        return "Mình chưa đọc được dữ liệu tour này vào lúc này hoặc tour không còn hiển thị công khai. Bạn vui lòng mở khung chat hỗ trợ bên dưới để đội ngũ HV Travel hỗ trợ trực tiếp nhé.";
     }
 
     private static ParticipantContext ResolveParticipant(ClaimsPrincipal user, string visitorSessionId)
@@ -497,7 +499,7 @@ public sealed class TourAiChatService : ITourAiChatService
 
         var displayName = user.FindFirst("FullName")?.Value?.Trim()
             ?? user.Identity?.Name?.Trim()
-            ?? (isCustomer ? "Khach hang" : "Khach xem tour");
+            ?? (isCustomer ? "Khách hàng" : "Khách xem tour");
         var email = user.FindFirst(ClaimTypes.Email)?.Value?.Trim()
             ?? user.FindFirst(ClaimTypes.Name)?.Value?.Trim()
             ?? string.Empty;
@@ -545,24 +547,29 @@ public sealed class TourAiChatService : ITourAiChatService
         var parts = new[] { tour.Destination?.City, tour.Destination?.Country }
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .ToList();
-        return parts.Count > 0 ? string.Join(", ", parts) : "Chua co du lieu";
+        return parts.Count > 0 ? string.Join(", ", parts) : "Chưa có dữ liệu";
     }
 
     private static string BuildListLine(IEnumerable<string>? values)
     {
         var items = values?.Where(value => !string.IsNullOrWhiteSpace(value)).ToList() ?? [];
-        return items.Count > 0 ? string.Join("; ", items) : "Chua co du lieu";
+        return items.Count > 0 ? string.Join("; ", items) : "Chưa có dữ liệu";
     }
 
     private static string ValueOrFallback(string? value)
     {
-        return string.IsNullOrWhiteSpace(value) ? "Chua co du lieu" : value.Trim();
+        return string.IsNullOrWhiteSpace(value) ? "Chưa có dữ liệu" : value.Trim();
     }
 
     private static string FormatCurrency(decimal? value)
     {
         var amount = value.GetValueOrDefault();
-        return amount > 0m ? $"{amount:N0} VND" : "Chua co du lieu";
+        return amount > 0m ? $"{amount:N0} VND" : "Chưa có dữ liệu";
+    }
+
+    private static string NormalizeAssistantContent(string content)
+    {
+        return TextEncodingRepair.NormalizeText(content).Trim();
     }
 
     private sealed class ParticipantContext

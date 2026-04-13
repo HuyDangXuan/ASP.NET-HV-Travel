@@ -1,5 +1,5 @@
 (function () {
-    const carousels = document.querySelectorAll('[data-region-carousel]');
+    const carousels = document.querySelectorAll('[data-tour-card-carousel]');
     if (!carousels.length) {
         return;
     }
@@ -9,13 +9,13 @@
     const tabletQuery = window.matchMedia('(min-width: 768px)');
 
     carousels.forEach((carousel) => {
-        const viewport = carousel.querySelector('[data-region-carousel-viewport]');
-        const track = carousel.querySelector('[data-region-carousel-track]');
-        const items = Array.from(carousel.querySelectorAll('[data-region-carousel-item]'));
-        const regionSection = carousel.closest('section') ?? carousel;
-        const controls = regionSection.querySelector('[data-region-carousel-controls]');
-        const prevButton = regionSection.querySelector('[data-region-carousel-prev]');
-        const nextButton = regionSection.querySelector('[data-region-carousel-next]');
+        const viewport = carousel.querySelector('[data-tour-card-carousel-viewport]');
+        const track = carousel.querySelector('[data-tour-card-carousel-track]');
+        const items = Array.from(carousel.querySelectorAll('[data-tour-card-carousel-item]'));
+        const carouselSection = carousel.closest('section') ?? carousel;
+        const controls = carouselSection.querySelector('[data-tour-card-carousel-controls]');
+        const prevButton = carouselSection.querySelector('[data-tour-card-carousel-prev]');
+        const nextButton = carouselSection.querySelector('[data-tour-card-carousel-next]');
 
         if (!viewport || !track || !items.length) {
             return;
@@ -26,6 +26,7 @@
         let pageWidth = 0;
         let maxTranslate = 0;
         let currentTranslate = 0;
+        let pageOffsets = [0];
         let isPointerDown = false;
         let isDragging = false;
         let pointerId = null;
@@ -49,29 +50,42 @@
 
         const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
+        const parseItemsPerPage = (attributeName, fallbackValue) => {
+            const rawValue = Number.parseInt(carousel.dataset[attributeName] ?? '', 10);
+            return Number.isFinite(rawValue) && rawValue > 0 ? rawValue : fallbackValue;
+        };
+
+        const itemsPerPageDesktop = parseItemsPerPage('tourCardCarouselItemsDesktop', 3);
+        const itemsPerPageTablet = parseItemsPerPage('tourCardCarouselItemsTablet', 2);
+        const itemsPerPageMobile = parseItemsPerPage('tourCardCarouselItemsMobile', 1);
+
         const getItemsPerPage = () => {
             if (desktopQuery.matches) {
-                return 3;
+                return itemsPerPageDesktop;
             }
 
             if (tabletQuery.matches) {
-                return 2;
+                return itemsPerPageTablet;
             }
 
-            return 1;
+            return itemsPerPageMobile;
         };
 
         const getTranslateForPage = (pageIndex) => {
-            const requestedTranslate = pageIndex * pageWidth;
-            return clamp(requestedTranslate, 0, maxTranslate);
+            if (!pageOffsets.length) {
+                return 0;
+            }
+
+            const safeIndex = clamp(pageIndex, 0, pageOffsets.length - 1);
+            return clamp(pageOffsets[safeIndex] ?? 0, 0, maxTranslate);
         };
 
         const getNearestPage = (translate) => {
             let nearestPage = 0;
             let smallestDistance = Number.POSITIVE_INFINITY;
 
-            for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
-                const pageTranslate = getTranslateForPage(pageIndex);
+            for (let pageIndex = 0; pageIndex < pageOffsets.length; pageIndex += 1) {
+                const pageTranslate = pageOffsets[pageIndex] ?? 0;
                 const distance = Math.abs(pageTranslate - translate);
 
                 if (distance < smallestDistance) {
@@ -139,7 +153,15 @@
         const measure = () => {
             pageWidth = viewport.clientWidth;
             maxTranslate = Math.max(track.scrollWidth - pageWidth, 0);
-            pageCount = Math.max(1, Math.ceil(items.length / getItemsPerPage()));
+            const itemsPerPage = getItemsPerPage();
+            const offsets = [];
+
+            for (let startIndex = 0; startIndex < items.length; startIndex += itemsPerPage) {
+                offsets.push(clamp(items[startIndex]?.offsetLeft ?? 0, 0, maxTranslate));
+            }
+
+            pageOffsets = offsets.filter((offset, index) => index === 0 || offset !== offsets[index - 1]);
+            pageCount = Math.max(1, pageOffsets.length);
             activePage = clamp(getNearestPage(currentTranslate), 0, pageCount - 1);
             setActivePage(activePage, false);
         };
@@ -244,7 +266,7 @@
                 return;
             }
 
-            if (event.target instanceof Element && event.target.closest('[data-region-carousel-prev], [data-region-carousel-next]')) {
+            if (event.target instanceof Element && event.target.closest('[data-tour-card-carousel-prev], [data-tour-card-carousel-next]')) {
                 return;
             }
 

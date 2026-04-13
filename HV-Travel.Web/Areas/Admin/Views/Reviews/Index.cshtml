@@ -1,45 +1,796 @@
-﻿@model List<HVTravel.Domain.Entities.Review>
+@model HVTravel.Domain.Models.PaginatedResult<HVTravel.Web.Models.AdminReviewListItemViewModel>
 @{
-    ViewData["Title"] = "Reviews";
+    ViewData["Title"] = "Quản lý đánh giá";
+
+    var currentStatus = ViewData["CurrentStatus"]?.ToString() ?? "all";
+    var currentVerified = ViewData["CurrentVerified"]?.ToString() ?? "all";
+    var currentSearch = ViewData["CurrentSearch"]?.ToString() ?? string.Empty;
+    var currentStartDate = ViewData["CurrentStartDate"]?.ToString() ?? string.Empty;
+    var currentEndDate = ViewData["CurrentEndDate"]?.ToString() ?? string.Empty;
+    var currentPageSize = ViewData["CurrentPageSize"] is int pageSizeValue ? pageSizeValue : 10;
+    var currentListUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+
+    string FormatDateLabel(string raw)
+    {
+        return DateTime.TryParse(raw, out var parsed) ? parsed.ToString("dd/MM/yyyy") : raw;
+    }
+
+    var dateLabel = "Chọn khoảng ngày...";
+    if (!string.IsNullOrWhiteSpace(currentStartDate))
+    {
+        var formattedStart = FormatDateLabel(currentStartDate);
+        if (string.IsNullOrWhiteSpace(currentEndDate) || currentEndDate == currentStartDate)
+        {
+            dateLabel = formattedStart;
+        }
+        else
+        {
+            dateLabel = $"{formattedStart} - {FormatDateLabel(currentEndDate)}";
+        }
+    }
 }
 
-<div class="flex items-end justify-between gap-4 mb-8">
-    <div>
+<div data-animate="fade-in-up" data-delay="0.05" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col gap-1">
         @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
         {
             Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
             {
                 new() { Label = "Trang chủ", Url = Url.Action("Index", "Dashboard") },
-                new() { Label = "Reviews", IsCurrent = true }
+                new() { Label = "Đánh giá", IsCurrent = true }
             }
         })
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mt-3">Review Moderation</h1>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Quản lý đánh giá</h1>
     </div>
 </div>
 
-<div class="space-y-4">
-    @foreach (var review in Model)
-    {
-        <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-surface-dark">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@review.ModerationStatus • @review.DisplayName</p>
-                    <h2 class="mt-2 text-xl font-bold text-slate-900 dark:text-white">@review.Rating sao</h2>
-                    <p class="mt-3 text-sm leading-7 text-slate-500">@review.Comment</p>
+<form data-animate="fade-in-up" data-delay="0.1" method="get" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
+    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" id="sortOrder-input">
+    <input type="hidden" name="startDate" value="@currentStartDate" id="startDate-input">
+    <input type="hidden" name="endDate" value="@currentEndDate" id="endDate-input">
+    <input type="hidden" name="pageSize" value="@currentPageSize" id="pageSize-input">
+
+    <div class="flex-1 min-w-[220px]">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+            <input name="searchString" value="@currentSearch" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-primary focus:border-primary" placeholder="Tìm tên, nội dung, mã booking, người duyệt..." type="text" />
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <div class="relative group">
+            <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined !text-[20px]">filter_list</span>
+            </button>
+
+            <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
+                <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-slate-900 dark:text-white">Bộ lọc</h3>
                 </div>
-                <div class="flex gap-2">
-                    <form asp-action="Moderate" method="post">
-                        <input type="hidden" name="id" value="@review.Id" />
-                        <input type="hidden" name="decision" value="approve" />
-                        <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white">Approve</button>
-                    </form>
-                    <form asp-action="Moderate" method="post">
-                        <input type="hidden" name="id" value="@review.Id" />
-                        <input type="hidden" name="decision" value="reject" />
-                        <button type="submit" class="rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white">Reject</button>
-                    </form>
+
+                <div class="p-4 flex flex-col gap-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Trạng thái duyệt</label>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="all" class="text-primary focus:ring-primary w-4 h-4" @(currentStatus == "all" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Tất cả</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="pending" class="text-primary focus:ring-primary w-4 h-4" @(currentStatus == "pending" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Chờ duyệt</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="approved" class="text-primary focus:ring-primary w-4 h-4" @(currentStatus == "approved" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Đã duyệt</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="status" value="rejected" class="text-primary focus:ring-primary w-4 h-4" @(currentStatus == "rejected" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Đã từ chối</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="w-full h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Trạng thái booking</label>
+                        <div class="flex flex-col gap-3">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="verified" value="all" class="text-primary focus:ring-primary w-4 h-4" @(currentVerified == "all" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300">Tất cả</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="verified" value="verified" class="text-primary focus:ring-primary w-4 h-4" @(currentVerified == "verified" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-sky-500"></span>Đã xác thực</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="verified" value="unverified" class="text-primary focus:ring-primary w-4 h-4" @(currentVerified == "unverified" ? "checked" : "")>
+                                <span class="text-sm text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Chưa xác thực</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="w-full h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Ngày tạo review</label>
+                        <div class="relative">
+                            <button type="button" onclick="toggleReviewFilter('date-dropdown')" class="flex justify-between items-center w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:border-primary transition-colors">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-slate-400 text-[16px]">calendar_today</span>
+                                    <span id="date-label-small">@dateLabel</span>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                    <button type="button" onclick="resetFilters()" class="flex-1 py-2 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">Đặt lại</button>
+                    <button type="submit" class="flex-1 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg shadow-lg shadow-primary/30 transition-all">Áp dụng</button>
+                </div>
+
+                <div id="date-dropdown" class="absolute right-[calc(100%+0.5rem)] top-0 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 z-[60] hidden origin-right transition-all animate-scale-in">
+                    <div class="p-5">
+                        <div class="flex justify-between items-center mb-5">
+                            <span class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Chọn thời gian</span>
+                            <div class="flex gap-1 bg-slate-50 dark:bg-slate-800/50 p-1 rounded-lg">
+                                <button type="button" onclick="changeMonth(-1)" class="p-1 rounded-md hover:bg-white dark:hover:bg-slate-700 text-slate-500 hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+                                <span id="calendar-month-year" class="text-xs font-bold text-slate-700 dark:text-slate-300 min-w-[100px] text-center flex items-center justify-center">Tháng</span>
+                                <button type="button" onclick="changeMonth(1)" class="p-1 rounded-md hover:bg-white dark:hover:bg-slate-700 text-slate-500 hover:text-primary transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center mb-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T2</span>
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T3</span>
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T4</span>
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T5</span>
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T6</span>
+                            <span class="text-[10px] text-slate-400 font-extrabold uppercase">T7</span>
+                            <span class="text-[10px] text-red-500 font-extrabold uppercase">CN</span>
+                        </div>
+                        <div id="calendar-days" class="grid grid-cols-7 gap-1 text-center mb-5"></div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="clearDateFilter()" class="py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all active:scale-95">Đặt lại</button>
+                            <button type="button" onclick="applyDateFilter()" class="py-2.5 text-xs font-bold text-white bg-primary hover:bg-primary-dark rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95">Xác nhận</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </article>
-    }
+        </div>
+
+        <div class="relative">
+            <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
+            </button>
+            <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-review')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Mã review</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-reviewer')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Người đánh giá</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-comment')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Nội dung</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-rating')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Đánh giá</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-verified')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Đã xác thực</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" checked onchange="toggleColumn('col-status')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Trạng thái</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" onchange="toggleColumn('col-moderator')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Người duyệt</span>
+                </label>
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                    <input type="checkbox" onchange="toggleColumn('col-moderated-at')" class="text-primary focus:ring-primary rounded">
+                    <span class="text-sm text-slate-700 dark:text-slate-300">Thời gian duyệt</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div data-animate="fade-in-up" data-delay="0.2" class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider font-bold">
+                    <th class="p-4 pl-6 text-center w-10">
+                        <label class="flex items-center justify-center cursor-pointer group">
+                            <input type="checkbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700 transition-all cursor-pointer">
+                        </label>
+                    </th>
+                    <th class="p-4 cursor-pointer hover:text-primary transition-colors select-none col-review" onclick="applySort('@ViewBag.DateSortParm')">
+                        <div class="flex items-center gap-1">
+                            Mã review
+                            @if (string.IsNullOrEmpty(ViewBag.CurrentSort))
+                            {
+                                <span class="material-symbols-outlined text-[16px]">arrow_downward</span>
+                            }
+                            else if (ViewBag.CurrentSort == "date_asc")
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            }
+                            else
+                            {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 col-reviewer">Người đánh giá</th>
+                    <th class="p-4 col-comment">Nội dung</th>
+                    <th class="p-4 text-center cursor-pointer hover:text-primary transition-colors select-none col-rating" onclick="applySort('@ViewBag.RatingSortParm')">
+                        <div class="flex items-center justify-center gap-1">
+                            Đánh giá
+                            @if (ViewBag.CurrentSort == "rating")
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            }
+                            else if (ViewBag.CurrentSort == "rating_desc")
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            }
+                            else
+                            {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 text-center col-verified">Đã xác thực</th>
+                    <th class="p-4 cursor-pointer hover:text-primary transition-colors select-none col-status" onclick="applySort('@ViewBag.StatusSortParm')">
+                        <div class="flex items-center gap-1">
+                            Trạng thái
+                            @if (ViewBag.CurrentSort == "status")
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_upward</span>
+                            }
+                            else if (ViewBag.CurrentSort == "status_desc")
+                            {
+                                <span class="material-symbols-outlined text-[16px] text-primary">arrow_downward</span>
+                            }
+                            else
+                            {
+                                <span class="material-symbols-outlined text-[16px] opacity-30">unfold_more</span>
+                            }
+                        </div>
+                    </th>
+                    <th class="p-4 col-moderator col-collapsed">Người duyệt</th>
+                    <th class="p-4 col-moderated-at col-collapsed">Thời gian duyệt</th>
+                    <th class="p-4 pr-6 text-right">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                @if (Model.Items.Any())
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        var rowClass = item.ModerationStatus switch
+                        {
+                            "Approved" => "bg-emerald-50/20 dark:bg-emerald-900/5",
+                            "Rejected" => "bg-rose-50/20 dark:bg-rose-900/5",
+                            _ => "hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                        };
+
+                        var statusClass = item.ModerationStatus switch
+                        {
+                            "Approved" => "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900",
+                            "Rejected" => "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 border-rose-200 dark:border-rose-900",
+                            _ => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+                        };
+
+                        var statusDotClass = item.ModerationStatus switch
+                        {
+                            "Approved" => "bg-emerald-500",
+                            "Rejected" => "bg-rose-500",
+                            _ => "bg-amber-500"
+                        };
+                        <tr class="group transition-colors @rowClass">
+                            <td class="p-4 pl-6 text-center w-10">
+                                <label class="flex items-center justify-center cursor-pointer">
+                                    <input type="checkbox" class="review-checkbox w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary dark:bg-slate-800 dark:border-slate-700 transition-all cursor-pointer" value="@item.Id" onchange="updateBulkState()">
+                                </label>
+                            </td>
+                            <td class="p-4 font-mono col-review">
+                                <p class="font-semibold text-primary">@item.ReviewCode</p>
+                                <p class="text-xs text-slate-400 mt-1">@item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                            </td>
+                            <td class="p-4 col-reviewer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase border-2 border-white dark:border-slate-700 shadow-sm">
+                                        @item.ReviewerInitials
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900 dark:text-white">@item.DisplayName</p>
+                                        <p class="text-xs text-slate-500">Booking: @(string.IsNullOrWhiteSpace(item.BookingId) ? "N/A" : item.BookingId)</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 max-w-xs col-comment">
+                                <p class="font-medium text-slate-700 dark:text-slate-300 line-clamp-3" title="@item.Comment">@item.CommentPreview</p>
+                            </td>
+                            <td class="p-4 text-center col-rating">
+                                <div class="inline-flex flex-col items-center gap-1">
+                                    <div class="flex items-center gap-0.5 text-amber-400">
+                                        @for (var star = 1; star <= 5; star++)
+                                        {
+                                            <span class="material-symbols-outlined text-[16px]">@(star <= item.Rating ? "star" : "star_outline")</span>
+                                        }
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500">@item.Rating/5</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-center col-verified">
+                                @if (item.IsVerifiedBooking)
+                                {
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400 border border-sky-200 dark:border-sky-900">
+                                        <span class="material-symbols-outlined text-[14px]">verified</span> @item.VerificationText
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                        <span class="material-symbols-outlined text-[14px]">shield_question</span> @item.VerificationText
+                                    </span>
+                                }
+                            </td>
+                            <td class="p-4 col-status">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold @statusClass border">
+                                    <span class="w-1.5 h-1.5 rounded-full @statusDotClass"></span> @item.ModerationStatusText
+                                </span>
+                            </td>
+                            <td class="p-4 text-xs font-medium text-slate-600 dark:text-slate-400 col-moderator col-collapsed">
+                                @(string.IsNullOrWhiteSpace(item.ModeratorName) ? "-" : item.ModeratorName)
+                            </td>
+                            <td class="p-4 text-xs text-slate-500 col-moderated-at col-collapsed">
+                                @(item.ModeratedAt.HasValue ? item.ModeratedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "-")
+                            </td>
+                            <td class="p-4 pr-6 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <form asp-action="Moderate" method="post" class="inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="decision" value="approve" />
+                                        <input type="hidden" name="returnUrl" value="@currentListUrl" />
+                                        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 px-3 py-2 text-xs font-bold transition-colors" title="Duyệt review">
+                                            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                            Duyệt
+                                        </button>
+                                    </form>
+                                    <form asp-action="Moderate" method="post" class="inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="decision" value="reject" />
+                                        <input type="hidden" name="returnUrl" value="@currentListUrl" />
+                                        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/30 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-400 px-3 py-2 text-xs font-bold transition-colors" title="Từ chối review">
+                                            <span class="material-symbols-outlined text-[16px]">cancel</span>
+                                            Từ chối
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="px-6 py-16 text-center">
+                            <div class="mx-auto max-w-md">
+                                <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center mb-4">
+                                    <span class="material-symbols-outlined text-[28px]">rate_review</span>
+                                </div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Không có đánh giá phù hợp</h3>
+                                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Thử đổi từ khóa tìm kiếm hoặc bộ lọc để xem thêm đánh giá.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20">
+        @{
+            var startItem = Model.TotalCount == 0 ? 0 : ((Model.PageIndex - 1) * Model.PageSize) + 1;
+            var endItem = Model.TotalCount == 0 ? 0 : Math.Min(Model.PageIndex * Model.PageSize, Model.TotalCount);
+            int[] pageSizes = [10, 15, 20, 50, 100];
+        }
+
+        <div class="flex items-center gap-4">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Hiển thị <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span> trong số <span class="font-bold text-slate-900 dark:text-white">@Model.TotalCount</span> đánh giá</p>
+            <div class="flex items-center gap-2">
+                <label for="pageSize" class="text-xs font-medium text-slate-500 dark:text-slate-400">Hiển thị:</label>
+                <div class="min-w-[92px]">
+                    <select id="pageSize" onchange="changePageSize(this.value)" class="w-full" data-admin-select="compact">
+                        @foreach (var size in pageSizes)
+                        {
+                            <option value="@size" selected="@(size == currentPageSize)">@size</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex - 1, status = currentStatus, verified = currentVerified, pageSize = currentPageSize, searchString = currentSearch, startDate = currentStartDate, endDate = currentEndDate, sortOrder = ViewBag.CurrentSort })'" @(Model.HasPreviousPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+            </button>
+
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                if (Math.Abs(i - Model.PageIndex) <= 2 || i == 1 || i == Model.TotalPages)
+                {
+                    <button onclick="location.href='@Url.Action("Index", new { page = i, status = currentStatus, verified = currentVerified, pageSize = currentPageSize, searchString = currentSearch, startDate = currentStartDate, endDate = currentEndDate, sortOrder = ViewBag.CurrentSort })'" class="w-8 h-8 rounded-lg @(i == Model.PageIndex ? "bg-primary text-white shadow-sm shadow-primary/30" : "hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400") text-xs font-bold transition-colors">@i</button>
+                }
+                else if (Math.Abs(i - Model.PageIndex) == 3)
+                {
+                    <span class="text-slate-400 text-xs">...</span>
+                }
+            }
+
+            <button onclick="location.href='@Url.Action("Index", new { page = Model.PageIndex + 1, status = currentStatus, verified = currentVerified, pageSize = currentPageSize, searchString = currentSearch, startDate = currentStartDate, endDate = currentEndDate, sortOrder = ViewBag.CurrentSort })'" @(Model.HasNextPage ? "" : "disabled") class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+            </button>
+        </div>
+    </div>
 </div>
+<div id="bulk-actions" class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 translate-y-32 opacity-0 invisible transition-all duration-300 w-[min(92vw,680px)]">
+    <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-4 py-3 shadow-2xl shadow-slate-900/10">
+        <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+            <span class="material-symbols-outlined text-primary">check_box</span>
+            <span>Đã chọn <strong id="selected-count" class="text-slate-900 dark:text-white">0</strong> review</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <button type="button" onclick="handleBulkModeration('approve')" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all group">
+                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">check_circle</span>
+                <span class="text-sm font-bold italic">Duyệt đã chọn</span>
+            </button>
+            <button type="button" onclick="handleBulkModeration('reject')" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 transition-all group">
+                <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">cancel</span>
+                <span class="text-sm font-bold italic">Từ chối đã chọn</span>
+            </button>
+        </div>
+
+        <button type="button" onclick="clearSelection()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+    </div>
+</div>
+
+<form id="bulk-form" asp-action="BulkModerate" method="post" class="hidden">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="returnUrl" value="@currentListUrl" />
+</form>
+
+@section Scripts {
+    <script>
+        const bulkModerationUrl = '@Url.Action("BulkModerate", "Reviews", new { area = "Admin" })';
+
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.review-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = master.checked;
+            });
+            updateBulkState();
+        }
+
+        function updateBulkState() {
+            const checkboxes = document.querySelectorAll('.review-checkbox:checked');
+            const bulkBar = document.getElementById('bulk-actions');
+            const countLabel = document.getElementById('selected-count');
+
+            if (!bulkBar || !countLabel) return;
+
+            if (checkboxes.length > 0) {
+                countLabel.innerText = checkboxes.length;
+                bulkBar.classList.remove('translate-y-32', 'opacity-0', 'invisible');
+                bulkBar.classList.add('translate-y-0', 'opacity-100', 'visible');
+            } else {
+                bulkBar.classList.add('translate-y-32', 'opacity-0', 'invisible');
+                bulkBar.classList.remove('translate-y-0', 'opacity-100', 'visible');
+            }
+        }
+
+        function clearSelection() {
+            const master = document.querySelector('thead input[type="checkbox"]');
+            if (master) master.checked = false;
+
+            const checkboxes = document.querySelectorAll('.review-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateBulkState();
+        }
+
+        function handleBulkModeration(decision) {
+            const selectedIds = Array.from(document.querySelectorAll('.review-checkbox:checked'))
+                .map(cb => cb.value)
+                .filter(id => id && id.length === 24);
+
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một review hợp lệ.');
+                return;
+            }
+
+            const actionText = decision === 'approve' ? 'duyệt' : 'từ chối';
+            if (!confirm(`Bạn có chắc chắn muốn ${actionText} ${selectedIds.length} review đã chọn?`)) {
+                return;
+            }
+
+            const form = document.getElementById('bulk-form');
+            const existingToken = form?.querySelector('input[name="__RequestVerificationToken"]')?.value
+                || document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            if (!form || !existingToken) {
+                console.error('Missing antiforgery token for bulk review action.');
+                return;
+            }
+
+            form.action = bulkModerationUrl;
+            form.querySelectorAll('input[name="ids"], input[name="decision"]').forEach(input => input.remove());
+
+            selectedIds.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids';
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            const decisionInput = document.createElement('input');
+            decisionInput.type = 'hidden';
+            decisionInput.name = 'decision';
+            decisionInput.value = decision;
+            form.appendChild(decisionInput);
+
+            form.submit();
+        }
+
+        function toggleColumn(colClass) {
+            const cols = document.querySelectorAll('.' + colClass);
+            cols.forEach(col => col.classList.toggle('col-collapsed'));
+        }
+
+        function toggleColumnMenu() {
+            const menu = document.getElementById('column-menu');
+            if (!menu) return;
+            window.AdminMenu?.toggle(menu);
+        }
+
+        function toggleFilterMenu() {
+            const menu = document.getElementById('filter-menu');
+            if (!menu) return;
+            window.AdminMenu?.toggle(menu);
+        }
+
+        function toggleReviewFilter(id) {
+            const menu = document.getElementById(id);
+            if (!menu) return;
+
+            if (menu.classList.contains('menu-visible')) {
+                window.AdminMenu?.close(menu);
+            } else {
+                window.AdminMenu?.open(menu);
+            }
+        }
+
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('pageSize', size);
+            url.searchParams.set('page', 1);
+            window.location.href = url.toString();
+        }
+
+        function applySort(sortOrder) {
+            const form = document.getElementById('filter-form');
+            let input = document.getElementById('sortOrder-input');
+
+            if (!form) return;
+
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'sortOrder';
+                input.id = 'sortOrder-input';
+                form.appendChild(input);
+            }
+
+            input.value = sortOrder;
+            form.submit();
+        }
+
+        function resetFilters() {
+            const form = document.getElementById('filter-form');
+            if (!form) return;
+
+            const searchInput = form.querySelector('input[name="searchString"]');
+            if (searchInput) searchInput.value = '';
+
+            document.getElementById('startDate-input').value = '';
+            document.getElementById('endDate-input').value = '';
+
+            form.querySelectorAll('input[name="status"]').forEach(radio => {
+                radio.checked = radio.value === 'all';
+            });
+
+            form.querySelectorAll('input[name="verified"]').forEach(radio => {
+                radio.checked = radio.value === 'all';
+            });
+
+            form.submit();
+        }
+
+        function clearDateFilter() {
+            document.getElementById('startDate-input').value = '';
+            document.getElementById('endDate-input').value = '';
+
+            const label = document.getElementById('date-label-small');
+            if (label) {
+                label.innerText = 'Chọn khoảng ngày...';
+            }
+
+            selectedStartDate = null;
+            selectedEndDate = null;
+
+            const dateMenu = document.getElementById('date-dropdown');
+            if (dateMenu && dateMenu.classList.contains('menu-visible')) {
+                window.AdminMenu?.close(dateMenu);
+            }
+
+            renderCalendar();
+        }
+
+        let currentDate = new Date();
+        let selectedStartDate = null;
+        let selectedEndDate = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const startVal = document.getElementById('startDate-input').value;
+            const endVal = document.getElementById('endDate-input').value;
+
+            if (startVal) selectedStartDate = new Date(startVal);
+            if (endVal) selectedEndDate = new Date(endVal);
+
+            renderCalendar();
+        });
+
+        function renderCalendar() {
+            const monthYearEl = document.getElementById('calendar-month-year');
+            const daysEl = document.getElementById('calendar-days');
+            if (!monthYearEl || !daysEl) return;
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+            monthYearEl.innerText = `${monthNames[month]}, ${year}`;
+
+            daysEl.innerHTML = '';
+            const firstDay = new Date(year, month, 1).getDay();
+            const startOffset = (firstDay + 6) % 7;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+
+            for (let i = 0; i < startOffset; i++) {
+                const dayNum = prevMonthDays - startOffset + 1 + i;
+                const span = document.createElement('span');
+                span.className = 'h-8 w-8 flex items-center justify-center text-xs text-slate-300 dark:text-slate-600';
+                span.innerText = dayNum;
+                daysEl.appendChild(span);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const date = new Date(year, month, i);
+                let className = 'h-8 w-8 rounded-lg text-sm flex items-center justify-center transition-all ';
+
+                const isSelectedStart = selectedStartDate && date.toDateString() === selectedStartDate.toDateString();
+                const isSelectedEnd = selectedEndDate && date.toDateString() === selectedEndDate.toDateString();
+                const isInRange = selectedStartDate && selectedEndDate && date > selectedStartDate && date < selectedEndDate;
+
+                if (isSelectedStart || isSelectedEnd) {
+                    className += 'bg-primary text-white font-bold shadow-sm shadow-primary/30';
+                } else if (isInRange) {
+                    className += 'bg-primary/20 text-primary font-medium';
+                } else {
+                    className += 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300';
+                }
+
+                const today = new Date();
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    btn.classList.add('ring-1', 'ring-primary', 'ring-inset');
+                }
+
+                btn.className = className;
+                btn.innerText = i;
+                btn.onclick = (event) => {
+                    event.stopPropagation();
+
+                    if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
+                        selectedStartDate = date;
+                        selectedEndDate = null;
+                    } else if (selectedStartDate && !selectedEndDate) {
+                        if (date < selectedStartDate) {
+                            selectedEndDate = selectedStartDate;
+                            selectedStartDate = date;
+                        } else {
+                            selectedEndDate = date;
+                        }
+                    }
+
+                    renderCalendar();
+                };
+
+                daysEl.appendChild(btn);
+            }
+        }
+
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            renderCalendar();
+        }
+
+        function applyDateFilter() {
+            if (selectedStartDate) {
+                const formatDate = (date) => {
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const year = date.getFullYear();
+                    return {
+                        display: `${day}/${month}/${year}`,
+                        value: `${year}-${month}-${day}`
+                    };
+                };
+
+                const start = formatDate(selectedStartDate);
+                const end = selectedEndDate ? formatDate(selectedEndDate) : start;
+                const displayStr = selectedEndDate && selectedStartDate.toDateString() !== selectedEndDate.toDateString()
+                    ? `${start.display} - ${end.display}`
+                    : start.display;
+
+                document.getElementById('date-label-small').innerText = displayStr;
+                document.getElementById('startDate-input').value = start.value;
+                document.getElementById('endDate-input').value = end.value;
+            }
+
+            toggleReviewFilter('date-dropdown');
+        }
+
+        document.addEventListener('click', function(event) {
+            const filterMenu = document.getElementById('filter-menu');
+            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
+            const insideFilter = event.target.closest('#filter-menu');
+            if (filterMenu && !filterBtn && !insideFilter && filterMenu.classList.contains('menu-visible')) {
+                window.AdminMenu?.close(filterMenu);
+            }
+
+            const colMenu = document.getElementById('column-menu');
+            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
+            const insideCol = event.target.closest('#column-menu');
+            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
+                window.AdminMenu?.close(colMenu);
+            }
+
+            const dateMenu = document.getElementById('date-dropdown');
+            const dateBtn = event.target.closest('button[onclick*="toggleReviewFilter(\'date-dropdown\')"]');
+            const insideDate = event.target.closest('#date-dropdown');
+            if (dateMenu && !dateBtn && !insideDate && dateMenu.classList.contains('menu-visible')) {
+                window.AdminMenu?.close(dateMenu);
+            }
+        });
+    </script>
+}
