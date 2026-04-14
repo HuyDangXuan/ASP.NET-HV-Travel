@@ -4,85 +4,8 @@
     let activePicker = null;
     let panel = null;
     let panelState = null;
-
-    function createFloatingLayerApi() {
-        function getHost() {
-            let host = document.getElementById('admin-floating-layer');
-            if (!host) {
-                host = document.createElement('div');
-                host.id = 'admin-floating-layer';
-                host.className = 'admin-floating-layer';
-                document.body.appendChild(host);
-            }
-
-            return host;
-        }
-
-        function clamp(value, min, max) {
-            return Math.min(Math.max(value, min), max);
-        }
-
-        function positionElement(element, anchor, options) {
-            if (!element || !anchor) return 'bottom';
-
-            const settings = options || {};
-            const anchorRect = anchor.getBoundingClientRect();
-            const viewportPadding = settings.viewportPadding ?? 12;
-            const offset = settings.offset ?? 12;
-            const preferredPlacement = settings.placement ?? 'auto';
-            const requestedWidth = settings.width ?? anchorRect.width;
-            const width = clamp(requestedWidth, settings.minWidth ?? 280, window.innerWidth - (viewportPadding * 2));
-
-            element.style.left = '0px';
-            element.style.top = '0px';
-            element.style.width = `${width}px`;
-            element.style.maxWidth = `${window.innerWidth - (viewportPadding * 2)}px`;
-
-            const measuredHeight = element.getBoundingClientRect().height;
-            const availableBottom = window.innerHeight - anchorRect.bottom - offset - viewportPadding;
-            const availableTop = anchorRect.top - offset - viewportPadding;
-            const minHeight = settings.minHeight ?? 260;
-
-            const shouldOpenUp = preferredPlacement === 'top'
-                || (preferredPlacement === 'auto' && availableBottom < minHeight && availableTop > availableBottom);
-
-            const placement = shouldOpenUp ? 'top' : 'bottom';
-            const maxHeight = Math.max(
-                settings.minVisibleHeight ?? 180,
-                placement === 'top' ? availableTop : availableBottom
-            );
-
-            let left = anchorRect.left;
-            if (settings.align === 'right') {
-                left = anchorRect.right - width;
-            } else if (settings.align === 'center') {
-                left = anchorRect.left + ((anchorRect.width - width) / 2);
-            }
-
-            left = clamp(left, viewportPadding, window.innerWidth - width - viewportPadding);
-
-            let top;
-            if (placement === 'top') {
-                top = Math.max(viewportPadding, anchorRect.top - measuredHeight - offset);
-            } else {
-                top = Math.min(window.innerHeight - measuredHeight - viewportPadding, anchorRect.bottom + offset);
-            }
-
-            element.style.left = `${Math.round(left)}px`;
-            element.style.top = `${Math.round(top)}px`;
-            element.style.maxHeight = `${Math.round(maxHeight)}px`;
-            element.dataset.placement = placement;
-            return placement;
-        }
-
-        return {
-            getHost,
-            positionElement
-        };
-    }
-
-    const floatingLayer = window.AdminFloatingLayer || createFloatingLayerApi();
-    window.AdminFloatingLayer = floatingLayer;
+    const floatingLayer = window.AdminFloatingLayer;
+    if (!floatingLayer) return;
 
     function getMode(picker) {
         return (picker?.dataset.adminPicker || 'date').trim().toLowerCase();

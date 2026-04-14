@@ -1,0 +1,6 @@
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.csproj.AssemblyReference.cache
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.AssemblyInfoInputs.cache
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.AssemblyInfo.cs
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.csproj.CoreCompileInputs.cache
+E:\Clone Repo\ASP.NET-HV-Travel\.artifacts\test-obj\Debug\net8.0\HV-Travel.Domain.sourcelink.json

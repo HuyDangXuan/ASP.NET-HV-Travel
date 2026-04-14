@@ -2,6 +2,23 @@ namespace HVTravel.Web.Services;
 
 public static class BookingDisplayTextHelper
 {
+    public static string BookingStatus(string? value)
+    {
+        var text = PublicTextSanitizer.NormalizeText(value);
+        var normalizedStatus = text.ToLowerInvariant();
+        return normalizedStatus switch
+        {
+            "pending" => "Chờ xử lý",
+            "pendingpayment" => "Chờ thanh toán",
+            "paid" => "Đã thanh toán",
+            "confirmed" => "Đã xác nhận",
+            "completed" => "Hoàn thành",
+            "cancelled" => "Đã hủy",
+            "refunded" => "Đã hoàn tiền",
+            _ => string.IsNullOrWhiteSpace(text) ? "-" : text
+        };
+    }
+
     public static string NormalizeCmsText(string? value)
     {
         var text = PublicTextSanitizer.NormalizeText(value);

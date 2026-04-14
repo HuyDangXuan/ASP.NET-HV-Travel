@@ -108,6 +108,8 @@
     top: 0;
     z-index: 2680;
     max-height: min(34rem, calc(100vh - 1.5rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .admin-picker-panel.hidden {

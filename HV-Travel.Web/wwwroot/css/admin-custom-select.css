@@ -13,15 +13,6 @@
     position: relative;
 }
 
-.custom-select-container.active {
-    z-index: 1000;
-}
-
-.section-card.active-section {
-    position: relative;
-    z-index: 500;
-}
-
 .custom-select-trigger {
     display: flex;
     align-items: center;

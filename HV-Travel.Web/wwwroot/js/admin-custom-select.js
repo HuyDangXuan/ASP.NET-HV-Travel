@@ -1,118 +1,8 @@
 (function () {
     let enhancedSelectCounter = 0;
     let activeContainer = null;
-
-    function createFloatingLayerApi() {
-        function getHost() {
-            let host = document.getElementById('admin-floating-layer');
-            if (!host) {
-                host = document.createElement('div');
-                host.id = 'admin-floating-layer';
-                host.className = 'admin-floating-layer';
-                document.body.appendChild(host);
-            }
-
-            return host;
-        }
-
-        function ensurePlaceholder(element) {
-            if (!element._floatingPlaceholder && element.parentNode) {
-                const placeholder = document.createElement('span');
-                placeholder.hidden = true;
-                placeholder.setAttribute('aria-hidden', 'true');
-                element.parentNode.insertBefore(placeholder, element);
-                element._floatingPlaceholder = placeholder;
-            }
-
-            return element._floatingPlaceholder;
-        }
-
-        function attach(element) {
-            if (!element) return;
-            ensurePlaceholder(element);
-            getHost().appendChild(element);
-        }
-
-        function detach(element) {
-            if (!element) return;
-
-            const placeholder = element._floatingPlaceholder;
-            if (placeholder && placeholder.parentNode) {
-                placeholder.parentNode.insertBefore(element, placeholder);
-                placeholder.remove();
-                element._floatingPlaceholder = null;
-            }
-        }
-
-        function clamp(value, min, max) {
-            return Math.min(Math.max(value, min), max);
-        }
-
-        function positionElement(element, anchor, options) {
-            if (!element || !anchor) return 'bottom';
-
-            const settings = options || {};
-            const anchorRect = anchor.getBoundingClientRect();
-            const viewportPadding = settings.viewportPadding ?? 12;
-            const offset = settings.offset ?? 10;
-            const preferredPlacement = settings.placement ?? 'auto';
-            const requestedWidth = settings.width ?? anchorRect.width;
-            const width = clamp(requestedWidth, settings.minWidth ?? 180, window.innerWidth - (viewportPadding * 2));
-
-            element.style.left = '0px';
-            element.style.top = '0px';
-            element.style.width = `${width}px`;
-            element.style.maxWidth = `${window.innerWidth - (viewportPadding * 2)}px`;
-
-            const measuredHeight = element.getBoundingClientRect().height;
-            const availableBottom = window.innerHeight - anchorRect.bottom - offset - viewportPadding;
-            const availableTop = anchorRect.top - offset - viewportPadding;
-            const minHeight = settings.minHeight ?? 220;
-
-            const shouldOpenUp = preferredPlacement === 'top'
-                || (preferredPlacement === 'auto' && availableBottom < minHeight && availableTop > availableBottom);
-
-            const placement = shouldOpenUp ? 'top' : 'bottom';
-            const maxHeight = Math.max(
-                settings.minVisibleHeight ?? 160,
-                placement === 'top' ? availableTop : availableBottom
-            );
-
-            let left = anchorRect.left;
-            if (settings.align === 'right') {
-                left = anchorRect.right - width;
-            } else if (settings.align === 'center') {
-                left = anchorRect.left + ((anchorRect.width - width) / 2);
-            }
-
-            left = clamp(left, viewportPadding, window.innerWidth - width - viewportPadding);
-
-            let top;
-            if (placement === 'top') {
-                top = anchorRect.top - measuredHeight - offset;
-                top = Math.max(viewportPadding, top);
-            } else {
-                top = anchorRect.bottom + offset;
-                top = Math.min(window.innerHeight - measuredHeight - viewportPadding, top);
-            }
-
-            element.style.left = `${Math.round(left)}px`;
-            element.style.top = `${Math.round(top)}px`;
-            element.style.maxHeight = `${Math.round(maxHeight)}px`;
-            element.dataset.placement = placement;
-            return placement;
-        }
-
-        return {
-            getHost,
-            attach,
-            detach,
-            positionElement
-        };
-    }
-
-    const floatingLayer = window.AdminFloatingLayer || createFloatingLayerApi();
-    window.AdminFloatingLayer = floatingLayer;
+    const floatingLayer = window.AdminFloatingLayer;
+    if (!floatingLayer) return;
 
     function findContainer(id) {
         return document.querySelector(`.custom-select-container[data-id="${id}"]`);
@@ -206,26 +96,14 @@
         const menu = getMenu(container);
         const arrow = container.querySelector('.arrow-icon');
         const trigger = getTrigger(container);
-        const section = container.closest('.section-card');
 
         cancelPendingReveal(menu);
         menu?.classList.remove('visible', 'menu-mounted', 'drop-up-menu', 'portal-attached');
         if (menu) {
-            const placeholder = menu._floatingPlaceholder;
-            if (placeholder && placeholder.parentNode) {
+            if (menu._floatingPlaceholder) {
                 floatingLayer.detach(menu);
-            } else if (container.isConnected) {
+            } else if (container.isConnected && !container.contains(menu)) {
                 container.appendChild(menu);
-                if (placeholder) {
-                    placeholder.remove();
-                    menu._floatingPlaceholder = null;
-                }
-            } else if (menu.parentNode) {
-                menu.parentNode.removeChild(menu);
-                if (placeholder) {
-                    placeholder.remove();
-                    menu._floatingPlaceholder = null;
-                }
             }
 
             menu.style.removeProperty('left');
@@ -238,7 +116,6 @@
         }
 
         container.classList.remove('active', 'drop-up');
-        if (section) section.classList.remove('active-section');
         if (arrow) arrow.style.transform = '';
         if (trigger) trigger.setAttribute('aria-expanded', 'false');
 
@@ -262,7 +139,6 @@
         const menu = getMenu(container);
         const arrow = container.querySelector('.arrow-icon');
         const trigger = getTrigger(container);
-        const section = container.closest('.section-card');
         if (!menu || !trigger) return;
 
         closeAllCustomSelects(container);
@@ -275,7 +151,6 @@
         positionFloatingMenu(container);
 
         container.classList.add('active');
-        if (section) section.classList.add('active-section');
         if (arrow) arrow.style.transform = 'rotate(180deg)';
         trigger.setAttribute('aria-expanded', 'true');
         activeContainer = container;

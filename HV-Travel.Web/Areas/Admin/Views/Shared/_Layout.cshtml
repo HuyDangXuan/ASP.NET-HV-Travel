@@ -176,6 +176,16 @@
                         filter 0.4s ease-out,
                         box-shadow 0.48s cubic-bezier(0.22, 1, 0.36, 1);
         }
+        .admin-menu-portal-attached {
+            position: fixed !important;
+            inset: auto !important;
+            margin: 0 !important;
+            z-index: 2660 !important;
+            max-width: calc(100vw - 1.5rem);
+            overflow: auto;
+            overscroll-behavior: contain;
+            transition-property: opacity, transform, filter, box-shadow !important;
+        }
         #filter-menu > *,
         #column-menu > *,
         #role-dropdown > *,
@@ -582,7 +592,7 @@
     <script src="~/js/admin-rich-text.js" asp-append-version="true"></script>
     <script src="~/js/admin-cloudinary.js" asp-append-version="true"></script>
     <div id="admin-floating-layer" class="admin-floating-layer" aria-hidden="true"></div>
-
+    <script src="~/js/admin-floating-layer.js" asp-append-version="true"></script>
     <script src="~/js/admin-custom-select.js" asp-append-version="true"></script>
     <script src="~/js/admin-date-time-picker.js" asp-append-version="true"></script>
 
@@ -591,6 +601,7 @@
     <script>
         (function () {
             const HIDE_DELAY_MS = 340;
+            const openMenus = new Set();
 
             function clearHideTimer(menu) {
                 if (menu && menu._menuHideTimer) {
@@ -599,40 +610,281 @@
                 }
             }
 
+            function cancelRevealFrame(menu) {
+                if (menu && menu._menuRevealFrame) {
+                    cancelAnimationFrame(menu._menuRevealFrame);
+                    menu._menuRevealFrame = null;
+                }
+            }
+
             function resetMenuPhase(menu) {
                 if (!menu) return;
                 menu.classList.remove('menu-closing', 'menu-hidden');
             }
 
-            function openMenu(menu) {
+            function isMenuOpen(menu) {
+                if (!menu) return false;
+
+                const state = menu.dataset.menuState;
+                return menu.classList.contains('menu-visible') || state === 'open' || state === 'opening';
+            }
+
+            function getFloatingLayer() {
+                return window.AdminFloatingLayer;
+            }
+
+            function parsePositiveNumber(value) {
+                const parsed = Number.parseFloat(value || '');
+                return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+            }
+
+            function getMenuSearchRoots(menu) {
+                const roots = [];
+                const placeholderParent = menu?._floatingPlaceholder?.parentElement;
+                const currentParent = menu?.parentElement;
+                const originalParent = menu?._menuOriginalParent;
+
+                [placeholderParent, originalParent, currentParent, document].forEach(root => {
+                    if (root && !roots.includes(root)) {
+                        roots.push(root);
+                    }
+                });
+
+                return roots;
+            }
+
+            function findAnchorBySelector(root, selector) {
+                if (!root || !selector) return null;
+
+                try {
+                    return root.querySelector(selector);
+                } catch {
+                    return null;
+                }
+            }
+
+            function inferMenuAnchor(menu) {
+                if (!menu) return null;
+
+                if (menu.dataset.menuAnchorId) {
+                    const explicitAnchor = document.getElementById(menu.dataset.menuAnchorId);
+                    if (explicitAnchor) {
+                        menu._menuAnchor = explicitAnchor;
+                        return explicitAnchor;
+                    }
+                }
+
+                if (menu._menuAnchor && document.body.contains(menu._menuAnchor)) {
+                    return menu._menuAnchor;
+                }
+
+                const placeholder = menu._floatingPlaceholder;
+                const previousSibling = placeholder?.previousElementSibling || menu.previousElementSibling;
+                if (previousSibling instanceof Element && previousSibling.matches('button, [data-menu-trigger], [aria-controls]')) {
+                    menu._menuAnchor = previousSibling;
+                    return previousSibling;
+                }
+
+                const selectors = menu.id
+                    ? [
+                        `[data-menu-target="${menu.id}"]`,
+                        `[aria-controls="${menu.id}"]`,
+                        `button[onclick*="'${menu.id}'"]`,
+                        `button[onclick*='"${menu.id}"']`,
+                        `[onclick*="'${menu.id}'"]`,
+                        `[onclick*='"${menu.id}"']`
+                    ]
+                    : [];
+
+                for (const root of getMenuSearchRoots(menu)) {
+                    for (const selector of selectors) {
+                        const candidate = findAnchorBySelector(root, selector);
+                        if (candidate) {
+                            menu._menuAnchor = candidate;
+                            return candidate;
+                        }
+                    }
+                }
+
+                const activeElement = document.activeElement;
+                if (activeElement instanceof Element && activeElement.matches('button, [data-menu-trigger]')) {
+                    menu._menuAnchor = activeElement;
+                    return activeElement;
+                }
+
+                return null;
+            }
+
+            function setAnchorExpandedState(anchor, isExpanded) {
+                if (!(anchor instanceof Element) || !anchor.hasAttribute('aria-expanded')) {
+                    return;
+                }
+
+                anchor.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+            }
+
+            function syncMenuAnchorExpanded(menu, isExpanded, anchor) {
+                const resolvedAnchor = anchor ?? menu?._menuAnchor ?? inferMenuAnchor(menu);
+                setAnchorExpandedState(resolvedAnchor, isExpanded);
+            }
+
+            function isMenuAncestor(candidate, menu) {
+                if (!candidate || !menu || candidate === menu) return false;
+
+                return candidate.contains(menu)
+                    || (menu._floatingPlaceholder instanceof Element && candidate.contains(menu._floatingPlaceholder));
+            }
+
+            function getOrderedOpenMenus() {
+                return Array.from(openMenus).sort((left, right) => {
+                    const leftDepth = Array.from(openMenus).filter(candidate => candidate !== left && isMenuAncestor(candidate, left)).length;
+                    const rightDepth = Array.from(openMenus).filter(candidate => candidate !== right && isMenuAncestor(candidate, right)).length;
+                    return leftDepth - rightDepth;
+                });
+            }
+
+            function closeDescendantMenus(menu) {
+                getOrderedOpenMenus()
+                    .filter(candidate => candidate !== menu && isMenuAncestor(menu, candidate))
+                    .reverse()
+                    .forEach(candidate => closeMenu(candidate, { immediate: true }));
+            }
+
+            function resolveMenuWidth(menu, anchor) {
+                const explicitWidth = parsePositiveNumber(menu?.dataset.menuWidth);
+                if (explicitWidth) return explicitWidth;
+
+                const measuredWidth = menu?.getBoundingClientRect().width;
+                if (measuredWidth) return measuredWidth;
+
+                const computedWidth = parsePositiveNumber(window.getComputedStyle(menu).width);
+                if (computedWidth) return computedWidth;
+
+                return anchor?.getBoundingClientRect().width || 0;
+            }
+
+            function getMenuOptions(menu, anchor) {
+                const width = resolveMenuWidth(menu, anchor);
+                return {
+                    align: menu?.dataset.menuAlign || 'right',
+                    placement: menu?.dataset.menuPlacement || 'auto',
+                    offset: parsePositiveNumber(menu?.dataset.menuOffset) ?? 10,
+                    minHeight: parsePositiveNumber(menu?.dataset.menuMinHeight) ?? 180,
+                    minVisibleHeight: parsePositiveNumber(menu?.dataset.menuMinVisibleHeight) ?? 140,
+                    minWidth: Math.min(width, anchor?.getBoundingClientRect().width || width),
+                    width
+                };
+            }
+
+            function positionMenu(menu) {
+                const floatingLayer = getFloatingLayer();
+                const anchor = inferMenuAnchor(menu);
+                if (!floatingLayer || !menu || !anchor || !document.body.contains(anchor)) {
+                    closeMenu(menu, { immediate: true });
+                    return;
+                }
+
+                const placement = floatingLayer.positionElement(menu, anchor, getMenuOptions(menu, anchor));
+                const align = menu.dataset.align || menu.dataset.menuAlign || 'right';
+                const originY = placement === 'top' ? 'bottom' : 'top';
+                const originX = align === 'left' ? 'left' : align === 'center' ? 'center' : 'right';
+                menu.style.transformOrigin = `${originY} ${originX}`;
+            }
+
+            function finalizeClose(menu) {
                 if (!menu) return;
 
                 clearHideTimer(menu);
-                resetMenuPhase(menu);
-                menu.classList.remove('hidden');
-                menu.dataset.menuState = 'opening';
+                cancelRevealFrame(menu);
+                syncMenuAnchorExpanded(menu, false);
+                menu.classList.remove('menu-visible', 'menu-closing', 'admin-menu-portal-attached');
+                menu.classList.add('menu-hidden', 'hidden');
+                menu.dataset.menuState = 'closed';
+                menu.style.removeProperty('left');
+                menu.style.removeProperty('top');
+                menu.style.removeProperty('right');
+                menu.style.removeProperty('bottom');
+                menu.style.removeProperty('width');
+                menu.style.removeProperty('max-width');
+                menu.style.removeProperty('max-height');
+                menu.style.removeProperty('visibility');
+                menu.style.removeProperty('transform-origin');
+                menu.removeAttribute('data-placement');
+                menu.removeAttribute('data-align');
 
-                requestAnimationFrame(() => {
+                if (menu._floatingPlaceholder) {
+                    getFloatingLayer()?.detach(menu);
+                }
+
+                openMenus.delete(menu);
+            }
+
+            function openMenu(menu) {
+                const floatingLayer = getFloatingLayer();
+                const anchor = inferMenuAnchor(menu);
+                if (!menu || !floatingLayer || !anchor || !document.body.contains(anchor)) {
+                    finalizeClose(menu);
+                    return;
+                }
+
+                getOrderedOpenMenus().forEach(candidate => {
+                    if (candidate !== menu && !isMenuAncestor(candidate, menu)) {
+                        closeMenu(candidate, { immediate: true });
+                    }
+                });
+
+                menu._menuOriginalParent ??= menu.parentElement;
+                clearHideTimer(menu);
+                cancelRevealFrame(menu);
+                resetMenuPhase(menu);
+                menu._menuAnchor = anchor;
+                floatingLayer.attach(menu);
+                menu.classList.add('admin-menu-portal-attached');
+                menu.classList.remove('hidden');
+                menu.style.visibility = 'hidden';
+                menu.dataset.menuState = 'opening';
+                syncMenuAnchorExpanded(menu, true, anchor);
+                positionMenu(menu);
+                openMenus.add(menu);
+
+                menu._menuRevealFrame = requestAnimationFrame(() => {
+                    menu._menuRevealFrame = null;
+                    if (!isMenuOpen(menu)) {
+                        return;
+                    }
+
+                    positionMenu(menu);
+                    menu.style.visibility = '';
                     menu.classList.add('menu-visible');
                     menu.dataset.menuState = 'open';
                 });
             }
 
-            function closeMenu(menu) {
+            function closeMenu(menu, options) {
                 if (!menu) return;
 
+                const settings = options || {};
+                if (settings.closeDescendants !== false) {
+                    closeDescendantMenus(menu);
+                }
+
                 clearHideTimer(menu);
+                cancelRevealFrame(menu);
                 resetMenuPhase(menu);
                 menu.classList.remove('menu-visible');
+                openMenus.delete(menu);
+
+                if (settings.immediate) {
+                    finalizeClose(menu);
+                    return;
+                }
+
                 menu.classList.add('menu-closing');
                 menu.dataset.menuState = 'closing';
 
                 menu._menuHideTimer = setTimeout(() => {
                     if (menu.dataset.menuState === 'closing') {
-                        menu.classList.remove('menu-closing');
-                        menu.classList.add('menu-hidden');
-                        menu.classList.add('hidden');
-                        menu.dataset.menuState = 'closed';
+                        finalizeClose(menu);
                     }
                 }, HIDE_DELAY_MS);
             }
@@ -652,11 +904,64 @@
                 openMenu(menu);
             }
 
+            function isEventInsideMenu(menu, target) {
+                if (!menu || !(target instanceof Element)) return false;
+
+                if (menu.contains(target)) {
+                    return true;
+                }
+
+                const floatingChild = target.closest('.options-menu.portal-attached, .admin-menu-portal-attached');
+                if (floatingChild?._floatingPlaceholder instanceof Element && menu.contains(floatingChild._floatingPlaceholder)) {
+                    return true;
+                }
+
+                return getOrderedOpenMenus().some(candidate =>
+                    candidate !== menu
+                    && isMenuAncestor(menu, candidate)
+                    && candidate.contains(target)
+                );
+            }
+
+            function repositionOpenMenus() {
+                getOrderedOpenMenus().forEach(menu => {
+                    if (!menu || !document.body.contains(menu)) {
+                        finalizeClose(menu);
+                        return;
+                    }
+
+                    positionMenu(menu);
+                });
+            }
+
+            document.addEventListener('click', function (event) {
+                const insideOpenMenu = getOrderedOpenMenus().some(menu => isEventInsideMenu(menu, event.target));
+                const insideAnchor = getOrderedOpenMenus().some(menu => {
+                    const anchor = inferMenuAnchor(menu);
+                    return anchor && anchor.contains(event.target);
+                });
+
+                if (!insideOpenMenu && !insideAnchor) {
+                    getOrderedOpenMenus().reverse().forEach(menu => closeMenu(menu));
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    getOrderedOpenMenus().reverse().forEach(menu => closeMenu(menu));
+                }
+            });
+
+            window.addEventListener('resize', repositionOpenMenus);
+            window.addEventListener('scroll', repositionOpenMenus, true);
+
             window.AdminMenu = {
                 hideDelay: HIDE_DELAY_MS,
+                floatingLayer: window.AdminFloatingLayer,
                 open(menu) { openMenu(menu); },
                 close(menu) { closeMenu(menu); },
                 toggle(menu) { toggleMenu(menu); },
+                contains(menu, target) { return isEventInsideMenu(menu, target); },
                 openById(id) { openMenu(document.getElementById(id)); },
                 closeById(id) { closeMenu(document.getElementById(id)); },
                 toggleById(id) { toggleMenu(document.getElementById(id)); }

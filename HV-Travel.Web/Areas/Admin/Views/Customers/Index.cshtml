@@ -153,11 +153,11 @@
             <div class="flex items-center gap-3">
                 <!-- Filter Dropdown -->
                 <div class="relative group">
-                    <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button id="filter-menu-trigger" type="button" data-menu-target="filter-menu" aria-controls="filter-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                     </button>
 
-                    <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
+                    <div id="filter-menu" data-menu-anchor-id="filter-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                         </div>
@@ -225,10 +225,10 @@
                 </div>
                 
                 <div class="relative">
-                    <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button id="column-menu-trigger" type="button" data-menu-target="column-menu" aria-controls="column-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">view_column</span>
                     </button>
-                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                    <div id="column-menu" data-menu-anchor-id="column-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-customer')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Khách Hàng</span>
@@ -733,32 +733,6 @@
         if (!menu) return;
         window.AdminMenu?.toggle(menu);
     }
-
-    // Close filter menu AND sidebar when clicking outside
-    document.addEventListener('click', function (event) {
-        // Filter Menu Logic
-        const menu = document.getElementById('filter-menu');
-        const button = event.target.closest('button[onclick="toggleFilterMenu()"]');
-        const insideMenu = event.target.closest('#filter-menu');
-
-        if (menu && !button && !insideMenu && menu.classList.contains('menu-visible')) {
-            window.AdminMenu?.close(menu);
-        }
-        
-        // Column Menu Logic
-        const colMenu = document.getElementById('column-menu');
-        const colButton = event.target.closest('button[onclick="toggleColumnMenu()"]');
-        const insideColMenu = event.target.closest('#column-menu');
-        
-        if (colMenu && !colButton && !insideColMenu && colMenu.classList.contains('menu-visible')) {
-            window.AdminMenu?.close(colMenu);
-        }
-
-        // Sidebar Logic (Closed when handled by Overlay, but keep this for extra safety or programmatic closing if needed)
-        const sidebar = document.getElementById('customer-detail-sidebar');
-        // If clicking a row while sidebar IS ALREADY OPEN, the overlay will technically catch it if we want to force closure first.
-        // The current implementation uses onclick on Overlay to close.
-    });
 
     function updateSpendingLabel(input) {
         document.getElementById('spending-label').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(input.value) + "+";

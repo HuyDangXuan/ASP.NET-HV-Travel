@@ -1,4 +1,5 @@
 ﻿@model HVTravel.Domain.Entities.Booking
+@using HVTravel.Web.Services
 @{
     ViewData["Title"] = "Chỉnh sửa Đơn đặt vé";
 }
@@ -51,6 +52,14 @@
         _ => "bg-slate-100 text-slate-700"
     };
 
+    string GetAdminStatusText(string status) => BookingDisplayTextHelper.BookingStatus(status);
+
+    string GetAdminStatusClass(string status) => status switch
+    {
+        "PendingPayment" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        _ => GetStatusClass(status)
+    };
+
 }
 
 <!-- Page Header -->
@@ -60,7 +69,7 @@
         <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Đang chỉnh sửa đơn hàng mã <span class="font-bold text-primary">#@Model.BookingCode</span> cho tour @(Model.TourSnapshot?.Name).</p>
     </div>
     <div class="flex items-center gap-3">
-        <span id="header-status-badge" class="px-4 py-2 @GetStatusClass(Model.Status) text-xs font-bold rounded-full uppercase tracking-wider">@GetStatusText(Model.Status)</span>
+        <span id="header-status-badge" class="px-4 py-2 @GetAdminStatusClass(Model.Status) text-xs font-bold rounded-full uppercase tracking-wider">@GetAdminStatusText(Model.Status)</span>
     </div>
 </div>
 
@@ -88,6 +97,7 @@
                                     data-admin-select-caption="Booking status"
                                     data-admin-select-icon="receipt_long">
                                 <option value="Pending">Chờ xử lý</option>
+                                <option value="PendingPayment">Chờ thanh toán</option>
                                 <option value="Paid">Đã thanh toán</option>
                                 <option value="Confirmed">Đã xác nhận</option>
                                 <option value="Completed">Hoàn thành</option>
@@ -236,6 +246,7 @@
         function getStatusBadgeClass(status) {
             switch(status) {
                 case "Pending": return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
+                case "PendingPayment": return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400";
                 case "Confirmed": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
                 case "Paid": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
                 case "Completed": return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
