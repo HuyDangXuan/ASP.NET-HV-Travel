@@ -18,6 +18,10 @@
         -webkit-overflow-scrolling: touch;
     }
 
+    body.public-chat-active .public-chat-widget[data-state="closed"] {
+        display: none !important;
+    }
+
     @@media (max-width: 639.98px) {
         .public-chat-widget {
             left: max(0.5rem, env(safe-area-inset-left));
@@ -36,10 +40,6 @@
 
         .public-chat-composer {
             padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
-        }
-
-        body.public-chat-active .public-chat-widget[data-state="closed"] {
-            display: none !important;
         }
     }
 </style>
@@ -246,7 +246,7 @@
             document.body.classList.toggle('public-chat-active', hasOpenWidget);
 
             widgets.forEach((widget) => {
-                const shouldHideWidget = mobileChatViewport.matches && hasOpenWidget && widget.dataset.state === 'closed';
+                const shouldHideWidget = hasOpenWidget && widget.dataset.state === 'closed';
                 widget.classList.toggle('hidden', shouldHideWidget);
                 widget.setAttribute('aria-hidden', shouldHideWidget ? 'true' : 'false');
             });

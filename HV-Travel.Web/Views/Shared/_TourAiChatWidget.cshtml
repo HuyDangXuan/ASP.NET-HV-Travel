@@ -1,5 +1,13 @@
 @model Tour
 
+<style>
+    @@media (min-width: 640px) {
+        body.public-chat-active .public-chat-widget--ai {
+            bottom: 1rem !important;
+        }
+    }
+</style>
+
 <div id="tour-ai-chat-widget"
      data-tour-id="@Model.Id"
      data-tour-name="@Model.Name"
@@ -168,7 +176,7 @@
             document.body.classList.toggle('public-chat-active', hasOpenWidget);
 
             widgets.forEach((widget) => {
-                const shouldHideWidget = mobileChatViewport.matches && hasOpenWidget && widget.dataset.state === 'closed';
+                const shouldHideWidget = hasOpenWidget && widget.dataset.state === 'closed';
                 widget.classList.toggle('hidden', shouldHideWidget);
                 widget.setAttribute('aria-hidden', shouldHideWidget ? 'true' : 'false');
             });
