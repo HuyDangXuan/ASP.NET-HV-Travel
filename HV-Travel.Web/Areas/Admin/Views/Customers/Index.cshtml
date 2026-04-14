@@ -134,7 +134,9 @@
         <!-- Segment Tabs -->
         <!-- Replaced Segment Tabs with Toolbar -->
         <form data-animate="fade-in-up" data-delay="0.2" method="get" action="@Url.Action("Index")" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
-            
+            <input type="hidden" name="pageSize" value="@Model.Pagination.PageSize" />
+            <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+
             <!-- Search Bar -->
             <div class="flex-1 min-w-[200px]">
                 <div class="relative">
@@ -415,8 +417,64 @@
                 </table>
             </div>
 
+            @{
+                var startItem = Model.Pagination.TotalCount == 0 ? 0 : ((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1;
+                var endItem = Model.Pagination.TotalCount == 0 ? 0 : Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount);
+                int[] pageSizes = { 10, 15, 20, 50, 100 };
+                int currentPageSize = (int?)ViewData["CurrentPageSize"] ?? Model.Pagination.PageSize;
+            }
+            <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
+                <div class="flex items-center gap-4">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        Hi&#7875;n th&#7883; <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span>
+                        trong s&#7889; <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> k&#7871;t qu&#7843;
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <label for="pageSize" class="text-xs font-medium text-slate-500 dark:text-slate-400">Hi&#7875;n th&#7883;:</label>
+                        <div class="min-w-[92px]">
+                            <select id="pageSize" onchange="changePageSize(this.value)" class="w-full" data-admin-select="compact">
+                                @foreach (var size in pageSizes)
+                                {
+                                    <option value="@size" selected="@(size == currentPageSize)">@size</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button"
+                            onclick="changePage(@(Model.Pagination.CurrentPage - 1))"
+                            @(Model.Pagination.HasPrevious ? "" : "disabled")
+                            class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-symbols-outlined text-lg">chevron_left</span>
+                    </button>
+
+                    @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                    {
+                        if (Math.Abs(i - Model.Pagination.CurrentPage) <= 2 || i == 1 || i == Model.Pagination.TotalPages)
+                        {
+                            <button type="button"
+                                    onclick="changePage(@i)"
+                                    class="w-8 h-8 rounded-lg @(i == Model.Pagination.CurrentPage ? "bg-primary text-white shadow-sm shadow-primary/30" : "hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400") text-xs font-bold transition-colors">@i</button>
+                        }
+                        else if (Math.Abs(i - Model.Pagination.CurrentPage) == 3)
+                        {
+                            <span class="text-slate-400 text-xs">...</span>
+                        }
+                    }
+
+                    <button type="button"
+                            onclick="changePage(@(Model.Pagination.CurrentPage + 1))"
+                            @(Model.Pagination.HasNext ? "" : "disabled")
+                            class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="material-symbols-outlined text-lg">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Pagination -->
-            <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
+            <div class="hidden p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
                 <p class="text-xs text-slate-500 dark:text-slate-400">
                     Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
                     trong số <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> kết quả
@@ -738,6 +796,10 @@
         const sortOrder = new URLSearchParams(window.location.search).get('sortOrder');
         if(sortOrder) params.set('sortOrder', sortOrder);
 
+        // Page Size (Preserve)
+        const pageSize = new URLSearchParams(window.location.search).get('pageSize');
+        if (pageSize) params.set('pageSize', pageSize);
+
         // Reset page
         params.delete('page');
 
@@ -750,7 +812,26 @@
         window.location.href = '@Url.Action("Index")' + '?' + params.toString();
     }
 
+    function changePage(page) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+    }
+
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('pageSize', size);
+        url.searchParams.set('page', 1);
+        window.location.href = url.toString();
+    }
+
     function resetFilters() {
-        window.location.href = '@Url.Action("Index")';
+        const url = new URL(window.location.origin + '@Url.Action("Index")');
+        const pageSize = new URLSearchParams(window.location.search).get('pageSize');
+        if (pageSize) {
+            url.searchParams.set('pageSize', pageSize);
+        }
+
+        window.location.href = url.toString();
     }
 </script>

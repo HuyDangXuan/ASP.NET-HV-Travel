@@ -1,105 +1,486 @@
-.date-field-custom {
-    display: block;
-    width: 100%;
-    height: 3.5rem; /* h-14 */
-    padding-left: 2.5rem; /* pl-10 */
-    padding-right: 2.5rem; /* pr-10 */
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-    border: 1px solid #d9e5f2;
-    border-radius: 1.25rem;
-    color: #111718;
-    font-size: 0.875rem;
-    font-weight: 600;
-    box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.45);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
-    outline: none !important;
-    appearance: none;
-    -webkit-appearance: none;
-    user-select: none;
-    cursor: pointer;
+.admin-picker {
+    position: relative;
 }
 
-.date-field-custom:hover {
-    border-color: #7dd3fc;
+.admin-picker-input {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+.admin-picker-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    width: 100%;
+    min-height: 3.5rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #d9e5f2;
+    border-radius: 1.25rem;
+    background:
+        radial-gradient(circle at top left, rgb(14 165 233 / 0.08), transparent 42%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    color: #111718;
+    box-shadow: 0 14px 30px -24px rgba(15, 23, 42, 0.42);
+    cursor: pointer;
+    outline: none;
+    text-align: left;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.admin-picker-trigger:hover {
+    border-color: rgb(14 165 233 / 0.58);
     box-shadow: 0 18px 34px -24px rgba(14, 165, 233, 0.35);
     transform: translateY(-1px);
 }
 
-.date-field-custom:focus {
-    border-color: #0ea5e9;
+.admin-picker.is-open .admin-picker-trigger,
+.admin-picker-trigger:focus-visible {
+    border-color: rgb(14 165 233 / 0.8);
     background: #ffffff;
-    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.12), 0 18px 34px -24px rgba(14, 165, 233, 0.35);
+    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.14), 0 18px 34px -24px rgba(14, 165, 233, 0.35);
 }
 
-.dark .date-field-custom {
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(17, 24, 39, 0.98) 100%);
+.admin-picker-trigger-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.admin-picker-trigger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.95rem;
+    background: linear-gradient(135deg, rgb(14 165 233 / 0.18), rgb(56 189 248 / 0.08));
+    color: var(--color-primary, #0ea5e9);
+    flex-shrink: 0;
+}
+
+.admin-picker-label {
+    display: block;
+    min-width: 0;
+    font-size: 0.92rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: #111718;
+}
+
+.admin-picker-trigger.is-empty .admin-picker-label,
+.admin-picker-trigger .admin-picker-label:empty {
+    color: #64748b;
+}
+
+.admin-picker-trigger-chevron {
+    color: #64748b;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.admin-picker.is-open .admin-picker-trigger-chevron {
+    transform: rotate(180deg);
+    color: var(--color-primary, #0ea5e9);
+}
+
+.admin-picker.disabled .admin-picker-trigger,
+.admin-picker-trigger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.admin-picker-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2680;
+    max-height: min(34rem, calc(100vh - 1.5rem));
+}
+
+.admin-picker-panel.hidden {
+    display: none;
+}
+
+.admin-picker-surface {
+    border: 1px solid rgb(226 232 240 / 0.92);
+    border-radius: 1.5rem;
+    background: rgb(255 255 255 / 0.98);
+    box-shadow: 0 28px 72px -28px rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+}
+
+.admin-picker-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.15rem 0.85rem;
+}
+
+.admin-picker-eyebrow {
+    margin: 0 0 0.2rem;
+    font-size: 0.65rem;
+    line-height: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.admin-picker-title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.admin-picker-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-picker-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.95rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    color: #475569;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.admin-picker-nav-btn:hover {
+    border-color: rgb(14 165 233 / 0.45);
+    color: var(--color-primary, #0ea5e9);
+    transform: translateY(-1px);
+}
+
+.admin-picker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0 1.15rem 0.65rem;
+}
+
+.admin-picker-weekdays span {
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.admin-picker-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0 1.15rem 1.1rem;
+}
+
+.admin-picker-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border: 0;
+    border-radius: 1rem;
+    background: transparent;
+    color: #334155;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-picker-day:hover {
+    background: rgb(241 245 249);
+    color: var(--color-primary, #0ea5e9);
+    transform: translateY(-1px);
+}
+
+.admin-picker-day.is-selected {
+    background: linear-gradient(135deg, var(--color-primary, #0ea5e9), #25b9d7);
+    color: #ffffff;
+    box-shadow: 0 16px 28px -18px rgba(14, 165, 233, 0.55);
+}
+
+.admin-picker-day.is-today {
+    box-shadow: inset 0 0 0 1px rgb(14 165 233 / 0.32);
+    color: var(--color-primary, #0ea5e9);
+}
+
+.admin-picker-day-placeholder {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.admin-picker-time-section {
+    border-top: 1px solid rgb(226 232 240 / 0.95);
+    padding: 1rem 1.15rem 0.9rem;
+    background: linear-gradient(180deg, rgb(248 250 252 / 0.78), rgb(255 255 255 / 0.96));
+}
+
+.admin-picker-time-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-picker-time-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: #64748b;
+}
+
+.admin-picker-time-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.admin-picker-time-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+    font-size: 0.72rem;
+    line-height: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.admin-picker-time-select {
+    width: 100%;
+    min-height: 2.9rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.95rem;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-picker-time-select:focus {
+    border-color: rgb(14 165 233 / 0.72);
+    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.12);
+}
+
+.admin-picker-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.95rem 1.15rem 1.15rem;
+    border-top: 1px solid rgb(226 232 240 / 0.92);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(248 250 252 / 0.92));
+}
+
+.admin-picker-footer-compact {
+    justify-content: flex-end;
+}
+
+.admin-picker-footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.admin-picker-primary,
+.admin-picker-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.7rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.95rem;
+    border: 1px solid transparent;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-picker-primary {
+    background: linear-gradient(135deg, var(--color-primary, #0ea5e9), #25b9d7);
+    color: #ffffff;
+    box-shadow: 0 14px 24px -18px rgba(14, 165, 233, 0.6);
+}
+
+.admin-picker-secondary {
+    background: rgb(248 250 252);
+    border-color: rgb(226 232 240);
+    color: #475569;
+}
+
+.admin-picker-primary:hover,
+.admin-picker-secondary:hover {
+    transform: translateY(-1px);
+}
+
+.admin-picker-secondary:hover {
+    border-color: rgb(14 165 233 / 0.32);
+    color: var(--color-primary, #0ea5e9);
+}
+
+.dark .admin-picker-trigger {
     border-color: rgb(51 65 85);
-    color: white;
+    background:
+        radial-gradient(circle at top left, rgb(14 165 233 / 0.16), transparent 40%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(17, 24, 39, 0.98) 100%);
+    color: #ffffff;
     box-shadow: 0 16px 30px -24px rgba(2, 6, 23, 0.85);
 }
 
-.dark .date-field-custom:hover {
-    border-color: rgb(56 189 248 / 0.9);
+.dark .admin-picker-trigger:hover {
+    border-color: rgb(56 189 248 / 0.85);
     box-shadow: 0 18px 34px -24px rgba(14, 165, 233, 0.4);
 }
 
-.dark .date-field-custom:focus {
-    border-color: rgb(56 189 248 / 0.95);
-    box-shadow: 0 0 0 4px rgb(14 165 233 / 0.16), 0 18px 34px -24px rgba(14, 165, 233, 0.4);
+.dark .admin-picker.is-open .admin-picker-trigger,
+.dark .admin-picker-trigger:focus-visible {
+    border-color: rgb(56 189 248 / 0.92);
+    box-shadow: 0 0 0 4px rgb(56 189 248 / 0.16), 0 18px 34px -24px rgba(14, 165, 233, 0.4);
 }
 
-/* Hide default browser date picker icons for text-based custom date fields */
-.date-field-custom:not(.admin-datetime-input)::-webkit-calendar-picker-indicator,
-.date-field-custom:not(.admin-datetime-input)::-webkit-inner-spin-button,
-.date-field-custom:not(.admin-datetime-input)::-webkit-clear-button {
-    display: none;
-    -webkit-appearance: none;
+.dark .admin-picker-trigger-icon {
+    background: linear-gradient(135deg, rgb(30 41 59), rgb(51 65 85));
+    color: rgb(125 211 252);
 }
 
-.admin-datetime-field {
-    position: relative;
+.dark .admin-picker-label {
+    color: #ffffff;
 }
 
-.admin-datetime-icon,
-.admin-datetime-suffix {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: rgb(100 116 139);
-}
-
-.admin-datetime-icon {
-    left: 1rem;
-    font-size: 1.125rem;
-}
-
-.admin-datetime-suffix {
-    right: 1rem;
-    font-size: 1.125rem;
-}
-
-.admin-datetime-input {
-    padding-left: 3rem;
-    padding-right: 3rem;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-}
-
-.admin-datetime-input::-webkit-calendar-picker-indicator {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.admin-datetime-input::-webkit-inner-spin-button,
-.admin-datetime-input::-webkit-clear-button {
-    opacity: 0;
-}
-
-.dark .admin-datetime-icon,
-.dark .admin-datetime-suffix {
+.dark .admin-picker-trigger.is-empty .admin-picker-label,
+.dark .admin-picker-trigger-chevron,
+.dark .admin-picker-eyebrow,
+.dark .admin-picker-time-hint,
+.dark .admin-picker-time-field {
     color: rgb(148 163 184);
+}
+
+.dark .admin-picker-surface {
+    border-color: rgb(51 65 85 / 0.96);
+    background: rgb(15 23 42 / 0.98);
+    box-shadow: 0 32px 72px -28px rgba(2, 6, 23, 0.86);
+}
+
+.dark .admin-picker-title {
+    color: #ffffff;
+}
+
+.dark .admin-picker-nav-btn {
+    border-color: rgb(51 65 85);
+    background: rgb(30 41 59 / 0.82);
+    color: rgb(226 232 240);
+}
+
+.dark .admin-picker-nav-btn:hover {
+    border-color: rgb(56 189 248 / 0.5);
+    color: rgb(125 211 252);
+}
+
+.dark .admin-picker-day {
+    color: rgb(203 213 225);
+}
+
+.dark .admin-picker-day:hover {
+    background: rgb(30 41 59 / 0.9);
+    color: rgb(125 211 252);
+}
+
+.dark .admin-picker-day.is-selected {
+    color: #ffffff;
+}
+
+.dark .admin-picker-day.is-today {
+    box-shadow: inset 0 0 0 1px rgb(56 189 248 / 0.42);
+    color: rgb(125 211 252);
+}
+
+.dark .admin-picker-time-section,
+.dark .admin-picker-footer {
+    border-color: rgb(51 65 85 / 0.96);
+    background: linear-gradient(180deg, rgb(15 23 42 / 0.98), rgb(2 6 23 / 0.94));
+}
+
+.dark .admin-picker-time-select {
+    border-color: rgb(71 85 105);
+    background: rgb(15 23 42 / 0.96);
+    color: #ffffff;
+}
+
+.dark .admin-picker-time-select:focus {
+    border-color: rgb(56 189 248 / 0.78);
+    box-shadow: 0 0 0 4px rgb(56 189 248 / 0.14);
+}
+
+.dark .admin-picker-secondary {
+    background: rgb(30 41 59 / 0.88);
+    border-color: rgb(51 65 85);
+    color: rgb(226 232 240);
+}
+
+.dark .admin-picker-secondary:hover {
+    border-color: rgb(56 189 248 / 0.42);
+    color: rgb(125 211 252);
+}
+
+@media (max-width: 640px) {
+    .admin-picker-time-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-picker-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-picker-footer-actions {
+        width: 100%;
+    }
+
+    .admin-picker-footer-actions > * {
+        flex: 1 1 0;
+    }
+
+    .admin-picker-footer-compact {
+        flex-direction: row;
+    }
+
+    .admin-picker-footer-compact > * {
+        flex: 1 1 0;
+    }
 }

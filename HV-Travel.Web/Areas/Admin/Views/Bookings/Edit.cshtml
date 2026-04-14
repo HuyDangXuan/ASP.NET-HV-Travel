@@ -51,15 +51,6 @@
         _ => "bg-slate-100 text-slate-700"
     };
 
-    string GetPaymentStatusText(string status) => status switch
-    {
-        "Unpaid" => "Chưa thanh toán",
-        "Pending" => "Chờ xác nhận",
-        "Partial" => "Thanh toán một phần",
-        "Full" => "Đã thanh toán",
-        "Refunded" => "Đã hoàn tiền",
-        _ => status
-    };
 }
 
 <!-- Page Header -->
@@ -89,73 +80,35 @@
                 </div>
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Custom Select: Status -->
-                        <div class="relative custom-select-container" data-id="Status">
-                             <label class="label-text">Trạng thái Đơn hàng</label>
-                             <div class="custom-select-trigger" onclick="toggleCustomSelect('Status')">
-                                 <div class="flex items-center gap-3 min-w-0">
-                                     <span class="custom-select-leading material-symbols-outlined">receipt_long</span>
-                                     <div class="custom-select-meta">
-                                         <span class="custom-select-caption">Booking status</span>
-                                         <span class="selected-label">@GetStatusText(Model.Status)</span>
-                                     </div>
-                                 </div>
-                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                             </div>
-                             <div class="options-menu">
-                                 @foreach (var status in new[] { "Pending", "Paid", "Confirmed", "Completed", "Cancelled", "Refunded" })
-                                 {
-                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" data-value="@status" data-label="@GetStatusText(status)" onclick="selectCustomOptionAndRefreshBadge('Status', '@status', '@GetStatusText(status)')">
-                                         <span class="custom-option-main">
-                                             <span class="custom-option-dot"></span>
-                                             <span>@GetStatusText(status)</span>
-                                         </span>
-                                         @if (Model.Status == status) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                                     </div>
-                                 }
-                             </div>
-                             <select asp-for="Status" class="hidden">
-                                 <option value="Pending">Chờ xử lý</option>
-                                 <option value="Paid">Đã thanh toán</option>
-                                 <option value="Confirmed">Đã xác nhận</option>
-                                 <option value="Completed">Hoàn thành</option>
-                                 <option value="Cancelled">Đã hủy</option>
-                                 <option value="Refunded">Đã hoàn quỹ</option>
-                             </select>
+                        <div>
+                            <label class="label-text">Trạng thái Đơn hàng</label>
+                            <select asp-for="Status"
+                                    class="w-full"
+                                    data-admin-select="default"
+                                    data-admin-select-caption="Booking status"
+                                    data-admin-select-icon="receipt_long">
+                                <option value="Pending">Chờ xử lý</option>
+                                <option value="Paid">Đã thanh toán</option>
+                                <option value="Confirmed">Đã xác nhận</option>
+                                <option value="Completed">Hoàn thành</option>
+                                <option value="Cancelled">Đã hủy</option>
+                                <option value="Refunded">Đã hoàn quỹ</option>
+                            </select>
                         </div>
 
-                        <!-- Custom Select: PaymentStatus -->
-                        <div class="relative custom-select-container" data-id="PaymentStatus">
-                             <label class="label-text">Trạng thái Thanh toán</label>
-                             <div class="custom-select-trigger" onclick="toggleCustomSelect('PaymentStatus')">
-                                 <div class="flex items-center gap-3 min-w-0">
-                                     <span class="custom-select-leading material-symbols-outlined">payments</span>
-                                     <div class="custom-select-meta">
-                                         <span class="custom-select-caption">Payment</span>
-                                         <span class="selected-label">@GetPaymentStatusText(Model.PaymentStatus)</span>
-                                     </div>
-                                 </div>
-                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                             </div>
-                             <div class="options-menu">
-                                 @foreach (var pStat in new[] { "Unpaid", "Pending", "Partial", "Full", "Refunded" })
-                                 {
-                                     <div class="custom-option @(Model.PaymentStatus == pStat ? "selected" : "")" data-value="@pStat" data-label="@GetPaymentStatusText(pStat)" onclick="selectCustomOption('PaymentStatus', '@pStat', '@GetPaymentStatusText(pStat)')">
-                                         <span class="custom-option-main">
-                                             <span class="custom-option-dot"></span>
-                                             <span>@GetPaymentStatusText(pStat)</span>
-                                         </span>
-                                         @if (Model.PaymentStatus == pStat) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                                     </div>
-                                 }
-                             </div>
-                             <select asp-for="PaymentStatus" class="hidden">
-                                 <option value="Unpaid">Chưa thanh toán</option>
-                                 <option value="Pending">Chờ xác nhận</option>
-                                 <option value="Partial">Thanh toán một phần</option>
-                                 <option value="Full">Đã thanh toán</option>
-                                 <option value="Refunded">Đã hoàn tiền</option>
-                             </select>
+                        <div>
+                            <label class="label-text">Trạng thái Thanh toán</label>
+                            <select asp-for="PaymentStatus"
+                                    class="w-full"
+                                    data-admin-select="default"
+                                    data-admin-select-caption="Payment"
+                                    data-admin-select-icon="payments">
+                                <option value="Unpaid">Chưa thanh toán</option>
+                                <option value="Pending">Chờ xác nhận</option>
+                                <option value="Partial">Thanh toán một phần</option>
+                                <option value="Full">Đã thanh toán</option>
+                                <option value="Refunded">Đã hoàn tiền</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -272,13 +225,6 @@
 
 @section Scripts {
     <script>
-        function selectCustomOptionAndRefreshBadge(id, value, text) {
-            selectCustomOption(id, value, text);
-            if (id === 'Status') {
-                updateHeaderStatusBadge(value, text);
-            }
-        }
-
         function updateHeaderStatusBadge(status, text) {
             const badge = document.getElementById('header-status-badge');
             if (badge) {
@@ -299,21 +245,6 @@
             }
         }
 
-        // Close on click outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.custom-select-container')) {
-                document.querySelectorAll('.options-menu.visible').forEach(m => {
-                    m.classList.remove('visible');
-                    const container = m.closest('.custom-select-container');
-                    const arrow = container.querySelector('.arrow-icon');
-                    if (arrow) arrow.style.transform = '';
-                    container.classList.remove('active');
-                    const section = container.closest('.section-card');
-                    if (section) section.classList.remove('active-section');
-                });
-            }
-        });
-
         // Sync Amount Preview
         const amountInput = document.getElementById('TotalAmountInput');
         const amountPreview = document.getElementById('preview-total-amount');
@@ -323,5 +254,15 @@
                 amountPreview.innerText = val.toLocaleString('vi-VN');
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusSelect = document.getElementById('Status');
+            if (!statusSelect) return;
+
+            statusSelect.addEventListener('change', function () {
+                const selectedOption = statusSelect.options[statusSelect.selectedIndex];
+                updateHeaderStatusBadge(statusSelect.value, selectedOption ? selectedOption.text : statusSelect.value);
+            });
+        });
     </script>
 }

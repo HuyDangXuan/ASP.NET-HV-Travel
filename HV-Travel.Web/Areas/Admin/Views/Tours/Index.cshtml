@@ -387,8 +387,12 @@
         </form>
 
         <form id="bulk-status-form" asp-action="BulkUpdateStatus" method="post" class="flex flex-wrap items-center justify-center gap-2">
-            <div class="custom-select-container bulk-select drop-up min-w-[190px]" data-id="BulkTourStatus">
-                <select name="newStatus" class="hidden">
+            <div class="min-w-[190px]">
+                <select name="newStatus"
+                        class="w-full"
+                        data-admin-select="bulk"
+                        data-admin-select-placeholder="-- Đổi trạng thái --"
+                        data-admin-select-icon="swap_horiz">
                     <option value="">-- Đổi trạng thái --</option>
                     <option value="Active">Hoạt động</option>
                     <option value="Draft">Bản nháp</option>
@@ -397,51 +401,6 @@
                     <option value="Hidden">Ẩn</option>
                     <option value="Deleted">Đã xóa</option>
                 </select>
-                <div class="custom-select-trigger" onclick="toggleCustomSelect('BulkTourStatus')">
-                    <div class="flex min-w-0 items-center gap-2">
-                        <span class="custom-select-leading material-symbols-outlined text-[18px]">swap_horiz</span>
-                        <span class="selected-label">-- Đổi trạng thái --</span>
-                    </div>
-                    <span class="material-symbols-outlined arrow-icon text-[18px] transition-transform duration-300">expand_more</span>
-                </div>
-                <div class="options-menu">
-                    <div class="custom-option" data-value="Active" onclick="selectCustomOption('BulkTourStatus', 'Active', 'Hoạt động')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Hoạt động</span>
-                        </span>
-                    </div>
-                    <div class="custom-option" data-value="Draft" onclick="selectCustomOption('BulkTourStatus', 'Draft', 'Bản nháp')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Bản nháp</span>
-                        </span>
-                    </div>
-                    <div class="custom-option" data-value="SoldOut" onclick="selectCustomOption('BulkTourStatus', 'SoldOut', 'Hết chỗ')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Hết chỗ</span>
-                        </span>
-                    </div>
-                    <div class="custom-option" data-value="ComingSoon" onclick="selectCustomOption('BulkTourStatus', 'ComingSoon', 'Sắp ra mắt')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Sắp ra mắt</span>
-                        </span>
-                    </div>
-                    <div class="custom-option" data-value="Hidden" onclick="selectCustomOption('BulkTourStatus', 'Hidden', 'Ẩn')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Ẩn</span>
-                        </span>
-                    </div>
-                    <div class="custom-option" data-value="Deleted" onclick="selectCustomOption('BulkTourStatus', 'Deleted', 'Đã xóa')">
-                        <span class="custom-option-main">
-                            <span class="custom-option-dot"></span>
-                            <span>Đã xóa</span>
-                        </span>
-                    </div>
-                </div>
             </div>
 
             <button type="submit" class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">

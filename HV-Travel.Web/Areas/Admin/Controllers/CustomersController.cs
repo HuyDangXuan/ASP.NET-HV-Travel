@@ -31,6 +31,10 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             string sortOrder,
             int page = 1, int pageSize = 10)
         {
+            if (page < 1) page = 1;
+            if (pageSize < 5) pageSize = 10;
+            if (pageSize > 100) pageSize = 100;
+
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.SpendingSortParm = sortOrder == "spending" ? "spending_desc" : "spending";
@@ -105,6 +109,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             ViewBag.SelectedSegments = segments ?? new string[0];
             ViewBag.MinSpending = minSpending;
             ViewBag.MinOrders = minOrders;
+            ViewData["CurrentPageSize"] = pageSize;
 
             // Sort
             customers = sortOrder switch

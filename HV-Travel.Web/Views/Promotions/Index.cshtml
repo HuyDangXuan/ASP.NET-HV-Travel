@@ -7,6 +7,7 @@
     var flashSalesIntro = sections.GetSection("flashSalesIntro");
     var voucherIntro = sections.GetSection("voucherIntro");
     var seasonalDealsIntro = sections.GetSection("seasonalDealsIntro");
+    var voucherCampaignCount = Model.VoucherCampaigns.Count;
 
     ViewData["Description"] = hero?.Fields.GetFieldValue("description", "Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment.")
         ?? "Trang mới gom toàn bộ khuyến mãi, hiển thị mức ưu đãi, thời hạn và điều kiện theo segment.";
@@ -84,26 +85,96 @@
         <div class="grid gap-8 lg:grid-cols-2">
             @if (voucherIntro?.IsEnabled != false)
             {
-                <section class="rounded-[2rem] border border-border-light bg-surface-light p-6 shadow-sm dark:border-border-dark dark:bg-surface-dark @ContentPresentationViewHelper.GetSectionTextClass(voucherIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(voucherIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(voucherIntro)">
-                    <p class="text-xs uppercase tracking-[0.3em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "eyebrowText")">@voucherIntro.Fields.GetFieldValue("eyebrowText", "Voucher campaigns")</p>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "title")">@voucherIntro.Fields.GetFieldValue("title", "Ví voucher")</h2>
-                    <div class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "description")">
-                        @Html.Raw(voucherIntro.Fields.GetFieldValue("description", "Tập hợp voucher và campaign có thể tái sử dụng cho nhiều phân khúc khách hàng."))
+                <section class="relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-surface-light/95 p-6 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.42)] backdrop-blur-sm dark:border-slate-700/80 dark:bg-slate-950/90 dark:shadow-[0_28px_80px_-52px_rgba(2,8,23,0.88)] sm:p-7 @ContentPresentationViewHelper.GetSectionTextClass(voucherIntro) @ContentPresentationViewHelper.GetSectionBackgroundClass(voucherIntro)" style="@ContentPresentationViewHelper.GetSectionStyle(voucherIntro)">
+                    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+                        <div class="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(20,184,212,0.16),transparent_62%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(20,184,212,0.18),transparent_58%)]"></div>
+                        <div class="absolute right-0 top-8 h-28 w-28 rounded-full bg-accent/10 blur-3xl dark:bg-primary/10"></div>
                     </div>
-                    <div class="mt-5 space-y-4">
-                        @foreach (var promo in Model.VoucherCampaigns)
-                        {
-                            <div class="rounded-2xl border border-border-light px-4 py-4 dark:border-border-dark">
-                                <div class="flex items-center justify-between gap-4">
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">@promo.Code</p>
-                                        <h3 class="mt-2 text-lg font-black text-slate-900 dark:text-white">@(string.IsNullOrWhiteSpace(promo.Title) ? promo.Code : promo.Title)</h3>
-                                    </div>
-                                    <p class="text-2xl font-black text-primary">@promo.DiscountPercentage.ToString("0")%</p>
+                    <div class="relative z-10">
+                        <div class="flex flex-col gap-4 border-b border-slate-200/80 pb-5 dark:border-slate-800/80 sm:flex-row sm:items-start sm:justify-between">
+                            <div class="max-w-2xl">
+                                <p class="text-xs uppercase tracking-[0.32em] text-primary" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "eyebrowText")">@voucherIntro.Fields.GetFieldValue("eyebrowText", "Voucher campaigns")</p>
+                                <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "title")">@voucherIntro.Fields.GetFieldValue("title", "Ví voucher")</h2>
+                                <div class="mt-3 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400" style="@ContentPresentationViewHelper.GetFieldTextStyle(voucherIntro, "description")">
+                                    @Html.Raw(voucherIntro.Fields.GetFieldValue("description", "Tập hợp voucher và campaign có thể tái sử dụng cho nhiều phân khúc khách hàng."))
                                 </div>
-                                <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@promo.Description</p>
                             </div>
-                        }
+                            @if (voucherCampaignCount > 0)
+                            {
+                                <div class="inline-flex w-fit items-center gap-2 self-start whitespace-nowrap rounded-full border border-primary/15 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.26em] text-primary shadow-[0_16px_40px_-28px_rgba(20,184,212,0.85)] dark:border-primary/20 dark:bg-primary/12">
+                                    <span class="material-symbols-outlined text-[16px]">confirmation_number</span>
+                                    <span>@voucherCampaignCount.ToString("00") voucher</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-6 space-y-4" data-stagger>
+                            @foreach (var promo in Model.VoucherCampaigns)
+                            {
+                                var promoTitle = string.IsNullOrWhiteSpace(promo.Title) ? promo.Code : promo.Title;
+                                var eligibleSegments = promo.EligibleSegments
+                                    .Where(segment => !string.IsNullOrWhiteSpace(segment))
+                                    .Select(segment => segment.Trim())
+                                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                                    .ToList();
+                                var visibleSegments = eligibleSegments.Take(2).ToList();
+                                var hiddenSegmentCount = Math.Max(eligibleSegments.Count - visibleSegments.Count, 0);
+
+                                <article tabindex="0" class="group relative overflow-hidden rounded-[1.9rem] border border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,248,251,0.94)_100%)] px-4 py-4 shadow-[0_22px_70px_-54px_rgba(15,23,42,0.58)] outline-none transition duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_28px_90px_-48px_rgba(20,184,212,0.42)] focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-slate-800/85 dark:bg-[linear-gradient(180deg,rgba(13,27,42,0.98)_0%,rgba(8,19,32,0.98)_100%)] dark:shadow-[0_24px_80px_-56px_rgba(2,8,23,0.95)] dark:focus-visible:ring-offset-slate-950 sm:px-5 sm:py-5">
+                                    <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                                        <div class="absolute inset-y-0 right-0 w-40 bg-[radial-gradient(circle_at_center,rgba(20,184,212,0.14),transparent_68%)] dark:bg-[radial-gradient(circle_at_center,rgba(20,184,212,0.12),transparent_68%)]"></div>
+                                    </div>
+
+                                    <div class="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                @if (!string.IsNullOrWhiteSpace(promo.BadgeText))
+                                                {
+                                                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-white/85 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-slate-500 dark:border-slate-700 dark:bg-slate-900/85 dark:text-slate-300">@promo.BadgeText</span>
+                                                }
+                                                <span class="text-[11px] font-semibold uppercase tracking-[0.34em] text-slate-400 dark:text-slate-500">@promo.Code</span>
+                                            </div>
+
+                                            <h3 class="mt-3 text-xl font-black tracking-tight text-slate-900 transition duration-300 group-hover:text-primary dark:text-white sm:text-[1.55rem]">@promoTitle</h3>
+
+                                            @if (!string.IsNullOrWhiteSpace(promo.Description))
+                                            {
+                                                <p class="mt-3 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400">@promo.Description</p>
+                                            }
+                                        </div>
+
+                                        <div class="order-first self-start text-primary sm:order-none sm:text-right">
+                                            <p class="text-[10px] font-black uppercase tracking-[0.32em] text-primary/80">Ưu đãi</p>
+                                            <div class="mt-2 inline-flex items-end gap-1 rounded-[1.5rem] border border-primary/20 bg-[linear-gradient(135deg,rgba(20,184,212,0.16)_0%,rgba(29,78,216,0.12)_100%)] px-4 py-3 shadow-[0_18px_45px_-32px_rgba(20,184,212,0.95)] dark:border-primary/25 dark:bg-[linear-gradient(135deg,rgba(20,184,212,0.18)_0%,rgba(29,78,216,0.18)_100%)] sm:px-5 sm:py-4">
+                                                <span class="text-4xl font-black leading-none sm:text-[2.75rem]">@promo.DiscountPercentage.ToString("0")</span>
+                                                <span class="pb-1 text-sm font-black uppercase tracking-[0.16em]">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative z-10 mt-5 flex flex-wrap gap-2.5 border-t border-slate-200/80 pt-4 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:border-slate-800/80 dark:text-slate-400">
+                                        <span class="inline-flex items-center gap-2 rounded-full bg-slate-100/90 px-3 py-2 dark:bg-slate-900/85">
+                                            <span class="material-symbols-outlined text-[15px] text-primary">schedule</span>
+                                            <span>Đến @promo.ValidTo.ToString("dd/MM/yyyy")</span>
+                                        </span>
+                                        @if (promo.MinimumSpend > 0)
+                                        {
+                                            <span class="inline-flex items-center gap-2 rounded-full bg-slate-100/90 px-3 py-2 dark:bg-slate-900/85">
+                                                <span class="material-symbols-outlined text-[15px] text-primary">payments</span>
+                                                <span>Tối thiểu @promo.MinimumSpend.ToString("N0")₫</span>
+                                            </span>
+                                        }
+                                        @if (visibleSegments.Any())
+                                        {
+                                            <span class="inline-flex items-center gap-2 rounded-full bg-slate-100/90 px-3 py-2 dark:bg-slate-900/85">
+                                                <span class="material-symbols-outlined text-[15px] text-primary">group</span>
+                                                <span>@string.Join(", ", visibleSegments)@(hiddenSegmentCount > 0 ? $" +{hiddenSegmentCount}" : string.Empty)</span>
+                                            </span>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
                     </div>
                 </section>
             }

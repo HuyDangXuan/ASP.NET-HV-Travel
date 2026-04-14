@@ -58,10 +58,8 @@
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Ng&#224;y xu&#7845;t b&#7843;n</label>
-                    <div class="admin-datetime-field">
-                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
-                        <input asp-for="PublishedAt" type="datetime-local" class="date-field-custom admin-datetime-input" />
-                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    <div class="admin-picker" data-admin-picker="datetime" data-picker-placeholder="Chọn ngày giờ xuất bản" data-picker-icon="schedule">
+                        <input asp-for="PublishedAt" type="datetime-local" step="300" class="admin-picker-input" />
                     </div>
                 </div>
                 <label class="mt-8 inline-flex items-center gap-3 text-sm font-semibold">
