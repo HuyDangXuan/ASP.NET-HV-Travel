@@ -61,7 +61,7 @@
                                 <div class="mt-6 flex flex-1 flex-col gap-3">
                                     @foreach (var tour in collection.Tours)
                                     {
-                                        <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@tour.Id" class="group flex items-center justify-between gap-4 rounded-[1.5rem] border border-slate-200/85 bg-slate-50/80 px-4 py-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:bg-white hover:shadow-sm dark:border-slate-700/80 dark:bg-slate-900/40 dark:hover:border-primary/40 dark:hover:bg-slate-900/70">
+                                        <a asp-controller="PublicTours" asp-action="Details" asp-route-id="@PublicTourIdentifierHelper.GetDetailIdentifier(tour)" class="group flex items-center justify-between gap-4 rounded-[1.5rem] border border-slate-200/85 bg-slate-50/80 px-4 py-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:bg-white hover:shadow-sm dark:border-slate-700/80 dark:bg-slate-900/40 dark:hover:border-primary/40 dark:hover:bg-slate-900/70">
                                             <div class="min-w-0">
                                                 <p class="text-base font-black tracking-tight text-slate-900 transition-colors group-hover:text-primary dark:text-white">@tour.Name</p>
                                                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">@(tour.Destination?.City ?? "Việt Nam") • @(tour.Duration?.Text ?? "Lịch trình đang cập nhật")</p>

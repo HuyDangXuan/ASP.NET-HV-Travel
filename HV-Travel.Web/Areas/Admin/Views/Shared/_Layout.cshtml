@@ -503,66 +503,7 @@
                     <span class="material-symbols-outlined text-[20px]">add</span>
                     <span class="text-sm">Tạo tour mới</span>
                 </a>
-                <div class="relative" id="notification-container">
-                    <button onclick="toggleNotificationDropdown()" class="relative w-12 h-12 flex items-center justify-center bg-surface-light dark:bg-surface-elevated-dark rounded-2xl shadow-sm ring-1 ring-border-light dark:ring-border-dark text-slate-500 dark:text-text-muted-dark hover:text-primary hover:bg-primary-soft dark:hover:bg-surface-dark transition-all duration-200 group">
-                        <span class="material-symbols-outlined text-[26px] group-hover:scale-110 transition-transform">notifications</span>
-                        <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-surface-light dark:border-surface-elevated-dark animate-pulse"></span>
-                    </button>
-                    <!-- Notification Dropdown -->
-                    <div id="notification-dropdown" class="absolute right-0 top-full mt-4 w-96 bg-surface-light dark:bg-surface-dark rounded-[2rem] shadow-2xl shadow-slate-200/40 dark:shadow-slate-950/40 border border-border-light dark:border-border-dark z-50 hidden origin-top-right transition-all transform opacity-100 scale-100">
-                        <div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center bg-surface-muted-light/80 dark:bg-surface-elevated-dark/60 rounded-t-[2rem]">
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Thông báo</h3>
-                                <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3 mới</span>
-                            </div>
-                            <button class="text-xs text-primary font-bold hover:underline">Đánh dấu đã đọc</button>
-                        </div>
-                        <div class="max-h-[400px] overflow-y-auto no-scrollbar py-2">
-                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
-                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <div class="flex gap-4">
-                                    <div class="size-12 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                                        <span class="material-symbols-outlined text-xl">payments</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Đơn hàng <span class="font-bold">#BK-9420</span> đã thanh toán thành công</p>
-                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">2 phút trước</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
-                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <div class="flex gap-4">
-                                    <div class="size-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                                        <span class="material-symbols-outlined text-xl">person_add</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Khách hàng mới <span class="font-bold">Nguyễn Văn A</span> vừa đăng ký</p>
-                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">1 giờ trước</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors cursor-pointer group relative">
-                                <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <div class="flex gap-4">
-                                    <div class="size-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                                        <span class="material-symbols-outlined text-xl">star</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-[15px] text-slate-900 dark:text-white font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors">Tour <span class="font-bold">Hà Giang Loop</span> nhận được đánh giá 5 sao</p>
-                                        <p class="text-xs text-slate-400 mt-1.5 font-medium">3 giờ trước</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-4 border-t border-border-light dark:border-border-dark text-center bg-surface-muted-light/70 dark:bg-surface-elevated-dark/60 rounded-b-[2rem]">
-                            <a href="#" class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-500 hover:text-primary transition-colors py-1 uppercase tracking-wider">
-                                Xem tất cả thông báo
-                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                @await Component.InvokeAsync("AdminNotificationDropdown")
 
                 <div class="flex items-center gap-3 pl-4 border-l border-border-light dark:border-border-dark">
                     <div class="text-right hidden md:block">

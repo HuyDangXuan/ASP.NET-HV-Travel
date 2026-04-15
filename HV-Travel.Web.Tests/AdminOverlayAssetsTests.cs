@@ -111,6 +111,38 @@ public class AdminOverlayAssetsTests
             layout);
     }
 
+    [Fact]
+    public void AdminLayout_UsesNotificationDropdownViewComponent_InsteadOfHardcodedSampleItems()
+    {
+        var layoutPath = Path.Combine(RepoRoot, "HV-Travel.Web", "Areas", "Admin", "Views", "Shared", "_Layout.cshtml");
+        var layout = File.ReadAllText(layoutPath);
+
+        Assert.Contains("@await Component.InvokeAsync(\"AdminNotificationDropdown\")", layout, StringComparison.Ordinal);
+        Assert.DoesNotContain("Đơn hàng <span class=\"font-bold\">#BK-9420</span> đã thanh toán thành công", layout, StringComparison.Ordinal);
+        Assert.DoesNotContain("Khách hàng mới <span class=\"font-bold\">Nguyễn Văn A</span> vừa đăng ký", layout, StringComparison.Ordinal);
+        Assert.DoesNotContain("Tour <span class=\"font-bold\">Hà Giang Loop</span> nhận được đánh giá 5 sao", layout, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AdminNotificationDropdownComponent_RendersPassiveReadOnlyCopy_InsteadOfDeadActions()
+    {
+        var componentViewPath = Path.Combine(
+            RepoRoot,
+            "HV-Travel.Web",
+            "Views",
+            "Shared",
+            "Components",
+            "AdminNotificationDropdown",
+            "Default.cshtml");
+
+        var view = File.ReadAllText(componentViewPath);
+
+        Assert.Contains("Chế độ chỉ đọc", view, StringComparison.Ordinal);
+        Assert.Contains("Thông báo đồng bộ từ hệ thống.", view, StringComparison.Ordinal);
+        Assert.DoesNotContain("href=\"#\"", view, StringComparison.Ordinal);
+        Assert.DoesNotContain("Đánh dấu đã đọc</button>", view, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("Bookings", true)]
     [InlineData("Payments", false)]

@@ -240,6 +240,16 @@
                                         <span class="material-symbols-outlined text-[14px]">location_on</span> @tour.Destination?.City
                                     </div>
                                     <div class="text-[10px] text-slate-400">ID: @tour.Id</div>
+                                    <div class="mt-2 flex flex-wrap gap-1.5">
+                                        @if (tour.Routing != null)
+                                        {
+                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Routing</span>
+                                        }
+                                        @if (tour.Departures != null && tour.Departures.Count > 0)
+                                        {
+                                            <span class="inline-flex items-center rounded-full bg-slate-200 px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-700 dark:bg-slate-800 dark:text-slate-300">@tour.Departures.Count departures</span>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </td>

@@ -86,6 +86,13 @@ public static class PublicTextSanitizer
             item.Activities = NormalizeList(item.Activities);
         }
 
+        foreach (var stop in tour.Routing?.Stops ?? [])
+        {
+            stop.Name = NormalizeText(stop.Name).Trim();
+            stop.Type = NormalizeText(stop.Type).Trim();
+            stop.Note = NormalizeText(stop.Note).Trim();
+        }
+
         return tour;
     }
 

@@ -95,13 +95,14 @@ public class PublicToursController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var tour = await _tourRepository.GetByIdAsync(id) ?? await _tourRepository.GetBySlugAsync(id);
+        var tour = await ResolveTourByPublicIdentifierAsync(id);
         if (tour == null || !IsPubliclyVisible(tour.Status))
         {
             return NotFound();
         }
 
         tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
+        ViewData["RouteOverview"] = PublicTourRouteOverviewBuilder.Build(tour);
 
         var description = tour.Seo?.Description;
         if (string.IsNullOrWhiteSpace(description))
@@ -111,7 +112,7 @@ public class PublicToursController : Controller
 
         ViewData["Title"] = string.IsNullOrWhiteSpace(tour.Seo?.Title) ? tour.Name : tour.Seo.Title;
         ViewData["Description"] = description;
-        ViewData["CanonicalUrl"] = Url.Action(nameof(Details), "PublicTours", new { id = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug }, Request.Scheme);
+        ViewData["CanonicalUrl"] = Url.Action(nameof(Details), "PublicTours", new { id = PublicTourIdentifierHelper.GetDetailIdentifier(tour) }, Request.Scheme);
         ViewData["OpenGraphTitle"] = ViewData["Title"];
         ViewData["OpenGraphDescription"] = description;
         ViewData["OpenGraphImage"] = !string.IsNullOrWhiteSpace(tour.Seo?.OpenGraphImageUrl)
@@ -138,6 +139,16 @@ public class PublicToursController : Controller
         relatedTours.ForEach(tour => PublicTextSanitizer.NormalizeTourForDisplay(tour));
         ViewData["RelatedTours"] = relatedTours;
         return View(tour);
+    }
+
+    private async Task<Tour?> ResolveTourByPublicIdentifierAsync(string id)
+    {
+        if (!PublicTourIdentifierHelper.IsObjectId(id))
+        {
+            return await _tourRepository.GetBySlugAsync(id);
+        }
+
+        return await _tourRepository.GetByIdAsync(id) ?? await _tourRepository.GetBySlugAsync(id);
     }
 
     private static bool IsPubliclyVisible(string? status)
