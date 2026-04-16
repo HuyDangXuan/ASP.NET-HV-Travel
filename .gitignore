@@ -22,7 +22,7 @@
 brain/
 
 ## Mockdata
-tools/
+# tools/
 
 ## [OS Specific]
 .DS_Store
