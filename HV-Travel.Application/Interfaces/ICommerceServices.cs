@@ -28,6 +28,16 @@ public interface IInventoryService
     Task<bool> ReserveDepartureAsync(string tourId, string departureId, int travellerCount);
 }
 
+public interface IRouteInsightService
+{
+    RouteInsightResult Build(HVTravel.Domain.Entities.Tour? tour);
+}
+
+public interface IRouteOptimizationService
+{
+    RouteOptimizationResult Optimize(HVTravel.Domain.Entities.Tour? tour);
+}
+
 public interface IAnalyticsTracker
 {
     Task TrackAsync(string eventName, IReadOnlyDictionary<string, string?> properties);

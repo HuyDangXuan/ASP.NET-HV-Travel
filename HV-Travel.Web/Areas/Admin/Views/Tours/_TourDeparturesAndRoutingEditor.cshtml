@@ -1,0 +1,614 @@
+@model HVTravel.Domain.Entities.Tour
+@using System.Linq
+
+@{
+    var departures = (Model.Departures ?? new List<HVTravel.Domain.Entities.TourDeparture>()).OrderBy(item => item.StartDate).ToList();
+    var routeStops = (Model.Routing?.Stops ?? new List<HVTravel.Domain.Entities.TourRouteStop>()).OrderBy(item => item.Day).ThenBy(item => item.Order).ToList();
+    IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError> departureErrors = ViewData.ModelState.TryGetValue("Departures", out var departuresState)
+        ? departuresState.Errors
+        : Array.Empty<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>();
+    IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError> routingErrors = ViewData.ModelState.TryGetValue("Routing", out var routingState)
+        ? routingState.Errors
+        : Array.Empty<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>();
+    var optimizationPreviewUrl = Url.Action("OptimizeRoutingPreview", "Tours", new { area = "Admin" }) ?? "/Admin/Tours/OptimizeRoutingPreview";
+}
+
+<section class="section-card">
+    <div class="flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined text-primary">event_upcoming</span>
+        <h2 class="text-[#111718] dark:text-white text-xl font-bold">Departures</h2>
+    </div>
+    <p class="text-sm text-slate-500 dark:text-slate-400">Manage concrete departure rows for booking. If this section stays empty, the app still falls back to <code>StartDates</code>.</p>
+    <input type="hidden" name="__departuresEditor" value="true" />
+
+    @if (departureErrors.Any())
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-300">
+            @foreach (var error in departureErrors)
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <div id="departures-container" class="space-y-4">
+        @for (var i = 0; i < departures.Count; i++)
+        {
+            var departure = departures[i];
+            <article class="departure-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Departure #@(i + 1)</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Start @departure.StartDate.ToString("dd/MM/yyyy")</p>
+                    </div>
+                    <button type="button" onclick="removeDepartureItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+                <input type="hidden" name="Departures[@i].Id" value="@departure.Id" data-departure-field="Id" />
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div><label class="label-text">StartDate</label><input type="date" name="Departures[@i].StartDate" value="@departure.StartDate.ToString("yyyy-MM-dd")" data-departure-field="StartDate" class="input-field" /></div>
+                    <div><label class="label-text">AdultPrice</label><input type="number" name="Departures[@i].AdultPrice" value="@departure.AdultPrice" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">ChildPrice</label><input type="number" name="Departures[@i].ChildPrice" value="@departure.ChildPrice" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">InfantPrice</label><input type="number" name="Departures[@i].InfantPrice" value="@departure.InfantPrice" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">DiscountPercentage</label><input type="number" name="Departures[@i].DiscountPercentage" value="@departure.DiscountPercentage" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
+                    <div><label class="label-text">Capacity</label><input type="number" name="Departures[@i].Capacity" value="@departure.Capacity" data-departure-field="Capacity" class="input-field" min="0" /></div>
+                    <div><label class="label-text">BookedCount</label><input type="number" name="Departures[@i].BookedCount" value="@departure.BookedCount" data-departure-field="BookedCount" class="input-field" min="0" /></div>
+                    <div><label class="label-text">CutoffHours</label><input type="number" name="Departures[@i].CutoffHours" value="@departure.CutoffHours" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
+                    <div>
+                        <label class="label-text">ConfirmationType</label>
+                        <select name="Departures[@i].ConfirmationType" data-departure-field="ConfirmationType" class="input-field">
+                            <option value="">Use tour default</option>
+                            <option value="Instant" selected="@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Instant</option>
+                            <option value="Manual" selected="@(string.Equals(departure.ConfirmationType, "Manual", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Manual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label-text">Status</label>
+                        <select name="Departures[@i].Status" data-departure-field="Status" class="input-field">
+                            <option value="">Use tour default</option>
+                            <option value="Scheduled" selected="@(string.Equals(departure.Status, "Scheduled", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Scheduled</option>
+                            <option value="SoldOut" selected="@(string.Equals(departure.Status, "SoldOut", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">SoldOut</option>
+                            <option value="Closed" selected="@(string.Equals(departure.Status, "Closed", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Closed</option>
+                        </select>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+
+    <button type="button" onclick="addDepartureItem()" class="w-full rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
+        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Add departure
+    </button>
+</section>
+
+<section class="section-card">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-primary">route</span>
+                <h2 class="text-[#111718] dark:text-white text-xl font-bold">Routing</h2>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Structured route stops power public route preview, route intelligence, and now admin optimization preview.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="button" onclick="generateRouteOptimizationPreview()" class="rounded-2xl border border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
+                <span class="material-symbols-outlined align-[-4px] text-lg">auto_awesome</span> Generate optimization
+            </button>
+        </div>
+    </div>
+
+    <input type="hidden" name="__routingEditor" value="true" />
+    <input type="hidden" name="Routing.SchemaVersion" value="@(Model.Routing?.SchemaVersion > 0 ? Model.Routing.SchemaVersion : 1)" />
+
+    @if (routingErrors.Any())
+    {
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-300">
+            @foreach (var error in routingErrors)
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <div id="route-stops-container" class="space-y-4">
+        @for (var i = 0; i < routeStops.Count; i++)
+        {
+            var stop = routeStops[i];
+            var routeKey = !string.IsNullOrWhiteSpace(stop.Id) ? stop.Id : $"route-{Guid.NewGuid():N}";
+            <article class="route-stop-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30" data-route-key="@routeKey">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Stop #@(i + 1)</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Day @stop.Day · Order @stop.Order</p>
+                    </div>
+                    <button type="button" onclick="removeRouteStopItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+                <input type="hidden" value="@routeKey" data-route-client-key />
+                <input type="hidden" name="Routing.Stops[@i].Id" value="@stop.Id" data-route-field="Id" />
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div><label class="label-text">Day</label><input type="number" name="Routing.Stops[@i].Day" value="@stop.Day" data-route-field="Day" class="input-field" min="1" /></div>
+                    <div><label class="label-text">Order</label><input type="number" name="Routing.Stops[@i].Order" value="@stop.Order" data-route-field="Order" class="input-field" min="1" /></div>
+                    <div class="md:col-span-2"><label class="label-text">Name</label><input type="text" name="Routing.Stops[@i].Name" value="@stop.Name" data-route-field="Name" class="input-field" /></div>
+                    <div><label class="label-text">Type</label><input type="text" name="Routing.Stops[@i].Type" value="@stop.Type" data-route-field="Type" class="input-field" /></div>
+                    <div><label class="label-text">VisitMinutes</label><input type="number" name="Routing.Stops[@i].VisitMinutes" value="@stop.VisitMinutes" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
+                    <div><label class="label-text">AttractionScore</label><input type="number" name="Routing.Stops[@i].AttractionScore" value="@stop.AttractionScore" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
+                    <div><label class="label-text">Lat</label><input type="number" name="Routing.Stops[@i].Coordinates.Lat" value="@stop.Coordinates?.Lat" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
+                    <div><label class="label-text">Lng</label><input type="number" name="Routing.Stops[@i].Coordinates.Lng" value="@stop.Coordinates?.Lng" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
+                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Note</label><textarea name="Routing.Stops[@i].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none">@stop.Note</textarea></div>
+                </div>
+            </article>
+        }
+    </div>
+
+    <button type="button" onclick="addRouteStopItem()" class="w-full rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
+        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Add route stop
+    </button>
+
+    <div id="route-optimization-preview" class="hidden rounded-3xl border border-slate-200 bg-slate-50/80 p-5 dark:border-slate-700 dark:bg-slate-900/40">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Optimization preview</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Route optimization preview</h3>
+                <p id="route-optimization-preview-status" class="mt-2 text-sm text-slate-500 dark:text-slate-400">Compare current routing against the suggested within-day reorder before saving.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <button type="button" onclick="applyRouteOptimizationSuggestion()" class="rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:brightness-110">Apply suggestion</button>
+                <button type="button" onclick="discardRouteOptimizationPreview()" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Discard preview</button>
+            </div>
+        </div>
+        <div id="route-optimization-preview-body" class="mt-5 space-y-4"></div>
+    </div>
+</section>
+
+<script>
+    window.routeOptimizationPreviewState = window.routeOptimizationPreviewState || null;
+
+    function createDepartureItemMarkup(index) {
+        return `
+            <article class="departure-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Departure #${index + 1}</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">New departure row</p>
+                    </div>
+                    <button type="button" onclick="removeDepartureItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+                <input type="hidden" name="Departures[${index}].Id" value="" data-departure-field="Id" />
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div><label class="label-text">StartDate</label><input type="date" name="Departures[${index}].StartDate" value="" data-departure-field="StartDate" class="input-field" /></div>
+                    <div><label class="label-text">AdultPrice</label><input type="number" name="Departures[${index}].AdultPrice" value="" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">ChildPrice</label><input type="number" name="Departures[${index}].ChildPrice" value="" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">InfantPrice</label><input type="number" name="Departures[${index}].InfantPrice" value="" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">DiscountPercentage</label><input type="number" name="Departures[${index}].DiscountPercentage" value="" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
+                    <div><label class="label-text">Capacity</label><input type="number" name="Departures[${index}].Capacity" value="" data-departure-field="Capacity" class="input-field" min="0" /></div>
+                    <div><label class="label-text">BookedCount</label><input type="number" name="Departures[${index}].BookedCount" value="" data-departure-field="BookedCount" class="input-field" min="0" /></div>
+                    <div><label class="label-text">CutoffHours</label><input type="number" name="Departures[${index}].CutoffHours" value="24" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
+                    <div><label class="label-text">ConfirmationType</label><select name="Departures[${index}].ConfirmationType" data-departure-field="ConfirmationType" class="input-field"><option value="">Use tour default</option><option value="Instant" selected>Instant</option><option value="Manual">Manual</option></select></div>
+                    <div><label class="label-text">Status</label><select name="Departures[${index}].Status" data-departure-field="Status" class="input-field"><option value="">Use tour default</option><option value="Scheduled" selected>Scheduled</option><option value="SoldOut">SoldOut</option><option value="Closed">Closed</option></select></div>
+                </div>
+            </article>
+        `;
+    }
+
+    function reindexDepartureItems() {
+        document.querySelectorAll('#departures-container .departure-item').forEach((item, index) => {
+            item.querySelectorAll('[data-departure-field]').forEach((field) => {
+                const property = field.getAttribute('data-departure-field');
+                field.name = `Departures[${index}].${property}`;
+            });
+
+            const labels = item.querySelectorAll('p');
+            if (labels.length > 0) {
+                labels[0].textContent = `Departure #${index + 1}`;
+            }
+        });
+    }
+
+    function addDepartureItem() {
+        const container = document.getElementById('departures-container');
+        const index = container.querySelectorAll('.departure-item').length;
+        container.insertAdjacentHTML('beforeend', createDepartureItemMarkup(index));
+    }
+
+    function removeDepartureItem(button) {
+        button.closest('.departure-item')?.remove();
+        reindexDepartureItems();
+    }
+
+    function buildRouteClientKey() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+
+        return `route-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+    }
+
+    function ensureRouteStopKey(item) {
+        if (!item) {
+            return '';
+        }
+
+        let routeKey = item.getAttribute('data-route-key');
+        if (!routeKey) {
+            routeKey = item.querySelector('[data-route-client-key]')?.value || buildRouteClientKey();
+        }
+
+        item.setAttribute('data-route-key', routeKey);
+
+        let keyInput = item.querySelector('[data-route-client-key]');
+        if (!keyInput) {
+            keyInput = document.createElement('input');
+            keyInput.type = 'hidden';
+            keyInput.setAttribute('data-route-client-key', '');
+            item.prepend(keyInput);
+        }
+
+        keyInput.value = routeKey;
+        return routeKey;
+    }
+
+    function ensureRouteStopKeys() {
+        document.querySelectorAll('#route-stops-container .route-stop-item').forEach((item) => ensureRouteStopKey(item));
+    }
+
+    function createRouteStopItemMarkup(index) {
+        const routeKey = buildRouteClientKey();
+        return `
+            <article class="route-stop-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30" data-route-key="${routeKey}">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Stop #${index + 1}</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Day ${index + 1} · Order 1</p>
+                    </div>
+                    <button type="button" onclick="removeRouteStopItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+                <input type="hidden" value="${routeKey}" data-route-client-key />
+                <input type="hidden" name="Routing.Stops[${index}].Id" value="" data-route-field="Id" />
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div><label class="label-text">Day</label><input type="number" name="Routing.Stops[${index}].Day" value="${index + 1}" data-route-field="Day" class="input-field" min="1" /></div>
+                    <div><label class="label-text">Order</label><input type="number" name="Routing.Stops[${index}].Order" value="1" data-route-field="Order" class="input-field" min="1" /></div>
+                    <div class="md:col-span-2"><label class="label-text">Name</label><input type="text" name="Routing.Stops[${index}].Name" value="" data-route-field="Name" class="input-field" /></div>
+                    <div><label class="label-text">Type</label><input type="text" name="Routing.Stops[${index}].Type" value="" data-route-field="Type" class="input-field" /></div>
+                    <div><label class="label-text">VisitMinutes</label><input type="number" name="Routing.Stops[${index}].VisitMinutes" value="" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
+                    <div><label class="label-text">AttractionScore</label><input type="number" name="Routing.Stops[${index}].AttractionScore" value="" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
+                    <div><label class="label-text">Lat</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lat" value="" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
+                    <div><label class="label-text">Lng</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lng" value="" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
+                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Note</label><textarea name="Routing.Stops[${index}].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none"></textarea></div>
+                </div>
+            </article>
+        `;
+    }
+
+    function reindexRouteStopItems() {
+        document.querySelectorAll('#route-stops-container .route-stop-item').forEach((item, index) => {
+            ensureRouteStopKey(item);
+            item.querySelectorAll('[data-route-field]').forEach((field) => {
+                const property = field.getAttribute('data-route-field');
+                field.name = `Routing.Stops[${index}].${property}`;
+            });
+
+            const day = item.querySelector('[data-route-field="Day"]')?.value || '';
+            const order = item.querySelector('[data-route-field="Order"]')?.value || '';
+            const labels = item.querySelectorAll('p');
+            if (labels.length > 0) {
+                labels[0].textContent = `Stop #${index + 1}`;
+            }
+            if (labels.length > 1) {
+                labels[1].textContent = `Day ${day} · Order ${order}`;
+            }
+        });
+    }
+
+    function addRouteStopItem() {
+        const container = document.getElementById('route-stops-container');
+        const index = container.querySelectorAll('.route-stop-item').length;
+        container.insertAdjacentHTML('beforeend', createRouteStopItemMarkup(index));
+        reindexRouteStopItems();
+        discardRouteOptimizationPreview();
+    }
+
+    function removeRouteStopItem(button) {
+        button.closest('.route-stop-item')?.remove();
+        reindexRouteStopItems();
+        discardRouteOptimizationPreview();
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function getRouteField(item, fieldName) {
+        return item.querySelector(`[data-route-field="${fieldName}"]`);
+    }
+
+    function parseNullableNumber(value) {
+        if (value === null || value === undefined || value === '') {
+            return null;
+        }
+
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function parseNumber(value, fallback = 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function getOptimizationPreviewUrl() {
+        return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(optimizationPreviewUrl));
+    }
+
+    function getRequestVerificationToken() {
+        return document.querySelector('#edit-tour-form input[name="__RequestVerificationToken"], #create-tour-form input[name="__RequestVerificationToken"], input[name="__RequestVerificationToken"]')?.value || '';
+    }
+
+    function serializeScheduleDraft() {
+        return Array.from(document.querySelectorAll('#schedule-container .schedule-item'))
+            .map((item) => ({
+                day: parseNumber(item.querySelector('input[name*=".Day"]')?.value, 0),
+                title: item.querySelector('input[name*=".Title"]')?.value || '',
+                description: item.querySelector('textarea[name*=".Description"]')?.value || ''
+            }))
+            .filter((item) => item.day > 0 || item.title || item.description);
+    }
+
+    function serializeRouteStopsDraft() {
+        ensureRouteStopKeys();
+
+        return Array.from(document.querySelectorAll('#route-stops-container .route-stop-item'))
+            .map((item) => ({
+                clientKey: ensureRouteStopKey(item),
+                day: parseNumber(getRouteField(item, 'Day')?.value, 0),
+                order: parseNumber(getRouteField(item, 'Order')?.value, 0),
+                name: getRouteField(item, 'Name')?.value || '',
+                type: getRouteField(item, 'Type')?.value || '',
+                coordinates: {
+                    lat: parseNullableNumber(getRouteField(item, 'Coordinates.Lat')?.value),
+                    lng: parseNullableNumber(getRouteField(item, 'Coordinates.Lng')?.value)
+                },
+                visitMinutes: parseNumber(getRouteField(item, 'VisitMinutes')?.value, 0),
+                attractionScore: parseNumber(getRouteField(item, 'AttractionScore')?.value, 0),
+                note: getRouteField(item, 'Note')?.value || ''
+            }))
+            .filter((item) =>
+                item.day > 0
+                || item.order > 0
+                || item.name
+                || item.type
+                || item.note
+                || item.visitMinutes > 0
+                || item.attractionScore > 0
+                || item.coordinates.lat !== null
+                || item.coordinates.lng !== null);
+    }
+
+    function renderOptimizationSummaryBlock(payload) {
+        return `
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current travel</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalTravelMinutes} min</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested travel</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalTravelMinutes} min</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current journey</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalJourneyMinutes} min</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested journey</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalJourneyMinutes} min</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderOptimizationWarnings(payload) {
+        if (!payload.warnings || payload.warnings.length === 0) {
+            return '';
+        }
+
+        return `
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/10 dark:text-amber-200">
+                <p class="font-black uppercase tracking-[0.18em]">Warnings</p>
+                <div class="mt-3 space-y-2">
+                    ${payload.warnings.map((warning) => `<div>${escapeHtml(warning.message)}</div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderOptimizationDays(payload) {
+        if (!payload.days || payload.days.length === 0) {
+            return '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">No route day available for preview.</div>';
+        }
+
+        return payload.days.map((day) => `
+            <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950/70">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Day ${day.day}</p>
+                        <h4 class="mt-2 text-lg font-black text-slate-900 dark:text-white">${day.changed ? 'Suggested reorder available' : 'No change suggested'}</h4>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentTravelMinutes} -> ${day.suggestedTravelMinutes} travel</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentJourneyMinutes} -> ${day.suggestedJourneyMinutes} journey</span>
+                    </div>
+                </div>
+                <div class="mt-4 grid gap-4 lg:grid-cols-2">
+                    <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/80">
+                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current order</p>
+                        <div class="mt-3 space-y-2">
+                            ${day.currentStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'stop')} · order ${stop.order}</div></div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="rounded-2xl bg-emerald-50/80 p-4 dark:bg-emerald-900/10">
+                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Suggested order</p>
+                        <div class="mt-3 space-y-2">
+                            ${day.suggestedStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'stop')} · order ${stop.order}</div></div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    function renderRouteOptimizationPreview(payload) {
+        const preview = document.getElementById('route-optimization-preview');
+        const status = document.getElementById('route-optimization-preview-status');
+        const body = document.getElementById('route-optimization-preview-body');
+        if (!preview || !status || !body) {
+            return;
+        }
+
+        const travelDelta = payload.currentInsight.totalTravelMinutes - payload.suggestedInsight.totalTravelMinutes;
+        status.textContent = payload.canOptimize
+            ? `Suggested routing reduces travel by ${travelDelta} min and keeps days unchanged.`
+            : (payload.unchangedReason || 'No better within-day reorder was found for this draft.');
+
+        body.innerHTML = `
+            ${renderOptimizationSummaryBlock(payload)}
+            ${renderOptimizationWarnings(payload)}
+            <div class="space-y-4">
+                ${renderOptimizationDays(payload)}
+            </div>
+        `;
+
+        preview.classList.remove('hidden');
+        window.routeOptimizationPreviewState = payload;
+    }
+
+    function renderRouteOptimizationErrors(errors) {
+        const preview = document.getElementById('route-optimization-preview');
+        const status = document.getElementById('route-optimization-preview-status');
+        const body = document.getElementById('route-optimization-preview-body');
+        if (!preview || !status || !body) {
+            return;
+        }
+
+        status.textContent = 'Optimization preview could not be generated for the current draft.';
+        body.innerHTML = `
+            <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-300">
+                <p class="font-black uppercase tracking-[0.18em]">Preview errors</p>
+                <div class="mt-3 space-y-2">
+                    ${(errors || ['Unknown preview error.']).map((error) => `<div>${escapeHtml(error)}</div>`).join('')}
+                </div>
+            </div>
+        `;
+        preview.classList.remove('hidden');
+        window.routeOptimizationPreviewState = null;
+    }
+
+    async function generateRouteOptimizationPreview() {
+        const token = getRequestVerificationToken();
+        const request = {
+            schedule: serializeScheduleDraft(),
+            stops: serializeRouteStopsDraft()
+        };
+
+        const status = document.getElementById('route-optimization-preview-status');
+        const preview = document.getElementById('route-optimization-preview');
+        const body = document.getElementById('route-optimization-preview-body');
+        if (preview && body && status) {
+            status.textContent = 'Generating route optimization preview...';
+            body.innerHTML = '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">Calculating current vs suggested route...</div>';
+            preview.classList.remove('hidden');
+        }
+
+        try {
+            const response = await fetch(getOptimizationPreviewUrl(), {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify(request)
+            });
+
+            const payload = await response.json();
+            if (!response.ok) {
+                renderRouteOptimizationErrors(payload?.errors || ['Preview request failed.']);
+                return;
+            }
+
+            renderRouteOptimizationPreview(payload);
+        } catch (error) {
+            renderRouteOptimizationErrors([error instanceof Error ? error.message : 'Preview request failed.']);
+        }
+    }
+
+    function discardRouteOptimizationPreview() {
+        window.routeOptimizationPreviewState = null;
+        const preview = document.getElementById('route-optimization-preview');
+        const body = document.getElementById('route-optimization-preview-body');
+        if (preview) {
+            preview.classList.add('hidden');
+        }
+        if (body) {
+            body.innerHTML = '';
+        }
+    }
+
+    function applyRouteOptimizationSuggestion() {
+        const payload = window.routeOptimizationPreviewState;
+        if (!payload || !payload.assignments || payload.assignments.length === 0) {
+            return;
+        }
+
+        ensureRouteStopKeys();
+
+        const container = document.getElementById('route-stops-container');
+        if (!container) {
+            return;
+        }
+
+        const itemMap = new Map(
+            Array.from(container.querySelectorAll('.route-stop-item')).map((item) => [ensureRouteStopKey(item), item])
+        );
+
+        payload.assignments
+            .slice()
+            .sort((left, right) => (left.day - right.day) || (left.order - right.order))
+            .forEach((assignment) => {
+                const item = itemMap.get(assignment.clientKey);
+                if (!item) {
+                    return;
+                }
+
+                const dayField = getRouteField(item, 'Day');
+                const orderField = getRouteField(item, 'Order');
+                if (dayField) {
+                    dayField.value = String(assignment.day);
+                }
+                if (orderField) {
+                    orderField.value = String(assignment.order);
+                }
+
+                container.appendChild(item);
+            });
+
+        reindexRouteStopItems();
+        discardRouteOptimizationPreview();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        ensureRouteStopKeys();
+        reindexRouteStopItems();
+    });
+</script>

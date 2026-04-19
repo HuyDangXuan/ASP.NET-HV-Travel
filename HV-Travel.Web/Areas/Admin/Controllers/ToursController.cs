@@ -4,9 +4,18 @@ using Microsoft.AspNetCore.Http.Features;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HVTravel.Application.Models;
+using HVTravel.Application.Services;
+using HVTravel.Web.Models;
 using HVTravel.Web.Security;
 using HVTravel.Web.Services;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
@@ -206,19 +215,24 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Tour tour, string? saveAction)
         {
-            // Manual validation or binding checks can be added here
-            if (tour.Id == null) tour.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-            
-            // Ensure nested objects are not null if they were completely missing from form
-            if (tour.Destination == null) tour.Destination = new Destination();
-            if (tour.Price == null) tour.Price = new TourPrice();
-            if (tour.Duration == null) tour.Duration = new TourDuration();
+            if (string.IsNullOrWhiteSpace(tour.Id))
+            {
+                tour.Id = ObjectId.GenerateNewId().ToString();
+            }
 
-            // Set status based on button clicked, default to Draft if not specified
+            EnsureTourStructure(tour);
             tour.Status = !string.IsNullOrEmpty(saveAction) ? saveAction : "Draft";
-            
+            tour.Slug = string.IsNullOrWhiteSpace(tour.Slug) ? GenerateSlug(tour.Name) : tour.Slug.Trim();
+            tour.ConfirmationType = string.IsNullOrWhiteSpace(tour.ConfirmationType) ? "Instant" : tour.ConfirmationType.Trim();
             tour.CreatedAt = DateTime.UtcNow;
             tour.UpdatedAt = DateTime.UtcNow;
+
+            NormalizeTourCollections(tour);
+            ValidateTourCollections(tour);
+            if (!ModelState.IsValid)
+            {
+                return View(tour);
+            }
 
             NormalizeRichTextFields(tour);
 
@@ -283,23 +297,21 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             var existingTour = await _tourRepository.GetByIdAsync(id);
             if (existingTour == null) return NotFound();
 
-            // Preserve critical fields not in form
-            tour.CreatedAt = existingTour.CreatedAt;
-            var versionProvided = HttpContext?.Features.Get<IFormFeature>()?.Form?.ContainsKey(nameof(Tour.Version)) == true;
-            if (!versionProvided)
-            {
-                tour.Version = existingTour.Version;
-            }
-            
-            // Update status functionality: Priority: saveAction button > form selection > existing status
-            tour.Status = !string.IsNullOrEmpty(saveAction) ? saveAction : (tour.Status ?? existingTour.Status);
-            
-            tour.UpdatedAt = DateTime.UtcNow;
+            EnsureTourStructure(existingTour);
+            EnsureTourStructure(tour);
 
-            // Ensure nested objects init
-            if (tour.Destination == null) tour.Destination = new Destination();
-            if (tour.Price == null) tour.Price = new TourPrice();
-            if (tour.Duration == null) tour.Duration = new TourDuration();
+            var form = HttpContext?.Features.Get<IFormFeature>()?.Form;
+            var versionProvided = form?.ContainsKey(nameof(Tour.Version)) == true;
+            var departuresPosted = ShouldApplyPostedDepartures(form, tour.Departures);
+            var routingPosted = ShouldApplyPostedRouting(form, tour.Routing);
+
+            MergeEditableFields(existingTour, tour, saveAction, versionProvided, departuresPosted, routingPosted);
+            NormalizeTourCollections(tour);
+            ValidateTourCollections(tour);
+            if (!ModelState.IsValid)
+            {
+                return View(tour);
+            }
 
             NormalizeRichTextFields(tour);
 
@@ -350,7 +362,51 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         {
             var tour = await _tourRepository.GetByIdAsync(id);
              if (tour == null) return NotFound();
+            ViewData["RouteInsight"] = new RouteInsightService().Build(tour);
             return View(tour);
+        }
+
+        [Authorize(Roles = "Admin,Manager,Staff")]
+        [HttpPost("OptimizeRoutingPreview")]
+        [ValidateAntiForgeryToken]
+        public Task<IActionResult> OptimizeRoutingPreview([FromBody] RouteOptimizationPreviewRequest request)
+        {
+            if (request == null)
+            {
+                return Task.FromResult<IActionResult>(BadRequest(new RouteOptimizationPreviewErrorResponse
+                {
+                    Errors = ["Preview request is required."]
+                }));
+            }
+
+            ModelState.Clear();
+
+            var draftTour = BuildOptimizationPreviewTour(request);
+            EnsureTourStructure(draftTour);
+            NormalizeTourCollections(draftTour);
+            ValidateTourCollections(draftTour);
+
+            if (!ModelState.IsValid)
+            {
+                return Task.FromResult<IActionResult>(BadRequest(new RouteOptimizationPreviewErrorResponse
+                {
+                    Errors = CollectModelStateErrors()
+                }));
+            }
+
+            var result = new RouteOptimizationService(new RouteInsightService()).Optimize(draftTour);
+            var response = new RouteOptimizationPreviewResponse
+            {
+                CanOptimize = result.CanOptimize,
+                CurrentInsight = result.CurrentInsight,
+                SuggestedInsight = result.SuggestedInsight,
+                Assignments = result.Assignments,
+                Days = result.Days,
+                Warnings = result.Warnings,
+                UnchangedReason = result.UnchangedReason
+            };
+
+            return Task.FromResult<IActionResult>(Ok(response));
         }
 
         // DeleteForever - Admin, Manager, Staff (Guide không có quyền)
@@ -421,12 +477,16 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     var content = await stream.ReadToEndAsync();
                     if (file.FileName.EndsWith(".json"))
                     {
-                        var tours = System.Text.Json.JsonSerializer.Deserialize<List<Tour>>(content);
+                        var tours = DeserializeTours(content);
                         if (tours != null)
                         {
                             foreach (var t in tours)
                             {
-                                t.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(); // Always new ID for import to avoid conflict
+                                t.Id = ObjectId.GenerateNewId().ToString();
+                                EnsureTourStructure(t);
+                                t.Slug = string.IsNullOrWhiteSpace(t.Slug) ? GenerateSlug(t.Name) : t.Slug.Trim();
+                                t.ConfirmationType = string.IsNullOrWhiteSpace(t.ConfirmationType) ? "Instant" : t.ConfirmationType.Trim();
+                                NormalizeTourCollections(t);
                                 await _tourRepository.AddAsync(t);
                             }
                         }
@@ -440,6 +500,349 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private static void EnsureTourStructure(Tour tour)
+        {
+            tour.Destination ??= new Destination();
+            tour.Price ??= new TourPrice();
+            tour.Duration ??= new TourDuration();
+            tour.Images ??= new List<string>();
+            tour.StartDates ??= new List<DateTime>();
+            tour.Schedule ??= new List<ScheduleItem>();
+            tour.GeneratedInclusions ??= new List<string>();
+            tour.GeneratedExclusions ??= new List<string>();
+            tour.Seo ??= new SeoMetadata();
+            tour.CancellationPolicy ??= new TourCancellationPolicy();
+            tour.Highlights ??= new List<string>();
+            tour.BadgeSet ??= new List<string>();
+            tour.SupplierRef ??= new SupplierReference();
+            tour.Departures ??= new List<TourDeparture>();
+
+            if (tour.Routing != null)
+            {
+                tour.Routing.Stops ??= new List<TourRouteStop>();
+            }
+        }
+
+        private void MergeEditableFields(
+            Tour existingTour,
+            Tour postedTour,
+            string? saveAction,
+            bool versionProvided,
+            bool departuresPosted,
+            bool routingPosted)
+        {
+            postedTour.Id = existingTour.Id;
+            postedTour.Code = postedTour.Code?.Trim() ?? string.Empty;
+            postedTour.Name = postedTour.Name?.Trim() ?? string.Empty;
+            postedTour.Description ??= string.Empty;
+            postedTour.ShortDescription ??= string.Empty;
+            postedTour.Destination ??= new Destination();
+            postedTour.Images ??= new List<string>();
+            postedTour.Price ??= new TourPrice();
+            postedTour.Duration ??= new TourDuration();
+            postedTour.StartDates ??= new List<DateTime>();
+            postedTour.Schedule ??= new List<ScheduleItem>();
+            postedTour.GeneratedInclusions ??= new List<string>();
+            postedTour.GeneratedExclusions ??= new List<string>();
+            postedTour.Status = !string.IsNullOrWhiteSpace(saveAction) ? saveAction : (postedTour.Status ?? existingTour.Status);
+            postedTour.CreatedAt = existingTour.CreatedAt;
+            postedTour.UpdatedAt = DateTime.UtcNow;
+            postedTour.Slug = existingTour.Slug;
+            postedTour.Seo = existingTour.Seo;
+            postedTour.CancellationPolicy = existingTour.CancellationPolicy;
+            postedTour.ConfirmationType = existingTour.ConfirmationType;
+            postedTour.Highlights = existingTour.Highlights;
+            postedTour.MeetingPoint = existingTour.MeetingPoint;
+            postedTour.BadgeSet = existingTour.BadgeSet;
+            postedTour.SupplierRef = existingTour.SupplierRef;
+
+            if (!departuresPosted)
+            {
+                postedTour.Departures = existingTour.Departures;
+            }
+
+            if (!routingPosted)
+            {
+                postedTour.Routing = existingTour.Routing;
+            }
+
+            if (versionProvided)
+            {
+                postedTour.Version = postedTour.Version;
+            }
+            else
+            {
+                postedTour.Version = existingTour.Version;
+            }
+        }
+
+        private static bool ShouldApplyPostedDepartures(IFormCollection? form, List<TourDeparture>? departures)
+        {
+            return form?.ContainsKey("__departuresEditor") == true
+                || (departures?.Any(IsMeaningfulDeparture) == true);
+        }
+
+        private static bool ShouldApplyPostedRouting(IFormCollection? form, TourRouting? routing)
+        {
+            return form?.ContainsKey("__routingEditor") == true
+                || (routing?.Stops?.Any(IsMeaningfulRouteStop) == true);
+        }
+
+        private static Tour BuildOptimizationPreviewTour(RouteOptimizationPreviewRequest request)
+        {
+            return new Tour
+            {
+                Id = ObjectId.GenerateNewId().ToString(),
+                Status = "Draft",
+                Schedule = (request.Schedule ?? new List<RouteOptimizationPreviewScheduleItem>())
+                    .Select(item => new ScheduleItem
+                    {
+                        Day = item.Day,
+                        Title = item.Title?.Trim() ?? string.Empty,
+                        Description = item.Description ?? string.Empty,
+                        Activities = new List<string>()
+                    })
+                    .ToList(),
+                Routing = new TourRouting
+                {
+                    SchemaVersion = 1,
+                    Stops = (request.Stops ?? new List<RouteOptimizationPreviewStop>())
+                        .Select(item => new TourRouteStop
+                        {
+                            Id = string.IsNullOrWhiteSpace(item.ClientKey) ? Guid.NewGuid().ToString("N") : item.ClientKey.Trim(),
+                            Day = item.Day,
+                            Order = item.Order,
+                            Name = item.Name?.Trim() ?? string.Empty,
+                            Type = item.Type?.Trim() ?? string.Empty,
+                            VisitMinutes = item.VisitMinutes,
+                            AttractionScore = item.AttractionScore,
+                            Note = item.Note?.Trim() ?? string.Empty,
+                            Coordinates = new GeoPoint
+                            {
+                                Lat = item.Coordinates?.Lat,
+                                Lng = item.Coordinates?.Lng
+                            }
+                        })
+                        .ToList()
+                }
+            };
+        }
+
+        private IReadOnlyList<string> CollectModelStateErrors()
+        {
+            return ModelState.Values
+                .SelectMany(value => value.Errors)
+                .Select(error => error.ErrorMessage)
+                .Where(message => !string.IsNullOrWhiteSpace(message))
+                .Distinct()
+                .ToList();
+        }
+
+        private void NormalizeTourCollections(Tour tour)
+        {
+            tour.Images = (tour.Images ?? new List<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => value.Trim())
+                .ToList();
+
+            tour.StartDates = (tour.StartDates ?? new List<DateTime>())
+                .Where(value => value != default)
+                .Distinct()
+                .OrderBy(value => value)
+                .ToList();
+
+            tour.Schedule = (tour.Schedule ?? new List<ScheduleItem>())
+                .Where(item => item != null)
+                .Select(item =>
+                {
+                    item.Title = item.Title?.Trim() ?? string.Empty;
+                    item.Description = item.Description ?? string.Empty;
+                    item.Activities ??= new List<string>();
+                    item.Activities = item.Activities
+                        .Where(value => !string.IsNullOrWhiteSpace(value))
+                        .Select(value => value.Trim())
+                        .ToList();
+                    return item;
+                })
+                .Where(item => item.Day > 0 || !string.IsNullOrWhiteSpace(item.Title) || !string.IsNullOrWhiteSpace(item.Description) || item.Activities.Count > 0)
+                .OrderBy(item => item.Day)
+                .ToList();
+
+            tour.Departures = (tour.Departures ?? new List<TourDeparture>())
+                .Where(item => item != null)
+                .Where(IsMeaningfulDeparture)
+                .Select(item =>
+                {
+                    item.Id = string.IsNullOrWhiteSpace(item.Id) ? Guid.NewGuid().ToString("N") : item.Id.Trim();
+                    item.ConfirmationType = string.IsNullOrWhiteSpace(item.ConfirmationType) ? "Instant" : item.ConfirmationType.Trim();
+                    item.Status = string.IsNullOrWhiteSpace(item.Status) ? "Scheduled" : item.Status.Trim();
+                    return item;
+                })
+                .OrderBy(item => item.StartDate)
+                .ToList();
+
+            if (tour.Routing?.Stops == null)
+            {
+                tour.Routing = null;
+                return;
+            }
+
+            var stops = tour.Routing.Stops
+                .Where(item => item != null)
+                .Where(IsMeaningfulRouteStop)
+                .Select(item =>
+                {
+                    item.Id = string.IsNullOrWhiteSpace(item.Id) ? Guid.NewGuid().ToString("N") : item.Id.Trim();
+                    item.Name = item.Name?.Trim() ?? string.Empty;
+                    item.Type = item.Type?.Trim() ?? string.Empty;
+                    item.Note = item.Note?.Trim() ?? string.Empty;
+                    item.Coordinates ??= new GeoPoint();
+                    return item;
+                })
+                .OrderBy(item => item.Day)
+                .ThenBy(item => item.Order)
+                .ToList();
+
+            if (stops.Count == 0)
+            {
+                tour.Routing = null;
+                return;
+            }
+
+            tour.Routing.SchemaVersion = 1;
+            tour.Routing.Stops = stops;
+        }
+
+        private void ValidateTourCollections(Tour tour)
+        {
+            foreach (var departure in tour.Departures ?? new List<TourDeparture>())
+            {
+                if (departure.StartDate == default)
+                {
+                    ModelState.AddModelError("Departures", "Mỗi departure hợp lệ phải có ngày khởi hành.");
+                }
+
+                if (departure.Capacity < 0 || departure.BookedCount < 0 || departure.CutoffHours < 0)
+                {
+                    ModelState.AddModelError("Departures", "Capacity, booked count và cutoff hours không được âm.");
+                }
+
+                if (departure.BookedCount > departure.Capacity)
+                {
+                    ModelState.AddModelError("Departures", "Booked count không được lớn hơn capacity.");
+                }
+            }
+
+            if (tour.Routing?.Stops == null || tour.Routing.Stops.Count == 0)
+            {
+                return;
+            }
+
+            var scheduleDays = (tour.Schedule ?? new List<ScheduleItem>())
+                .Select(item => item.Day)
+                .Where(day => day > 0)
+                .ToHashSet();
+
+            foreach (var stop in tour.Routing.Stops)
+            {
+                if (!scheduleDays.Contains(stop.Day))
+                {
+                    ModelState.AddModelError("Routing", "Mỗi route stop phải thuộc một ngày đã tồn tại trong schedule.");
+                }
+
+                if (stop.Order <= 0)
+                {
+                    ModelState.AddModelError("Routing", "Order của route stop phải lớn hơn 0.");
+                }
+
+                var hasLat = stop.Coordinates?.Lat.HasValue == true;
+                var hasLng = stop.Coordinates?.Lng.HasValue == true;
+                if (hasLat != hasLng)
+                {
+                    ModelState.AddModelError("Routing", "Lat và lng phải được nhập theo cặp.");
+                }
+
+                if (stop.VisitMinutes < 0)
+                {
+                    ModelState.AddModelError("Routing", "Visit minutes không được âm.");
+                }
+
+                if (stop.AttractionScore is < 0 or > 10)
+                {
+                    ModelState.AddModelError("Routing", "Attraction score phải nằm trong khoảng 0 đến 10.");
+                }
+            }
+        }
+
+        private static bool IsMeaningfulDeparture(TourDeparture departure)
+        {
+            return departure.StartDate != default
+                   || departure.AdultPrice > 0m
+                   || departure.ChildPrice > 0m
+                   || departure.InfantPrice > 0m
+                   || departure.DiscountPercentage > 0m
+                   || departure.Capacity > 0
+                   || departure.BookedCount > 0
+                   || departure.CutoffHours > 0
+                   || !string.IsNullOrWhiteSpace(departure.Id)
+                   || !string.IsNullOrWhiteSpace(departure.ConfirmationType)
+                   || !string.IsNullOrWhiteSpace(departure.Status);
+        }
+
+        private static bool IsMeaningfulRouteStop(TourRouteStop stop)
+        {
+            return stop.Day > 0
+                   || stop.Order > 0
+                   || !string.IsNullOrWhiteSpace(stop.Name)
+                   || !string.IsNullOrWhiteSpace(stop.Type)
+                   || !string.IsNullOrWhiteSpace(stop.Note)
+                   || stop.VisitMinutes > 0
+                   || stop.AttractionScore > 0
+                   || stop.Coordinates?.Lat != null
+                   || stop.Coordinates?.Lng != null;
+        }
+
+        private static List<Tour>? DeserializeTours(string content)
+        {
+            try
+            {
+                return BsonSerializer.Deserialize<List<Tour>>(content);
+            }
+            catch
+            {
+                return JsonSerializer.Deserialize<List<Tour>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+        }
+
+        private static string GenerateSlug(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return ObjectId.GenerateNewId().ToString();
+            }
+
+            var normalized = value.Normalize(NormalizationForm.FormD);
+            var builder = new StringBuilder(normalized.Length);
+            foreach (var character in normalized)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(character);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    builder.Append(character);
+                }
+            }
+
+            var ascii = builder.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
+            ascii = ascii.Replace('đ', 'd');
+            ascii = Regex.Replace(ascii, @"[^a-z0-9]+", "-");
+            ascii = ascii.Trim('-');
+
+            return string.IsNullOrWhiteSpace(ascii) ? ObjectId.GenerateNewId().ToString() : ascii;
         }
     }
 }

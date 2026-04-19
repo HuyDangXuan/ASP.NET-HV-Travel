@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using HVTravel.Application.Services;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Utils;
@@ -355,6 +356,7 @@ public sealed class TourAiChatService : ITourAiChatService
 
     private static string BuildTourSnapshot(Tour tour)
     {
+        var routeInsight = new RouteInsightService().Build(tour);
         var departures = (tour.Departures?.Count > 0 ? tour.Departures : tour.EffectiveDepartures.ToList())
             .OrderBy(item => item.StartDate)
             .Take(6)
@@ -403,6 +405,21 @@ public sealed class TourAiChatService : ITourAiChatService
         else
         {
             builder.AppendLine("  * Chưa có lịch khởi hành đang mở bán.");
+        }
+
+        if (routeInsight.HasRouting)
+        {
+            builder.AppendLine("- Tóm tắt lộ trình:");
+            builder.AppendLine($"  * Tổng số điểm dừng: {routeInsight.StopCount}");
+            builder.AppendLine($"  * Tổng phút tham quan: {routeInsight.TotalVisitMinutes}");
+            builder.AppendLine($"  * Tổng phút di chuyển ước lượng: {routeInsight.TotalTravelMinutes}");
+            builder.AppendLine($"  * Tổng thời lượng hành trình: {routeInsight.TotalJourneyMinutes}");
+
+            foreach (var day in routeInsight.Days.Take(6))
+            {
+                builder.AppendLine(
+                    $"  * Ngày {day.Day:00}: {day.StopCount} điểm dừng, tham quan {day.VisitMinutes} phút, di chuyển {day.TravelMinutes} phút.");
+            }
         }
 
         return builder.ToString().Trim();

@@ -32,7 +32,7 @@ public static class PublicContentDefaults
         ["about"] = new() { "hero", "story", "missionVision", "team" },
         ["contact"] = new() { "hero", "cards", "formIntro" },
         ["publicTours"] = new() { "indexHero", "collectionChips", "filterPanel", "resultsPanel", "emptyState" },
-        ["publicTourDetails"] = new() { "hero", "highlights", "overview", "inclusions", "schedule", "policies", "departures", "bookingPanel", "relatedTours" },
+        ["publicTourDetails"] = new() { "hero", "highlights", "overview", "inclusions", "schedule", "routing", "policies", "departures", "bookingPanel", "relatedTours" },
         ["destinations"] = new() { "hero", "collectionsIntro", "regionsIntro" },
         ["promotions"] = new() { "hero", "flashSalesIntro", "voucherIntro", "seasonalDealsIntro" },
         ["services"] = new() { "hero", "serviceCards", "quoteFormIntro" },
@@ -450,7 +450,22 @@ public static class PublicContentDefaults
                 Text("title", "Tiêu đề", "Lịch trình chi tiết"),
                 Text("emptyStateText", "Thông báo rỗng", "Lịch trình chi tiết sẽ được cập nhật gần ngày khởi hành.")
             }),
-            Section("publicTourDetails", "policies", "Chính sách tour", 6, new List<ContentField>
+            Section("publicTourDetails", "routing", "Route overview", 6, new List<ContentField>
+              {
+                  Text("eyebrowText", "Eyebrow", "Route overview"),
+                  Text("title", "Tiêu đề", "Lộ trình tham quan"),
+                  TextArea("description", "Mô tả", "Các điểm dừng chính được cấu trúc lại theo từng ngày để bạn hình dung nhịp di chuyển của hành trình."),
+                  Text("dayCountFormat", "Định dạng số ngày", "{0} ngày"),
+                  Text("stopCountFormat", "Định dạng số điểm dừng", "{0} điểm dừng"),
+                  Text("visitMinutesFormat", "Định dạng tổng phút tham quan", "{0} phút tham quan"),
+                  Text("travelMinutesFormat", "Định dạng tổng phút di chuyển", "{0} phút di chuyển"),
+                  Text("journeyMinutesFormat", "Định dạng tổng thời lượng hành trình", "{0} phút hành trình"),
+                  Text("distanceFormat", "Định dạng quãng đường", "{0} km"),
+                  Text("dayTravelMinutesFormat", "Định dạng phút di chuyển theo ngày", "{0} phút di chuyển"),
+                  Text("dayJourneyMinutesFormat", "Định dạng thời lượng hành trình theo ngày", "{0} phút hành trình"),
+                  Text("typeLabel", "Nhãn loại điểm", "Loại điểm")
+              }),
+            Section("publicTourDetails", "policies", "Chính sách tour", 7, new List<ContentField>
             {
                 Text("cancellationEyebrowText", "Eyebrow hủy", "Cancellation"),
                 Text("cancellationTitle", "Tiêu đề hủy", "Chính sách hủy và hoàn"),
@@ -462,7 +477,7 @@ public static class PublicContentDefaults
                 Text("meetingPointFallback", "Fallback điểm đón", "HV Travel sẽ gửi meeting point chi tiết trong voucher xác nhận."),
                 TextArea("meetingPointDescription", "Mô tả điểm đón", "Thông tin hotline, giờ có mặt và hướng dẫn check-in sẽ được cập nhật rõ trong booking timeline.")
             }),
-            Section("publicTourDetails", "departures", "Lịch khởi hành tour", 7, new List<ContentField>
+            Section("publicTourDetails", "departures", "Lịch khởi hành tour", 8, new List<ContentField>
             {
                 Text("eyebrowText", "Eyebrow", "Price calendar"),
                 Text("title", "Tiêu đề", "Lịch khởi hành và chỗ trống"),
@@ -477,7 +492,7 @@ public static class PublicContentDefaults
                 Text("conditionalPolicyLabel", "Nhãn theo điều kiện", "Theo điều kiện tour"),
                 Text("seatsRemainingFormat", "Định dạng số chỗ còn lại", "{0} còn lại")
             }),
-            Section("publicTourDetails", "bookingPanel", "Khối đặt tour", 8, new List<ContentField>
+            Section("publicTourDetails", "bookingPanel", "Khối đặt tour", 9, new List<ContentField>
             {
                 Text("eyebrowText", "Eyebrow", "Sẵn sàng đặt tour"),
                 TextArea("priceHelperText", "Mô tả giá", "Mức giá tốt nhất theo lịch khởi hành hiện có."),
@@ -492,7 +507,7 @@ public static class PublicContentDefaults
                 Text("voucherTitle", "Tiêu đề voucher", "Voucher và hóa đơn"),
                 TextArea("voucherDescription", "Mô tả voucher", "Sau khi thanh toán, booking có thể mở rộng sang voucher, invoice và trạng thái fulfillment theo policy.")
             }),
-            Section("publicTourDetails", "relatedTours", "Tour liên quan", 9, new List<ContentField>
+            Section("publicTourDetails", "relatedTours", "Tour liên quan", 10, new List<ContentField>
             {
                 Text("title", "Tiêu đề", "Tour liên quan"),
                 Text("emptyStateText", "Thông báo rỗng", "Chưa có tour liên quan phù hợp để hiển thị.")
