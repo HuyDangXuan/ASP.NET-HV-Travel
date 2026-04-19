@@ -17,6 +17,9 @@
     var relatedToursSection = sections.GetSection("relatedTours");
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
     var routeOverview = ViewData["RouteOverview"] as PublicTourRouteOverview ?? PublicTourRouteOverview.Empty;
+    var routeStyle = ViewData["CurrentRouteStyle"]?.ToString();
+    var currentRouteStyle = routeStyle;
+    var relatedToursRouteStyleText = ViewData["RelatedToursRouteStyleText"]?.ToString();
     var departures = ((Model.Departures != null && Model.Departures.Any()) ? Model.Departures : (Model.EffectiveDepartures ?? Array.Empty<TourDeparture>())).OrderBy(item => item.StartDate).ToList();
     var featuredDeparture = departures.FirstOrDefault();
     var startingPrice = departures.Any() ? departures.Min(item => item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m) : Model.Price?.Adult ?? 0m;
@@ -27,6 +30,8 @@
     var gallerySlots = new[] { galleryImages.ElementAtOrDefault(0) ?? heroImage, galleryImages.ElementAtOrDefault(1) ?? heroImage, galleryImages.ElementAtOrDefault(2) ?? heroImage, galleryImages.ElementAtOrDefault(3) ?? heroImage };
     var locationParts = new[] { Model.Destination?.City, Model.Destination?.Country }.Where(value => !string.IsNullOrWhiteSpace(value)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
     var locationLabel = locationParts.Any() ? string.Join(", ", locationParts) : hero?.Fields.GetVisibleFieldValue("locationFallback", "Vietnam") ?? "Vietnam";
+    var plannerDetailId = PublicTourIdentifierHelper.GetDetailIdentifier(Model);
+    var plannerDetailUrl = Url.Action("Details", "PublicTours", new { id = plannerDetailId, routeStyle = currentRouteStyle }) ?? "#";
     var scheduleItems = (Model.Schedule ?? new List<ScheduleItem>()).OrderBy(entry => entry.Day).ToList();
     var durationLabel = Model.Duration?.Text ?? hero?.Fields.GetVisibleFieldValue("durationFallback", "Contact for itinerary") ?? "Contact for itinerary";
     var reviewLabel = string.Format(hero?.Fields.GetVisibleFieldValue("reviewFormat", "{0} reviews") ?? "{0} reviews", Model.ReviewCount);
@@ -51,6 +56,22 @@
     const string Eyebrow = "text-[11px] font-black uppercase tracking-[0.28em] text-primary";
     const string Heading = "text-2xl font-black tracking-tight text-slate-900 dark:text-white";
     const string Copy = "text-sm leading-7 text-slate-600 dark:text-slate-300";
+    string DayPartText(string? value) => value switch
+    {
+        "early_morning" => "Early morning",
+        "morning_peak" => "Morning peak",
+        "late_morning" => "Late morning",
+        "midday" => "Midday",
+        "afternoon" => "Afternoon",
+        "evening_peak" => "Evening peak",
+        _ => "Night"
+    };
+    string CongestionText(string? value) => value switch
+    {
+        "high" => "High",
+        "moderate" => "Moderate",
+        _ => "Low"
+    };
 }
 
 <script type="application/ld+json">@Html.Raw(structuredData)</script>
@@ -73,6 +94,19 @@
                 @if (!string.IsNullOrWhiteSpace(Model.Code)) { <p class="text-[11px] font-black uppercase tracking-[0.3em] text-white/60">@Model.Code</p> }
                 <h1 class="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "title")">@Model.Name</h1>
                 <p class="max-w-3xl text-base leading-relaxed text-slate-300 sm:text-lg" style="@ContentPresentationViewHelper.GetFieldTextStyle(hero, "description")">@headlineDescription</p>
+                <button type="button"
+                        class="inline-flex items-center justify-center gap-2 rounded-2xl border border-cyan-200/30 bg-cyan-400/15 px-5 py-3 text-sm font-black text-cyan-50 shadow-lg shadow-cyan-950/20 backdrop-blur transition hover:-translate-y-0.5 hover:bg-cyan-400/25"
+                        data-tour-planner-toggle
+                        data-tour-id="@Model.Id"
+                        data-tour-name="@Model.Name"
+                        data-tour-price="@startingPrice"
+                        data-tour-location="@locationLabel"
+                        data-tour-url="@plannerDetailUrl"
+                        data-tour-image="@heroImage"
+                        aria-pressed="false">
+                    <span class="material-symbols-outlined text-[18px]" data-tour-planner-icon>playlist_add</span>
+                    <span>Add to planner</span>
+                </button>
                 <div class="flex flex-wrap gap-3 text-sm text-white/80">
                     <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur"><span class="material-symbols-outlined text-[18px]">location_on</span><span>@locationLabel</span></span>
                     <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur"><span class="material-symbols-outlined text-[18px]">schedule</span><span>@durationLabel</span></span>
@@ -242,12 +276,26 @@
                                             <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">@string.Format(routing?.Fields.GetVisibleFieldValue("stopCountFormat", "{0} stops") ?? "{0} stops", routeDay.Stops.Count)</span>
                                             <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">@string.Format(routing?.Fields.GetVisibleFieldValue("dayTravelMinutesFormat", "{0} travel minutes") ?? "{0} travel minutes", routeDay.TravelMinutes)</span>
                                             <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">@string.Format(routing?.Fields.GetVisibleFieldValue("dayJourneyMinutesFormat", "{0} journey minutes") ?? "{0} journey minutes", routeDay.JourneyMinutes)</span>
+                                            @if (!string.IsNullOrWhiteSpace(routeDay.PeakDayPart))
+                                            {
+                                                <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-sky-700 dark:border-sky-800/60 dark:bg-sky-950/40 dark:text-sky-200">@(routing?.Fields.GetVisibleFieldValue("dayPartLabel", "Day part")): @DayPartText(routeDay.PeakDayPart)</span>
+                                            }
                                         </div>
                                     </div>
                                     <div class="mt-5 space-y-3">
                                         @foreach (var stop in routeDay.Stops)
                                         {
                                             <div class="rounded-[1.4rem] border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950/80">
+                                                @if (stop.TransferFromPrevious != null)
+                                                {
+                                                    <div class="mb-4 rounded-[1.1rem] border border-dashed border-slate-200 bg-slate-50/80 px-4 py-3 text-xs font-semibold text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300">
+                                                        <div class="flex flex-wrap items-center gap-3">
+                                                            <span>@string.Format(routing?.Fields.GetVisibleFieldValue("transferTimeFormat", "Travel about {0} minutes") ?? "Travel about {0} minutes", stop.TransferFromPrevious.TravelMinutes)</span>
+                                                            <span>@(routing?.Fields.GetVisibleFieldValue("dayPartLabel", "Day part")): @DayPartText(stop.TransferFromPrevious.DayPart)</span>
+                                                            <span>@(routing?.Fields.GetVisibleFieldValue("congestionLabel", "Congestion")): @CongestionText(stop.TransferFromPrevious.CongestionLevel)</span>
+                                                        </div>
+                                                    </div>
+                                                }
                                                 <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                                     <div class="min-w-0">
                                                         <p class="text-base font-black tracking-tight text-slate-900 dark:text-white">@stop.Name</p>
@@ -298,7 +346,7 @@
                         <div class="min-w-0">
                             <p class="@Eyebrow">@relatedToursSection?.Fields.GetVisibleFieldValue("eyebrowText", "Related tours")</p>
                             <h2 class="@Heading">@relatedToursSection?.Fields.GetVisibleFieldValue("title", "Related tours")</h2>
-                            <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">@relatedToursSection?.Fields.GetVisibleFieldValue("description", "Những hành trình tương đồng để bạn so sánh nhanh điểm đến, mức giá và lịch khởi hành.")</p>
+                            <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-500 dark:text-slate-400">@(!string.IsNullOrWhiteSpace(relatedToursRouteStyleText) ? relatedToursRouteStyleText : relatedToursSection?.Fields.GetVisibleFieldValue("description", "Những hành trình tương đồng để bạn so sánh nhanh điểm đến, mức giá và lịch khởi hành."))</p>
                         </div>
                         <div class="flex flex-col items-start gap-3 text-sm text-slate-500 dark:text-slate-400 sm:flex-row sm:flex-wrap sm:items-center lg:min-w-[18rem] lg:items-end lg:justify-start">
                             <span class="inline-flex min-h-[3.25rem] items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-5 py-3 font-semibold shadow-sm shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-none">
@@ -382,6 +430,7 @@
 @await Html.PartialAsync("_TourAiChatWidget", Model)
 
 @section Scripts {
+    <script src="~/js/card-interactions.js" asp-append-version="true"></script>
     <script src="~/js/tour-card-carousel.js" asp-append-version="true"></script>
     <script>
         (() => {

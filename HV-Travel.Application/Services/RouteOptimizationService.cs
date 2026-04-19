@@ -7,23 +7,40 @@ namespace HVTravel.Application.Services;
 public class RouteOptimizationService : IRouteOptimizationService
 {
     private const int BruteForceLimit = 7;
+    private const int MaxTwoOptIterations = 10;
     private static readonly string[] StartAnchorKeywords = ["meeting", "pickup", "checkin", "departure"];
     private static readonly string[] EndAnchorKeywords = ["hotel", "dropoff", "return", "checkout"];
 
     private readonly IRouteInsightService _routeInsightService;
+    private readonly IRouteTravelEstimator _routeTravelEstimator;
 
     public RouteOptimizationService()
-        : this(new RouteInsightService())
+        : this(new RouteInsightService(new RouteTravelEstimator()), new RouteTravelEstimator())
     {
     }
 
     public RouteOptimizationService(IRouteInsightService routeInsightService)
+        : this(routeInsightService, new RouteTravelEstimator())
+    {
+    }
+
+    public RouteOptimizationService(IRouteInsightService routeInsightService, IRouteTravelEstimator routeTravelEstimator)
     {
         _routeInsightService = routeInsightService;
+        _routeTravelEstimator = routeTravelEstimator;
     }
 
     public RouteOptimizationResult Optimize(Tour? tour)
     {
+        return Optimize(tour, new RouteOptimizationRequest
+        {
+            Profile = RouteOptimizationProfiles.Balanced
+        });
+    }
+
+    public RouteOptimizationResult Optimize(Tour? tour, RouteOptimizationRequest request)
+    {
+        var profile = ResolveProfile(request);
         var orderedStops = (tour?.Routing?.Stops ?? new List<TourRouteStop>())
             .Where(IsValidStop)
             .OrderBy(stop => stop.Day)
@@ -33,12 +50,7 @@ public class RouteOptimizationService : IRouteOptimizationService
 
         if (tour == null || orderedStops.Count == 0)
         {
-            return new RouteOptimizationResult
-            {
-                CurrentInsight = RouteInsightResult.Empty,
-                SuggestedInsight = RouteInsightResult.Empty,
-                UnchangedReason = "No valid routing data to optimize."
-            };
+            return BuildEmptyResult(profile, "No valid routing data to optimize.");
         }
 
         var currentTour = CloneTour(tour, orderedStops);
@@ -49,6 +61,8 @@ public class RouteOptimizationService : IRouteOptimizationService
         var suggestedStops = new List<TourRouteStop>();
         var hasOptimizableDay = false;
         var hasChangedDay = false;
+        double currentObjectiveScore = 0d;
+        double suggestedObjectiveScore = 0d;
 
         foreach (var dayGroup in orderedStops.GroupBy(stop => stop.Day).OrderBy(group => group.Key))
         {
@@ -57,28 +71,32 @@ public class RouteOptimizationService : IRouteOptimizationService
                 .Select(CloneStop)
                 .ToList();
 
-            var optimizedDay = OptimizeDay(dayStops, warnings, out var dayCanOptimize, out var dayChanged);
-            hasOptimizableDay |= dayCanOptimize;
-            hasChangedDay |= dayChanged;
+            var outcome = OptimizeDay(dayStops, warnings, profile);
+            hasOptimizableDay |= outcome.CanOptimize;
+            hasChangedDay |= outcome.Changed;
+            currentObjectiveScore += outcome.CurrentObjectiveScore;
+            suggestedObjectiveScore += outcome.SuggestedObjectiveScore;
 
-            suggestedStops.AddRange(optimizedDay.Select(CloneStop));
+            suggestedStops.AddRange(outcome.SuggestedCandidate.Stops.Select(CloneStop));
 
-            var currentDayInsight = BuildInsightForStops(tour, dayStops);
-            var suggestedDayInsight = BuildInsightForStops(tour, optimizedDay);
+            var currentDayInsight = outcome.CurrentCandidate.Insight;
+            var suggestedDayInsight = outcome.SuggestedCandidate.Insight;
 
             dayResults.Add(new RouteOptimizationDayResult
             {
                 Day = dayGroup.Key,
-                Changed = dayChanged,
+                Changed = outcome.Changed,
                 StopCount = dayStops.Count,
+                CurrentObjectiveScore = outcome.CurrentObjectiveScore,
+                SuggestedObjectiveScore = outcome.SuggestedObjectiveScore,
                 CurrentTravelMinutes = currentDayInsight.TotalTravelMinutes,
                 SuggestedTravelMinutes = suggestedDayInsight.TotalTravelMinutes,
                 CurrentJourneyMinutes = currentDayInsight.TotalJourneyMinutes,
                 SuggestedJourneyMinutes = suggestedDayInsight.TotalJourneyMinutes,
                 CurrentDistanceKm = currentDayInsight.TotalDistanceKm,
                 SuggestedDistanceKm = suggestedDayInsight.TotalDistanceKm,
-                CurrentStops = dayStops.Select(ToPreview).ToList(),
-                SuggestedStops = optimizedDay.Select(ToPreview).ToList()
+                CurrentStops = outcome.CurrentCandidate.Stops.Select(ToPreview).ToList(),
+                SuggestedStops = outcome.SuggestedCandidate.Stops.Select(ToPreview).ToList()
             });
         }
 
@@ -98,6 +116,11 @@ public class RouteOptimizationService : IRouteOptimizationService
         return new RouteOptimizationResult
         {
             CanOptimize = hasChangedDay,
+            Profile = profile.Id,
+            ProfileLabel = profile.Label,
+            ProfileDescription = profile.Description,
+            CurrentObjectiveScore = currentObjectiveScore,
+            SuggestedObjectiveScore = suggestedObjectiveScore,
             CurrentInsight = currentInsight,
             SuggestedInsight = suggestedInsight,
             Assignments = assignments,
@@ -107,23 +130,26 @@ public class RouteOptimizationService : IRouteOptimizationService
         };
     }
 
-    private List<TourRouteStop> OptimizeDay(
+    private DayOptimizationOutcome OptimizeDay(
         IReadOnlyList<TourRouteStop> dayStops,
         ICollection<RouteOptimizationWarning> warnings,
-        out bool canOptimizeDay,
-        out bool changed)
+        RouteOptimizationProfileDefinition profile)
     {
         var original = dayStops
             .OrderBy(stop => stop.Order)
             .Select(CloneStop)
             .ToList();
 
-        canOptimizeDay = false;
-        changed = false;
+        var currentCandidate = EvaluateCandidate(original, original);
+        var fallback = new DayOptimizationOutcome
+        {
+            CurrentCandidate = currentCandidate,
+            SuggestedCandidate = currentCandidate
+        };
 
         if (original.Count < 3)
         {
-            return original;
+            return fallback;
         }
 
         if (original.Any(stop => !HasCoordinatePair(stop.Coordinates)))
@@ -135,7 +161,7 @@ public class RouteOptimizationService : IRouteOptimizationService
                 ClientKey = original.FirstOrDefault(stop => !HasCoordinatePair(stop.Coordinates))?.Id ?? string.Empty,
                 Message = $"Day {original[0].Day} was skipped because at least one stop is missing coordinates."
             });
-            return original;
+            return fallback;
         }
 
         var startAnchor = original.FirstOrDefault(stop => MatchesAny(stop.Type, StartAnchorKeywords));
@@ -148,52 +174,100 @@ public class RouteOptimizationService : IRouteOptimizationService
 
         if (optimizable.Count < 2)
         {
-            return original;
+            return fallback;
         }
 
-        canOptimizeDay = true;
+        var candidates = optimizable.Count <= BruteForceLimit
+            ? BuildBruteForceCandidates(original, startAnchor, endAnchor, optimizable)
+            : BuildHeuristicCandidates(original, startAnchor, endAnchor, optimizable, profile);
 
-        List<TourRouteStop> bestDay;
-        if (optimizable.Count <= BruteForceLimit)
+        AddCandidate(candidates, currentCandidate);
+        ApplyObjectiveScores(candidates.Values, profile);
+
+        var bestCandidate = candidates.Values
+            .OrderBy(candidate => candidate, DayCandidateComparer.Instance)
+            .First();
+
+        var changed = !HaveSameSequence(original, bestCandidate.Stops);
+        return new DayOptimizationOutcome
         {
-            bestDay = FindBestBruteForceDay(original, startAnchor, endAnchor, optimizable);
-        }
-        else
-        {
-            bestDay = FindBestHeuristicDay(original, startAnchor, endAnchor, optimizable);
-        }
-
-        RenumberDay(bestDay, original[0].Day);
-        changed = !HaveSameSequence(original, bestDay);
-        return bestDay;
+            CanOptimize = true,
+            Changed = changed,
+            CurrentCandidate = currentCandidate,
+            SuggestedCandidate = bestCandidate,
+            CurrentObjectiveScore = currentCandidate.ObjectiveScore,
+            SuggestedObjectiveScore = bestCandidate.ObjectiveScore
+        };
     }
 
-    private List<TourRouteStop> FindBestBruteForceDay(
+    private Dictionary<string, DayCandidate> BuildBruteForceCandidates(
         IReadOnlyList<TourRouteStop> originalDay,
         TourRouteStop? startAnchor,
         TourRouteStop? endAnchor,
         IReadOnlyList<TourRouteStop> optimizableStops)
     {
-        DayCandidate? bestCandidate = null;
+        var candidates = new Dictionary<string, DayCandidate>(StringComparer.Ordinal);
 
         foreach (var permutation in EnumeratePermutations(optimizableStops.ToList(), 0))
         {
             var candidateStops = BuildCandidateStops(startAnchor, permutation, endAnchor);
-            var candidate = EvaluateCandidate(originalDay, candidateStops);
-            if (IsBetterCandidate(candidate, bestCandidate))
-            {
-                bestCandidate = candidate;
-            }
+            AddCandidate(candidates, EvaluateCandidate(originalDay, candidateStops));
         }
 
-        return bestCandidate?.Stops.Select(CloneStop).ToList()
-            ?? originalDay.Select(CloneStop).ToList();
+        return candidates;
     }
 
-    private List<TourRouteStop> FindBestHeuristicDay(
+    private Dictionary<string, DayCandidate> BuildHeuristicCandidates(
         IReadOnlyList<TourRouteStop> originalDay,
         TourRouteStop? startAnchor,
         TourRouteStop? endAnchor,
+        IReadOnlyList<TourRouteStop> optimizableStops,
+        RouteOptimizationProfileDefinition profile)
+    {
+        var candidates = new Dictionary<string, DayCandidate>(StringComparer.Ordinal);
+        var currentMiddle = optimizableStops
+            .OrderBy(stop => stop.Order)
+            .Select(CloneStop)
+            .ToList();
+
+        var seedOrders = new List<List<TourRouteStop>>
+        {
+            currentMiddle.Select(CloneStop).ToList(),
+            BuildNearestNeighborByTravel(originalDay, startAnchor, currentMiddle),
+            BuildNearestNeighborByProfile(originalDay, startAnchor, currentMiddle, profile),
+            currentMiddle.AsEnumerable().Reverse().Select(CloneStop).ToList()
+        };
+
+        if (string.Equals(profile.Id, RouteOptimizationProfiles.HighlightsFirst, StringComparison.Ordinal))
+        {
+            seedOrders.Add(currentMiddle
+                .OrderByDescending(stop => stop.AttractionScore)
+                .ThenBy(stop => stop.Order)
+                .Select(CloneStop)
+                .ToList());
+        }
+
+        foreach (var seed in seedOrders)
+        {
+            var seededDay = BuildCandidateStops(startAnchor, seed, endAnchor);
+            AddCandidate(candidates, EvaluateCandidate(originalDay, seededDay));
+
+            var improvedDay = ApplyIterativeTwoOpt(
+                seededDay,
+                startAnchor != null,
+                endAnchor != null,
+                originalDay,
+                profile);
+
+            AddCandidate(candidates, EvaluateCandidate(originalDay, improvedDay));
+        }
+
+        return candidates;
+    }
+
+    private List<TourRouteStop> BuildNearestNeighborByTravel(
+        IReadOnlyList<TourRouteStop> originalDay,
+        TourRouteStop? startAnchor,
         IReadOnlyList<TourRouteStop> optimizableStops)
     {
         var remaining = optimizableStops
@@ -202,6 +276,7 @@ public class RouteOptimizationService : IRouteOptimizationService
 
         var ordered = new List<TourRouteStop>();
         TourRouteStop current;
+
         if (startAnchor != null)
         {
             current = CloneStop(startAnchor);
@@ -222,112 +297,247 @@ public class RouteOptimizationService : IRouteOptimizationService
                 .First();
 
             ordered.Add(CloneStop(next));
-            remaining.Remove(next);
+            remaining.RemoveAll(stop => string.Equals(stop.Id, next.Id, StringComparison.Ordinal));
             current = next;
         }
 
-        var dayCandidate = BuildCandidateStops(startAnchor, ordered, endAnchor);
-        var improved = ApplySinglePassTwoOpt(dayCandidate, startAnchor != null, endAnchor != null);
-        var initialEvaluation = EvaluateCandidate(originalDay, dayCandidate);
-        var improvedEvaluation = EvaluateCandidate(originalDay, improved);
-
-        return IsBetterCandidate(improvedEvaluation, initialEvaluation)
-            ? improvedEvaluation.Stops.Select(CloneStop).ToList()
-            : initialEvaluation.Stops.Select(CloneStop).ToList();
+        return ordered;
     }
 
-    private List<TourRouteStop> ApplySinglePassTwoOpt(IReadOnlyList<TourRouteStop> candidateStops, bool hasFixedStart, bool hasFixedEnd)
+    private List<TourRouteStop> BuildNearestNeighborByProfile(
+        IReadOnlyList<TourRouteStop> originalDay,
+        TourRouteStop? startAnchor,
+        IReadOnlyList<TourRouteStop> optimizableStops,
+        RouteOptimizationProfileDefinition profile)
     {
-        var best = candidateStops.Select(CloneStop).ToList();
-        var bestEvaluation = EvaluateCandidate(best, best);
-        var startIndex = hasFixedStart ? 1 : 0;
-        var endIndexExclusive = hasFixedEnd ? best.Count - 1 : best.Count;
+        var remaining = optimizableStops
+            .Select(CloneStop)
+            .ToList();
 
-        for (var start = startIndex; start < endIndexExclusive - 1; start++)
-        {
-            for (var end = start + 1; end < endIndexExclusive; end++)
-            {
-                var candidate = best.Select(CloneStop).ToList();
-                candidate.Reverse(start, end - start + 1);
-                RenumberDay(candidate, candidateStops.First().Day);
-
-                var evaluation = EvaluateCandidate(best, candidate);
-                if (IsBetterCandidate(evaluation, bestEvaluation))
-                {
-                    best = candidate;
-                    bestEvaluation = evaluation;
-                }
-            }
-        }
-
-        return best;
-    }
-
-    private DayCandidate EvaluateCandidate(IReadOnlyList<TourRouteStop> originalDay, IReadOnlyList<TourRouteStop> candidateStops)
-    {
-        var insight = BuildInsightForStops(null, candidateStops);
         var originalIndex = originalDay
             .Select((stop, index) => new { stop.Id, index })
             .ToDictionary(item => item.Id, item => item.index, StringComparer.Ordinal);
 
-        var displacement = candidateStops
+        var ordered = new List<TourRouteStop>();
+        TourRouteStop current;
+
+        if (startAnchor != null)
+        {
+            current = CloneStop(startAnchor);
+        }
+        else
+        {
+            current = CloneStop(originalDay.OrderBy(stop => stop.Order).First());
+            ordered.Add(CloneStop(current));
+            remaining.RemoveAll(stop => string.Equals(stop.Id, current.Id, StringComparison.Ordinal));
+        }
+
+        while (remaining.Count > 0)
+        {
+            var candidateChoices = remaining
+                .Select(stop =>
+                {
+                    originalIndex.TryGetValue(stop.Id, out var sourceIndex);
+                    var projectedPosition = ordered.Count + (startAnchor != null ? 1 : 0);
+                    return new LocalChoiceCandidate
+                    {
+                        Stop = CloneStop(stop),
+                        TravelMinutes = CalculateLegTravelMinutes(current, stop),
+                        DistanceKm = CalculateDistanceKm(current, stop),
+                        AttractionScore = stop.AttractionScore,
+                        Displacement = Math.Abs(sourceIndex - projectedPosition),
+                        Signature = stop.Id
+                    };
+                })
+                .ToList();
+
+            ApplyLocalChoiceScores(candidateChoices, profile);
+
+            var next = candidateChoices
+                .OrderBy(choice => choice, LocalChoiceComparer.Instance)
+                .First()
+                .Stop;
+
+            ordered.Add(CloneStop(next));
+            remaining.RemoveAll(stop => string.Equals(stop.Id, next.Id, StringComparison.Ordinal));
+            current = next;
+        }
+
+        return ordered;
+    }
+
+    private List<TourRouteStop> ApplyIterativeTwoOpt(
+        IReadOnlyList<TourRouteStop> candidateStops,
+        bool hasFixedStart,
+        bool hasFixedEnd,
+        IReadOnlyList<TourRouteStop> originalDay,
+        RouteOptimizationProfileDefinition profile)
+    {
+        var current = candidateStops.Select(CloneStop).ToList();
+        var currentSignature = BuildSignature(current);
+        var startIndex = hasFixedStart ? 1 : 0;
+        var endIndexExclusive = hasFixedEnd ? current.Count - 1 : current.Count;
+
+        for (var iteration = 0; iteration < MaxTwoOptIterations; iteration++)
+        {
+            var neighbours = new Dictionary<string, DayCandidate>(StringComparer.Ordinal)
+            {
+                [currentSignature] = EvaluateCandidate(originalDay, current)
+            };
+
+            for (var start = startIndex; start < endIndexExclusive - 1; start++)
+            {
+                for (var end = start + 1; end < endIndexExclusive; end++)
+                {
+                    var swapped = current.Select(CloneStop).ToList();
+                    swapped.Reverse(start, end - start + 1);
+                    RenumberDay(swapped, candidateStops.First().Day);
+                    AddCandidate(neighbours, EvaluateCandidate(originalDay, swapped));
+                }
+            }
+
+            ApplyObjectiveScores(neighbours.Values, profile);
+            var best = neighbours.Values
+                .OrderBy(candidate => candidate, DayCandidateComparer.Instance)
+                .First();
+
+            if (string.Equals(best.Signature, currentSignature, StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            current = best.Stops.Select(CloneStop).ToList();
+            currentSignature = best.Signature;
+        }
+
+        return current;
+    }
+
+    private static void AddCandidate(IDictionary<string, DayCandidate> candidates, DayCandidate candidate)
+    {
+        candidates[candidate.Signature] = candidate;
+    }
+
+    private static void ApplyLocalChoiceScores(
+        IReadOnlyCollection<LocalChoiceCandidate> candidates,
+        RouteOptimizationProfileDefinition profile)
+    {
+        if (candidates.Count == 0)
+        {
+            return;
+        }
+
+        var minTravel = candidates.Min(candidate => candidate.TravelMinutes);
+        var maxTravel = candidates.Max(candidate => candidate.TravelMinutes);
+        var minDistance = candidates.Min(candidate => candidate.DistanceKm);
+        var maxDistance = candidates.Max(candidate => candidate.DistanceKm);
+        var minAttraction = candidates.Min(candidate => candidate.AttractionScore);
+        var maxAttraction = candidates.Max(candidate => candidate.AttractionScore);
+        var minDisplacement = candidates.Min(candidate => candidate.Displacement);
+        var maxDisplacement = candidates.Max(candidate => candidate.Displacement);
+
+        foreach (var candidate in candidates)
+        {
+            var travelScore = NormalizeLowerIsBetter(candidate.TravelMinutes, minTravel, maxTravel);
+            var distanceScore = NormalizeLowerIsBetter(candidate.DistanceKm, minDistance, maxDistance);
+            var attractionScore = NormalizeHigherIsBetter(candidate.AttractionScore, minAttraction, maxAttraction);
+            var stabilityScore = NormalizeLowerIsBetter(candidate.Displacement, minDisplacement, maxDisplacement);
+
+            candidate.ObjectiveScore =
+                (travelScore * profile.TravelWeight)
+                + (distanceScore * profile.DistanceWeight)
+                + (attractionScore * profile.AttractionWeight)
+                + (stabilityScore * profile.StabilityWeight);
+        }
+    }
+
+    private static void ApplyObjectiveScores(
+        IEnumerable<DayCandidate> candidates,
+        RouteOptimizationProfileDefinition profile)
+    {
+        var list = candidates.ToList();
+        if (list.Count == 0)
+        {
+            return;
+        }
+
+        var minTravel = list.Min(candidate => candidate.Insight.TotalTravelMinutes);
+        var maxTravel = list.Max(candidate => candidate.Insight.TotalTravelMinutes);
+        var minDistance = list.Min(candidate => candidate.Insight.TotalDistanceKm);
+        var maxDistance = list.Max(candidate => candidate.Insight.TotalDistanceKm);
+        var minAttraction = list.Min(candidate => candidate.FrontLoadedAttractionUtility);
+        var maxAttraction = list.Max(candidate => candidate.FrontLoadedAttractionUtility);
+        var minDisplacement = list.Min(candidate => candidate.Displacement);
+        var maxDisplacement = list.Max(candidate => candidate.Displacement);
+
+        foreach (var candidate in list)
+        {
+            candidate.TravelMinutesScore = NormalizeLowerIsBetter(candidate.Insight.TotalTravelMinutes, minTravel, maxTravel);
+            candidate.DistanceScore = NormalizeLowerIsBetter(candidate.Insight.TotalDistanceKm, minDistance, maxDistance);
+            candidate.AttractionFrontloadScore = NormalizeHigherIsBetter(candidate.FrontLoadedAttractionUtility, minAttraction, maxAttraction);
+            candidate.StabilityScore = NormalizeLowerIsBetter(candidate.Displacement, minDisplacement, maxDisplacement);
+
+            candidate.ObjectiveScore =
+                (candidate.TravelMinutesScore * profile.TravelWeight)
+                + (candidate.DistanceScore * profile.DistanceWeight)
+                + (candidate.AttractionFrontloadScore * profile.AttractionWeight)
+                + (candidate.StabilityScore * profile.StabilityWeight);
+        }
+    }
+
+    private static double NormalizeLowerIsBetter(double value, double min, double max)
+    {
+        if (max <= min)
+        {
+            return 1d;
+        }
+
+        return (max - value) / (max - min);
+    }
+
+    private static double NormalizeHigherIsBetter(double value, double min, double max)
+    {
+        if (max <= min)
+        {
+            return 1d;
+        }
+
+        return (value - min) / (max - min);
+    }
+
+    private DayCandidate EvaluateCandidate(IReadOnlyList<TourRouteStop> originalDay, IReadOnlyList<TourRouteStop> candidateStops)
+    {
+        var normalizedStops = candidateStops.Select(CloneStop).ToList();
+        if (normalizedStops.Count > 0)
+        {
+            RenumberDay(normalizedStops, normalizedStops[0].Day);
+        }
+
+        var insight = BuildInsightForStops(null, normalizedStops);
+        var originalIndex = originalDay
+            .Select((stop, index) => new { stop.Id, index })
+            .ToDictionary(item => item.Id, item => item.index, StringComparer.Ordinal);
+
+        var displacement = normalizedStops
             .Select((stop, index) =>
             {
-                originalIndex.TryGetValue(stop.Id, out var originalPosition);
-                return Math.Abs(originalPosition - index);
+                originalIndex.TryGetValue(stop.Id, out var sourceIndex);
+                return Math.Abs(sourceIndex - index);
             })
             .Sum();
 
-        var attractionUtility = candidateStops
+        var attractionUtility = normalizedStops
             .Select((stop, index) => stop.AttractionScore / (index + 1d))
             .Sum();
 
         return new DayCandidate
         {
-            Stops = candidateStops.Select(CloneStop).ToList(),
+            Stops = normalizedStops,
             Insight = insight,
             FrontLoadedAttractionUtility = attractionUtility,
-            Displacement = displacement
+            Displacement = displacement,
+            Signature = BuildSignature(normalizedStops)
         };
-    }
-
-    private static bool IsBetterCandidate(DayCandidate candidate, DayCandidate? bestCandidate)
-    {
-        if (bestCandidate == null)
-        {
-            return true;
-        }
-
-        var current = candidate.Insight;
-        var best = bestCandidate.Insight;
-
-        var compare = current.TotalTravelMinutes.CompareTo(best.TotalTravelMinutes);
-        if (compare != 0)
-        {
-            return compare < 0;
-        }
-
-        compare = current.TotalDistanceKm.CompareTo(best.TotalDistanceKm);
-        if (compare != 0)
-        {
-            return compare < 0;
-        }
-
-        compare = bestCandidate.FrontLoadedAttractionUtility.CompareTo(candidate.FrontLoadedAttractionUtility);
-        if (compare != 0)
-        {
-            return compare > 0;
-        }
-
-        compare = candidate.Displacement.CompareTo(bestCandidate.Displacement);
-        if (compare != 0)
-        {
-            return compare < 0;
-        }
-
-        return string.CompareOrdinal(
-                   string.Join("|", candidate.Stops.Select(stop => stop.Id)),
-                   string.Join("|", bestCandidate.Stops.Select(stop => stop.Id))) < 0;
     }
 
     private RouteInsightResult BuildInsightForStops(Tour? templateTour, IReadOnlyList<TourRouteStop> stops)
@@ -400,7 +610,7 @@ public class RouteOptimizationService : IRouteOptimizationService
             return "No route day had enough stops to optimize.";
         }
 
-        return "Current routing is already optimal for the configured heuristic.";
+        return "Current routing is already optimal for the selected profile.";
     }
 
     private static bool HaveSameSequence(IReadOnlyList<TourRouteStop> left, IReadOnlyList<TourRouteStop> right)
@@ -419,6 +629,11 @@ public class RouteOptimizationService : IRouteOptimizationService
         }
 
         return true;
+    }
+
+    private static string BuildSignature(IEnumerable<TourRouteStop> stops)
+    {
+        return string.Join("|", stops.Select(stop => stop.Id));
     }
 
     private static void RenumberDay(IReadOnlyList<TourRouteStop> stops, int day)
@@ -454,79 +669,16 @@ public class RouteOptimizationService : IRouteOptimizationService
         return coordinates?.Lat.HasValue == true && coordinates.Lng.HasValue;
     }
 
-    private static int CalculateLegTravelMinutes(TourRouteStop fromStop, TourRouteStop toStop)
+    private int CalculateLegTravelMinutes(TourRouteStop fromStop, TourRouteStop toStop)
     {
-        var profile = ResolveProfile(toStop.Type, fromStop.Type);
-        var speedKmPerHour = profile switch
-        {
-            "urban" => 24d,
-            "scenic" => 32d,
-            _ => 28d
-        };
-
-        var junctionDelayMinutes = profile switch
-        {
-            "urban" => 6,
-            "scenic" => 3,
-            _ => 4
-        };
-
-        var distance = CalculateDistanceKm(fromStop, toStop);
-        var driveMinutes = Math.Max(5, (int)Math.Round((distance / speedKmPerHour) * 60d, MidpointRounding.AwayFromZero));
-        return driveMinutes + junctionDelayMinutes;
+        var profile = _routeTravelEstimator.ResolveProfile(fromStop, toStop);
+        return _routeTravelEstimator.Estimate(fromStop, toStop, profile, 8 * 60).TravelMinutes;
     }
 
-    private static string ResolveProfile(string? primaryType, string? fallbackType)
+    private double CalculateDistanceKm(TourRouteStop fromStop, TourRouteStop toStop)
     {
-        var type = !string.IsNullOrWhiteSpace(primaryType) ? primaryType : fallbackType;
-        if (string.IsNullOrWhiteSpace(type))
-        {
-            return "default";
-        }
-
-        if (type.Contains("market", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("city", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("museum", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("landmark", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("meeting", StringComparison.OrdinalIgnoreCase))
-        {
-            return "urban";
-        }
-
-        if (type.Contains("viewpoint", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("beach", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("park", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("forest", StringComparison.OrdinalIgnoreCase)
-            || type.Contains("lake", StringComparison.OrdinalIgnoreCase))
-        {
-            return "scenic";
-        }
-
-        return "default";
-    }
-
-    private static double CalculateDistanceKm(TourRouteStop fromStop, TourRouteStop toStop)
-    {
-        if (!HasCoordinatePair(fromStop.Coordinates) || !HasCoordinatePair(toStop.Coordinates))
-        {
-            return 0d;
-        }
-
-        var earthRadiusKm = 6371d;
-        var latDistance = DegreesToRadians(toStop.Coordinates.Lat!.Value - fromStop.Coordinates.Lat!.Value);
-        var lngDistance = DegreesToRadians(toStop.Coordinates.Lng!.Value - fromStop.Coordinates.Lng!.Value);
-        var a = Math.Pow(Math.Sin(latDistance / 2d), 2d)
-                + Math.Cos(DegreesToRadians(fromStop.Coordinates.Lat.Value))
-                * Math.Cos(DegreesToRadians(toStop.Coordinates.Lat.Value))
-                * Math.Pow(Math.Sin(lngDistance / 2d), 2d);
-
-        var c = 2d * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1d - a));
-        return earthRadiusKm * c;
-    }
-
-    private static double DegreesToRadians(double degrees)
-    {
-        return degrees * (Math.PI / 180d);
+        var profile = _routeTravelEstimator.ResolveProfile(fromStop, toStop);
+        return _routeTravelEstimator.Estimate(fromStop, toStop, profile, 8 * 60).DistanceKm;
     }
 
     private static Tour CloneTour(Tour template, IReadOnlyList<TourRouteStop> stops)
@@ -611,6 +763,100 @@ public class RouteOptimizationService : IRouteOptimizationService
         };
     }
 
+    private static RouteOptimizationResult BuildEmptyResult(RouteOptimizationProfileDefinition profile, string unchangedReason)
+    {
+        return new RouteOptimizationResult
+        {
+            Profile = profile.Id,
+            ProfileLabel = profile.Label,
+            ProfileDescription = profile.Description,
+            CurrentInsight = RouteInsightResult.Empty,
+            SuggestedInsight = RouteInsightResult.Empty,
+            UnchangedReason = unchangedReason
+        };
+    }
+
+    private static RouteOptimizationProfileDefinition ResolveProfile(RouteOptimizationRequest? request)
+    {
+        return RouteOptimizationProfiles.Normalize(request?.Profile) switch
+        {
+            RouteOptimizationProfiles.DistanceFirst => new RouteOptimizationProfileDefinition(
+                RouteOptimizationProfiles.DistanceFirst,
+                RouteOptimizationProfiles.GetLabel(RouteOptimizationProfiles.DistanceFirst),
+                RouteOptimizationProfiles.GetDescription(RouteOptimizationProfiles.DistanceFirst),
+                travelWeight: 0.30d,
+                distanceWeight: 0.45d,
+                attractionWeight: 0.10d,
+                stabilityWeight: 0.15d),
+            RouteOptimizationProfiles.HighlightsFirst => new RouteOptimizationProfileDefinition(
+                RouteOptimizationProfiles.HighlightsFirst,
+                RouteOptimizationProfiles.GetLabel(RouteOptimizationProfiles.HighlightsFirst),
+                RouteOptimizationProfiles.GetDescription(RouteOptimizationProfiles.HighlightsFirst),
+                travelWeight: 0.25d,
+                distanceWeight: 0.10d,
+                attractionWeight: 0.45d,
+                stabilityWeight: 0.20d),
+            _ => new RouteOptimizationProfileDefinition(
+                RouteOptimizationProfiles.Balanced,
+                RouteOptimizationProfiles.GetLabel(RouteOptimizationProfiles.Balanced),
+                RouteOptimizationProfiles.GetDescription(RouteOptimizationProfiles.Balanced),
+                travelWeight: 0.40d,
+                distanceWeight: 0.25d,
+                attractionWeight: 0.25d,
+                stabilityWeight: 0.10d)
+        };
+    }
+
+    private sealed class DayOptimizationOutcome
+    {
+        public bool CanOptimize { get; set; }
+
+        public bool Changed { get; set; }
+
+        public double CurrentObjectiveScore { get; set; }
+
+        public double SuggestedObjectiveScore { get; set; }
+
+        public DayCandidate CurrentCandidate { get; set; } = new();
+
+        public DayCandidate SuggestedCandidate { get; set; } = new();
+    }
+
+    private sealed class RouteOptimizationProfileDefinition
+    {
+        public RouteOptimizationProfileDefinition(
+            string id,
+            string label,
+            string description,
+            double travelWeight,
+            double distanceWeight,
+            double attractionWeight,
+            double stabilityWeight)
+        {
+            Id = id;
+            Label = label;
+            Description = description;
+            TravelWeight = travelWeight;
+            DistanceWeight = distanceWeight;
+            AttractionWeight = attractionWeight;
+            StabilityWeight = stabilityWeight;
+        }
+
+        public string Id { get; }
+
+        public string Label { get; }
+
+        public string Description { get; }
+
+        public double TravelWeight { get; }
+
+        public double DistanceWeight { get; }
+
+        public double AttractionWeight { get; }
+
+        public double StabilityWeight { get; }
+    }
+
     private sealed class DayCandidate
     {
         public List<TourRouteStop> Stops { get; set; } = new();
@@ -620,5 +866,144 @@ public class RouteOptimizationService : IRouteOptimizationService
         public double FrontLoadedAttractionUtility { get; set; }
 
         public int Displacement { get; set; }
+
+        public double TravelMinutesScore { get; set; }
+
+        public double DistanceScore { get; set; }
+
+        public double AttractionFrontloadScore { get; set; }
+
+        public double StabilityScore { get; set; }
+
+        public double ObjectiveScore { get; set; }
+
+        public string Signature { get; set; } = string.Empty;
+    }
+
+    private sealed class LocalChoiceCandidate
+    {
+        public TourRouteStop Stop { get; set; } = new();
+
+        public int TravelMinutes { get; set; }
+
+        public double DistanceKm { get; set; }
+
+        public double AttractionScore { get; set; }
+
+        public int Displacement { get; set; }
+
+        public double ObjectiveScore { get; set; }
+
+        public string Signature { get; set; } = string.Empty;
+    }
+
+    private sealed class LocalChoiceComparer : IComparer<LocalChoiceCandidate>
+    {
+        public static LocalChoiceComparer Instance { get; } = new();
+
+        public int Compare(LocalChoiceCandidate? left, LocalChoiceCandidate? right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return 0;
+            }
+
+            if (left == null)
+            {
+                return 1;
+            }
+
+            if (right == null)
+            {
+                return -1;
+            }
+
+            var compare = right.ObjectiveScore.CompareTo(left.ObjectiveScore);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.TravelMinutes.CompareTo(right.TravelMinutes);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.DistanceKm.CompareTo(right.DistanceKm);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = right.AttractionScore.CompareTo(left.AttractionScore);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.Displacement.CompareTo(right.Displacement);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            return string.CompareOrdinal(left.Signature, right.Signature);
+        }
+    }
+
+    private sealed class DayCandidateComparer : IComparer<DayCandidate>
+    {
+        public static DayCandidateComparer Instance { get; } = new();
+
+        public int Compare(DayCandidate? left, DayCandidate? right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return 0;
+            }
+
+            if (left == null)
+            {
+                return 1;
+            }
+
+            if (right == null)
+            {
+                return -1;
+            }
+
+            var compare = right.ObjectiveScore.CompareTo(left.ObjectiveScore);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.Insight.TotalTravelMinutes.CompareTo(right.Insight.TotalTravelMinutes);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.Insight.TotalDistanceKm.CompareTo(right.Insight.TotalDistanceKm);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = right.FrontLoadedAttractionUtility.CompareTo(left.FrontLoadedAttractionUtility);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            compare = left.Displacement.CompareTo(right.Displacement);
+            if (compare != 0)
+            {
+                return compare;
+            }
+
+            return string.CompareOrdinal(left.Signature, right.Signature);
+        }
     }
 }

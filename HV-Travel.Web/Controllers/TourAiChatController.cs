@@ -22,13 +22,15 @@ public sealed class TourAiChatController : Controller
     {
         try
         {
-            var conversation = await _tourAiChatService.BootstrapConversationAsync(request, User);
+            var bootstrapResult = await _tourAiChatService.BootstrapConversationAsync(request, User);
+            var conversation = bootstrapResult.Conversation;
             var messages = await _tourAiChatService.GetMessagesAsync(conversation.Id);
 
             return Json(new TourAiBootstrapResponse
             {
                 Conversation = ToConversationDto(conversation),
                 Messages = messages.Select(ToMessageDto).ToList(),
+                SuggestedPrompts = bootstrapResult.SuggestedPrompts.ToList(),
                 IsAssistantPending = _pendingTracker.IsPending(conversation.Id)
             });
         }

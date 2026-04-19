@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using HVTravel.Application.Models;
 using HVTravel.Application.Services;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
@@ -19,6 +20,7 @@ public sealed class TourAiChatService : ITourAiChatService
     private readonly IRepository<ChatConversation> _conversationRepository;
     private readonly IRepository<ChatMessage> _messageRepository;
     private readonly ITourRepository _tourRepository;
+    private readonly ITourAiRouteAdvisorContextBuilder _routeAdvisorContextBuilder;
     private readonly IGroqChatClient _groqChatClient;
     private readonly ITourAiJobQueue _jobQueue;
     private readonly ITourAiPendingTracker _pendingTracker;
@@ -28,6 +30,7 @@ public sealed class TourAiChatService : ITourAiChatService
         IRepository<ChatConversation> conversationRepository,
         IRepository<ChatMessage> messageRepository,
         ITourRepository tourRepository,
+        ITourAiRouteAdvisorContextBuilder routeAdvisorContextBuilder,
         IGroqChatClient groqChatClient,
         ITourAiJobQueue jobQueue,
         ITourAiPendingTracker pendingTracker,
@@ -36,13 +39,14 @@ public sealed class TourAiChatService : ITourAiChatService
         _conversationRepository = conversationRepository;
         _messageRepository = messageRepository;
         _tourRepository = tourRepository;
+        _routeAdvisorContextBuilder = routeAdvisorContextBuilder;
         _groqChatClient = groqChatClient;
         _jobQueue = jobQueue;
         _pendingTracker = pendingTracker;
         _logger = logger;
     }
 
-    public async Task<ChatConversation> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user)
+    public async Task<TourAiBootstrapResult> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user)
     {
         var tourId = request.TourId.Trim();
         if (string.IsNullOrWhiteSpace(tourId))
@@ -51,6 +55,8 @@ public sealed class TourAiChatService : ITourAiChatService
         }
 
         var tour = await GetPublicTourAsync(tourId);
+        var routeStyle = ResolveRouteStyle(request.RouteStyle, request.SourcePage);
+        var routeAdvisorContext = await _routeAdvisorContextBuilder.BuildAsync(tour, routeStyle);
         var participant = ResolveParticipant(user, request.VisitorSessionId);
 
         var conversation = await FindConversationAsync(tour.Id, participant.CustomerId, participant.VisitorSessionId);
@@ -65,7 +71,7 @@ public sealed class TourAiChatService : ITourAiChatService
                 CustomerId = participant.CustomerId,
                 VisitorSessionId = participant.VisitorSessionId,
                 GuestProfile = participant.Profile,
-                SourcePage = ResolveSourcePage(request.SourcePage),
+                SourcePage = ResolveSourcePage(request.SourcePage, routeStyle),
                 ContextType = TourContextType,
                 ContextId = tour.Id,
                 ContextLabel = tour.Name,
@@ -80,7 +86,7 @@ public sealed class TourAiChatService : ITourAiChatService
         {
             conversation.Channel = TourAiChannel;
             conversation.Status = "open";
-            conversation.SourcePage = ResolveSourcePage(request.SourcePage);
+            conversation.SourcePage = ResolveSourcePage(request.SourcePage, routeStyle);
             conversation.ContextType = TourContextType;
             conversation.ContextId = tour.Id;
             conversation.ContextLabel = tour.Name;
@@ -112,7 +118,11 @@ public sealed class TourAiChatService : ITourAiChatService
             await UpdateConversationSummaryAsync(conversation, welcomeMessage);
         }
 
-        return conversation;
+        return new TourAiBootstrapResult
+        {
+            Conversation = conversation,
+            SuggestedPrompts = routeAdvisorContext.SuggestedPrompts
+        };
     }
 
     public async Task<ChatConversation?> GetConversationAsync(string conversationId)
@@ -305,7 +315,9 @@ public sealed class TourAiChatService : ITourAiChatService
             }
 
             var recentMessages = await GetMessagesAsync(conversation.Id, PromptHistoryLimit);
-            var promptMessages = BuildPromptMessages(tour, recentMessages);
+            var routeStyle = ResolveRouteStyle(null, conversation.SourcePage);
+            var routeAdvisorContext = await _routeAdvisorContextBuilder.BuildAsync(tour, routeStyle, cancellationToken);
+            var promptMessages = BuildPromptMessages(routeAdvisorContext, recentMessages);
             return await _groqChatClient.CompleteChatAsync(promptMessages, cancellationToken);
         }
         catch (Exception ex)
@@ -315,7 +327,7 @@ public sealed class TourAiChatService : ITourAiChatService
         }
     }
 
-    private static List<GroqChatMessage> BuildPromptMessages(Tour tour, IReadOnlyList<ChatMessage> recentMessages)
+    private static List<GroqChatMessage> BuildPromptMessages(TourAiRouteAdvisorContext routeAdvisorContext, IReadOnlyList<ChatMessage> recentMessages)
     {
         var promptMessages = new List<GroqChatMessage>
         {
@@ -330,7 +342,17 @@ public sealed class TourAiChatService : ITourAiChatService
                 Không bịa thêm giá, lịch trình, điều khoản, giờ giấc, dịch vụ, khách sạn, phương tiện hoặc ưu đãi.
                 Nếu cần xác nhận sâu hơn hoặc dữ liệu đang thiếu, hãy mời người dùng mở khung chat hỗ trợ bên dưới để gặp tư vấn viên thật.
                 """),
-            new("system", BuildTourSnapshot(tour))
+            new("system", routeAdvisorContext.SnapshotText),
+            new(
+                "system",
+                """
+                Route-aware rules: neu nguoi dung hoi ve di chuyen, lich trinh, thoi gian hanh trinh hoac traffic, uu tien RouteInsight trong context.
+                Neu nguoi dung hoi tour phu hop kieu hanh trinh nao, dung routeStyle va recommendation signals da cung cap.
+                Neu so sanh tour khac, chi dung related tour summaries trong context; khong tu them tour ngoai context.
+                Neu tour chua co routing, noi ro tour nay chua co du lieu routing co cau truc.
+                Khong bia ETA realtime, traffic realtime, khach san, phuong tien hoac dich vu ngoai du lieu.
+                Khong lo toa do, lat/lng, raw coordinates hoac du lieu noi bo khong danh cho public.
+                """)
         };
 
         foreach (var message in recentMessages)
@@ -420,6 +442,11 @@ public sealed class TourAiChatService : ITourAiChatService
                 builder.AppendLine(
                     $"  * Ngày {day.Day:00}: {day.StopCount} điểm dừng, tham quan {day.VisitMinutes} phút, di chuyển {day.TravelMinutes} phút.");
             }
+        }
+
+        if (routeInsight.HasRouting && routeInsight.Days.Any(day => !string.IsNullOrWhiteSpace(day.PeakDayPart)))
+        {
+            builder.AppendLine($"- Peak traffic: {BuildTrafficSummary(routeInsight.Days)}");
         }
 
         return builder.ToString().Trim();
@@ -549,9 +576,65 @@ public sealed class TourAiChatService : ITourAiChatService
         };
     }
 
-    private static string ResolveSourcePage(string? sourcePage)
+    private static string ResolveSourcePage(string? sourcePage, string routeStyle)
     {
-        return string.IsNullOrWhiteSpace(sourcePage) ? "/" : sourcePage.Trim();
+        var resolved = string.IsNullOrWhiteSpace(sourcePage) ? "/" : sourcePage.Trim();
+        if (TryReadRouteStyleFromSourcePage(resolved, out _))
+        {
+            return resolved;
+        }
+
+        var separator = resolved.Contains('?') ? "&" : "?";
+        return $"{resolved}{separator}routeStyle={Uri.EscapeDataString(RouteRecommendationStyles.Normalize(routeStyle))}";
+    }
+
+    private static string ResolveRouteStyle(string? routeStyle, string? sourcePage)
+    {
+        if (!string.IsNullOrWhiteSpace(routeStyle))
+        {
+            return RouteRecommendationStyles.Normalize(routeStyle);
+        }
+
+        return TryReadRouteStyleFromSourcePage(sourcePage, out var routeStyleFromSourcePage)
+            ? RouteRecommendationStyles.Normalize(routeStyleFromSourcePage)
+            : RouteRecommendationStyles.Balanced;
+    }
+
+    private static bool TryReadRouteStyleFromSourcePage(string? sourcePage, out string routeStyle)
+    {
+        routeStyle = string.Empty;
+        if (string.IsNullOrWhiteSpace(sourcePage))
+        {
+            return false;
+        }
+
+        var queryStart = sourcePage.IndexOf('?');
+        if (queryStart < 0 || queryStart >= sourcePage.Length - 1)
+        {
+            return false;
+        }
+
+        var query = sourcePage[(queryStart + 1)..];
+        var fragmentStart = query.IndexOf('#');
+        if (fragmentStart >= 0)
+        {
+            query = query[..fragmentStart];
+        }
+
+        foreach (var pair in query.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var separator = pair.IndexOf('=');
+            var key = separator >= 0 ? pair[..separator] : pair;
+            if (!string.Equals(Uri.UnescapeDataString(key), "routeStyle", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            routeStyle = separator >= 0 ? Uri.UnescapeDataString(pair[(separator + 1)..]) : string.Empty;
+            return !string.IsNullOrWhiteSpace(routeStyle);
+        }
+
+        return false;
     }
 
     private static bool IsPubliclyVisible(string? status)
@@ -582,6 +665,41 @@ public sealed class TourAiChatService : ITourAiChatService
     {
         var amount = value.GetValueOrDefault();
         return amount > 0m ? $"{amount:N0} VND" : "Chưa có dữ liệu";
+    }
+
+    private static string BuildTrafficSummary(IEnumerable<RouteInsightDay> days)
+    {
+        var highlights = days
+            .Where(day => !string.IsNullOrWhiteSpace(day.PeakDayPart))
+            .Take(3)
+            .Select(day => $"day {day.Day:00} {TranslateDayPart(day.PeakDayPart)} {TranslateCongestion(day.PeakCongestionLevel)}")
+            .ToList();
+
+        return highlights.Count > 0 ? string.Join("; ", highlights) : "stable";
+    }
+
+    private static string TranslateDayPart(string? value)
+    {
+        return value switch
+        {
+            "early_morning" => "early morning",
+            "morning_peak" => "morning peak",
+            "late_morning" => "late morning",
+            "midday" => "midday",
+            "afternoon" => "afternoon",
+            "evening_peak" => "evening peak",
+            _ => "night"
+        };
+    }
+
+    private static string TranslateCongestion(string? value)
+    {
+        return value switch
+        {
+            "high" => "high congestion",
+            "moderate" => "moderate congestion",
+            _ => "low congestion"
+        };
     }
 
     private static string NormalizeAssistantContent(string content)

@@ -465,7 +465,7 @@ public class RouteOptimizationPhase4Tests
 
         Assert.NotNull(service);
 
-        var optimizeMethod = serviceType.GetMethod("Optimize", BindingFlags.Public | BindingFlags.Instance);
+        var optimizeMethod = serviceType.GetMethod("Optimize", BindingFlags.Public | BindingFlags.Instance, null, [typeof(Tour)], null);
         Assert.NotNull(optimizeMethod);
 
         var result = optimizeMethod!.Invoke(service, [tour]);

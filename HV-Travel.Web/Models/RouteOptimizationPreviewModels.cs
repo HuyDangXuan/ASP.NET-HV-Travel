@@ -4,6 +4,8 @@ namespace HVTravel.Web.Models;
 
 public class RouteOptimizationPreviewRequest
 {
+    public string Profile { get; set; } = RouteOptimizationProfiles.Balanced;
+
     public List<RouteOptimizationPreviewScheduleItem> Schedule { get; set; } = new();
 
     public List<RouteOptimizationPreviewStop> Stops { get; set; } = new();
@@ -49,6 +51,16 @@ public class RouteOptimizationPreviewGeoPoint
 public class RouteOptimizationPreviewResponse
 {
     public bool CanOptimize { get; set; }
+
+    public string Profile { get; set; } = RouteOptimizationProfiles.Balanced;
+
+    public string ProfileLabel { get; set; } = RouteOptimizationProfiles.GetLabel(RouteOptimizationProfiles.Balanced);
+
+    public string ProfileDescription { get; set; } = RouteOptimizationProfiles.GetDescription(RouteOptimizationProfiles.Balanced);
+
+    public double CurrentObjectiveScore { get; set; }
+
+    public double SuggestedObjectiveScore { get; set; }
 
     public RouteInsightResult CurrentInsight { get; set; } = RouteInsightResult.Empty;
 

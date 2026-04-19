@@ -1,8 +1,60 @@
 namespace HVTravel.Application.Models;
 
+public class RouteOptimizationRequest
+{
+    public string Profile { get; set; } = RouteOptimizationProfiles.Balanced;
+}
+
+public static class RouteOptimizationProfiles
+{
+    public const string Balanced = "balanced";
+    public const string DistanceFirst = "distance_first";
+    public const string HighlightsFirst = "highlights_first";
+
+    public static string Normalize(string? profile)
+    {
+        return profile?.Trim().ToLowerInvariant() switch
+        {
+            DistanceFirst => DistanceFirst,
+            HighlightsFirst => HighlightsFirst,
+            _ => Balanced
+        };
+    }
+
+    public static string GetLabel(string? profile)
+    {
+        return Normalize(profile) switch
+        {
+            DistanceFirst => "Distance first",
+            HighlightsFirst => "Highlights first",
+            _ => "Balanced"
+        };
+    }
+
+    public static string GetDescription(string? profile)
+    {
+        return Normalize(profile) switch
+        {
+            DistanceFirst => "Prioritize shorter distance and lower travel cost while still keeping the route stable.",
+            HighlightsFirst => "Front-load stronger attractions earlier in the day without breaking within-day route efficiency.",
+            _ => "Balance travel time, distance, attraction priority, and route stability for a practical day plan."
+        };
+    }
+}
+
 public class RouteOptimizationResult
 {
     public bool CanOptimize { get; set; }
+
+    public string Profile { get; set; } = RouteOptimizationProfiles.Balanced;
+
+    public string ProfileLabel { get; set; } = RouteOptimizationProfiles.GetLabel(RouteOptimizationProfiles.Balanced);
+
+    public string ProfileDescription { get; set; } = RouteOptimizationProfiles.GetDescription(RouteOptimizationProfiles.Balanced);
+
+    public double CurrentObjectiveScore { get; set; }
+
+    public double SuggestedObjectiveScore { get; set; }
 
     public RouteInsightResult CurrentInsight { get; set; } = RouteInsightResult.Empty;
 
@@ -24,6 +76,10 @@ public class RouteOptimizationDayResult
     public bool Changed { get; set; }
 
     public int StopCount { get; set; }
+
+    public double CurrentObjectiveScore { get; set; }
+
+    public double SuggestedObjectiveScore { get; set; }
 
     public int CurrentTravelMinutes { get; set; }
 

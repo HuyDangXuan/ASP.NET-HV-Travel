@@ -29,6 +29,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddScoped<IPublicContentService, PublicContentService>();
 builder.Services.AddScoped<ISupportChatService, SupportChatService>();
+builder.Services.AddScoped<ITourAiRouteAdvisorContextBuilder, TourAiRouteAdvisorContextBuilder>();
 builder.Services.AddScoped<ITourAiChatService, TourAiChatService>();
 builder.Services.AddScoped<CustomerPortalService>();
 builder.Services.AddScoped<BookingWorkflowService>();

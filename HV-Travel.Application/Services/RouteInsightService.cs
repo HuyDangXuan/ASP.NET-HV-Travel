@@ -6,9 +6,19 @@ namespace HVTravel.Application.Services;
 
 public class RouteInsightService : IRouteInsightService
 {
-    private const double EarthRadiusKm = 6371d;
-    private static readonly string[] UrbanKeywords = ["market", "city", "museum", "landmark", "meeting"];
-    private static readonly string[] ScenicKeywords = ["viewpoint", "beach", "park", "forest", "lake"];
+    private const int DefaultDayStartMinuteOfDay = 8 * 60;
+
+    private readonly IRouteTravelEstimator _routeTravelEstimator;
+
+    public RouteInsightService()
+        : this(new RouteTravelEstimator())
+    {
+    }
+
+    public RouteInsightService(IRouteTravelEstimator routeTravelEstimator)
+    {
+        _routeTravelEstimator = routeTravelEstimator;
+    }
 
     public RouteInsightResult Build(Tour? tour)
     {
@@ -29,7 +39,6 @@ public class RouteInsightService : IRouteInsightService
         }
 
         var warnings = new List<RouteInsightWarning>();
-
         var days = validStops
             .GroupBy(stop => stop.Day)
             .OrderBy(group => group.Key)
@@ -56,17 +65,20 @@ public class RouteInsightService : IRouteInsightService
         };
     }
 
-    private static RouteInsightDay BuildDay(int day, IReadOnlyList<TourRouteStop> stops, ICollection<RouteInsightWarning> warnings)
+    private RouteInsightDay BuildDay(int day, IReadOnlyList<TourRouteStop> stops, ICollection<RouteInsightWarning> warnings)
     {
         var orderedStops = stops
             .OrderBy(stop => stop.Order)
             .ToList();
 
         var legs = new List<RouteInsightLeg>();
+        var currentMinuteOfDay = DefaultDayStartMinuteOfDay;
+
         for (var index = 0; index < orderedStops.Count - 1; index++)
         {
             var fromStop = orderedStops[index];
             var toStop = orderedStops[index + 1];
+            currentMinuteOfDay += Math.Max(0, fromStop.VisitMinutes);
 
             if (!HasCoordinatePair(fromStop.Coordinates) || !HasCoordinatePair(toStop.Coordinates))
             {
@@ -80,28 +92,9 @@ public class RouteInsightService : IRouteInsightService
                 continue;
             }
 
-            var profile = ResolveProfile(toStop.Type, fromStop.Type);
-            var distanceKm = CalculateDistanceKm(
-                fromStop.Coordinates!.Lat!.Value,
-                fromStop.Coordinates.Lng!.Value,
-                toStop.Coordinates!.Lat!.Value,
-                toStop.Coordinates.Lng!.Value);
-
-            var speedKmPerHour = profile switch
-            {
-                "urban" => 24d,
-                "scenic" => 32d,
-                _ => 28d
-            };
-
-            var junctionDelayMinutes = profile switch
-            {
-                "urban" => 6,
-                "scenic" => 3,
-                _ => 4
-            };
-
-            var driveMinutes = Math.Max(5, (int)Math.Round((distanceKm / speedKmPerHour) * 60d, MidpointRounding.AwayFromZero));
+            var profile = _routeTravelEstimator.ResolveProfile(fromStop, toStop);
+            var estimate = _routeTravelEstimator.Estimate(fromStop, toStop, profile, currentMinuteOfDay);
+            var arrivalMinuteOfDay = currentMinuteOfDay + estimate.TravelMinutes;
 
             legs.Add(new RouteInsightLeg
             {
@@ -109,11 +102,17 @@ public class RouteInsightService : IRouteInsightService
                 FromStopId = fromStop.Id ?? string.Empty,
                 ToStopId = toStop.Id ?? string.Empty,
                 Profile = profile,
-                DistanceKm = distanceKm,
-                DriveMinutes = driveMinutes,
-                JunctionDelayMinutes = junctionDelayMinutes,
-                TravelMinutes = driveMinutes + junctionDelayMinutes
+                DistanceKm = estimate.DistanceKm,
+                DriveMinutes = estimate.DriveMinutes,
+                JunctionDelayMinutes = estimate.JunctionDelayMinutes,
+                TravelMinutes = estimate.TravelMinutes,
+                DayPart = estimate.DayPart,
+                CongestionLevel = estimate.CongestionLevel,
+                DepartureMinuteOfDay = currentMinuteOfDay,
+                ArrivalMinuteOfDay = arrivalMinuteOfDay
             });
+
+            currentMinuteOfDay = arrivalMinuteOfDay;
         }
 
         var scores = orderedStops
@@ -123,6 +122,7 @@ public class RouteInsightService : IRouteInsightService
 
         var visitMinutes = orderedStops.Sum(stop => Math.Max(0, stop.VisitMinutes));
         var travelMinutes = legs.Sum(leg => leg.TravelMinutes);
+        var peakLeg = ResolvePeakLeg(legs);
 
         return new RouteInsightDay
         {
@@ -133,56 +133,44 @@ public class RouteInsightService : IRouteInsightService
             JourneyMinutes = visitMinutes + travelMinutes,
             DistanceKm = legs.Sum(leg => leg.DistanceKm),
             AverageAttractionScore = scores.Count > 0 ? scores.Average() : null,
+            PeakDayPart = peakLeg?.DayPart ?? string.Empty,
+            PeakCongestionLevel = peakLeg?.CongestionLevel ?? string.Empty,
             Legs = legs
+        };
+    }
+
+    private static RouteInsightLeg? ResolvePeakLeg(IEnumerable<RouteInsightLeg> legs)
+    {
+        return legs
+            .OrderByDescending(leg => CongestionSeverity(leg.CongestionLevel))
+            .ThenByDescending(leg => PeakWindowPriority(leg.DayPart))
+            .ThenByDescending(leg => leg.TravelMinutes)
+            .FirstOrDefault();
+    }
+
+    private static int CongestionSeverity(string? value)
+    {
+        return value switch
+        {
+            "high" => 3,
+            "moderate" => 2,
+            _ => 1
+        };
+    }
+
+    private static int PeakWindowPriority(string? value)
+    {
+        return value switch
+        {
+            "morning_peak" => 3,
+            "evening_peak" => 2,
+            "late_morning" or "midday" or "afternoon" => 1,
+            _ => 0
         };
     }
 
     private static bool HasCoordinatePair(GeoPoint? coordinates)
     {
         return coordinates?.Lat.HasValue == true && coordinates.Lng.HasValue;
-    }
-
-    private static string ResolveProfile(string? primaryType, string? fallbackType)
-    {
-        var type = !string.IsNullOrWhiteSpace(primaryType) ? primaryType : fallbackType;
-        if (string.IsNullOrWhiteSpace(type))
-        {
-            return "default";
-        }
-
-        if (ContainsAny(type, UrbanKeywords))
-        {
-            return "urban";
-        }
-
-        if (ContainsAny(type, ScenicKeywords))
-        {
-            return "scenic";
-        }
-
-        return "default";
-    }
-
-    private static bool ContainsAny(string value, IEnumerable<string> keywords)
-    {
-        return keywords.Any(keyword => value.Contains(keyword, StringComparison.OrdinalIgnoreCase));
-    }
-
-    private static double CalculateDistanceKm(double fromLat, double fromLng, double toLat, double toLng)
-    {
-        var latDistance = DegreesToRadians(toLat - fromLat);
-        var lngDistance = DegreesToRadians(toLng - fromLng);
-        var a = Math.Pow(Math.Sin(latDistance / 2d), 2d)
-                + Math.Cos(DegreesToRadians(fromLat))
-                * Math.Cos(DegreesToRadians(toLat))
-                * Math.Pow(Math.Sin(lngDistance / 2d), 2d);
-
-        var c = 2d * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1d - a));
-        return EarthRadiusKm * c;
-    }
-
-    private static double DegreesToRadians(double degrees)
-    {
-        return degrees * (Math.PI / 180d);
     }
 }

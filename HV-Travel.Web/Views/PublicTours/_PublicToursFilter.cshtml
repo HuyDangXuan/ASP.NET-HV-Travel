@@ -7,6 +7,7 @@
     var filterPanel = ViewData["FilterPanel"] as ContentSection;
     var currentSearch = ViewData["CurrentSearch"]?.ToString();
     var currentSort = ViewData["CurrentSort"]?.ToString();
+    var currentRouteStyle = ViewData["CurrentRouteStyle"]?.ToString();
     var currentCollection = ViewData["CurrentCollection"]?.ToString();
     var currentRegion = ViewData["CurrentRegion"]?.ToString();
     var currentDestination = ViewData["CurrentDestination"]?.ToString();
@@ -41,7 +42,12 @@
     var maxDaysPlaceholder = CmsText("maxDaysPlaceholder", "7");
     var travellersLabelText = CmsText("travellersLabel", "Số khách");
     var travellersPlaceholder = CmsText("travellersPlaceholder", "2");
+    var routeStyleLabelText = CmsText("routeStyleLabel", "Kiểu hành trình");
+    var routeStyleCompactLabel = CmsText("routeStyleCompactLabel", "Gọn, ít di chuyển");
+    var routeStyleBalancedLabel = CmsText("routeStyleBalancedLabel", "Cân bằng");
+    var routeStyleHighlightsLabel = CmsText("routeStyleHighlightsLabel", "Ưu tiên điểm nổi bật");
     var sortLabelText = CmsText("sortLabel", "Sắp xếp");
+    var sortRecommendedLabel = CmsText("sortRecommendedLabel", "Phù hợp nhất");
     var sortRatingLabel = CmsText("sortRatingLabel", "Đánh giá cao");
     var sortBestValueLabel = CmsText("sortBestValueLabel", "Giá tốt nhất");
     var sortPriceAscLabel = CmsText("sortPriceAscLabel", "Giá thấp đến cao");
@@ -152,12 +158,24 @@
                 <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="@travellersPlaceholder" class="@ControlClass" />
             </div>
             <div class="@FieldClass">
+                @if (!string.IsNullOrWhiteSpace(routeStyleLabelText))
+                {
+                    <label class="@LabelClass" for="route-style-select">@routeStyleLabelText</label>
+                }
+                <select id="route-style-select" name="routeStyle" class="@ControlClass">
+                    <option value="compact" selected="@(currentRouteStyle == "compact")">@routeStyleCompactLabel</option>
+                    <option value="balanced" selected="@(string.IsNullOrWhiteSpace(currentRouteStyle) || currentRouteStyle == "balanced")">@routeStyleBalancedLabel</option>
+                    <option value="highlights" selected="@(currentRouteStyle == "highlights")">@routeStyleHighlightsLabel</option>
+                </select>
+            </div>
+            <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(sortLabelText))
                 {
                     <label class="@LabelClass" for="sort-select">@sortLabelText</label>
                 }
                 <select id="sort-select" name="sort" class="@ControlClass">
-                    <option value="rating" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "rating")">@sortRatingLabel</option>
+                    <option value="recommended" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "recommended")">@sortRecommendedLabel</option>
+                    <option value="rating" selected="@(currentSort == "rating")">@sortRatingLabel</option>
                     <option value="best_value" selected="@(currentSort == "best_value")">@sortBestValueLabel</option>
                     <option value="price_asc" selected="@(currentSort == "price_asc")">@sortPriceAscLabel</option>
                     <option value="price_desc" selected="@(currentSort == "price_desc")">@sortPriceDescLabel</option>

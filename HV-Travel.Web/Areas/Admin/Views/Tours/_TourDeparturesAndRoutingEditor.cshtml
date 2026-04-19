@@ -92,6 +92,14 @@
             <p class="text-sm text-slate-500 dark:text-slate-400">Structured route stops power public route preview, route intelligence, and now admin optimization preview.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
+            <div>
+                <label for="route-optimization-profile" class="label-text">Optimization profile</label>
+                <select id="route-optimization-profile" class="input-field min-w-[220px]">
+                    <option value="balanced" selected>Balanced</option>
+                    <option value="distance_first">Distance first</option>
+                    <option value="highlights_first">Highlights first</option>
+                </select>
+            </div>
             <button type="button" onclick="generateRouteOptimizationPreview()" class="rounded-2xl border border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
                 <span class="material-symbols-outlined align-[-4px] text-lg">auto_awesome</span> Generate optimization
             </button>
@@ -355,6 +363,31 @@
         return document.querySelector('#edit-tour-form input[name="__RequestVerificationToken"], #create-tour-form input[name="__RequestVerificationToken"], input[name="__RequestVerificationToken"]')?.value || '';
     }
 
+    function getSelectedRouteOptimizationProfile() {
+        return document.getElementById('route-optimization-profile')?.value || 'balanced';
+    }
+
+    function formatObjectiveScore(value) {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+            return '0.000';
+        }
+
+        return parsed.toFixed(3);
+    }
+
+    function bindRouteOptimizationProfileSelector() {
+        const selector = document.getElementById('route-optimization-profile');
+        if (!selector || selector.dataset.bound === 'true') {
+            return;
+        }
+
+        selector.dataset.bound = 'true';
+        selector.addEventListener('change', () => {
+            discardRouteOptimizationPreview();
+        });
+    }
+
     function serializeScheduleDraft() {
         return Array.from(document.querySelectorAll('#schedule-container .schedule-item'))
             .map((item) => ({
@@ -397,7 +430,12 @@
 
     function renderOptimizationSummaryBlock(payload) {
         return `
-            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Optimization profile</p>
+                <p class="mt-2 text-lg font-black text-slate-900 dark:text-white">${escapeHtml(payload.profileLabel || 'Balanced')}</p>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${escapeHtml(payload.profileDescription || '')}</p>
+            </div>
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
                     <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current travel</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalTravelMinutes} min</p>
@@ -413,6 +451,14 @@
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
                     <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested journey</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalJourneyMinutes} min</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current Objective score</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${formatObjectiveScore(payload.currentObjectiveScore)}</p>
+                </div>
+                <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested Objective score</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${formatObjectiveScore(payload.suggestedObjectiveScore)}</p>
                 </div>
             </div>
         `;
@@ -448,6 +494,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentTravelMinutes} -> ${day.suggestedTravelMinutes} travel</span>
                         <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentJourneyMinutes} -> ${day.suggestedJourneyMinutes} journey</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">Objective score ${formatObjectiveScore(day.currentObjectiveScore)} -> ${formatObjectiveScore(day.suggestedObjectiveScore)}</span>
                     </div>
                 </div>
                 <div class="mt-4 grid gap-4 lg:grid-cols-2">
@@ -477,8 +524,9 @@
         }
 
         const travelDelta = payload.currentInsight.totalTravelMinutes - payload.suggestedInsight.totalTravelMinutes;
+        const objectiveDelta = Number(payload.suggestedObjectiveScore || 0) - Number(payload.currentObjectiveScore || 0);
         status.textContent = payload.canOptimize
-            ? `Suggested routing reduces travel by ${travelDelta} min and keeps days unchanged.`
+            ? `${payload.profileLabel || 'Balanced'} suggestion changes within-day order, reduces travel by ${travelDelta} min, and shifts objective score by ${formatObjectiveScore(objectiveDelta)}.`
             : (payload.unchangedReason || 'No better within-day reorder was found for this draft.');
 
         body.innerHTML = `
@@ -517,6 +565,7 @@
     async function generateRouteOptimizationPreview() {
         const token = getRequestVerificationToken();
         const request = {
+            profile: getSelectedRouteOptimizationProfile(),
             schedule: serializeScheduleDraft(),
             stops: serializeRouteStopsDraft()
         };
@@ -608,6 +657,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        bindRouteOptimizationProfileSelector();
         ensureRouteStopKeys();
         reindexRouteStopItems();
     });

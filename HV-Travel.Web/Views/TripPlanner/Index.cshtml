@@ -1,0 +1,280 @@
+@{
+    var currentRouteStyle = ViewData["CurrentRouteStyle"]?.ToString() ?? "balanced";
+    ViewData["Title"] = ViewData["Title"] ?? "Trip Planner";
+}
+
+<section class="overflow-hidden bg-slate-950 text-white">
+    <div class="mx-auto grid min-h-[34rem] max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
+        <div class="flex flex-col justify-center">
+            <p class="text-xs font-black uppercase tracking-[0.34em] text-cyan-300">Route-aware planner</p>
+            <h1 class="mt-5 max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">Build a smarter draft trip from tours you already like.</h1>
+            <p class="mt-6 max-w-2xl text-base leading-8 text-slate-300">Select public tours, compare total cost and journey time, then let route intelligence suggest the next best fit.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a asp-controller="PublicTours" asp-action="Index" asp-route-sort="recommended" asp-route-routeStyle="@currentRouteStyle" class="inline-flex items-center justify-center rounded-2xl bg-cyan-400 px-6 py-3 text-sm font-black text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-300">
+                    Browse tours
+                </a>
+                <a href="#trip-planner-shell" class="inline-flex items-center justify-center rounded-2xl border border-white/15 px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-cyan-300/60">
+                    View planner
+                </a>
+            </div>
+        </div>
+        <div class="relative min-h-[20rem]">
+            <div class="absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_30%_30%,rgba(34,211,238,0.38),transparent_38%),linear-gradient(135deg,rgba(14,165,233,0.28),rgba(15,23,42,0.2))]"></div>
+            <div class="absolute inset-8 rounded-[2.5rem] border border-white/10 bg-white/10 backdrop-blur"></div>
+            <div class="absolute bottom-8 left-8 right-8 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl">
+                <p class="text-xs font-black uppercase tracking-[0.28em] text-cyan-200">Draft metrics</p>
+                <div class="mt-5 grid grid-cols-3 gap-3 text-center">
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-days>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">days</p></div>
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-travel>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">travel</p></div>
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-items>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">tours</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="trip-planner-shell"
+         data-trip-planner-preview="@Url.Action("Preview", "TripPlanner")"
+         data-default-route-style="@currentRouteStyle"
+         class="bg-slate-50 py-14 dark:bg-slate-950 sm:py-18">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-[22rem_1fr]">
+            <aside class="h-fit rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Planner controls</p>
+                <div class="mt-5 space-y-4">
+                    <label class="block">
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Route style</span>
+                        <select data-planner-route-style class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white">
+                            <option value="compact" selected="@(currentRouteStyle == "compact")">Compact</option>
+                            <option value="balanced" selected="@(currentRouteStyle == "balanced")">Balanced</option>
+                            <option value="highlights" selected="@(currentRouteStyle == "highlights")">Highlights</option>
+                        </select>
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Travellers</span>
+                        <input data-planner-travellers type="number" min="1" value="2" class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Max days</span>
+                        <input data-planner-max-days type="number" min="1" max="30" value="7" class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+                    </label>
+                </div>
+                <button type="button" data-planner-refresh class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-primary-dark">
+                    Refresh plan
+                </button>
+                <button type="button" data-planner-clear class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">
+                    Clear planner
+                </button>
+            </aside>
+
+            <div class="space-y-8">
+                <div data-planner-empty class="hidden rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Empty planner</p>
+                    <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white">Start by adding a tour.</h2>
+                    <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400">Your draft trip lives in this browser only. Add tours from the public listing, then return here for route-aware suggestions.</p>
+                    <a asp-controller="PublicTours" asp-action="Index" asp-route-sort="recommended" asp-route-routeStyle="balanced" class="mt-6 inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-primary-dark">
+                        Find recommended tours
+                    </a>
+                </div>
+
+                <div data-planner-summary class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
+                <div data-planner-warnings class="space-y-3"></div>
+
+                <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Selected tours</p>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Your draft stack</h2>
+                        </div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400" data-selected-count>0 selected</p>
+                    </div>
+                    <div data-selected-tours class="mt-6 grid gap-4"></div>
+                </section>
+
+                <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Suggested next</p>
+                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Route-aware additions</h2>
+                    <div data-suggested-tours class="mt-6 grid gap-4"></div>
+                </section>
+
+                <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Day by day</p>
+                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Draft itinerary</h2>
+                    <div data-itinerary-days class="mt-6 space-y-4"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script src="~/js/card-interactions.js" asp-append-version="true"></script>
+<script>
+    (() => {
+        const root = document.getElementById('trip-planner-shell');
+        if (!root) return;
+
+        const storageKey = 'hvtravel_trip_planner';
+        const formatter = new Intl.NumberFormat('vi-VN');
+        const previewUrl = root.dataset.tripPlannerPreview;
+        const routeStyleEl = root.querySelector('[data-planner-route-style]');
+        const travellersEl = root.querySelector('[data-planner-travellers]');
+        const maxDaysEl = root.querySelector('[data-planner-max-days]');
+        const summaryEl = root.querySelector('[data-planner-summary]');
+        const warningsEl = root.querySelector('[data-planner-warnings]');
+        const selectedEl = root.querySelector('[data-selected-tours]');
+        const suggestedEl = root.querySelector('[data-suggested-tours]');
+        const daysEl = root.querySelector('[data-itinerary-days]');
+        const emptyEl = root.querySelector('[data-planner-empty]');
+        const selectedCountEl = root.querySelector('[data-selected-count]');
+
+        const parseItems = () => {
+            try {
+                return JSON.parse(localStorage.getItem(storageKey) || '[]');
+            } catch {
+                return [];
+            }
+        };
+
+        const saveItems = (items) => {
+            localStorage.setItem(storageKey, JSON.stringify(items.slice(0, 6)));
+            window.dispatchEvent(new CustomEvent('hvtravel:trip-planner-changed'));
+        };
+
+        const escapeHtml = (value) => (value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const detailUrl = (item) => `/PublicTours/Details/${encodeURIComponent(item.detailIdentifier || item.tourId)}?routeStyle=${encodeURIComponent(routeStyleEl.value || 'balanced')}`;
+        const bookingUrl = (item) => `/Booking/Create?tourId=${encodeURIComponent(item.tourId)}`;
+
+        const metricCard = (label, value) => `
+            <div class="rounded-[1.6rem] border border-slate-200 bg-white px-5 py-5 dark:border-slate-800 dark:bg-slate-900">
+                <p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">${escapeHtml(label)}</p>
+                <p class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">${escapeHtml(value)}</p>
+            </div>`;
+
+        const itemMarkup = (item, allowAdd) => `
+            <article class="grid gap-4 rounded-[1.75rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">${escapeHtml(item.destinationLabel)} · ${escapeHtml(item.durationText)}</p>
+                    <h3 class="mt-2 text-lg font-black text-slate-900 dark:text-white">${escapeHtml(item.name)}</h3>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${item.hasRouting ? `${item.stopCount} stops · ${item.travelMinutes} travel minutes · ${item.journeyMinutes} journey minutes` : 'No structured routing yet'}</p>
+                    <p class="mt-2 text-sm font-black text-primary">${formatter.format(item.startingAdultPrice)} VND</p>
+                </div>
+                <div class="flex flex-wrap gap-2 sm:justify-end">
+                    <a href="${detailUrl(item)}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition hover:border-primary/30 hover:text-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">View details</a>
+                    <a href="${bookingUrl(item)}" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2 text-xs font-black text-white transition hover:bg-primary-dark">Book this tour</a>
+                    ${allowAdd ? `<button type="button" data-planner-add-suggested="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-2 text-xs font-black text-cyan-700 transition hover:border-cyan-300 dark:border-cyan-900/50 dark:bg-cyan-950/30 dark:text-cyan-200">Add to planner</button>` : `<button type="button" data-planner-remove="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-4 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-300">Remove</button>`}
+                </div>
+            </article>`;
+
+        const renderPlan = (payload) => {
+            const plan = payload.plan || {};
+            const selected = plan.selectedItems || [];
+            const suggested = plan.suggestedItems || [];
+            const days = plan.days || [];
+            const warnings = payload.warnings || [];
+            const hasLocalItems = parseItems().length > 0;
+
+            emptyEl.classList.toggle('hidden', hasLocalItems);
+            selectedCountEl.textContent = `${selected.length} selected`;
+            document.querySelector('[data-hero-total-days]').textContent = plan.totalDays || 0;
+            document.querySelector('[data-hero-total-travel]').textContent = plan.totalTravelMinutes || 0;
+            document.querySelector('[data-hero-total-items]').textContent = selected.length + suggested.length;
+
+            summaryEl.innerHTML = [
+                metricCard('Total days', String(plan.totalDays || 0)),
+                metricCard('Starting adult price', `${formatter.format(plan.totalStartingAdultPrice || 0)} VND`),
+                metricCard('Travel minutes', String(plan.totalTravelMinutes || 0)),
+                metricCard('Journey minutes', String(plan.totalJourneyMinutes || 0))
+            ].join('');
+
+            warningsEl.innerHTML = warnings.length
+                ? warnings.map((warning) => `<div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">${escapeHtml(warning)}</div>`).join('')
+                : '';
+
+            selectedEl.innerHTML = selected.length
+                ? selected.map((item) => itemMarkup(item, false)).join('')
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">No selected tours yet.</p>';
+
+            suggestedEl.innerHTML = suggested.length
+                ? suggested.map((item) => itemMarkup(item, true)).join('')
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">Add one tour to unlock route-aware suggestions.</p>';
+
+            daysEl.innerHTML = days.length
+                ? days.map((day) => `
+                    <div class="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950 sm:grid-cols-[4rem_1fr]">
+                        <div class="text-center"><p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Day</p><p class="mt-1 text-3xl font-black text-slate-900 dark:text-white">${day.dayNumber}</p></div>
+                        <div>
+                            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-primary">${escapeHtml(day.tourName)} · tour day ${day.tourDay}</p>
+                            <h3 class="mt-2 text-base font-black text-slate-900 dark:text-white">${escapeHtml(day.title)}</h3>
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${day.hasRouting ? `${day.stopCount} stops · ${day.visitMinutes} visit minutes · ${day.travelMinutes} travel minutes · ${day.journeyMinutes} journey minutes` : 'No structured routing metrics for this day.'}</p>
+                        </div>
+                    </div>`).join('')
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">Your draft itinerary will appear here.</p>';
+        };
+
+        const refresh = async () => {
+            const ids = parseItems().map((item) => item.id).filter(Boolean);
+            const response = await fetch(previewUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tourIds: ids,
+                    routeStyle: routeStyleEl.value || root.dataset.defaultRouteStyle || 'balanced',
+                    travellers: Number(travellersEl.value || 2),
+                    maxDays: Number(maxDaysEl.value || 7)
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Planner preview failed.');
+            }
+
+            renderPlan(await response.json());
+        };
+
+        root.addEventListener('click', (event) => {
+            const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+            const removeButton = target?.closest('[data-planner-remove]');
+            const addButton = target?.closest('[data-planner-add-suggested]');
+
+            if (removeButton) {
+                const id = removeButton.getAttribute('data-planner-remove');
+                saveItems(parseItems().filter((item) => item.id !== id));
+                refresh().catch(() => {});
+                return;
+            }
+
+            if (addButton) {
+                const id = addButton.getAttribute('data-planner-add-suggested');
+                const card = {
+                    id,
+                    name: addButton.closest('article')?.querySelector('h3')?.textContent || id,
+                    url: `/PublicTours/Details/${encodeURIComponent(id)}`,
+                    price: 0,
+                    location: ''
+                };
+                const items = parseItems().filter((item) => item.id !== id);
+                items.unshift(card);
+                saveItems(items);
+                refresh().catch(() => {});
+            }
+        });
+
+        root.querySelector('[data-planner-refresh]')?.addEventListener('click', () => refresh().catch(() => {}));
+        root.querySelector('[data-planner-clear]')?.addEventListener('click', () => {
+            saveItems([]);
+            refresh().catch(() => {});
+        });
+
+        [routeStyleEl, travellersEl, maxDaysEl].forEach((input) => input?.addEventListener('change', () => refresh().catch(() => {})));
+        window.addEventListener('hvtravel:trip-planner-changed', () => refresh().catch(() => {}));
+        refresh().catch(() => {});
+    })();
+</script>
+}

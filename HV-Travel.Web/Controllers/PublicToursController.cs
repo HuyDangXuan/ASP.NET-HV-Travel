@@ -1,4 +1,7 @@
 ﻿using HVTravel.Domain.Entities;
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
+using HVTravel.Application.Services;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Models;
 using HVTravel.Web.Models;
@@ -10,15 +13,23 @@ namespace HVTravel.Web.Controllers;
 public class PublicToursController : Controller
 {
     private readonly ITourRepository _tourRepository;
+    private readonly ITourSearchService _tourSearchService;
+    private readonly IRouteRecommendationService _routeRecommendationService;
 
-    public PublicToursController(ITourRepository tourRepository)
+    public PublicToursController(
+        ITourRepository tourRepository,
+        ITourSearchService? tourSearchService = null,
+        IRouteRecommendationService? routeRecommendationService = null)
     {
         _tourRepository = tourRepository;
+        _routeRecommendationService = routeRecommendationService ?? new RouteRecommendationService(new RouteInsightService());
+        _tourSearchService = tourSearchService ?? new TourSearchService(_tourRepository, _routeRecommendationService);
     }
 
     public async Task<IActionResult> Index(
         string? search,
         string? sort,
+        string? routeStyle = null,
         string? region = null,
         string? destination = null,
         decimal? minPrice = null,
@@ -35,11 +46,15 @@ public class PublicToursController : Controller
     {
         ViewData["ActivePage"] = "Tours";
         ViewData["Title"] = "Tour du lịch";
+        var normalizedRouteStyle = RouteRecommendationStyles.Normalize(routeStyle);
+        var normalizedSort = NormalizeSort(sort);
+        var useRecommendationRanking = string.Equals(normalizedSort, "recommended", StringComparison.OrdinalIgnoreCase);
 
-        var result = await _tourRepository.SearchAsync(new TourSearchRequest
+        var result = await _tourSearchService.SearchAsync(new TourSearchRequest
         {
             Search = search,
-            Sort = sort,
+            Sort = normalizedSort,
+            RouteStyle = normalizedRouteStyle,
             Region = region,
             Destination = destination,
             MinPrice = minPrice,
@@ -52,6 +67,7 @@ public class PublicToursController : Controller
             Travellers = travellers,
             ConfirmationType = confirmationType,
             CancellationType = cancellationType,
+            UseRecommendationRanking = useRecommendationRanking,
             Page = page,
             PageSize = 9,
             PublicOnly = true
@@ -65,7 +81,8 @@ public class PublicToursController : Controller
         ViewData["CancellationTypeFacets"] = result.CancellationTypes;
 
         ViewData["CurrentSearch"] = search?.Trim();
-        ViewData["CurrentSort"] = sort;
+        ViewData["CurrentSort"] = normalizedSort;
+        ViewData["CurrentRouteStyle"] = normalizedRouteStyle;
         ViewData["CurrentRegion"] = region;
         ViewData["CurrentDestination"] = destination;
         ViewData["CurrentMinPrice"] = minPrice;
@@ -87,7 +104,7 @@ public class PublicToursController : Controller
         return View(result.Items);
     }
 
-    public async Task<IActionResult> Details(string id)
+    public async Task<IActionResult> Details(string id, string? routeStyle = null)
     {
         ViewData["ActivePage"] = "Tours";
 
@@ -96,6 +113,7 @@ public class PublicToursController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        var normalizedRouteStyle = RouteRecommendationStyles.Normalize(routeStyle);
         var tour = await ResolveTourByPublicIdentifierAsync(id);
         if (tour == null || !IsPubliclyVisible(tour.Status))
         {
@@ -104,6 +122,7 @@ public class PublicToursController : Controller
 
         tour = PublicTextSanitizer.NormalizeTourForDisplay(tour);
         ViewData["RouteOverview"] = PublicTourRouteOverviewBuilder.Build(tour);
+        ViewData["CurrentRouteStyle"] = normalizedRouteStyle;
 
         var description = tour.Seo?.Description;
         if (string.IsNullOrWhiteSpace(description))
@@ -119,21 +138,26 @@ public class PublicToursController : Controller
         ViewData["OpenGraphImage"] = !string.IsNullOrWhiteSpace(tour.Seo?.OpenGraphImageUrl)
             ? tour.Seo.OpenGraphImageUrl
             : tour.Images?.FirstOrDefault();
+        ViewData["RelatedToursRouteStyleText"] = GetRelatedToursRouteStyleText(normalizedRouteStyle);
 
         var searchContext = await _tourRepository.SearchAsync(new TourSearchRequest
         {
             Region = tour.Destination?.Region,
             Page = 1,
-            PageSize = 12,
+            PageSize = int.MaxValue,
+            UseRecommendationRanking = true,
             PublicOnly = true
         });
 
-        var relatedTours = searchContext.Items
-            .Where(item => item.Id != tour.Id)
-            .OrderByDescending(item => string.Equals(item.Destination?.City, tour.Destination?.City, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(item => string.Equals(item.Destination?.Region, tour.Destination?.Region, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(item => item.EffectiveDepartures.Any(departure => departure.RemainingCapacity is > 0 and <= 5))
-            .ThenByDescending(item => item.Rating)
+        var relatedTours = _routeRecommendationService
+            .Recommend(searchContext.Items, new RouteRecommendationRequest
+            {
+                RouteStyle = normalizedRouteStyle,
+                CurrentTourId = tour.Id,
+                CurrentCity = tour.Destination?.City,
+                CurrentRegion = tour.Destination?.Region
+            })
+            .Items
             .Take(4)
             .ToList();
 
@@ -155,6 +179,21 @@ public class PublicToursController : Controller
     private static bool IsPubliclyVisible(string? status)
     {
         return status is "Active" or "ComingSoon" or "SoldOut";
+    }
+
+    private static string NormalizeSort(string? sort)
+    {
+        return string.IsNullOrWhiteSpace(sort) ? "recommended" : sort.Trim();
+    }
+
+    private static string GetRelatedToursRouteStyleText(string routeStyle)
+    {
+        return routeStyle switch
+        {
+            RouteRecommendationStyles.Compact => "Gợi ý ưu tiên hành trình gọn và giảm thời gian di chuyển.",
+            RouteRecommendationStyles.Highlights => "Gợi ý ưu tiên các tour có điểm dừng nổi bật và trải nghiệm đậm hơn.",
+            _ => "Gợi ý ưu tiên lịch trình cân bằng giữa trải nghiệm, chi phí và thời lượng."
+        };
     }
 }
 

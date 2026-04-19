@@ -17,8 +17,11 @@ namespace HVTravel.Application
             services.AddScoped<IPricingService, PricingService>();
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<ICheckoutService, CheckoutService>();
+            services.AddScoped<IRouteTravelEstimator, RouteTravelEstimator>();
             services.AddScoped<IRouteInsightService, RouteInsightService>();
             services.AddScoped<IRouteOptimizationService, RouteOptimizationService>();
+            services.AddScoped<IRouteRecommendationService, RouteRecommendationService>();
+            services.AddScoped<ITripPlannerService, TripPlannerService>();
             services.AddScoped<IAnalyticsTracker, NoopAnalyticsTracker>();
 
             return services;

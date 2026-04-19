@@ -33,9 +33,32 @@ public interface IRouteInsightService
     RouteInsightResult Build(HVTravel.Domain.Entities.Tour? tour);
 }
 
+public interface IRouteTravelEstimator
+{
+    RouteTravelEstimate Estimate(
+        HVTravel.Domain.Entities.TourRouteStop? fromStop,
+        HVTravel.Domain.Entities.TourRouteStop? toStop,
+        string? profile,
+        int departureMinuteOfDay);
+
+    string ResolveProfile(HVTravel.Domain.Entities.TourRouteStop? fromStop, HVTravel.Domain.Entities.TourRouteStop? toStop);
+}
+
 public interface IRouteOptimizationService
 {
     RouteOptimizationResult Optimize(HVTravel.Domain.Entities.Tour? tour);
+
+    RouteOptimizationResult Optimize(HVTravel.Domain.Entities.Tour? tour, RouteOptimizationRequest request);
+}
+
+public interface IRouteRecommendationService
+{
+    RouteRecommendationResult Recommend(IEnumerable<HVTravel.Domain.Entities.Tour>? tours, RouteRecommendationRequest? request);
+}
+
+public interface ITripPlannerService
+{
+    TripPlannerResult Build(TripPlannerRequest? request);
 }
 
 public interface IAnalyticsTracker

@@ -1,5 +1,20 @@
 namespace HVTravel.Application.Models;
 
+public class RouteTravelEstimate
+{
+    public double DistanceKm { get; set; }
+
+    public int DriveMinutes { get; set; }
+
+    public int JunctionDelayMinutes { get; set; }
+
+    public int TravelMinutes { get; set; }
+
+    public string DayPart { get; set; } = "night";
+
+    public string CongestionLevel { get; set; } = "low";
+}
+
 public class RouteInsightResult
 {
     public static RouteInsightResult Empty { get; } = new();
@@ -41,6 +56,10 @@ public class RouteInsightDay
 
     public double? AverageAttractionScore { get; set; }
 
+    public string PeakDayPart { get; set; } = string.Empty;
+
+    public string PeakCongestionLevel { get; set; } = string.Empty;
+
     public IReadOnlyList<RouteInsightLeg> Legs { get; set; } = Array.Empty<RouteInsightLeg>();
 }
 
@@ -61,6 +80,14 @@ public class RouteInsightLeg
     public int JunctionDelayMinutes { get; set; }
 
     public int TravelMinutes { get; set; }
+
+    public string DayPart { get; set; } = "night";
+
+    public string CongestionLevel { get; set; } = "low";
+
+    public int DepartureMinuteOfDay { get; set; }
+
+    public int ArrivalMinuteOfDay { get; set; }
 }
 
 public class RouteInsightWarning

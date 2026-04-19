@@ -8,8 +8,28 @@
         : "https://via.placeholder.com/1200x800?text=Tour";
     var adminDepartures = (Model.Departures ?? new List<HVTravel.Domain.Entities.TourDeparture>()).OrderBy(item => item.StartDate).ToList();
     var routeStops = (Model.Routing?.Stops ?? new List<HVTravel.Domain.Entities.TourRouteStop>()).OrderBy(item => item.Day).ThenBy(item => item.Order).ToList();
+    var routeStopNameLookup = routeStops
+        .Where(item => !string.IsNullOrWhiteSpace(item.Id))
+        .GroupBy(item => item.Id)
+        .ToDictionary(group => group.Key!, group => group.First().Name);
     var highlights = Model.Highlights ?? new List<string>();
     var badgeSet = Model.BadgeSet ?? new List<string>();
+    string DayPartText(string? value) => value switch
+    {
+        "early_morning" => "Early morning",
+        "morning_peak" => "Morning peak",
+        "late_morning" => "Late morning",
+        "midday" => "Midday",
+        "afternoon" => "Afternoon",
+        "evening_peak" => "Evening peak",
+        _ => "Night"
+    };
+    string CongestionText(string? value) => value switch
+    {
+        "high" => "High",
+        "moderate" => "Moderate",
+        _ => "Low"
+    };
 }
 
 @await Html.PartialAsync("_AdminBreadcrumb", new HVTravel.Web.Models.BreadcrumbViewModel
@@ -302,6 +322,67 @@
                 else
                 {
                     <p class="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Khong co warning cho routing hien tai.</p>
+                }
+            </div>
+            <div class="mt-8 space-y-5">
+                @if (routeInsight.Days.Any(day => day.Legs.Count > 0))
+                {
+                    foreach (var routeDay in routeInsight.Days.Where(day => day.Legs.Count > 0).OrderBy(day => day.Day))
+                    {
+                        <article class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 dark:border-slate-700 dark:bg-slate-800/60">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Traffic-aware estimate</p>
+                                    <h4 class="mt-1 text-lg font-black text-slate-900 dark:text-white">Day @routeDay.Day</h4>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(routeDay.PeakDayPart))
+                                    {
+                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Day part: @DayPartText(routeDay.PeakDayPart)</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(routeDay.PeakCongestionLevel))
+                                    {
+                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Congestion: @CongestionText(routeDay.PeakCongestionLevel)</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="mt-5 overflow-x-auto">
+                                <table class="min-w-full text-sm text-slate-600 dark:text-slate-300">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 text-left text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:border-slate-700 dark:text-slate-500">
+                                            <th class="pb-3 pr-4">Leg</th>
+                                            <th class="pb-3 pr-4">Distance</th>
+                                            <th class="pb-3 pr-4">Drive</th>
+                                            <th class="pb-3 pr-4">Junction delay</th>
+                                            <th class="pb-3 pr-4">Travel</th>
+                                            <th class="pb-3 pr-4">Day part</th>
+                                            <th class="pb-3">Congestion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var leg in routeDay.Legs)
+                                        {
+                                            var fromName = routeStopNameLookup.TryGetValue(leg.FromStopId, out var resolvedFromName) ? resolvedFromName : leg.FromStopId;
+                                            var toName = routeStopNameLookup.TryGetValue(leg.ToStopId, out var resolvedToName) ? resolvedToName : leg.ToStopId;
+                                            <tr class="border-b border-slate-100 align-top last:border-b-0 dark:border-slate-800">
+                                                <td class="py-3 pr-4 font-semibold text-slate-900 dark:text-white">@fromName -> @toName</td>
+                                                <td class="py-3 pr-4">@leg.DistanceKm.ToString("0.0") km</td>
+                                                <td class="py-3 pr-4">@leg.DriveMinutes phut</td>
+                                                <td class="py-3 pr-4">@leg.JunctionDelayMinutes phut</td>
+                                                <td class="py-3 pr-4">@leg.TravelMinutes phut</td>
+                                                <td class="py-3 pr-4">@DayPartText(leg.DayPart)</td>
+                                                <td class="py-3">@CongestionText(leg.CongestionLevel)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    }
+                }
+                else
+                {
+                    <p class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Chua co leg estimate hop le de hien thi bang ETA.</p>
                 }
             </div>
         </section>

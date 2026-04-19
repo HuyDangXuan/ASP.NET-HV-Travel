@@ -394,10 +394,18 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 }));
             }
 
-            var result = new RouteOptimizationService(new RouteInsightService()).Optimize(draftTour);
+            var result = new RouteOptimizationService(new RouteInsightService()).Optimize(draftTour, new RouteOptimizationRequest
+            {
+                Profile = request.Profile
+            });
             var response = new RouteOptimizationPreviewResponse
             {
                 CanOptimize = result.CanOptimize,
+                Profile = result.Profile,
+                ProfileLabel = result.ProfileLabel,
+                ProfileDescription = result.ProfileDescription,
+                CurrentObjectiveScore = result.CurrentObjectiveScore,
+                SuggestedObjectiveScore = result.SuggestedObjectiveScore,
                 CurrentInsight = result.CurrentInsight,
                 SuggestedInsight = result.SuggestedInsight,
                 Assignments = result.Assignments,

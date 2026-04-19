@@ -8,6 +8,60 @@ namespace HVTravel.Web.Tests;
 public class RouteIntelligencePhase3Tests
 {
     [Fact]
+    public void RouteTravelEstimator_AppliesDayPartTrafficPenalties_Deterministically()
+    {
+        var estimatorType = typeof(HVTravel.Application.Services.PricingService).Assembly.GetType("HVTravel.Application.Services.RouteTravelEstimator");
+        Assert.NotNull(estimatorType);
+
+        var estimator = Activator.CreateInstance(estimatorType!);
+        Assert.NotNull(estimator);
+
+        var estimateMethod = estimatorType!.GetMethod("Estimate", BindingFlags.Public | BindingFlags.Instance);
+        Assert.NotNull(estimateMethod);
+
+        var fromStop = new TourRouteStop
+        {
+            Id = "from-stop",
+            Day = 1,
+            Order = 1,
+            Name = "Cho trung tam",
+            Type = "market",
+            Coordinates = new GeoPoint { Lat = 10.7769, Lng = 106.7009 }
+        };
+
+        var toStop = new TourRouteStop
+        {
+            Id = "to-stop",
+            Day = 1,
+            Order = 2,
+            Name = "Bao tang thanh pho",
+            Type = "museum",
+            Coordinates = new GeoPoint { Lat = 10.7898, Lng = 106.6992 }
+        };
+
+        var urbanMorningPeak = estimateMethod!.Invoke(estimator, [fromStop, toStop, "urban", 7 * 60 + 30]);
+        var urbanLateMorning = estimateMethod.Invoke(estimator, [fromStop, toStop, "urban", 9 * 60 + 30]);
+        var scenicMorningPeak = estimateMethod.Invoke(estimator, [fromStop, toStop, "scenic", 7 * 60 + 30]);
+        var urbanMorningPeakRepeat = estimateMethod.Invoke(estimator, [fromStop, toStop, "urban", 7 * 60 + 30]);
+
+        Assert.NotNull(urbanMorningPeak);
+        Assert.NotNull(urbanLateMorning);
+        Assert.NotNull(scenicMorningPeak);
+        Assert.NotNull(urbanMorningPeakRepeat);
+
+        Assert.Equal("morning_peak", GetProperty<string>(urbanMorningPeak!, "DayPart"));
+        Assert.Equal("late_morning", GetProperty<string>(urbanLateMorning!, "DayPart"));
+        Assert.Equal("morning_peak", GetProperty<string>(scenicMorningPeak!, "DayPart"));
+
+        Assert.True(GetProperty<int>(urbanMorningPeak, "TravelMinutes") > GetProperty<int>(urbanLateMorning, "TravelMinutes"));
+        Assert.True(GetProperty<int>(urbanMorningPeak, "JunctionDelayMinutes") > GetProperty<int>(scenicMorningPeak, "JunctionDelayMinutes"));
+
+        Assert.Equal(GetProperty<double>(urbanMorningPeak, "DistanceKm"), GetProperty<double>(urbanMorningPeakRepeat, "DistanceKm"), 6);
+        Assert.Equal(GetProperty<int>(urbanMorningPeak, "DriveMinutes"), GetProperty<int>(urbanMorningPeakRepeat, "DriveMinutes"));
+        Assert.Equal(GetProperty<int>(urbanMorningPeak, "TravelMinutes"), GetProperty<int>(urbanMorningPeakRepeat, "TravelMinutes"));
+    }
+
+    [Fact]
     public void RouteInsightService_ComputesUrbanLegDistanceTravelAndJourneyMetrics()
     {
         var tour = BuildTourWithRouting(
@@ -83,8 +137,66 @@ public class RouteIntelligencePhase3Tests
 
         var warnings = GetProperty<IEnumerable<object>>(insight, "Warnings").ToList();
         Assert.NotEmpty(warnings);
-        Assert.True(warnings.Any(warning =>
-            GetProperty<string>(warning, "Message").Contains("coordinates", StringComparison.OrdinalIgnoreCase)));
+        Assert.Contains(warnings, warning =>
+            GetProperty<string>(warning, "Message").Contains("coordinates", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void RouteInsightService_TracksDeterministicClockAndTrafficMetadata_PerDay()
+    {
+        var tour = BuildTourWithRouting(
+            new TourRouteStop
+            {
+                Id = "stop-1",
+                Day = 1,
+                Order = 1,
+                Name = "Diem don trung tam",
+                Type = "meeting",
+                VisitMinutes = 20,
+                Coordinates = new GeoPoint { Lat = 10.7769, Lng = 106.7009 }
+            },
+            new TourRouteStop
+            {
+                Id = "stop-2",
+                Day = 1,
+                Order = 2,
+                Name = "Bao tang tinh",
+                Type = "museum",
+                VisitMinutes = 40,
+                Coordinates = new GeoPoint { Lat = 10.7898, Lng = 106.6992 }
+            },
+            new TourRouteStop
+            {
+                Id = "stop-3",
+                Day = 1,
+                Order = 3,
+                Name = "Pho di bo",
+                Type = "city",
+                VisitMinutes = 25,
+                Coordinates = new GeoPoint { Lat = 10.8026, Lng = 106.7050 }
+            });
+
+        var insight = BuildRouteInsight(tour);
+        var day = GetProperty<IEnumerable<object>>(insight, "Days").Single();
+        var legs = GetProperty<IEnumerable<object>>(day, "Legs").ToList();
+
+        Assert.Equal(2, legs.Count);
+
+        var firstLeg = legs[0];
+        var secondLeg = legs[1];
+
+        Assert.Equal(8 * 60 + 20, GetProperty<int>(firstLeg, "DepartureMinuteOfDay"));
+        Assert.Equal(
+            GetProperty<int>(firstLeg, "DepartureMinuteOfDay") + GetProperty<int>(firstLeg, "TravelMinutes"),
+            GetProperty<int>(firstLeg, "ArrivalMinuteOfDay"));
+        Assert.Equal(
+            GetProperty<int>(firstLeg, "ArrivalMinuteOfDay") + 40,
+            GetProperty<int>(secondLeg, "DepartureMinuteOfDay"));
+
+        Assert.Equal("morning_peak", GetProperty<string>(firstLeg, "DayPart"));
+        Assert.Equal("late_morning", GetProperty<string>(secondLeg, "DayPart"));
+        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(firstLeg, "CongestionLevel")));
+        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(secondLeg, "CongestionLevel")));
     }
 
     [Fact]
@@ -129,6 +241,47 @@ public class RouteIntelligencePhase3Tests
     }
 
     [Fact]
+    public void PublicTourRouteOverview_Build_ExposesTrafficAwareTransferMetadata_WithoutCoordinates()
+    {
+        var tour = BuildTourWithRouting(
+            new TourRouteStop
+            {
+                Id = "stop-1",
+                Day = 1,
+                Order = 1,
+                Name = "Ben xe trung tam",
+                Type = "meeting",
+                VisitMinutes = 25,
+                Coordinates = new GeoPoint { Lat = 10.7769, Lng = 106.7009 }
+            },
+            new TourRouteStop
+            {
+                Id = "stop-2",
+                Day = 1,
+                Order = 2,
+                Name = "Cho lon",
+                Type = "market",
+                VisitMinutes = 30,
+                Coordinates = new GeoPoint { Lat = 10.7898, Lng = 106.6992 }
+            });
+
+        var overview = PublicTourRouteOverviewBuilder.Build(tour);
+        var day = overview.Days.Single();
+        var secondStop = day.Stops.Last();
+
+        Assert.NotNull(secondStop.GetType().GetProperty("TransferFromPrevious"));
+
+        var transfer = secondStop.GetType().GetProperty("TransferFromPrevious")?.GetValue(secondStop);
+        Assert.NotNull(transfer);
+
+        Assert.True(GetProperty<int>(transfer!, "TravelMinutes") > 0);
+        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(transfer, "DayPart")));
+        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(transfer, "CongestionLevel")));
+        Assert.Null(transfer.GetType().GetProperty("Lat"));
+        Assert.Null(transfer.GetType().GetProperty("Lng"));
+    }
+
+    [Fact]
     public void TourAiChatService_Snapshot_IncludesRouteSummary_ButNotRawCoordinates()
     {
         var method = typeof(TourAiChatService).GetMethod("BuildTourSnapshot", BindingFlags.NonPublic | BindingFlags.Static);
@@ -161,6 +314,10 @@ public class RouteIntelligencePhase3Tests
         Assert.False(string.IsNullOrWhiteSpace(snapshot));
         Assert.True(snapshot!.Contains("lộ trình", StringComparison.OrdinalIgnoreCase));
         Assert.True(snapshot.Contains("di chuyển", StringComparison.OrdinalIgnoreCase));
+        Assert.True(
+            snapshot.Contains("cao Ä‘iá»ƒm", StringComparison.OrdinalIgnoreCase)
+            || snapshot.Contains("khung giá»", StringComparison.OrdinalIgnoreCase)
+            || snapshot.Contains("Peak traffic", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain("104.9834", snapshot, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("105.361", snapshot, StringComparison.OrdinalIgnoreCase);
     }
@@ -175,6 +332,10 @@ public class RouteIntelligencePhase3Tests
         Assert.True(source.Contains("distanceFormat", StringComparison.Ordinal));
         Assert.True(source.Contains("dayTravelMinutesFormat", StringComparison.Ordinal));
         Assert.True(source.Contains("dayJourneyMinutesFormat", StringComparison.Ordinal));
+        Assert.True(source.Contains("transferTimeFormat", StringComparison.Ordinal));
+        Assert.True(source.Contains("dayPartLabel", StringComparison.Ordinal));
+        Assert.True(source.Contains("congestionLabel", StringComparison.Ordinal));
+        Assert.True(source.Contains("junctionDelayLabel", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -184,6 +345,18 @@ public class RouteIntelligencePhase3Tests
 
         Assert.True(source.Contains("Route intelligence", StringComparison.OrdinalIgnoreCase));
         Assert.True(source.Contains("warning", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Junction delay", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Congestion", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void PublicTourDetails_Source_ContainsTrafficAwareTransferMarkup()
+    {
+        var source = TestPaths.ReadRepoFile("HV-Travel.Web", "Views", "PublicTours", "Details.cshtml");
+
+        Assert.True(source.Contains("transferTimeFormat", StringComparison.Ordinal));
+        Assert.True(source.Contains("dayPartLabel", StringComparison.Ordinal));
+        Assert.True(source.Contains("congestionLabel", StringComparison.Ordinal));
     }
 
     private static object BuildRouteInsight(Tour tour)
