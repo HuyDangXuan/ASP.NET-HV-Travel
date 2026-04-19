@@ -9,7 +9,7 @@
     var travellerForm = sections.GetSection("travellerForm");
     var pricingPanel = sections.GetSection("pricingPanel");
     var tour = Model.Tour ?? new Tour();
-    var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
+    var detailId = PublicTourIdentifierHelper.GetDetailIdentifier(tour);
     var departures = tour.EffectiveDepartures.OrderBy(item => item.StartDate).ToList();
     var selectedDeparture = tour.ResolveDeparture(Model.DepartureId, Model.SelectedStartDate) ?? departures.FirstOrDefault();
     var adultPrice = selectedDeparture?.AdultPrice > 0m ? selectedDeparture.AdultPrice : tour.Price?.Adult ?? 0m;

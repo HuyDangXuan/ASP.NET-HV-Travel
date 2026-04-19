@@ -29,7 +29,7 @@
         originalPrice = 0m;
     }
 
-    var detailId = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug;
+    var detailId = PublicTourIdentifierHelper.GetDetailIdentifier(tour);
     var detailUrl = Url.Action("Details", "PublicTours", new { id = detailId }) ?? "#";
     var bookingUrl = Url.Action("Create", "Booking", new { tourId = tour.Id }) ?? detailUrl;
     var coverImage = tour.Images.FirstOrDefault();

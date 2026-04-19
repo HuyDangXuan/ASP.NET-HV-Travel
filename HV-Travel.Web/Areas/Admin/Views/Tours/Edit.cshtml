@@ -1,17 +1,6 @@
 ﻿@model HVTravel.Domain.Entities.Tour
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
-    
-    string GetStatusText(string status) => status switch
-    {
-        "Draft" => "Bản nháp",
-        "Active" => "Hoạt động",
-        "SoldOut" => "Hết chỗ",
-        "ComingSoon" => "Sắp ra mắt",
-        "Hidden" => "Ẩn",
-        _ => status
-    };
-
 }
 
 <style type="text/tailwindcss">
@@ -27,7 +16,6 @@
         }
     }
 </style>
-<link rel="stylesheet" href="~/css/admin-tour-date-picker.css" asp-append-version="true" />
 
 <form id="edit-tour-form" asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
 <input type="hidden" asp-for="Id" />
@@ -67,32 +55,13 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Custom Select: Status -->
-                        <div class="relative custom-select-container" data-id="Status">
-                             <label class="label-text">Trạng thái</label>
-                             <div class="custom-select-trigger" onclick="toggleCustomSelect('Status')">
-                                 <div class="flex items-center gap-3 min-w-0">
-                                     <span class="custom-select-leading material-symbols-outlined">verified</span>
-                                     <div class="custom-select-meta">
-                                         <span class="custom-select-caption">Tour status</span>
-                                         <span class="selected-label">@GetStatusText(Model.Status)</span>
-                                     </div>
-                                 </div>
-                                 <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                             </div>
-                             <div class="options-menu">
-                                 @foreach (var status in new[] { "Draft", "Active", "SoldOut", "ComingSoon", "Hidden" })
-                                 {
-                                     <div class="custom-option @(Model.Status == status ? "selected" : "")" data-value="@status" data-label="@GetStatusText(status)" onclick="selectCustomOption('Status', '@status', '@GetStatusText(status)')">
-                                         <span class="custom-option-main">
-                                             <span class="custom-option-dot"></span>
-                                             <span>@GetStatusText(status)</span>
-                                         </span>
-                                         @if (Model.Status == status) { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                                     </div>
-                                 }
-                             </div>
-                             <select asp-for="Status" class="hidden">
+                        <div>
+                            <label class="label-text">Trạng thái</label>
+                            <select asp-for="Status"
+                                    class="w-full"
+                                    data-admin-select="default"
+                                    data-admin-select-caption="Tour status"
+                                    data-admin-select-icon="verified">
                                 <option value="Draft">Bản nháp (Draft)</option>
                                 <option value="Active">Hoạt động (Active)</option>
                                 <option value="SoldOut">Hết chỗ (Sold Out)</option>
@@ -235,11 +204,10 @@
                         {
                             for (int i = 0; i < Model.StartDates.Count; i++)
                             {
-                                <div class="relative group date-item">
-                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] group-hover:text-primary transition-colors z-20">calendar_today</span>
-                                    <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="text" readonly 
-                                           onclick="openTourCalendar(this)" placeholder="Chọn ngày..."
-                                           class="date-field-custom pl-10 pr-10 cursor-pointer" />
+                                <div class="relative date-item">
+                                    <div class="admin-picker" data-admin-picker="date" data-picker-placeholder="Chọn ngày khởi hành" data-picker-icon="calendar_month">
+                                        <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="hidden" class="admin-picker-input start-date-value" />
+                                    </div>
                                     <button type="button" onclick="removeDate(this)" class="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all z-20">
                                         <span class="material-symbols-outlined text-[18px]">delete</span>
                                     </button>
@@ -358,10 +326,36 @@
     </div>
 </footer>
 
-<partial name="_TourDatePicker" />
 </form>
 
 <script>
+    // --- Start Dates ---
+    function createStartDateMarkup(index, value = '') {
+        return `
+            <div class="relative date-item">
+                <div class="admin-picker" data-admin-picker="date" data-picker-placeholder="Chọn ngày khởi hành" data-picker-icon="calendar_month">
+                    <input name="StartDates[${index}]" value="${value}" type="hidden" class="admin-picker-input start-date-value" />
+                </div>
+                <button type="button" onclick="removeDate(this)" class="absolute right-2 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all z-20">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+            </div>
+        `;
+    }
+
+    function addStartDate() {
+        const container = document.getElementById('start-dates-container');
+        const index = container.querySelectorAll('.date-item').length;
+        container.insertAdjacentHTML('beforeend', createStartDateMarkup(index));
+        window.AdminDateTimePicker?.init(container.lastElementChild);
+    }
+
+    function removeDate(btn) {
+        window.AdminDateTimePicker?.close();
+        btn.closest('.date-item')?.remove();
+        reindexItems('#start-dates-container .start-date-value', 'StartDates');
+    }
+
     // --- Images ---
     function createImageItem(url) {
         const container = document.createElement('div');
@@ -814,6 +808,7 @@
 
         // Initialize
         enableImageReordering(document.getElementById('images-container'));
+        window.AdminDateTimePicker?.init(document);
         updatePreview();
         calculateActualPrice();
     });

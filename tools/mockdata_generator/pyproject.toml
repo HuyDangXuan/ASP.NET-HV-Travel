@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mockdata-generator"
+version = "0.1.0"
+description = "Deterministic JSON mockdata generator for ASP.NET HV Travel"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Codex" }
+]
+
+[project.scripts]
+mockdata-generator = "mockdata_generator.cli:entrypoint"
+
+[tool.setuptools]
+package-dir = { "" = "." }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mockdata_generator*"]

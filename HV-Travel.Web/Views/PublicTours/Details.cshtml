@@ -9,11 +9,13 @@
     var overview = sections.GetSection("overview");
     var inclusions = sections.GetSection("inclusions");
     var schedule = sections.GetSection("schedule");
+    var routeSection = sections.GetSection("routing");
     var policies = sections.GetSection("policies");
     var departuresSection = sections.GetSection("departures");
     var bookingPanel = sections.GetSection("bookingPanel");
     var relatedToursSection = sections.GetSection("relatedTours");
     var relatedTours = ViewData["RelatedTours"] as List<Tour> ?? new List<Tour>();
+    var routeOverview = ViewData["RouteOverview"] as PublicTourRouteOverview ?? PublicTourRouteOverview.Empty;
     var departures = ((Model.Departures != null && Model.Departures.Any()) ? Model.Departures : (Model.EffectiveDepartures ?? Array.Empty<TourDeparture>())).OrderBy(item => item.StartDate).ToList();
     var featuredDeparture = departures.FirstOrDefault();
     var startingPrice = departures.Any() ? departures.Min(item => item.AdultPrice > 0m ? item.AdultPrice : Model.Price?.Adult ?? 0m) : Model.Price?.Adult ?? 0m;
@@ -207,6 +209,59 @@
                         </div>
                     }
                 </section>
+
+                @if (routeOverview.HasRouting)
+                {
+                    <section class="@($"{Card} {ContentPresentationViewHelper.GetSectionTextClass(routeSection)} {ContentPresentationViewHelper.GetSectionBackgroundClass(routeSection)}")" style="@ContentPresentationViewHelper.GetSectionStyle(routeSection)">
+                        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                            <div class="max-w-3xl">
+                                <p class="@Eyebrow">@routeSection?.Fields.GetVisibleFieldValue("eyebrowText", "Route overview")</p>
+                                <h2 class="@Heading">@routeSection?.Fields.GetVisibleFieldValue("title", "Route overview")</h2>
+                                <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@routeSection?.Fields.GetVisibleFieldValue("description", "A structured preview of the tour route based on the current itinerary data.")</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">@string.Format(routeSection?.Fields.GetVisibleFieldValue("dayCountFormat", "{0} days") ?? "{0} days", routeOverview.DayCount)</span>
+                                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">@string.Format(routeSection?.Fields.GetVisibleFieldValue("stopCountFormat", "{0} stops") ?? "{0} stops", routeOverview.StopCount)</span>
+                                <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">@string.Format(routeSection?.Fields.GetVisibleFieldValue("visitMinutesFormat", "{0} visit minutes") ?? "{0} visit minutes", routeOverview.TotalVisitMinutes)</span>
+                            </div>
+                        </div>
+                        <div class="mt-8 space-y-5">
+                            @foreach (var routeDay in routeOverview.Days)
+                            {
+                                <article class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-50/80 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 sm:p-6">
+                                    <div class="flex flex-col gap-3 border-b border-slate-200/80 pb-4 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+                                        <div>
+                                            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-primary">Day @routeDay.Day.ToString("00")</p>
+                                            <h3 class="mt-2 text-xl font-black tracking-tight text-slate-900 dark:text-white">@routeDay.DayTitle</h3>
+                                        </div>
+                                        <span class="inline-flex items-center rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 shadow-sm dark:bg-slate-950 dark:text-slate-300">@string.Format(routeSection?.Fields.GetVisibleFieldValue("stopCountFormat", "{0} stops") ?? "{0} stops", routeDay.Stops.Count)</span>
+                                    </div>
+                                    <div class="mt-5 grid gap-3">
+                                        @foreach (var stop in routeDay.Stops)
+                                        {
+                                            <article class="rounded-[1.4rem] border border-slate-200 bg-white/90 p-4 dark:border-slate-800 dark:bg-slate-950/70">
+                                                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                                    <div class="min-w-0">
+                                                        <h4 class="text-base font-black tracking-tight text-slate-900 dark:text-white">@stop.Name</h4>
+                                                        @if (!string.IsNullOrWhiteSpace(stop.Type))
+                                                        {
+                                                            <p class="mt-2 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">@routeSection?.Fields.GetVisibleFieldValue("typeLabel", "Type"): @stop.Type</p>
+                                                        }
+                                                        @if (!string.IsNullOrWhiteSpace(stop.Note))
+                                                        {
+                                                            <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@stop.Note</p>
+                                                        }
+                                                    </div>
+                                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700 dark:bg-slate-800 dark:text-slate-200">@stop.VisitMinutes min</span>
+                                                </div>
+                                            </article>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </section>
+                }
 
                 <section class="grid gap-6 lg:grid-cols-2">
                     <article class="@($"{Card} {ContentPresentationViewHelper.GetSectionBackgroundClass(inclusions)}")" style="@ContentPresentationViewHelper.GetSectionStyle(inclusions)"><h2 class="@Heading">@inclusions?.Fields.GetVisibleFieldValue("includedTitle", "Included")</h2>@if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Any()) { <ul class="mt-6 space-y-3 @Copy">@foreach (var item in Model.GeneratedInclusions) { <li class="flex gap-3"><span class="material-symbols-outlined mt-1 text-primary text-[18px]">check_circle</span><span>@item</span></li> }</ul> } else { <p class="mt-6 text-sm leading-7 text-slate-500 dark:text-slate-400">@inclusions?.Fields.GetVisibleFieldValue("includedEmptyText", "Included services will be updated soon.")</p> }</article>

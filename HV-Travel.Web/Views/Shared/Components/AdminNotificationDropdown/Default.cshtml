@@ -1,0 +1,50 @@
+@model HVTravel.Web.Models.AdminNotificationDropdownViewModel
+
+<div class="relative" id="notification-container">
+    <button type="button" onclick="toggleNotificationDropdown()" class="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-light text-slate-500 shadow-sm ring-1 ring-border-light transition-all duration-200 hover:bg-primary-soft hover:text-primary dark:bg-surface-elevated-dark dark:text-text-muted-dark dark:ring-border-dark dark:hover:bg-surface-dark group" aria-label="Mở thông báo quản trị">
+        <span class="material-symbols-outlined text-[26px] transition-transform group-hover:scale-110">notifications</span>
+        <span class="absolute top-3 right-3 h-2.5 w-2.5 rounded-full border-2 border-surface-light bg-red-500 @(Model.HasUnread ? "animate-pulse" : "hidden") dark:border-surface-elevated-dark"></span>
+    </button>
+
+    <div id="notification-dropdown" class="absolute right-0 top-full z-50 mt-4 hidden w-96 origin-top-right rounded-[2rem] border border-border-light bg-surface-light shadow-2xl shadow-slate-200/40 transition-all transform opacity-100 scale-100 dark:border-border-dark dark:bg-surface-dark dark:shadow-slate-950/40">
+        <div class="flex items-center justify-between gap-3 rounded-t-[2rem] border-b border-border-light bg-surface-muted-light/80 p-5 dark:border-border-dark dark:bg-surface-elevated-dark/60">
+            <div class="flex items-center gap-2">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Thông báo</h3>
+                <span class="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">@Model.UnreadCount mới</span>
+            </div>
+            <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Chế độ chỉ đọc</span>
+        </div>
+
+        <div class="max-h-[400px] overflow-y-auto no-scrollbar py-2">
+            @if (Model.Items.Count == 0)
+            {
+                <div class="px-5 py-10 text-center text-sm text-slate-400 dark:text-slate-500">
+                    Chưa có thông báo admin nào để hiển thị.
+                </div>
+            }
+            else
+            {
+                foreach (var item in Model.Items)
+                {
+                    <div class="group relative px-5 py-4 transition-colors @item.ItemContainerClass">
+                        <div class="absolute left-2 top-1/2 h-8 w-1 -translate-y-1/2 rounded-full transition-opacity @item.ReadStateBarClass"></div>
+                        <div class="flex gap-4">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-2xl shadow-sm @item.IconContainerClass">
+                                <span class="material-symbols-outlined text-xl">@item.IconName</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="line-clamp-2 text-[15px] font-semibold leading-snug @item.TitleClass">@item.Title</p>
+                                <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed @item.MessageClass">@item.Message</p>
+                                <p class="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">@item.RelativeTimeText</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="rounded-b-[2rem] border-t border-border-light bg-surface-muted-light/70 p-4 text-center dark:border-border-dark dark:bg-surface-elevated-dark/60">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Thông báo đồng bộ từ hệ thống.</p>
+        </div>
+    </div>
+</div>
