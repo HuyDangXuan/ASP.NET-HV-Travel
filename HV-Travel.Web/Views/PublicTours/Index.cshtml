@@ -200,7 +200,7 @@
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2" data-animate="fade-in" data-stagger>
                         @foreach (var tour in Model)
                         {
                             @await Html.PartialAsync("_TourCard", tour)

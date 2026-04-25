@@ -68,7 +68,8 @@
     const string SectionClass = "space-y-5 rounded-[1.75rem] border border-slate-200 bg-white/90 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950/80";
     const string FieldClass = "space-y-2";
     const string LabelClass = "block text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400";
-    const string ControlClass = "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
+    const string InputControlClass = "w-full rounded-2xl border border-sky-200/80 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/60 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20";
+    var SelectControlClass = $"{InputControlClass} public-select";
 }
 
 <form asp-action="Index" method="get" class="space-y-6">
@@ -89,7 +90,7 @@
                 {
                     <label class="@LabelClass" for="region-select">@regionLabelText</label>
                 }
-                <select id="region-select" name="region" class="@ControlClass">
+                <select id="region-select" name="region" class="@SelectControlClass">
                     <option value="">@allOptionLabel</option>
                     @foreach (var facet in regionFacets)
                     {
@@ -103,7 +104,7 @@
                 {
                     <label class="@LabelClass" for="destination-select">@destinationLabelText</label>
                 }
-                <select id="destination-select" name="destination" class="@ControlClass">
+                <select id="destination-select" name="destination" class="@SelectControlClass">
                     <option value="">@allOptionLabel</option>
                     @foreach (var facet in destinationFacets)
                     {
@@ -115,27 +116,27 @@
     </section>
 
     <section class="@SectionClass">
-        <div class="grid gap-5 sm:grid-cols-2">
+        <div class="grid gap-5">
             <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(minPriceLabelText))
                 {
                     <label class="@LabelClass" for="min-price">@minPriceLabelText</label>
                 }
-                <input id="min-price" name="minPrice" value="@currentMinPrice" placeholder="@minPricePlaceholder" class="@ControlClass" />
+                <input id="min-price" name="minPrice" value="@currentMinPrice" placeholder="@minPricePlaceholder" class="@InputControlClass" />
             </div>
             <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(maxPriceLabelText))
                 {
                     <label class="@LabelClass" for="max-price">@maxPriceLabelText</label>
                 }
-                <input id="max-price" name="maxPrice" value="@currentMaxPrice" placeholder="@maxPricePlaceholder" class="@ControlClass" />
+                <input id="max-price" name="maxPrice" value="@currentMaxPrice" placeholder="@maxPricePlaceholder" class="@InputControlClass" />
             </div>
             <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(departureMonthLabelText))
                 {
                     <label class="@LabelClass" for="departure-month-select">@departureMonthLabelText</label>
                 }
-                <select id="departure-month-select" name="departureMonth" class="@ControlClass">
+                <select id="departure-month-select" name="departureMonth" class="@SelectControlClass">
                     <option value="">@allOptionLabel</option>
                     @for (var month = 1; month <= 12; month++)
                     {
@@ -148,21 +149,21 @@
                 {
                     <label class="@LabelClass" for="max-days">@maxDaysLabelText</label>
                 }
-                <input id="max-days" name="maxDays" value="@currentMaxDays" placeholder="@maxDaysPlaceholder" class="@ControlClass" />
+                <input id="max-days" name="maxDays" value="@currentMaxDays" placeholder="@maxDaysPlaceholder" class="@InputControlClass" />
             </div>
             <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(travellersLabelText))
                 {
                     <label class="@LabelClass" for="travellers">@travellersLabelText</label>
                 }
-                <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="@travellersPlaceholder" class="@ControlClass" />
+                <input id="travellers" type="number" min="0" name="travellers" value="@(currentTravellers == 0 ? string.Empty : currentTravellers)" placeholder="@travellersPlaceholder" class="@InputControlClass" />
             </div>
             <div class="@FieldClass">
                 @if (!string.IsNullOrWhiteSpace(routeStyleLabelText))
                 {
                     <label class="@LabelClass" for="route-style-select">@routeStyleLabelText</label>
                 }
-                <select id="route-style-select" name="routeStyle" class="@ControlClass">
+                <select id="route-style-select" name="routeStyle" class="@SelectControlClass">
                     <option value="compact" selected="@(currentRouteStyle == "compact")">@routeStyleCompactLabel</option>
                     <option value="balanced" selected="@(string.IsNullOrWhiteSpace(currentRouteStyle) || currentRouteStyle == "balanced")">@routeStyleBalancedLabel</option>
                     <option value="highlights" selected="@(currentRouteStyle == "highlights")">@routeStyleHighlightsLabel</option>
@@ -173,7 +174,7 @@
                 {
                     <label class="@LabelClass" for="sort-select">@sortLabelText</label>
                 }
-                <select id="sort-select" name="sort" class="@ControlClass">
+                <select id="sort-select" name="sort" class="@SelectControlClass">
                     <option value="recommended" selected="@(string.IsNullOrWhiteSpace(currentSort) || currentSort == "recommended")">@sortRecommendedLabel</option>
                     <option value="rating" selected="@(currentSort == "rating")">@sortRatingLabel</option>
                     <option value="best_value" selected="@(currentSort == "best_value")">@sortBestValueLabel</option>
@@ -192,7 +193,7 @@
                 {
                     <label class="@LabelClass" for="confirmation-type-select">@confirmationLabelText</label>
                 }
-                <select id="confirmation-type-select" name="confirmationType" class="@ControlClass">
+                <select id="confirmation-type-select" name="confirmationType" class="@SelectControlClass">
                     <option value="">@allOptionLabel</option>
                     @foreach (var facet in confirmationFacets)
                     {
@@ -206,7 +207,7 @@
                 {
                     <label class="@LabelClass" for="cancellation-type-select">@cancellationLabelText</label>
                 }
-                <select id="cancellation-type-select" name="cancellationType" class="@ControlClass">
+                <select id="cancellation-type-select" name="cancellationType" class="@SelectControlClass">
                     <option value="">@allOptionLabel</option>
                     @foreach (var facet in cancellationFacets)
                     {
@@ -221,14 +222,14 @@
         <div class="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/70">
             @if (!string.IsNullOrWhiteSpace(availableOnlyLabelText))
             {
-                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                <label class="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <input type="checkbox" name="availableOnly" value="true" checked="@currentAvailableOnly" class="rounded border-border-light dark:border-border-dark" />
                     @availableOnlyLabelText
                 </label>
             }
             @if (!string.IsNullOrWhiteSpace(promotionOnlyLabelText))
             {
-                <label class="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300">
+                <label class="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-300">
                     <input type="checkbox" name="promotionOnly" value="true" checked="@currentPromotionOnly" class="rounded border-border-light dark:border-border-dark" />
                     @promotionOnlyLabelText
                 </label>

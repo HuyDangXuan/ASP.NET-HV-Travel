@@ -86,8 +86,8 @@ public class RouteOptimizationPhase6Tests
         var ok = Assert.IsType<OkObjectResult>(result);
         Assert.NotNull(ok.Value);
         Assert.Equal("distance_first", GetProperty<string>(ok.Value!, "Profile"));
-        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(ok.Value!, "ProfileLabel")));
-        Assert.False(string.IsNullOrWhiteSpace(GetProperty<string>(ok.Value!, "ProfileDescription")));
+        Assert.Equal("Ưu tiên quãng đường", GetProperty<string>(ok.Value!, "ProfileLabel"));
+        Assert.Contains("đường đi", GetProperty<string>(ok.Value!, "ProfileDescription"), StringComparison.OrdinalIgnoreCase);
         Assert.NotNull(ok.Value!.GetType().GetProperty("CurrentObjectiveScore"));
         Assert.NotNull(ok.Value!.GetType().GetProperty("SuggestedObjectiveScore"));
 
@@ -120,12 +120,15 @@ public class RouteOptimizationPhase6Tests
     {
         var source = TestPaths.ReadRepoFile("HV-Travel.Web", "Areas", "Admin", "Views", "Tours", "_TourDeparturesAndRoutingEditor.cshtml");
 
-        Assert.Contains("Optimization profile", source, StringComparison.Ordinal);
-        Assert.Contains("Distance first", source, StringComparison.Ordinal);
-        Assert.Contains("Highlights first", source, StringComparison.Ordinal);
+        Assert.Contains("Lịch khởi hành", source, StringComparison.Ordinal);
+        Assert.Contains("Tối ưu lộ trình", source, StringComparison.Ordinal);
+        Assert.Contains("Cấu hình tối ưu", source, StringComparison.Ordinal);
+        Assert.Contains("Ưu tiên quãng đường", source, StringComparison.Ordinal);
+        Assert.Contains("Ưu tiên điểm nổi bật", source, StringComparison.Ordinal);
+        Assert.Contains("Áp dụng gợi ý", source, StringComparison.Ordinal);
         Assert.Contains("route-optimization-profile", source, StringComparison.Ordinal);
         Assert.Contains("profile:", source, StringComparison.Ordinal);
-        Assert.Contains("Objective score", source, StringComparison.Ordinal);
+        Assert.Contains("Điểm mục tiêu", source, StringComparison.Ordinal);
     }
 
     [Fact]

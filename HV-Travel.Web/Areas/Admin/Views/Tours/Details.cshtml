@@ -16,19 +16,19 @@
     var badgeSet = Model.BadgeSet ?? new List<string>();
     string DayPartText(string? value) => value switch
     {
-        "early_morning" => "Early morning",
-        "morning_peak" => "Morning peak",
-        "late_morning" => "Late morning",
-        "midday" => "Midday",
-        "afternoon" => "Afternoon",
-        "evening_peak" => "Evening peak",
-        _ => "Night"
+        "early_morning" => "Sáng sớm",
+        "morning_peak" => "Giờ cao điểm sáng",
+        "late_morning" => "Cuối buổi sáng",
+        "midday" => "Giữa ngày",
+        "afternoon" => "Buổi chiều",
+        "evening_peak" => "Giờ cao điểm tối",
+        _ => "Buổi tối"
     };
     string CongestionText(string? value) => value switch
     {
-        "high" => "High",
-        "moderate" => "Moderate",
-        _ => "Low"
+        "high" => "Cao",
+        "moderate" => "Vừa",
+        _ => "Thấp"
     };
 }
 
@@ -37,7 +37,7 @@
     Items = new List<HVTravel.Web.Models.BreadcrumbItemViewModel>
     {
         new() { Label = "Trang chu", Url = Url.Action("Index", "Dashboard") },
-        new() { Label = "Danh sach tour", Url = Url.Action("Index", "Tours") },
+        new() { Label = "Danh sách tour", Url = Url.Action("Index", "Tours") },
         new() { Label = $"#{Model.Code}", IsCurrent = true }
     }
 })
@@ -67,24 +67,24 @@
         </div>
         <div class="space-y-5 p-8">
             <div>
-                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">Overview</p>
+                <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">Tổng quan</p>
                 <h2 class="mt-2 text-3xl font-black text-slate-900 dark:text-white">@Model.Name</h2>
                 <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">@Model.Destination?.City, @Model.Destination?.Country</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Gia nguoi lon</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Giá người lớn</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@Model.Price?.Adult.ToString("N0") @Model.Price?.Currency</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thoi luong</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thời lượng</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@Model.Duration?.Text</p>
                 </div>
             </div>
             <dl class="grid gap-4 text-sm sm:grid-cols-2">
                 <div>
                     <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Slug</dt>
-                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Slug) ? Model.Slug : "Chua co")</dd>
+                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Slug) ? Model.Slug : "Chưa có")</dd>
                 </div>
                 <div>
                     <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">ConfirmationType</dt>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="sm:col-span-2">
                     <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">MeetingPoint</dt>
-                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.MeetingPoint) ? Model.MeetingPoint : "Chua cau hinh")</dd>
+                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.MeetingPoint) ? Model.MeetingPoint : "Chưa cấu hình")</dd>
                 </div>
             </dl>
         </div>
@@ -102,7 +102,7 @@
 <div class="grid grid-cols-1 gap-10 lg:grid-cols-12">
     <div class="space-y-10 lg:col-span-8">
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/40">
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Mo ta</h3>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Mô tả</h3>
             <div class="prose mt-4 max-w-none dark:prose-invert">
                 @Html.Raw(RichTextContentFormatter.ToTrustedHtml(Model.Description))
             </div>
@@ -120,29 +120,29 @@
                 <dl class="mt-4 space-y-4 text-sm">
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Seo.Title</dt>
-                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.Title) ? Model.Seo.Title : "Chua cau hinh")</dd>
+                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.Title) ? Model.Seo.Title : "Chưa cấu hình")</dd>
                     </div>
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Seo.Description</dt>
-                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.Description) ? Model.Seo.Description : "Chua cau hinh")</dd>
+                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.Description) ? Model.Seo.Description : "Chưa cấu hình")</dd>
                     </div>
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Seo.CanonicalPath</dt>
-                        <dd class="mt-1 break-all text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.CanonicalPath) ? Model.Seo.CanonicalPath : "Chua cau hinh")</dd>
+                        <dd class="mt-1 break-all text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.CanonicalPath) ? Model.Seo.CanonicalPath : "Chưa cấu hình")</dd>
                     </div>
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Seo.OpenGraphImageUrl</dt>
-                        <dd class="mt-1 break-all text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.OpenGraphImageUrl) ? Model.Seo.OpenGraphImageUrl : "Chua cau hinh")</dd>
+                        <dd class="mt-1 break-all text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.Seo?.OpenGraphImageUrl) ? Model.Seo.OpenGraphImageUrl : "Chưa cấu hình")</dd>
                     </div>
                 </dl>
             </article>
 
             <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/40">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Commerce metadata</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Metadata thương mại</h3>
                 <dl class="mt-4 space-y-4 text-sm">
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">CancellationPolicy</dt>
-                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? Model.CancellationPolicy.Summary : "Chua cau hinh")</dd>
+                        <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.CancellationPolicy?.Summary) ? Model.CancellationPolicy.Summary : "Chưa cấu hình")</dd>
                     </div>
                     <div>
                         <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Highlights</dt>
@@ -156,7 +156,7 @@
                             }
                             else
                             {
-                                <span class="text-slate-500 dark:text-slate-400">Chua cau hinh</span>
+                                <span class="text-slate-500 dark:text-slate-400">Chưa cấu hình</span>
                             }
                         </dd>
                     </div>
@@ -172,7 +172,7 @@
                             }
                             else
                             {
-                                <span class="text-slate-500 dark:text-slate-400">Chua cau hinh</span>
+                                <span class="text-slate-500 dark:text-slate-400">Chưa cấu hình</span>
                             }
                         </dd>
                     </div>
@@ -181,14 +181,14 @@
         </section>
 
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/40">
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Lich trinh</h3>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Lịch trình</h3>
             <div class="mt-6 space-y-6">
                 @if (Model.Schedule != null && Model.Schedule.Count > 0)
                 {
                     foreach (var item in Model.Schedule.OrderBy(item => item.Day))
                     {
                         <article class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 dark:border-slate-700 dark:bg-slate-800/60">
-                            <h4 class="text-lg font-black text-slate-900 dark:text-white">Day @item.Day · @item.Title</h4>
+                            <h4 class="text-lg font-black text-slate-900 dark:text-white">Ngày @item.Day · @item.Title</h4>
                             <div class="prose mt-3 max-w-none text-sm dark:prose-invert">
                                 @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
                             </div>
@@ -206,14 +206,14 @@
                 }
                 else
                 {
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Chua co lich trinh.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Chưa có lịch trình.</p>
                 }
             </div>
         </section>
 
         <section class="grid gap-6 md:grid-cols-2">
             <article class="rounded-2xl border border-green-200 bg-green-50/70 p-6 shadow-sm dark:border-green-900/50 dark:bg-green-900/10">
-                <h3 class="text-lg font-bold text-green-800 dark:text-green-300">Bao gom</h3>
+                <h3 class="text-lg font-bold text-green-800 dark:text-green-300">Bao gồm</h3>
                 <ul class="mt-4 space-y-2 text-sm text-green-700 dark:text-green-200">
                     @if (Model.GeneratedInclusions != null && Model.GeneratedInclusions.Count > 0)
                     {
@@ -224,12 +224,12 @@
                     }
                     else
                     {
-                        <li>Chua cau hinh</li>
+                        <li>Chưa cấu hình</li>
                     }
                 </ul>
             </article>
             <article class="rounded-2xl border border-red-200 bg-red-50/70 p-6 shadow-sm dark:border-red-900/50 dark:bg-red-900/10">
-                <h3 class="text-lg font-bold text-red-800 dark:text-red-300">Khong bao gom</h3>
+                <h3 class="text-lg font-bold text-red-800 dark:text-red-300">Không bao gồm</h3>
                 <ul class="mt-4 space-y-2 text-sm text-red-700 dark:text-red-200">
                     @if (Model.GeneratedExclusions != null && Model.GeneratedExclusions.Count > 0)
                     {
@@ -240,7 +240,7 @@
                     }
                     else
                     {
-                        <li>Chua cau hinh</li>
+                        <li>Chưa cấu hình</li>
                     }
                 </ul>
             </article>
@@ -249,15 +249,15 @@
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/40">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Departures</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Danh sach departures dung cho booking va bao gia.</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Lịch khởi hành</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Danh sách lịch khởi hành dùng cho booking và báo giá.</p>
                 </div>
-                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">@adminDepartures.Count item(s)</span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">@adminDepartures.Count lịch</span>
             </div>
 
             @if (adminDepartures.Count == 0)
             {
-                <p class="mt-6 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Dang dung fallback tu StartDates.</p>
+                <p class="mt-6 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Đang dùng fallback từ StartDates.</p>
             }
             else
             {
@@ -271,9 +271,9 @@
                                     <p class="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">@departure.Status · @departure.ConfirmationType</p>
                                 </div>
                                 <div class="grid gap-3 text-sm sm:grid-cols-3 lg:text-right">
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Gia</span><strong class="text-slate-900 dark:text-white">NL @departure.AdultPrice.ToString("N0") · TE @departure.ChildPrice.ToString("N0") · EB @departure.InfantPrice.ToString("N0")</strong></div>
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Capacity</span><strong class="text-slate-900 dark:text-white">@departure.BookedCount / @departure.Capacity</strong></div>
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Cutoff</span><strong class="text-slate-900 dark:text-white">@departure.CutoffHours gio</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Giá</span><strong class="text-slate-900 dark:text-white">NL @departure.AdultPrice.ToString("N0") · TE @departure.ChildPrice.ToString("N0") · EB @departure.InfantPrice.ToString("N0")</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Sức chứa</span><strong class="text-slate-900 dark:text-white">@departure.BookedCount / @departure.Capacity</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Giờ khóa đặt</span><strong class="text-slate-900 dark:text-white">@departure.CutoffHours giờ</strong></div>
                                 </div>
                             </div>
                         </article>
@@ -285,31 +285,31 @@
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/40">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Route intelligence</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Heuristic summary cho quang duong, thoi gian di chuyen va warning cua routing hien tai.</p>
+                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Phân tích lộ trình</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Tóm tắt heuristic cho quãng đường, thời gian di chuyển và cảnh báo của routing hiện tại.</p>
                 </div>
-                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">@routeInsight.DayCount day(s)</span>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">@routeInsight.DayCount ngày</span>
             </div>
             <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Distance</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Quãng đường</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@routeInsight.TotalDistanceKm.ToString("0.0") km</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Travel</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@routeInsight.TotalTravelMinutes phut</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Di chuyển</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@routeInsight.TotalTravelMinutes phút</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Journey</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@routeInsight.TotalJourneyMinutes phut</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Hành trình</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@routeInsight.TotalJourneyMinutes phút</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Average score</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm trung bình</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">@(routeInsight.AverageAttractionScore?.ToString("0.0") ?? "N/A")</p>
                 </div>
             </div>
             <div class="mt-6">
-                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Warnings</p>
+                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Cảnh báo</p>
                 @if (routeInsight.Warnings.Count > 0)
                 {
                     <div class="mt-3 space-y-2">
@@ -321,7 +321,7 @@
                 }
                 else
                 {
-                    <p class="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Khong co warning cho routing hien tai.</p>
+                    <p class="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Không có cảnh báo cho routing hiện tại.</p>
                 }
             </div>
             <div class="mt-8 space-y-5">
@@ -332,17 +332,17 @@
                         <article class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 dark:border-slate-700 dark:bg-slate-800/60">
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Traffic-aware estimate</p>
-                                    <h4 class="mt-1 text-lg font-black text-slate-900 dark:text-white">Day @routeDay.Day</h4>
+                                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Ước tính có xét giao thông</p>
+                                    <h4 class="mt-1 text-lg font-black text-slate-900 dark:text-white">Ngày @routeDay.Day</h4>
                                 </div>
                                 <div class="flex flex-wrap gap-2">
                                     @if (!string.IsNullOrWhiteSpace(routeDay.PeakDayPart))
                                     {
-                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Day part: @DayPartText(routeDay.PeakDayPart)</span>
+                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Khung giờ: @DayPartText(routeDay.PeakDayPart)</span>
                                     }
                                     @if (!string.IsNullOrWhiteSpace(routeDay.PeakCongestionLevel))
                                     {
-                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Congestion: @CongestionText(routeDay.PeakCongestionLevel)</span>
+                                        <span class="rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-900 dark:text-slate-300">Mật độ: @CongestionText(routeDay.PeakCongestionLevel)</span>
                                     }
                                 </div>
                             </div>
@@ -350,13 +350,13 @@
                                 <table class="min-w-full text-sm text-slate-600 dark:text-slate-300">
                                     <thead>
                                         <tr class="border-b border-slate-200 text-left text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:border-slate-700 dark:text-slate-500">
-                                            <th class="pb-3 pr-4">Leg</th>
-                                            <th class="pb-3 pr-4">Distance</th>
-                                            <th class="pb-3 pr-4">Drive</th>
-                                            <th class="pb-3 pr-4">Junction delay</th>
-                                            <th class="pb-3 pr-4">Travel</th>
-                                            <th class="pb-3 pr-4">Day part</th>
-                                            <th class="pb-3">Congestion</th>
+                                            <th class="pb-3 pr-4">Chặng</th>
+                                            <th class="pb-3 pr-4">Quãng đường</th>
+                                            <th class="pb-3 pr-4">Lái xe</th>
+                                            <th class="pb-3 pr-4">Trễ giao lộ</th>
+                                            <th class="pb-3 pr-4">Di chuyển</th>
+                                            <th class="pb-3 pr-4">Khung giờ</th>
+                                            <th class="pb-3">Mật độ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -367,9 +367,9 @@
                                             <tr class="border-b border-slate-100 align-top last:border-b-0 dark:border-slate-800">
                                                 <td class="py-3 pr-4 font-semibold text-slate-900 dark:text-white">@fromName -> @toName</td>
                                                 <td class="py-3 pr-4">@leg.DistanceKm.ToString("0.0") km</td>
-                                                <td class="py-3 pr-4">@leg.DriveMinutes phut</td>
-                                                <td class="py-3 pr-4">@leg.JunctionDelayMinutes phut</td>
-                                                <td class="py-3 pr-4">@leg.TravelMinutes phut</td>
+                                                <td class="py-3 pr-4">@leg.DriveMinutes phút</td>
+                                                <td class="py-3 pr-4">@leg.JunctionDelayMinutes phút</td>
+                                                <td class="py-3 pr-4">@leg.TravelMinutes phút</td>
                                                 <td class="py-3 pr-4">@DayPartText(leg.DayPart)</td>
                                                 <td class="py-3">@CongestionText(leg.CongestionLevel)</td>
                                             </tr>
@@ -382,7 +382,7 @@
                 }
                 else
                 {
-                    <p class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Chua co leg estimate hop le de hien thi bang ETA.</p>
+                    <p class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Chưa có ước tính chặng hợp lệ để hiển thị bảng ETA.</p>
                 }
             </div>
         </section>
@@ -391,14 +391,14 @@
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h3 class="text-2xl font-bold text-slate-900 dark:text-white">Routing</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Danh sach route stop da embed trong tour.</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Danh sách route stop đã embed trong tour.</p>
                 </div>
                 <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">Schema v@(Model.Routing?.SchemaVersion ?? 0)</span>
             </div>
 
             @if (routeStops.Count == 0)
             {
-                <p class="mt-6 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Chua co du lieu routing.</p>
+                <p class="mt-6 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">Chưa có dữ liệu routing.</p>
             }
             else
             {
@@ -408,7 +408,7 @@
                         <article class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-700 dark:bg-slate-800/60">
                             <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                 <div>
-                                    <p class="text-lg font-black text-slate-900 dark:text-white">Day @stop.Day · Order @stop.Order · @stop.Name</p>
+                                    <p class="text-lg font-black text-slate-900 dark:text-white">Ngày @stop.Day · Thứ tự @stop.Order · @stop.Name</p>
                                     <p class="mt-1 text-xs font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">@stop.Type</p>
                                     @if (!string.IsNullOrWhiteSpace(stop.Note))
                                     {
@@ -416,9 +416,9 @@
                                     }
                                 </div>
                                 <div class="grid gap-3 text-sm sm:grid-cols-2 lg:text-right">
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Coordinates</span><strong class="text-slate-900 dark:text-white">@stop.Coordinates?.Lat, @stop.Coordinates?.Lng</strong></div>
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Visit</span><strong class="text-slate-900 dark:text-white">@stop.VisitMinutes phut</strong></div>
-                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Score</span><strong class="text-slate-900 dark:text-white">@stop.AttractionScore</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Tọa độ</span><strong class="text-slate-900 dark:text-white">@stop.Coordinates?.Lat, @stop.Coordinates?.Lng</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Tham quan</span><strong class="text-slate-900 dark:text-white">@stop.VisitMinutes phút</strong></div>
+                                    <div><span class="block text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm</span><strong class="text-slate-900 dark:text-white">@stop.AttractionScore</strong></div>
                                 </div>
                             </div>
                         </article>
@@ -430,18 +430,18 @@
 
     <aside class="space-y-6 lg:col-span-4">
         <section class="sticky top-28 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/60">
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Quick summary</h3>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tóm tắt nhanh</h3>
             <dl class="mt-4 space-y-4 text-sm">
                 <div>
                     <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">SupplierRef</dt>
-                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.SupplierRef?.SupplierName) ? Model.SupplierRef.SupplierName : "Chua cau hinh")</dd>
+                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@(!string.IsNullOrWhiteSpace(Model.SupplierRef?.SupplierName) ? Model.SupplierRef.SupplierName : "Chưa cấu hình")</dd>
                 </div>
                 <div>
-                    <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Danh gia</dt>
-                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@Model.Rating / 5 · @Model.ReviewCount review(s)</dd>
+                    <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Đánh giá</dt>
+                    <dd class="mt-1 text-slate-700 dark:text-slate-200">@Model.Rating / 5 · @Model.ReviewCount đánh giá</dd>
                 </div>
                 <div>
-                    <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Suc chua tour</dt>
+                    <dt class="font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">Sức chứa tour</dt>
                     <dd class="mt-1 text-slate-700 dark:text-slate-200">@Model.CurrentParticipants / @Model.MaxParticipants</dd>
                 </div>
                 <div>
@@ -453,7 +453,7 @@
                         }
                         else
                         {
-                            <span>Chua cau hinh</span>
+                            <span>Chưa cấu hình</span>
                         }
                     </dd>
                 </div>

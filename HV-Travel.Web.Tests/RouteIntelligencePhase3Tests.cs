@@ -343,10 +343,10 @@ public class RouteIntelligencePhase3Tests
     {
         var source = TestPaths.ReadRepoFile("HV-Travel.Web", "Areas", "Admin", "Views", "Tours", "Details.cshtml");
 
-        Assert.True(source.Contains("Route intelligence", StringComparison.OrdinalIgnoreCase));
-        Assert.True(source.Contains("warning", StringComparison.OrdinalIgnoreCase));
-        Assert.True(source.Contains("Junction delay", StringComparison.OrdinalIgnoreCase));
-        Assert.True(source.Contains("Congestion", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Phân tích lộ trình", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Cảnh báo", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Trễ giao lộ", StringComparison.OrdinalIgnoreCase));
+        Assert.True(source.Contains("Mật độ", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

@@ -40,7 +40,7 @@ public sealed class TourAiChatController : Controller
         }
         catch (KeyNotFoundException)
         {
-            return NotFound(new { message = "Tour chat context was not found." });
+            return NotFound(new { message = "Không tìm thấy ngữ cảnh chat của tour." });
         }
     }
 
@@ -67,11 +67,11 @@ public sealed class TourAiChatController : Controller
         }
         catch (UnauthorizedAccessException)
         {
-            return NotFound(new { message = "Conversation not found." });
+            return NotFound(new { message = "Không tìm thấy cuộc trò chuyện." });
         }
         catch (KeyNotFoundException)
         {
-            return NotFound(new { message = "Conversation not found." });
+            return NotFound(new { message = "Không tìm thấy cuộc trò chuyện." });
         }
     }
 
@@ -85,7 +85,7 @@ public sealed class TourAiChatController : Controller
             Status = conversation.Status,
             ParticipantType = conversation.ParticipantType,
             DisplayName = string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName)
-                ? "Khach xem tour"
+                ? "Khách xem tour"
                 : conversation.GuestProfile.DisplayName,
             SourcePage = conversation.SourcePage,
             ContextType = conversation.ContextType ?? string.Empty,

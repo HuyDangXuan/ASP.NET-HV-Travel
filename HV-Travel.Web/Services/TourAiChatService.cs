@@ -51,7 +51,7 @@ public sealed class TourAiChatService : ITourAiChatService
         var tourId = request.TourId.Trim();
         if (string.IsNullOrWhiteSpace(tourId))
         {
-            throw new ArgumentException("TourId is required.", nameof(request));
+            throw new ArgumentException("Thiếu TourId.", nameof(request));
         }
 
         var tour = await GetPublicTourAsync(tourId);
@@ -151,12 +151,12 @@ public sealed class TourAiChatService : ITourAiChatService
     {
         if (string.IsNullOrWhiteSpace(request.ConversationId))
         {
-            throw new ArgumentException("ConversationId is required.", nameof(request));
+            throw new ArgumentException("Thiếu ConversationId.", nameof(request));
         }
 
         if (string.IsNullOrWhiteSpace(request.Content))
         {
-            throw new ArgumentException("Content is required.", nameof(request));
+            throw new ArgumentException("Vui lòng nhập nội dung câu hỏi.", nameof(request));
         }
 
         var conversation = await RequireConversationAsync(request.ConversationId);
@@ -346,12 +346,12 @@ public sealed class TourAiChatService : ITourAiChatService
             new(
                 "system",
                 """
-                Route-aware rules: neu nguoi dung hoi ve di chuyen, lich trinh, thoi gian hanh trinh hoac traffic, uu tien RouteInsight trong context.
-                Neu nguoi dung hoi tour phu hop kieu hanh trinh nao, dung routeStyle va recommendation signals da cung cap.
-                Neu so sanh tour khac, chi dung related tour summaries trong context; khong tu them tour ngoai context.
-                Neu tour chua co routing, noi ro tour nay chua co du lieu routing co cau truc.
-                Khong bia ETA realtime, traffic realtime, khach san, phuong tien hoac dich vu ngoai du lieu.
-                Khong lo toa do, lat/lng, raw coordinates hoac du lieu noi bo khong danh cho public.
+                Quy tắc theo lộ trình: nếu người dùng hỏi về di chuyển, lịch trình, thời gian hành trình hoặc traffic, ưu tiên RouteInsight trong context.
+                Nếu người dùng hỏi tour phù hợp kiểu hành trình nào, dùng routeStyle và recommendation signals đã cung cấp.
+                Nếu so sánh tour khác, chỉ dùng related tour summaries trong context; không tự thêm tour ngoài context.
+                Nếu tour chưa có routing, nói rõ tour này chưa có dữ liệu lộ trình có cấu trúc.
+                Không bịa ETA thời gian thực, giao thông thời gian thực, khách sạn, phương tiện hoặc dịch vụ ngoài dữ liệu.
+                Không lộ tọa độ, lat/lng, raw coordinates hoặc dữ liệu nội bộ không dành cho public.
                 """)
         };
 
@@ -457,7 +457,7 @@ public sealed class TourAiChatService : ITourAiChatService
         var tour = await _tourRepository.GetByIdAsync(tourId);
         if (tour == null || !IsPubliclyVisible(tour.Status))
         {
-            throw new KeyNotFoundException("Tour not found.");
+            throw new KeyNotFoundException("Không tìm thấy tour.");
         }
 
         return tour;
@@ -468,7 +468,7 @@ public sealed class TourAiChatService : ITourAiChatService
         var conversation = await GetConversationAsync(conversationId);
         if (conversation == null)
         {
-            throw new KeyNotFoundException("Conversation not found.");
+            throw new KeyNotFoundException("Không tìm thấy cuộc trò chuyện.");
         }
 
         return conversation;
@@ -490,7 +490,7 @@ public sealed class TourAiChatService : ITourAiChatService
             return;
         }
 
-        throw new UnauthorizedAccessException("Conversation not found.");
+        throw new UnauthorizedAccessException("Không tìm thấy cuộc trò chuyện.");
     }
 
     private async Task UpdateConversationSummaryAsync(ChatConversation conversation, ChatMessage lastMessage)
@@ -672,23 +672,23 @@ public sealed class TourAiChatService : ITourAiChatService
         var highlights = days
             .Where(day => !string.IsNullOrWhiteSpace(day.PeakDayPart))
             .Take(3)
-            .Select(day => $"day {day.Day:00} {TranslateDayPart(day.PeakDayPart)} {TranslateCongestion(day.PeakCongestionLevel)}")
+            .Select(day => $"ngày {day.Day:00} {TranslateDayPart(day.PeakDayPart)} {TranslateCongestion(day.PeakCongestionLevel)}")
             .ToList();
 
-        return highlights.Count > 0 ? string.Join("; ", highlights) : "stable";
+        return highlights.Count > 0 ? string.Join("; ", highlights) : "ổn định";
     }
 
     private static string TranslateDayPart(string? value)
     {
         return value switch
         {
-            "early_morning" => "early morning",
-            "morning_peak" => "morning peak",
-            "late_morning" => "late morning",
-            "midday" => "midday",
-            "afternoon" => "afternoon",
-            "evening_peak" => "evening peak",
-            _ => "night"
+            "early_morning" => "sáng sớm",
+            "morning_peak" => "giờ cao điểm sáng",
+            "late_morning" => "cuối buổi sáng",
+            "midday" => "giữa ngày",
+            "afternoon" => "buổi chiều",
+            "evening_peak" => "giờ cao điểm tối",
+            _ => "buổi tối"
         };
     }
 
@@ -696,9 +696,9 @@ public sealed class TourAiChatService : ITourAiChatService
     {
         return value switch
         {
-            "high" => "high congestion",
-            "moderate" => "moderate congestion",
-            _ => "low congestion"
+            "high" => "mật độ cao",
+            "moderate" => "mật độ vừa",
+            _ => "mật độ thấp"
         };
     }
 

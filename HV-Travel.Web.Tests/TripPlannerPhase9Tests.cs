@@ -75,6 +75,7 @@ public class TripPlannerPhase9Tests
         Assert.True(GetProperty<int>(result, "TotalJourneyMinutes") >= GetProperty<int>(result, "TotalVisitMinutes"));
         Assert.Equal(5, days.Count);
         Assert.Contains(warnings, warning => GetProperty<string>(warning, "Code").Contains("missing-routing", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(warnings, warning => GetProperty<string>(warning, "Message").Contains("chưa có dữ liệu lộ trình", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -121,6 +122,7 @@ public class TripPlannerPhase9Tests
         Assert.Empty(suggestedItems);
         Assert.Equal(2, GetProperty<int>(result, "TotalDays"));
         Assert.Contains(warnings, warning => GetProperty<string>(warning, "Code").Contains("max-days", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(warnings, warning => GetProperty<string>(warning, "Message").Contains("vượt giới hạn 2 ngày", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -141,8 +143,16 @@ public class TripPlannerPhase9Tests
         Assert.Contains("TripPlannerPreviewResponse", controllerSource, StringComparison.Ordinal);
         Assert.Contains("trip-planner-shell", viewSource, StringComparison.Ordinal);
         Assert.Contains("data-trip-planner-preview", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Lập kế hoạch", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Tour đã chọn", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Gợi ý tiếp theo", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Lịch trình nháp", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Chi tiết tour", viewSource, StringComparison.Ordinal);
+        Assert.Contains("Đặt tour này", viewSource, StringComparison.Ordinal);
         Assert.Contains("data-tour-planner-toggle", cardSource, StringComparison.Ordinal);
         Assert.Contains("data-tour-planner-toggle", detailsSource, StringComparison.Ordinal);
+        Assert.Contains("Thêm tour", cardSource, StringComparison.Ordinal);
+        Assert.Contains("Thêm vào planner", detailsSource, StringComparison.Ordinal);
         Assert.Contains("hvtravel_trip_planner", clientSource, StringComparison.Ordinal);
         Assert.Contains("data-tour-planner-toggle", clientSource, StringComparison.Ordinal);
         Assert.DoesNotContain("coordinates", viewSource, StringComparison.OrdinalIgnoreCase);

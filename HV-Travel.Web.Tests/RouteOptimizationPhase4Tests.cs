@@ -126,7 +126,7 @@ public class RouteOptimizationPhase4Tests
         var warnings = GetProperty<IEnumerable<object>>(result, "Warnings").ToList();
         Assert.NotEmpty(warnings);
         Assert.Contains(warnings, warning =>
-            GetProperty<string>(warning, "Message").Contains("coordinates", StringComparison.OrdinalIgnoreCase));
+            GetProperty<string>(warning, "Message").Contains("tọa độ", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -351,9 +351,9 @@ public class RouteOptimizationPhase4Tests
     {
         var source = TestPaths.ReadRepoFile("HV-Travel.Web", "Areas", "Admin", "Views", "Tours", "_TourDeparturesAndRoutingEditor.cshtml");
 
-        Assert.Contains("Generate optimization", source, StringComparison.Ordinal);
-        Assert.Contains("Apply suggestion", source, StringComparison.Ordinal);
-        Assert.Contains("Discard preview", source, StringComparison.Ordinal);
+        Assert.Contains("Tối ưu lộ trình", source, StringComparison.Ordinal);
+        Assert.Contains("Áp dụng gợi ý", source, StringComparison.Ordinal);
+        Assert.Contains("Bỏ bản xem trước", source, StringComparison.Ordinal);
         Assert.Contains("data-route-key", source, StringComparison.Ordinal);
         Assert.Contains("route-optimization-preview", source, StringComparison.Ordinal);
     }

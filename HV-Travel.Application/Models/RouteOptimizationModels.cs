@@ -25,9 +25,9 @@ public static class RouteOptimizationProfiles
     {
         return Normalize(profile) switch
         {
-            DistanceFirst => "Distance first",
-            HighlightsFirst => "Highlights first",
-            _ => "Balanced"
+            DistanceFirst => "Ưu tiên quãng đường",
+            HighlightsFirst => "Ưu tiên điểm nổi bật",
+            _ => "Cân bằng"
         };
     }
 
@@ -35,9 +35,9 @@ public static class RouteOptimizationProfiles
     {
         return Normalize(profile) switch
         {
-            DistanceFirst => "Prioritize shorter distance and lower travel cost while still keeping the route stable.",
-            HighlightsFirst => "Front-load stronger attractions earlier in the day without breaking within-day route efficiency.",
-            _ => "Balance travel time, distance, attraction priority, and route stability for a practical day plan."
+            DistanceFirst => "Ưu tiên đường đi ngắn hơn và chi phí di chuyển thấp hơn nhưng vẫn giữ lộ trình ổn định.",
+            HighlightsFirst => "Đưa các điểm nổi bật lên sớm hơn trong ngày mà không phá vỡ hiệu quả di chuyển theo lộ trình.",
+            _ => "Cân bằng thời gian di chuyển, quãng đường, mức ưu tiên điểm tham quan và độ ổn định của lộ trình."
         };
     }
 }

@@ -303,6 +303,9 @@ public class RouteRecommendationPhase5Tests
         Assert.Contains("routeStyleHighlightsLabel", contentDefaultsSource, StringComparison.Ordinal);
         Assert.Contains("sortRecommendedLabel", contentDefaultsSource, StringComparison.Ordinal);
         Assert.Contains("routeStyleSummaryFormat", contentDefaultsSource, StringComparison.Ordinal);
+        Assert.Contains("Phù hợp nhất", contentDefaultsSource, StringComparison.Ordinal);
+        Assert.Contains("Gọn, ít di chuyển", contentDefaultsSource, StringComparison.Ordinal);
+        Assert.Contains("Khám phá", contentDefaultsSource, StringComparison.Ordinal);
     }
 
     private static IReadOnlyList<string> RecommendAndGetTourIds(

@@ -26,7 +26,7 @@ public class TripPlannerController : Controller
     public IActionResult Index(string? routeStyle = null)
     {
         ViewData["ActivePage"] = "Tours";
-        ViewData["Title"] = "Trip Planner";
+        ViewData["Title"] = "Lập kế hoạch";
         ViewData["CurrentRouteStyle"] = RouteRecommendationStyles.Normalize(routeStyle);
         return View();
     }
@@ -43,7 +43,7 @@ public class TripPlannerController : Controller
             var tour = await ResolvePublicTourAsync(identifier.Trim());
             if (tour == null)
             {
-                warnings.Add($"Tour \"{identifier}\" was not found or is not public.");
+                warnings.Add($"Tour \"{identifier}\" không tìm thấy hoặc chưa được công khai.");
                 continue;
             }
 

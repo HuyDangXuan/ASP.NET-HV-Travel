@@ -1,20 +1,20 @@
 @{
     var currentRouteStyle = ViewData["CurrentRouteStyle"]?.ToString() ?? "balanced";
-    ViewData["Title"] = ViewData["Title"] ?? "Trip Planner";
+    ViewData["Title"] = ViewData["Title"] ?? "Lập kế hoạch";
 }
 
 <section class="overflow-hidden bg-slate-950 text-white">
     <div class="mx-auto grid min-h-[34rem] max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-20">
         <div class="flex flex-col justify-center">
-            <p class="text-xs font-black uppercase tracking-[0.34em] text-cyan-300">Route-aware planner</p>
-            <h1 class="mt-5 max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">Build a smarter draft trip from tours you already like.</h1>
-            <p class="mt-6 max-w-2xl text-base leading-8 text-slate-300">Select public tours, compare total cost and journey time, then let route intelligence suggest the next best fit.</p>
+            <p class="text-xs font-black uppercase tracking-[0.34em] text-cyan-300">Planner theo lộ trình</p>
+            <h1 class="mt-5 max-w-3xl text-4xl font-black tracking-tight sm:text-6xl">Lập kế hoạch thông minh từ các tour bạn đã chọn.</h1>
+            <p class="mt-6 max-w-2xl text-base leading-8 text-slate-300">Chọn tour public, so sánh tổng chi phí và thời gian hành trình, rồi để dữ liệu lộ trình gợi ý lựa chọn phù hợp tiếp theo.</p>
             <div class="mt-8 flex flex-wrap gap-3">
                 <a asp-controller="PublicTours" asp-action="Index" asp-route-sort="recommended" asp-route-routeStyle="@currentRouteStyle" class="inline-flex items-center justify-center rounded-2xl bg-cyan-400 px-6 py-3 text-sm font-black text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-300">
-                    Browse tours
+                    Xem tour
                 </a>
                 <a href="#trip-planner-shell" class="inline-flex items-center justify-center rounded-2xl border border-white/15 px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:border-cyan-300/60">
-                    View planner
+                    Xem planner
                 </a>
             </div>
         </div>
@@ -22,11 +22,11 @@
             <div class="absolute inset-0 rounded-[3rem] bg-[radial-gradient(circle_at_30%_30%,rgba(34,211,238,0.38),transparent_38%),linear-gradient(135deg,rgba(14,165,233,0.28),rgba(15,23,42,0.2))]"></div>
             <div class="absolute inset-8 rounded-[2.5rem] border border-white/10 bg-white/10 backdrop-blur"></div>
             <div class="absolute bottom-8 left-8 right-8 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl">
-                <p class="text-xs font-black uppercase tracking-[0.28em] text-cyan-200">Draft metrics</p>
+                <p class="text-xs font-black uppercase tracking-[0.28em] text-cyan-200">Chỉ số bản nháp</p>
                 <div class="mt-5 grid grid-cols-3 gap-3 text-center">
-                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-days>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">days</p></div>
-                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-travel>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">travel</p></div>
-                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-items>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">tours</p></div>
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-days>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">ngày</p></div>
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-travel>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">di chuyển</p></div>
+                    <div class="rounded-2xl bg-white/10 px-3 py-4"><p class="text-2xl font-black" data-hero-total-items>0</p><p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-400">tour</p></div>
                 </div>
             </div>
         </div>
@@ -40,40 +40,40 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-[22rem_1fr]">
             <aside class="h-fit rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Planner controls</p>
+                <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Điều khiển planner</p>
                 <div class="mt-5 space-y-4">
                     <label class="block">
-                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Route style</span>
-                        <select data-planner-route-style class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white">
-                            <option value="compact" selected="@(currentRouteStyle == "compact")">Compact</option>
-                            <option value="balanced" selected="@(currentRouteStyle == "balanced")">Balanced</option>
-                            <option value="highlights" selected="@(currentRouteStyle == "highlights")">Highlights</option>
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Kiểu hành trình</span>
+                        <select data-planner-route-style class="public-select mt-2 w-full rounded-2xl border border-sky-200/80 bg-white/90 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:shadow-black/20">
+                            <option value="compact" selected="@(currentRouteStyle == "compact")">Gọn, ít di chuyển</option>
+                            <option value="balanced" selected="@(currentRouteStyle == "balanced")">Cân bằng</option>
+                            <option value="highlights" selected="@(currentRouteStyle == "highlights")">Ưu tiên điểm nổi bật</option>
                         </select>
                     </label>
                     <label class="block">
-                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Travellers</span>
-                        <input data-planner-travellers type="number" min="1" value="2" class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Số khách</span>
+                        <input data-planner-travellers type="number" min="1" value="2" class="mt-2 w-full rounded-2xl border border-sky-200/80 bg-white/90 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:shadow-black/20" />
                     </label>
                     <label class="block">
-                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Max days</span>
-                        <input data-planner-max-days type="number" min="1" max="30" value="7" class="mt-2 w-full rounded-2xl border-slate-200 bg-slate-50 text-sm font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+                        <span class="text-xs font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Số ngày tối đa</span>
+                        <input data-planner-max-days type="number" min="1" max="30" value="7" class="mt-2 w-full rounded-2xl border border-sky-200/80 bg-white/90 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:shadow-black/20" />
                     </label>
                 </div>
                 <button type="button" data-planner-refresh class="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-primary-dark">
-                    Refresh plan
+                    Làm mới kế hoạch
                 </button>
                 <button type="button" data-planner-clear class="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:border-red-300 hover:text-red-600 dark:border-slate-700 dark:text-slate-200">
-                    Clear planner
+                    Xóa planner
                 </button>
             </aside>
 
             <div class="space-y-8">
                 <div data-planner-empty class="hidden rounded-[2.5rem] border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
-                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Empty planner</p>
-                    <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white">Start by adding a tour.</h2>
-                    <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400">Your draft trip lives in this browser only. Add tours from the public listing, then return here for route-aware suggestions.</p>
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Planner trống</p>
+                    <h2 class="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white">Bắt đầu bằng cách thêm một tour.</h2>
+                    <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500 dark:text-slate-400">Bản nháp chỉ lưu trong trình duyệt này. Thêm tour từ danh sách public, rồi quay lại đây để xem gợi ý theo lộ trình.</p>
                     <a asp-controller="PublicTours" asp-action="Index" asp-route-sort="recommended" asp-route-routeStyle="balanced" class="mt-6 inline-flex items-center justify-center rounded-2xl bg-primary px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-primary-dark">
-                        Find recommended tours
+                        Tìm tour được gợi ý
                     </a>
                 </div>
 
@@ -83,23 +83,23 @@
                 <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Selected tours</p>
-                            <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Your draft stack</h2>
+                            <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Tour đã chọn</p>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Danh sách tour trong bản nháp</h2>
                         </div>
-                        <p class="text-sm text-slate-500 dark:text-slate-400" data-selected-count>0 selected</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400" data-selected-count>0 tour đã chọn</p>
                     </div>
                     <div data-selected-tours class="mt-6 grid gap-4"></div>
                 </section>
 
                 <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Suggested next</p>
-                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Route-aware additions</h2>
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Gợi ý tiếp theo</p>
+                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Tour bổ sung theo lộ trình</h2>
                     <div data-suggested-tours class="mt-6 grid gap-4"></div>
                 </section>
 
                 <section class="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Day by day</p>
-                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Draft itinerary</h2>
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-primary">Theo từng ngày</p>
+                    <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white">Lịch trình nháp</h2>
                     <div data-itinerary-days class="mt-6 space-y-4"></div>
                 </section>
             </div>
@@ -162,13 +162,13 @@
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">${escapeHtml(item.destinationLabel)} · ${escapeHtml(item.durationText)}</p>
                     <h3 class="mt-2 text-lg font-black text-slate-900 dark:text-white">${escapeHtml(item.name)}</h3>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${item.hasRouting ? `${item.stopCount} stops · ${item.travelMinutes} travel minutes · ${item.journeyMinutes} journey minutes` : 'No structured routing yet'}</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${item.hasRouting ? `${item.stopCount} điểm dừng · ${item.travelMinutes} phút di chuyển · ${item.journeyMinutes} phút hành trình` : 'Chưa có dữ liệu lộ trình có cấu trúc'}</p>
                     <p class="mt-2 text-sm font-black text-primary">${formatter.format(item.startingAdultPrice)} VND</p>
                 </div>
                 <div class="flex flex-wrap gap-2 sm:justify-end">
-                    <a href="${detailUrl(item)}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition hover:border-primary/30 hover:text-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">View details</a>
-                    <a href="${bookingUrl(item)}" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2 text-xs font-black text-white transition hover:bg-primary-dark">Book this tour</a>
-                    ${allowAdd ? `<button type="button" data-planner-add-suggested="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-2 text-xs font-black text-cyan-700 transition hover:border-cyan-300 dark:border-cyan-900/50 dark:bg-cyan-950/30 dark:text-cyan-200">Add to planner</button>` : `<button type="button" data-planner-remove="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-4 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-300">Remove</button>`}
+                    <a href="${detailUrl(item)}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition hover:border-primary/30 hover:text-primary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">Chi tiết tour</a>
+                    <a href="${bookingUrl(item)}" class="inline-flex items-center justify-center rounded-2xl bg-primary px-4 py-2 text-xs font-black text-white transition hover:bg-primary-dark">Đặt tour này</a>
+                    ${allowAdd ? `<button type="button" data-planner-add-suggested="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-2 text-xs font-black text-cyan-700 transition hover:border-cyan-300 dark:border-cyan-900/50 dark:bg-cyan-950/30 dark:text-cyan-200">Thêm vào planner</button>` : `<button type="button" data-planner-remove="${escapeHtml(item.tourId)}" class="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-4 py-2 text-xs font-black text-red-600 transition hover:bg-red-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-300">Gỡ</button>`}
                 </div>
             </article>`;
 
@@ -181,16 +181,16 @@
             const hasLocalItems = parseItems().length > 0;
 
             emptyEl.classList.toggle('hidden', hasLocalItems);
-            selectedCountEl.textContent = `${selected.length} selected`;
+            selectedCountEl.textContent = `${selected.length} tour đã chọn`;
             document.querySelector('[data-hero-total-days]').textContent = plan.totalDays || 0;
             document.querySelector('[data-hero-total-travel]').textContent = plan.totalTravelMinutes || 0;
             document.querySelector('[data-hero-total-items]').textContent = selected.length + suggested.length;
 
             summaryEl.innerHTML = [
-                metricCard('Total days', String(plan.totalDays || 0)),
-                metricCard('Starting adult price', `${formatter.format(plan.totalStartingAdultPrice || 0)} VND`),
-                metricCard('Travel minutes', String(plan.totalTravelMinutes || 0)),
-                metricCard('Journey minutes', String(plan.totalJourneyMinutes || 0))
+                metricCard('Tổng số ngày', String(plan.totalDays || 0)),
+                metricCard('Giá người lớn từ', `${formatter.format(plan.totalStartingAdultPrice || 0)} VND`),
+                metricCard('Phút di chuyển', String(plan.totalTravelMinutes || 0)),
+                metricCard('Phút hành trình', String(plan.totalJourneyMinutes || 0))
             ].join('');
 
             warningsEl.innerHTML = warnings.length
@@ -199,23 +199,23 @@
 
             selectedEl.innerHTML = selected.length
                 ? selected.map((item) => itemMarkup(item, false)).join('')
-                : '<p class="text-sm text-slate-500 dark:text-slate-400">No selected tours yet.</p>';
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">Chưa có tour nào được chọn.</p>';
 
             suggestedEl.innerHTML = suggested.length
                 ? suggested.map((item) => itemMarkup(item, true)).join('')
-                : '<p class="text-sm text-slate-500 dark:text-slate-400">Add one tour to unlock route-aware suggestions.</p>';
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">Thêm một tour để mở gợi ý theo lộ trình.</p>';
 
             daysEl.innerHTML = days.length
                 ? days.map((day) => `
                     <div class="grid gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950 sm:grid-cols-[4rem_1fr]">
-                        <div class="text-center"><p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Day</p><p class="mt-1 text-3xl font-black text-slate-900 dark:text-white">${day.dayNumber}</p></div>
+                        <div class="text-center"><p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Ngày</p><p class="mt-1 text-3xl font-black text-slate-900 dark:text-white">${day.dayNumber}</p></div>
                         <div>
-                            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-primary">${escapeHtml(day.tourName)} · tour day ${day.tourDay}</p>
+                            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-primary">${escapeHtml(day.tourName)} · ngày tour ${day.tourDay}</p>
                             <h3 class="mt-2 text-base font-black text-slate-900 dark:text-white">${escapeHtml(day.title)}</h3>
-                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${day.hasRouting ? `${day.stopCount} stops · ${day.visitMinutes} visit minutes · ${day.travelMinutes} travel minutes · ${day.journeyMinutes} journey minutes` : 'No structured routing metrics for this day.'}</p>
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${day.hasRouting ? `${day.stopCount} điểm dừng · ${day.visitMinutes} phút tham quan · ${day.travelMinutes} phút di chuyển · ${day.journeyMinutes} phút hành trình` : 'Chưa có chỉ số lộ trình có cấu trúc cho ngày này.'}</p>
                         </div>
                     </div>`).join('')
-                : '<p class="text-sm text-slate-500 dark:text-slate-400">Your draft itinerary will appear here.</p>';
+                : '<p class="text-sm text-slate-500 dark:text-slate-400">Lịch trình nháp sẽ hiển thị tại đây.</p>';
         };
 
         const refresh = async () => {
@@ -232,7 +232,7 @@
             });
 
             if (!response.ok) {
-                throw new Error('Planner preview failed.');
+                throw new Error('Không thể tạo bản xem trước planner.');
             }
 
             renderPlan(await response.json());

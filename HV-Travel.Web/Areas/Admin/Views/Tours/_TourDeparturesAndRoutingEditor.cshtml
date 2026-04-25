@@ -16,9 +16,9 @@
 <section class="section-card">
     <div class="flex items-center gap-2 mb-2">
         <span class="material-symbols-outlined text-primary">event_upcoming</span>
-        <h2 class="text-[#111718] dark:text-white text-xl font-bold">Departures</h2>
+        <h2 class="text-[#111718] dark:text-white text-xl font-bold">Lịch khởi hành</h2>
     </div>
-    <p class="text-sm text-slate-500 dark:text-slate-400">Manage concrete departure rows for booking. If this section stays empty, the app still falls back to <code>StartDates</code>.</p>
+    <p class="text-sm text-slate-500 dark:text-slate-400">Quản lý từng lịch khởi hành để phục vụ đặt tour. Nếu phần này để trống, hệ thống vẫn dùng fallback <code>StartDates</code>.</p>
     <input type="hidden" name="__departuresEditor" value="true" />
 
     @if (departureErrors.Any())
@@ -38,8 +38,8 @@
             <article class="departure-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30">
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Departure #@(i + 1)</p>
-                        <p class="text-sm font-bold text-slate-900 dark:text-white">Start @departure.StartDate.ToString("dd/MM/yyyy")</p>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Lịch khởi hành #@(i + 1)</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Bắt đầu @departure.StartDate.ToString("dd/MM/yyyy")</p>
                     </div>
                     <button type="button" onclick="removeDepartureItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
                         <span class="material-symbols-outlined">delete</span>
@@ -47,29 +47,29 @@
                 </div>
                 <input type="hidden" name="Departures[@i].Id" value="@departure.Id" data-departure-field="Id" />
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <div><label class="label-text">StartDate</label><input type="date" name="Departures[@i].StartDate" value="@departure.StartDate.ToString("yyyy-MM-dd")" data-departure-field="StartDate" class="input-field" /></div>
-                    <div><label class="label-text">AdultPrice</label><input type="number" name="Departures[@i].AdultPrice" value="@departure.AdultPrice" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">ChildPrice</label><input type="number" name="Departures[@i].ChildPrice" value="@departure.ChildPrice" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">InfantPrice</label><input type="number" name="Departures[@i].InfantPrice" value="@departure.InfantPrice" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">DiscountPercentage</label><input type="number" name="Departures[@i].DiscountPercentage" value="@departure.DiscountPercentage" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
-                    <div><label class="label-text">Capacity</label><input type="number" name="Departures[@i].Capacity" value="@departure.Capacity" data-departure-field="Capacity" class="input-field" min="0" /></div>
-                    <div><label class="label-text">BookedCount</label><input type="number" name="Departures[@i].BookedCount" value="@departure.BookedCount" data-departure-field="BookedCount" class="input-field" min="0" /></div>
-                    <div><label class="label-text">CutoffHours</label><input type="number" name="Departures[@i].CutoffHours" value="@departure.CutoffHours" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Ngày khởi hành</label><input type="date" name="Departures[@i].StartDate" value="@departure.StartDate.ToString("yyyy-MM-dd")" data-departure-field="StartDate" class="input-field" /></div>
+                    <div><label class="label-text">Giá người lớn</label><input type="number" name="Departures[@i].AdultPrice" value="@departure.AdultPrice" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Giá trẻ em</label><input type="number" name="Departures[@i].ChildPrice" value="@departure.ChildPrice" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Giá em bé</label><input type="number" name="Departures[@i].InfantPrice" value="@departure.InfantPrice" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Phần trăm giảm</label><input type="number" name="Departures[@i].DiscountPercentage" value="@departure.DiscountPercentage" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
+                    <div><label class="label-text">Sức chứa</label><input type="number" name="Departures[@i].Capacity" value="@departure.Capacity" data-departure-field="Capacity" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Số chỗ đã đặt</label><input type="number" name="Departures[@i].BookedCount" value="@departure.BookedCount" data-departure-field="BookedCount" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Giờ khóa đặt</label><input type="number" name="Departures[@i].CutoffHours" value="@departure.CutoffHours" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
                     <div>
-                        <label class="label-text">ConfirmationType</label>
+                        <label class="label-text">Kiểu xác nhận</label>
                         <select name="Departures[@i].ConfirmationType" data-departure-field="ConfirmationType" class="input-field">
-                            <option value="">Use tour default</option>
-                            <option value="Instant" selected="@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Instant</option>
-                            <option value="Manual" selected="@(string.Equals(departure.ConfirmationType, "Manual", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Manual</option>
+                            <option value="">Dùng mặc định của tour</option>
+                            <option value="Instant" selected="@(string.Equals(departure.ConfirmationType, "Instant", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Xác nhận tức thì</option>
+                            <option value="Manual" selected="@(string.Equals(departure.ConfirmationType, "Manual", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Xác nhận thủ công</option>
                         </select>
                     </div>
                     <div>
-                        <label class="label-text">Status</label>
+                        <label class="label-text">Trạng thái</label>
                         <select name="Departures[@i].Status" data-departure-field="Status" class="input-field">
-                            <option value="">Use tour default</option>
-                            <option value="Scheduled" selected="@(string.Equals(departure.Status, "Scheduled", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Scheduled</option>
-                            <option value="SoldOut" selected="@(string.Equals(departure.Status, "SoldOut", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">SoldOut</option>
-                            <option value="Closed" selected="@(string.Equals(departure.Status, "Closed", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Closed</option>
+                            <option value="">Dùng mặc định của tour</option>
+                            <option value="Scheduled" selected="@(string.Equals(departure.Status, "Scheduled", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Đã lên lịch</option>
+                            <option value="SoldOut" selected="@(string.Equals(departure.Status, "SoldOut", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Hết chỗ</option>
+                            <option value="Closed" selected="@(string.Equals(departure.Status, "Closed", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Đã đóng</option>
                         </select>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
     </div>
 
     <button type="button" onclick="addDepartureItem()" class="w-full rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
-        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Add departure
+        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Thêm lịch khởi hành
     </button>
 </section>
 
@@ -87,21 +87,21 @@
         <div>
             <div class="flex items-center gap-2 mb-2">
                 <span class="material-symbols-outlined text-primary">route</span>
-                <h2 class="text-[#111718] dark:text-white text-xl font-bold">Routing</h2>
+                <h2 class="text-[#111718] dark:text-white text-xl font-bold">Lộ trình</h2>
             </div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Structured route stops power public route preview, route intelligence, and now admin optimization preview.</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Các điểm dừng có cấu trúc dùng cho bản xem trước public, phân tích lộ trình và bản xem trước tối ưu trong admin.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <div>
-                <label for="route-optimization-profile" class="label-text">Optimization profile</label>
+                <label for="route-optimization-profile" class="label-text">Cấu hình tối ưu</label>
                 <select id="route-optimization-profile" class="input-field min-w-[220px]">
-                    <option value="balanced" selected>Balanced</option>
-                    <option value="distance_first">Distance first</option>
-                    <option value="highlights_first">Highlights first</option>
+                    <option value="balanced" selected>Cân bằng</option>
+                    <option value="distance_first">Ưu tiên quãng đường</option>
+                    <option value="highlights_first">Ưu tiên điểm nổi bật</option>
                 </select>
             </div>
             <button type="button" onclick="generateRouteOptimizationPreview()" class="rounded-2xl border border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
-                <span class="material-symbols-outlined align-[-4px] text-lg">auto_awesome</span> Generate optimization
+                <span class="material-symbols-outlined align-[-4px] text-lg">auto_awesome</span> Tối ưu lộ trình
             </button>
         </div>
     </div>
@@ -127,8 +127,8 @@
             <article class="route-stop-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30" data-route-key="@routeKey">
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Stop #@(i + 1)</p>
-                        <p class="text-sm font-bold text-slate-900 dark:text-white">Day @stop.Day · Order @stop.Order</p>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm dừng #@(i + 1)</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Ngày @stop.Day · Thứ tự @stop.Order</p>
                     </div>
                     <button type="button" onclick="removeRouteStopItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
                         <span class="material-symbols-outlined">delete</span>
@@ -137,34 +137,34 @@
                 <input type="hidden" value="@routeKey" data-route-client-key />
                 <input type="hidden" name="Routing.Stops[@i].Id" value="@stop.Id" data-route-field="Id" />
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <div><label class="label-text">Day</label><input type="number" name="Routing.Stops[@i].Day" value="@stop.Day" data-route-field="Day" class="input-field" min="1" /></div>
-                    <div><label class="label-text">Order</label><input type="number" name="Routing.Stops[@i].Order" value="@stop.Order" data-route-field="Order" class="input-field" min="1" /></div>
-                    <div class="md:col-span-2"><label class="label-text">Name</label><input type="text" name="Routing.Stops[@i].Name" value="@stop.Name" data-route-field="Name" class="input-field" /></div>
-                    <div><label class="label-text">Type</label><input type="text" name="Routing.Stops[@i].Type" value="@stop.Type" data-route-field="Type" class="input-field" /></div>
-                    <div><label class="label-text">VisitMinutes</label><input type="number" name="Routing.Stops[@i].VisitMinutes" value="@stop.VisitMinutes" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
-                    <div><label class="label-text">AttractionScore</label><input type="number" name="Routing.Stops[@i].AttractionScore" value="@stop.AttractionScore" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
-                    <div><label class="label-text">Lat</label><input type="number" name="Routing.Stops[@i].Coordinates.Lat" value="@stop.Coordinates?.Lat" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
-                    <div><label class="label-text">Lng</label><input type="number" name="Routing.Stops[@i].Coordinates.Lng" value="@stop.Coordinates?.Lng" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
-                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Note</label><textarea name="Routing.Stops[@i].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none">@stop.Note</textarea></div>
+                    <div><label class="label-text">Ngày</label><input type="number" name="Routing.Stops[@i].Day" value="@stop.Day" data-route-field="Day" class="input-field" min="1" /></div>
+                    <div><label class="label-text">Thứ tự</label><input type="number" name="Routing.Stops[@i].Order" value="@stop.Order" data-route-field="Order" class="input-field" min="1" /></div>
+                    <div class="md:col-span-2"><label class="label-text">Tên điểm dừng</label><input type="text" name="Routing.Stops[@i].Name" value="@stop.Name" data-route-field="Name" class="input-field" /></div>
+                    <div><label class="label-text">Loại điểm</label><input type="text" name="Routing.Stops[@i].Type" value="@stop.Type" data-route-field="Type" class="input-field" /></div>
+                    <div><label class="label-text">Phút tham quan</label><input type="number" name="Routing.Stops[@i].VisitMinutes" value="@stop.VisitMinutes" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Điểm hấp dẫn</label><input type="number" name="Routing.Stops[@i].AttractionScore" value="@stop.AttractionScore" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
+                    <div><label class="label-text">Vĩ độ</label><input type="number" name="Routing.Stops[@i].Coordinates.Lat" value="@stop.Coordinates?.Lat" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
+                    <div><label class="label-text">Kinh độ</label><input type="number" name="Routing.Stops[@i].Coordinates.Lng" value="@stop.Coordinates?.Lng" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
+                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Ghi chú</label><textarea name="Routing.Stops[@i].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none">@stop.Note</textarea></div>
                 </div>
             </article>
         }
     </div>
 
     <button type="button" onclick="addRouteStopItem()" class="w-full rounded-2xl border-2 border-dashed border-primary/30 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5">
-        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Add route stop
+        <span class="material-symbols-outlined align-[-4px] text-lg">add_circle</span> Thêm điểm dừng
     </button>
 
     <div id="route-optimization-preview" class="hidden rounded-3xl border border-slate-200 bg-slate-50/80 p-5 dark:border-slate-700 dark:bg-slate-900/40">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Optimization preview</p>
-                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Route optimization preview</h3>
-                <p id="route-optimization-preview-status" class="mt-2 text-sm text-slate-500 dark:text-slate-400">Compare current routing against the suggested within-day reorder before saving.</p>
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Bản xem trước tối ưu</p>
+                <h3 class="mt-2 text-xl font-black text-slate-900 dark:text-white">Tối ưu lộ trình</h3>
+                <p id="route-optimization-preview-status" class="mt-2 text-sm text-slate-500 dark:text-slate-400">So sánh lộ trình hiện tại với thứ tự gợi ý trong từng ngày trước khi lưu.</p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
-                <button type="button" onclick="applyRouteOptimizationSuggestion()" class="rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:brightness-110">Apply suggestion</button>
-                <button type="button" onclick="discardRouteOptimizationPreview()" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Discard preview</button>
+                <button type="button" onclick="applyRouteOptimizationSuggestion()" class="rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:brightness-110">Áp dụng gợi ý</button>
+                <button type="button" onclick="discardRouteOptimizationPreview()" class="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Bỏ bản xem trước</button>
             </div>
         </div>
         <div id="route-optimization-preview-body" class="mt-5 space-y-4"></div>
@@ -179,8 +179,8 @@
             <article class="departure-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30">
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Departure #${index + 1}</p>
-                        <p class="text-sm font-bold text-slate-900 dark:text-white">New departure row</p>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Lịch khởi hành #${index + 1}</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Dòng lịch khởi hành mới</p>
                     </div>
                     <button type="button" onclick="removeDepartureItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
                         <span class="material-symbols-outlined">delete</span>
@@ -188,16 +188,16 @@
                 </div>
                 <input type="hidden" name="Departures[${index}].Id" value="" data-departure-field="Id" />
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <div><label class="label-text">StartDate</label><input type="date" name="Departures[${index}].StartDate" value="" data-departure-field="StartDate" class="input-field" /></div>
-                    <div><label class="label-text">AdultPrice</label><input type="number" name="Departures[${index}].AdultPrice" value="" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">ChildPrice</label><input type="number" name="Departures[${index}].ChildPrice" value="" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">InfantPrice</label><input type="number" name="Departures[${index}].InfantPrice" value="" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
-                    <div><label class="label-text">DiscountPercentage</label><input type="number" name="Departures[${index}].DiscountPercentage" value="" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
-                    <div><label class="label-text">Capacity</label><input type="number" name="Departures[${index}].Capacity" value="" data-departure-field="Capacity" class="input-field" min="0" /></div>
-                    <div><label class="label-text">BookedCount</label><input type="number" name="Departures[${index}].BookedCount" value="" data-departure-field="BookedCount" class="input-field" min="0" /></div>
-                    <div><label class="label-text">CutoffHours</label><input type="number" name="Departures[${index}].CutoffHours" value="24" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
-                    <div><label class="label-text">ConfirmationType</label><select name="Departures[${index}].ConfirmationType" data-departure-field="ConfirmationType" class="input-field"><option value="">Use tour default</option><option value="Instant" selected>Instant</option><option value="Manual">Manual</option></select></div>
-                    <div><label class="label-text">Status</label><select name="Departures[${index}].Status" data-departure-field="Status" class="input-field"><option value="">Use tour default</option><option value="Scheduled" selected>Scheduled</option><option value="SoldOut">SoldOut</option><option value="Closed">Closed</option></select></div>
+                    <div><label class="label-text">Ngày khởi hành</label><input type="date" name="Departures[${index}].StartDate" value="" data-departure-field="StartDate" class="input-field" /></div>
+                    <div><label class="label-text">Giá người lớn</label><input type="number" name="Departures[${index}].AdultPrice" value="" data-departure-field="AdultPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Giá trẻ em</label><input type="number" name="Departures[${index}].ChildPrice" value="" data-departure-field="ChildPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Giá em bé</label><input type="number" name="Departures[${index}].InfantPrice" value="" data-departure-field="InfantPrice" class="input-field" min="0" step="1000" /></div>
+                    <div><label class="label-text">Phần trăm giảm</label><input type="number" name="Departures[${index}].DiscountPercentage" value="" data-departure-field="DiscountPercentage" class="input-field" min="0" step="0.01" /></div>
+                    <div><label class="label-text">Sức chứa</label><input type="number" name="Departures[${index}].Capacity" value="" data-departure-field="Capacity" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Số chỗ đã đặt</label><input type="number" name="Departures[${index}].BookedCount" value="" data-departure-field="BookedCount" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Giờ khóa đặt</label><input type="number" name="Departures[${index}].CutoffHours" value="24" data-departure-field="CutoffHours" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Kiểu xác nhận</label><select name="Departures[${index}].ConfirmationType" data-departure-field="ConfirmationType" class="input-field"><option value="">Dùng mặc định của tour</option><option value="Instant" selected>Xác nhận tức thì</option><option value="Manual">Xác nhận thủ công</option></select></div>
+                    <div><label class="label-text">Trạng thái</label><select name="Departures[${index}].Status" data-departure-field="Status" class="input-field"><option value="">Dùng mặc định của tour</option><option value="Scheduled" selected>Đã lên lịch</option><option value="SoldOut">Hết chỗ</option><option value="Closed">Đã đóng</option></select></div>
                 </div>
             </article>
         `;
@@ -212,7 +212,7 @@
 
             const labels = item.querySelectorAll('p');
             if (labels.length > 0) {
-                labels[0].textContent = `Departure #${index + 1}`;
+                labels[0].textContent = `Lịch khởi hành #${index + 1}`;
             }
         });
     }
@@ -270,8 +270,8 @@
             <article class="route-stop-item rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/30" data-route-key="${routeKey}">
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Stop #${index + 1}</p>
-                        <p class="text-sm font-bold text-slate-900 dark:text-white">Day ${index + 1} · Order 1</p>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm dừng #${index + 1}</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">Ngày ${index + 1} · Thứ tự 1</p>
                     </div>
                     <button type="button" onclick="removeRouteStopItem(this)" class="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
                         <span class="material-symbols-outlined">delete</span>
@@ -280,15 +280,15 @@
                 <input type="hidden" value="${routeKey}" data-route-client-key />
                 <input type="hidden" name="Routing.Stops[${index}].Id" value="" data-route-field="Id" />
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <div><label class="label-text">Day</label><input type="number" name="Routing.Stops[${index}].Day" value="${index + 1}" data-route-field="Day" class="input-field" min="1" /></div>
-                    <div><label class="label-text">Order</label><input type="number" name="Routing.Stops[${index}].Order" value="1" data-route-field="Order" class="input-field" min="1" /></div>
-                    <div class="md:col-span-2"><label class="label-text">Name</label><input type="text" name="Routing.Stops[${index}].Name" value="" data-route-field="Name" class="input-field" /></div>
-                    <div><label class="label-text">Type</label><input type="text" name="Routing.Stops[${index}].Type" value="" data-route-field="Type" class="input-field" /></div>
-                    <div><label class="label-text">VisitMinutes</label><input type="number" name="Routing.Stops[${index}].VisitMinutes" value="" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
-                    <div><label class="label-text">AttractionScore</label><input type="number" name="Routing.Stops[${index}].AttractionScore" value="" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
-                    <div><label class="label-text">Lat</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lat" value="" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
-                    <div><label class="label-text">Lng</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lng" value="" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
-                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Note</label><textarea name="Routing.Stops[${index}].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none"></textarea></div>
+                    <div><label class="label-text">Ngày</label><input type="number" name="Routing.Stops[${index}].Day" value="${index + 1}" data-route-field="Day" class="input-field" min="1" /></div>
+                    <div><label class="label-text">Thứ tự</label><input type="number" name="Routing.Stops[${index}].Order" value="1" data-route-field="Order" class="input-field" min="1" /></div>
+                    <div class="md:col-span-2"><label class="label-text">Tên điểm dừng</label><input type="text" name="Routing.Stops[${index}].Name" value="" data-route-field="Name" class="input-field" /></div>
+                    <div><label class="label-text">Loại điểm</label><input type="text" name="Routing.Stops[${index}].Type" value="" data-route-field="Type" class="input-field" /></div>
+                    <div><label class="label-text">Phút tham quan</label><input type="number" name="Routing.Stops[${index}].VisitMinutes" value="" data-route-field="VisitMinutes" class="input-field" min="0" /></div>
+                    <div><label class="label-text">Điểm hấp dẫn</label><input type="number" name="Routing.Stops[${index}].AttractionScore" value="" data-route-field="AttractionScore" class="input-field" min="0" max="10" step="0.1" /></div>
+                    <div><label class="label-text">Vĩ độ</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lat" value="" data-route-field="Coordinates.Lat" class="input-field" step="any" /></div>
+                    <div><label class="label-text">Kinh độ</label><input type="number" name="Routing.Stops[${index}].Coordinates.Lng" value="" data-route-field="Coordinates.Lng" class="input-field" step="any" /></div>
+                    <div class="md:col-span-2 xl:col-span-4"><label class="label-text">Ghi chú</label><textarea name="Routing.Stops[${index}].Note" data-route-field="Note" class="input-field h-28 py-4 resize-none"></textarea></div>
                 </div>
             </article>
         `;
@@ -309,7 +309,7 @@
                 labels[0].textContent = `Stop #${index + 1}`;
             }
             if (labels.length > 1) {
-                labels[1].textContent = `Day ${day} · Order ${order}`;
+                labels[1].textContent = `Ngày ${day} · Thứ tự ${order}`;
             }
         });
     }
@@ -431,33 +431,33 @@
     function renderOptimizationSummaryBlock(payload) {
         return `
             <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Optimization profile</p>
-                <p class="mt-2 text-lg font-black text-slate-900 dark:text-white">${escapeHtml(payload.profileLabel || 'Balanced')}</p>
+                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Cấu hình tối ưu</p>
+                <p class="mt-2 text-lg font-black text-slate-900 dark:text-white">${escapeHtml(payload.profileLabel || 'Cân bằng')}</p>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">${escapeHtml(payload.profileDescription || '')}</p>
             </div>
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current travel</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalTravelMinutes} min</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Di chuyển hiện tại</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalTravelMinutes} phút</p>
                 </div>
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested travel</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalTravelMinutes} min</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Di chuyển gợi ý</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalTravelMinutes} phút</p>
                 </div>
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current journey</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalJourneyMinutes} min</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Hành trình hiện tại</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.currentInsight.totalJourneyMinutes} phút</p>
                 </div>
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested journey</p>
-                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalJourneyMinutes} min</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Hành trình gợi ý</p>
+                    <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${payload.suggestedInsight.totalJourneyMinutes} phút</p>
                 </div>
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current Objective score</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm mục tiêu hiện tại</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${formatObjectiveScore(payload.currentObjectiveScore)}</p>
                 </div>
                 <div class="rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-slate-950/70">
-                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Suggested Objective score</p>
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Điểm mục tiêu gợi ý</p>
                     <p class="mt-2 text-xl font-black text-slate-900 dark:text-white">${formatObjectiveScore(payload.suggestedObjectiveScore)}</p>
                 </div>
             </div>
@@ -471,7 +471,7 @@
 
         return `
             <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/10 dark:text-amber-200">
-                <p class="font-black uppercase tracking-[0.18em]">Warnings</p>
+                <p class="font-black uppercase tracking-[0.18em]">Cảnh báo</p>
                 <div class="mt-3 space-y-2">
                     ${payload.warnings.map((warning) => `<div>${escapeHtml(warning.message)}</div>`).join('')}
                 </div>
@@ -481,33 +481,33 @@
 
     function renderOptimizationDays(payload) {
         if (!payload.days || payload.days.length === 0) {
-            return '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">No route day available for preview.</div>';
+            return '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">Chưa có ngày lộ trình để xem trước.</div>';
         }
 
         return payload.days.map((day) => `
             <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950/70">
                 <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Day ${day.day}</p>
-                        <h4 class="mt-2 text-lg font-black text-slate-900 dark:text-white">${day.changed ? 'Suggested reorder available' : 'No change suggested'}</h4>
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Ngày ${day.day}</p>
+                        <h4 class="mt-2 text-lg font-black text-slate-900 dark:text-white">${day.changed ? 'Có thứ tự gợi ý mới' : 'Không có thay đổi được gợi ý'}</h4>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentTravelMinutes} -> ${day.suggestedTravelMinutes} travel</span>
-                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentJourneyMinutes} -> ${day.suggestedJourneyMinutes} journey</span>
-                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">Objective score ${formatObjectiveScore(day.currentObjectiveScore)} -> ${formatObjectiveScore(day.suggestedObjectiveScore)}</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentTravelMinutes} -> ${day.suggestedTravelMinutes} phút di chuyển</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">${day.currentJourneyMinutes} -> ${day.suggestedJourneyMinutes} phút hành trình</span>
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:bg-slate-800 dark:text-slate-300">Điểm mục tiêu ${formatObjectiveScore(day.currentObjectiveScore)} -> ${formatObjectiveScore(day.suggestedObjectiveScore)}</span>
                     </div>
                 </div>
                 <div class="mt-4 grid gap-4 lg:grid-cols-2">
                     <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/80">
-                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Current order</p>
+                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">Thứ tự hiện tại</p>
                         <div class="mt-3 space-y-2">
-                            ${day.currentStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'stop')} · order ${stop.order}</div></div>`).join('')}
+                            ${day.currentStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'điểm dừng')} · thứ tự ${stop.order}</div></div>`).join('')}
                         </div>
                     </div>
                     <div class="rounded-2xl bg-emerald-50/80 p-4 dark:bg-emerald-900/10">
-                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Suggested order</p>
+                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">Thứ tự gợi ý</p>
                         <div class="mt-3 space-y-2">
-                            ${day.suggestedStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'stop')} · order ${stop.order}</div></div>`).join('')}
+                            ${day.suggestedStops.map((stop) => `<div class="rounded-xl bg-white px-3 py-3 text-sm shadow-sm dark:bg-slate-950"><strong class="text-slate-900 dark:text-white">${escapeHtml(stop.name)}</strong><div class="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">${escapeHtml(stop.type || 'điểm dừng')} · thứ tự ${stop.order}</div></div>`).join('')}
                         </div>
                     </div>
                 </div>
@@ -526,8 +526,8 @@
         const travelDelta = payload.currentInsight.totalTravelMinutes - payload.suggestedInsight.totalTravelMinutes;
         const objectiveDelta = Number(payload.suggestedObjectiveScore || 0) - Number(payload.currentObjectiveScore || 0);
         status.textContent = payload.canOptimize
-            ? `${payload.profileLabel || 'Balanced'} suggestion changes within-day order, reduces travel by ${travelDelta} min, and shifts objective score by ${formatObjectiveScore(objectiveDelta)}.`
-            : (payload.unchangedReason || 'No better within-day reorder was found for this draft.');
+            ? `Gợi ý ${payload.profileLabel || 'Cân bằng'} thay đổi thứ tự trong ngày, giảm ${travelDelta} phút di chuyển và thay đổi điểm mục tiêu ${formatObjectiveScore(objectiveDelta)}.`
+            : (payload.unchangedReason || 'Không tìm thấy thứ tự tốt hơn trong ngày cho bản nháp này.');
 
         body.innerHTML = `
             ${renderOptimizationSummaryBlock(payload)}
@@ -549,12 +549,12 @@
             return;
         }
 
-        status.textContent = 'Optimization preview could not be generated for the current draft.';
+        status.textContent = 'Không thể tạo bản xem trước tối ưu cho bản nháp hiện tại.';
         body.innerHTML = `
             <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-300">
-                <p class="font-black uppercase tracking-[0.18em]">Preview errors</p>
+                <p class="font-black uppercase tracking-[0.18em]">Lỗi bản xem trước</p>
                 <div class="mt-3 space-y-2">
-                    ${(errors || ['Unknown preview error.']).map((error) => `<div>${escapeHtml(error)}</div>`).join('')}
+                    ${(errors || ['Lỗi bản xem trước chưa xác định.']).map((error) => `<div>${escapeHtml(error)}</div>`).join('')}
                 </div>
             </div>
         `;
@@ -574,8 +574,8 @@
         const preview = document.getElementById('route-optimization-preview');
         const body = document.getElementById('route-optimization-preview-body');
         if (preview && body && status) {
-            status.textContent = 'Generating route optimization preview...';
-            body.innerHTML = '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">Calculating current vs suggested route...</div>';
+            status.textContent = 'Đang tạo bản xem trước tối ưu lộ trình...';
+            body.innerHTML = '<div class="rounded-2xl bg-white px-4 py-4 text-sm text-slate-500 shadow-sm dark:bg-slate-950/70 dark:text-slate-300">Đang tính lộ trình hiện tại và lộ trình gợi ý...</div>';
             preview.classList.remove('hidden');
         }
 
@@ -592,13 +592,13 @@
 
             const payload = await response.json();
             if (!response.ok) {
-                renderRouteOptimizationErrors(payload?.errors || ['Preview request failed.']);
+                renderRouteOptimizationErrors(payload?.errors || ['Yêu cầu xem trước thất bại.']);
                 return;
             }
 
             renderRouteOptimizationPreview(payload);
         } catch (error) {
-            renderRouteOptimizationErrors([error instanceof Error ? error.message : 'Preview request failed.']);
+            renderRouteOptimizationErrors([error instanceof Error ? error.message : 'Yêu cầu xem trước thất bại.']);
         }
     }
 

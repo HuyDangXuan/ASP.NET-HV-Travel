@@ -144,8 +144,8 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
             StartingAdultPrice = ResolveStartingAdultPrice(tour),
             Rating = tour.Rating,
             RouteSummary = insight.HasRouting
-                ? $"{insight.StopCount} stops, travel {insight.TotalTravelMinutes} minutes, journey {insight.TotalJourneyMinutes} minutes"
-                : "No structured routing data",
+                ? $"{insight.StopCount} điểm dừng, di chuyển {insight.TotalTravelMinutes} phút, hành trình {insight.TotalJourneyMinutes} phút"
+                : "Chưa có dữ liệu lộ trình có cấu trúc",
             Reason = BuildRelatedReason(routeStyle, tour, insight)
         };
     }
@@ -162,71 +162,71 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
             .ToList();
         var builder = new StringBuilder();
 
-        builder.AppendLine("Route-aware AI advisor context:");
-        builder.AppendLine($"- Route style: {routeStyle} ({GetRouteStyleLabel(routeStyle)}).");
-        builder.AppendLine("- Coordinate privacy: khong lo toa do, lat/lng, raw coordinates.");
-        builder.AppendLine($"- Tour name: {ValueOrFallback(tour.Name)}");
-        builder.AppendLine($"- Tour code: {ValueOrFallback(tour.Code)}");
-        builder.AppendLine($"- Destination: {BuildDestinationLabel(tour)}");
-        builder.AppendLine($"- Duration: {ValueOrFallback(tour.Duration?.Text)}");
-        builder.AppendLine($"- Short description: {ValueOrFallback(RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 320))}");
-        builder.AppendLine($"- Highlights: {BuildListLine(tour.Highlights)}");
-        builder.AppendLine($"- Includes: {BuildListLine(tour.GeneratedInclusions)}");
-        builder.AppendLine($"- Excludes: {BuildListLine(tour.GeneratedExclusions)}");
-        builder.AppendLine($"- Meeting point: {ValueOrFallback(tour.MeetingPoint)}");
-        builder.AppendLine($"- Cancellation policy: {ValueOrFallback(tour.CancellationPolicy?.Summary)}");
-        builder.AppendLine($"- Confirmation: {ValueOrFallback(tour.ConfirmationType)}");
-        builder.AppendLine($"- Default adult price: {FormatCurrency(tour.Price?.Adult)}");
+        builder.AppendLine("Ngữ cảnh AI tư vấn tour theo lộ trình:");
+        builder.AppendLine($"- Kiểu hành trình: {routeStyle} ({GetRouteStyleLabel(routeStyle)}).");
+        builder.AppendLine("- Quy tắc riêng tư tọa độ: không lộ tọa độ, lat/lng hoặc raw coordinates.");
+        builder.AppendLine($"- Tên tour: {ValueOrFallback(tour.Name)}");
+        builder.AppendLine($"- Mã tour: {ValueOrFallback(tour.Code)}");
+        builder.AppendLine($"- Điểm đến: {BuildDestinationLabel(tour)}");
+        builder.AppendLine($"- Thời lượng: {ValueOrFallback(tour.Duration?.Text)}");
+        builder.AppendLine($"- Mô tả ngắn: {ValueOrFallback(RichTextContentFormatter.ToPlainTextSummary(tour.ShortDescription ?? tour.Description, 320))}");
+        builder.AppendLine($"- Điểm nổi bật: {BuildListLine(tour.Highlights)}");
+        builder.AppendLine($"- Bao gồm: {BuildListLine(tour.GeneratedInclusions)}");
+        builder.AppendLine($"- Không bao gồm: {BuildListLine(tour.GeneratedExclusions)}");
+        builder.AppendLine($"- Điểm hẹn: {ValueOrFallback(tour.MeetingPoint)}");
+        builder.AppendLine($"- Chính sách hủy: {ValueOrFallback(tour.CancellationPolicy?.Summary)}");
+        builder.AppendLine($"- Xác nhận: {ValueOrFallback(tour.ConfirmationType)}");
+        builder.AppendLine($"- Giá người lớn mặc định: {FormatCurrency(tour.Price?.Adult)}");
 
-        builder.AppendLine("- Schedule summary:");
+        builder.AppendLine("- Tóm tắt lịch trình:");
         if (tour.Schedule is { Count: > 0 })
         {
             foreach (var item in tour.Schedule.OrderBy(entry => entry.Day).Take(8))
             {
-                builder.AppendLine($"  * Day {item.Day:00}: {ValueOrFallback(item.Title)}. {ValueOrFallback(RichTextContentFormatter.ToPlainText(item.Description))}");
+                builder.AppendLine($"  * Ngày {item.Day:00}: {ValueOrFallback(item.Title)}. {ValueOrFallback(RichTextContentFormatter.ToPlainText(item.Description))}");
             }
         }
         else
         {
-            builder.AppendLine("  * No detailed schedule data.");
+            builder.AppendLine("  * Chưa có dữ liệu lịch trình chi tiết.");
         }
 
-        builder.AppendLine("- Departure availability:");
+        builder.AppendLine("- Lịch khởi hành còn chỗ:");
         if (departures.Count > 0)
         {
-            builder.AppendLine($"  * Starting adult price: {FormatCurrency(departures.Min(item => item.AdultPrice))}");
+            builder.AppendLine($"  * Giá người lớn từ: {FormatCurrency(departures.Min(item => item.AdultPrice))}");
             foreach (var departure in departures)
             {
                 builder.AppendLine(
-                    $"  * {departure.StartDate:dd/MM/yyyy}: adult {FormatCurrency(departure.AdultPrice)}, child {FormatCurrency(departure.ChildPrice)}, infant {FormatCurrency(departure.InfantPrice)}, remaining {departure.RemainingCapacity} seats, status {ValueOrFallback(departure.Status)}, confirmation {ValueOrFallback(departure.ConfirmationType)}");
+                    $"  * {departure.StartDate:dd/MM/yyyy}: người lớn {FormatCurrency(departure.AdultPrice)}, trẻ em {FormatCurrency(departure.ChildPrice)}, em bé {FormatCurrency(departure.InfantPrice)}, còn {departure.RemainingCapacity} chỗ, trạng thái {ValueOrFallback(departure.Status)}, xác nhận {ValueOrFallback(departure.ConfirmationType)}");
             }
         }
         else
         {
-            builder.AppendLine("  * No open departure data.");
+            builder.AppendLine("  * Chưa có lịch khởi hành đang mở.");
         }
 
         if (routeInsight.HasRouting)
         {
-            builder.AppendLine("- RouteInsight ETA v2 summary:");
-            builder.AppendLine($"  * Total stops: {routeInsight.StopCount}");
-            builder.AppendLine($"  * Total visit minutes: {routeInsight.TotalVisitMinutes}");
-            builder.AppendLine($"  * Total travel minutes: {routeInsight.TotalTravelMinutes}");
-            builder.AppendLine($"  * Total journey minutes: {routeInsight.TotalJourneyMinutes}");
-            builder.AppendLine($"  * Total distance km: {routeInsight.TotalDistanceKm:0.0}");
+            builder.AppendLine("- Tóm tắt RouteInsight ETA v2:");
+            builder.AppendLine($"  * Tổng điểm dừng: {routeInsight.StopCount}");
+            builder.AppendLine($"  * Tổng phút tham quan: {routeInsight.TotalVisitMinutes}");
+            builder.AppendLine($"  * Tổng phút di chuyển: {routeInsight.TotalTravelMinutes}");
+            builder.AppendLine($"  * Tổng phút hành trình: {routeInsight.TotalJourneyMinutes}");
+            builder.AppendLine($"  * Tổng quãng đường km: {routeInsight.TotalDistanceKm:0.0}");
 
             foreach (var day in routeInsight.Days.Take(6))
             {
                 var peakTraffic = !string.IsNullOrWhiteSpace(day.PeakDayPart)
                     ? $"{day.PeakDayPart}/{day.PeakCongestionLevel}"
-                    : "stable";
+                    : "ổn định";
                 builder.AppendLine(
-                    $"  * Day {day.Day:00}: {day.StopCount} stops, visit {day.VisitMinutes} minutes, travel {day.TravelMinutes} minutes, journey {day.JourneyMinutes} minutes, traffic {peakTraffic}.");
+                    $"  * Ngày {day.Day:00}: {day.StopCount} điểm dừng, tham quan {day.VisitMinutes} phút, di chuyển {day.TravelMinutes} phút, hành trình {day.JourneyMinutes} phút, giao thông {peakTraffic}.");
             }
 
             if (routeInsight.Warnings.Count > 0)
             {
-                builder.AppendLine("- Route warnings:");
+                builder.AppendLine("- Cảnh báo lộ trình:");
                 foreach (var warning in routeInsight.Warnings.Take(4))
                 {
                     builder.AppendLine($"  * {warning.Message}");
@@ -235,21 +235,21 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
         }
         else
         {
-            builder.AppendLine("- RouteInsight ETA v2 summary: tour nay chua co du lieu routing co cau truc.");
+            builder.AppendLine("- Tóm tắt RouteInsight ETA v2: tour này chưa có dữ liệu lộ trình có cấu trúc.");
         }
 
-        builder.AppendLine("- Related route-aware tours:");
+        builder.AppendLine("- Tour liên quan theo lộ trình:");
         if (relatedTours.Count > 0)
         {
             foreach (var related in relatedTours)
             {
                 builder.AppendLine(
-                    $"  * {related.Name}: {related.DestinationLabel}, {related.DurationText}, from {FormatCurrency(related.StartingAdultPrice)}, rating {related.Rating:0.0}, route {related.RouteSummary}, reason {related.Reason}");
+                    $"  * {related.Name}: {related.DestinationLabel}, {related.DurationText}, từ {FormatCurrency(related.StartingAdultPrice)}, đánh giá {related.Rating:0.0}, lộ trình {related.RouteSummary}, lý do {related.Reason}");
             }
         }
         else
         {
-            builder.AppendLine("  * No related public tours were found in the current route context.");
+            builder.AppendLine("  * Chưa tìm thấy tour public liên quan trong ngữ cảnh lộ trình hiện tại.");
         }
 
         return builder.ToString().Trim();
@@ -263,19 +263,19 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
         {
             return
             [
-                "Tour nay phu hop voi ai?",
-                "Co ngay khoi hanh nao con cho khong?",
-                "Tour nay co diem noi bat nao?",
-                "Co tour lien quan nao de so sanh khong?"
+                "Tour này phù hợp với ai?",
+                "Có ngày khởi hành nào còn chỗ không?",
+                "Tour này có điểm nổi bật nào?",
+                "Có tour liên quan nào để so sánh không?"
             ];
         }
 
         return
         [
-            "Tour nay di chuyen nhieu khong?",
-            "Ngay nao trong lich trinh co nhieu thoi gian di chuyen nhat?",
-            $"Tour nay hop voi kieu hanh trinh {routeStyleLabel} khong?",
-            "Co tour nao tuong tu nhung gon hon khong?"
+            "Tour này di chuyển nhiều không?",
+            "Ngày nào trong lịch trình có nhiều thời gian di chuyển nhất?",
+            $"Tour này hợp với kiểu hành trình {routeStyleLabel} không?",
+            "Có tour nào tương tự nhưng gọn hơn không?"
         ];
     }
 
@@ -303,16 +303,16 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
 
     private static string BuildRelatedReason(string routeStyle, Tour tour, RouteInsightResult insight)
     {
-        var similarity = $"{BuildDestinationLabel(tour)} with {ValueOrFallback(tour.Duration?.Text)}";
+        var similarity = $"{BuildDestinationLabel(tour)} với thời lượng {ValueOrFallback(tour.Duration?.Text)}";
         return routeStyle switch
         {
             RouteRecommendationStyles.Compact => insight.HasRouting
-                ? $"compact fit from shorter travel profile; {similarity}"
-                : $"compact fallback by duration and availability; {similarity}",
+                ? $"phù hợp kiểu gọn nhờ hồ sơ di chuyển ngắn hơn; {similarity}"
+                : $"fallback kiểu gọn theo thời lượng và tình trạng còn chỗ; {similarity}",
             RouteRecommendationStyles.Highlights => insight.AverageAttractionScore.HasValue
-                ? $"highlight fit from attraction strength {insight.AverageAttractionScore:0.0}; {similarity}"
-                : $"highlight fallback by rating and destination; {similarity}",
-            _ => $"balanced fit across route, price, availability and destination; {similarity}"
+                ? $"phù hợp kiểu điểm nổi bật nhờ điểm hấp dẫn {insight.AverageAttractionScore:0.0}; {similarity}"
+                : $"fallback kiểu điểm nổi bật theo đánh giá và điểm đến; {similarity}",
+            _ => $"phù hợp kiểu cân bằng theo lộ trình, giá, tình trạng còn chỗ và điểm đến; {similarity}"
         };
     }
 
@@ -320,9 +320,9 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
     {
         return routeStyle switch
         {
-            RouteRecommendationStyles.Compact => "compact",
-            RouteRecommendationStyles.Highlights => "highlights",
-            _ => "balanced"
+            RouteRecommendationStyles.Compact => "gọn, ít di chuyển",
+            RouteRecommendationStyles.Highlights => "ưu tiên điểm nổi bật",
+            _ => "cân bằng"
         };
     }
 
@@ -338,23 +338,23 @@ public sealed class TourAiRouteAdvisorContextBuilder : ITourAiRouteAdvisorContex
             .Select(value => value!.Trim())
             .ToList();
 
-        return parts.Count > 0 ? string.Join(", ", parts) : "No destination data";
+        return parts.Count > 0 ? string.Join(", ", parts) : "Chưa có dữ liệu điểm đến";
     }
 
     private static string BuildListLine(IEnumerable<string>? values)
     {
         var items = values?.Where(value => !string.IsNullOrWhiteSpace(value)).Select(value => value.Trim()).ToList() ?? [];
-        return items.Count > 0 ? string.Join("; ", items) : "No data";
+        return items.Count > 0 ? string.Join("; ", items) : "Chưa có dữ liệu";
     }
 
     private static string ValueOrFallback(string? value)
     {
-        return string.IsNullOrWhiteSpace(value) ? "No data" : value.Trim();
+        return string.IsNullOrWhiteSpace(value) ? "Chưa có dữ liệu" : value.Trim();
     }
 
     private static string FormatCurrency(decimal? value)
     {
         var amount = value.GetValueOrDefault();
-        return amount > 0m ? $"{amount:N0} VND" : "No data";
+        return amount > 0m ? $"{amount:N0} VND" : "Chưa có dữ liệu";
     }
 }

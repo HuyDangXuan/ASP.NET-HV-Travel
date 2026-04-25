@@ -131,7 +131,7 @@ public class TripPlannerService : ITripPlannerService
             {
                 Code = "max-days-exceeded",
                 TourId = tour.Id,
-                Message = $"Tour \"{tour.Name}\" was skipped because it exceeds the {maxDays}-day planner limit."
+                Message = $"Tour \"{tour.Name}\" bị bỏ qua vì vượt giới hạn {maxDays} ngày của planner."
             });
             return;
         }
@@ -156,7 +156,7 @@ public class TripPlannerService : ITripPlannerService
                 TourDay = tourDay,
                 Title = !string.IsNullOrWhiteSpace(scheduleTitle)
                     ? scheduleTitle
-                    : $"{tour.Name} - Day {tourDay}",
+                    : $"{tour.Name} - Ngày {tourDay}",
                 HasRouting = routeDay != null,
                 StopCount = routeDay?.StopCount ?? 0,
                 VisitMinutes = routeDay?.VisitMinutes ?? 0,
@@ -179,7 +179,7 @@ public class TripPlannerService : ITripPlannerService
             {
                 Code = "missing-routing",
                 TourId = tour.Id,
-                Message = $"Tour \"{tour.Name}\" does not have structured routing data yet."
+                Message = $"Tour \"{tour.Name}\" chưa có dữ liệu lộ trình có cấu trúc."
             });
         }
 
@@ -190,7 +190,7 @@ public class TripPlannerService : ITripPlannerService
             DetailIdentifier = string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id : tour.Slug,
             Name = tour.Name ?? string.Empty,
             DestinationLabel = BuildDestinationLabel(tour),
-            DurationText = string.IsNullOrWhiteSpace(tour.Duration?.Text) ? $"{durationDays} days" : tour.Duration.Text,
+            DurationText = string.IsNullOrWhiteSpace(tour.Duration?.Text) ? $"{durationDays} ngày" : tour.Duration.Text,
             DurationDays = durationDays,
             StartingAdultPrice = startingAdultPrice,
             Rating = tour.Rating,
@@ -233,7 +233,7 @@ public class TripPlannerService : ITripPlannerService
         {
             Code = "missing-departure",
             TourId = tour.Id,
-            Message = $"Tour \"{tour.Name}\" does not have an open priced departure; default tour price is used."
+            Message = $"Tour \"{tour.Name}\" chưa có lịch khởi hành mở có giá; hệ thống dùng giá mặc định của tour."
         });
 
         return tour.Price?.Adult ?? 0m;
@@ -260,7 +260,7 @@ public class TripPlannerService : ITripPlannerService
             .Select(value => value!.Trim())
             .ToList();
 
-        return parts.Count > 0 ? string.Join(", ", parts) : "Viet Nam";
+        return parts.Count > 0 ? string.Join(", ", parts) : "Việt Nam";
     }
 
     private static bool IsPubliclyVisible(string? status)

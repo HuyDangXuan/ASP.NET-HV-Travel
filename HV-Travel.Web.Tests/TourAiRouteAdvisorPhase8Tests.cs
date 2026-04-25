@@ -63,15 +63,15 @@ public class TourAiRouteAdvisorPhase8Tests
         var relatedSummaries = GetProperty<IReadOnlyList<object>>(context, "RelatedTourSummaries");
 
         Assert.Contains("compact", snapshotText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("travel", snapshotText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("journey", snapshotText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("traffic", snapshotText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("di chuyển", snapshotText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hành trình", snapshotText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("giao thông", snapshotText, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Da Lat Compact Nature", snapshotText, StringComparison.Ordinal);
         Assert.DoesNotContain("108.4583", snapshotText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("11.9404", snapshotText, StringComparison.OrdinalIgnoreCase);
 
         Assert.InRange(suggestedPrompts.Count, 3, 5);
-        Assert.Contains(suggestedPrompts, prompt => prompt.Contains("di chuyen", StringComparison.OrdinalIgnoreCase) || prompt.Contains("route", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(suggestedPrompts, prompt => prompt.Contains("di chuyển", StringComparison.OrdinalIgnoreCase) || prompt.Contains("kiểu hành trình", StringComparison.OrdinalIgnoreCase));
         Assert.Equal("Da Lat Compact Nature", GetProperty<string>(relatedSummaries[0], "Name"));
     }
 
@@ -93,9 +93,9 @@ public class TourAiRouteAdvisorPhase8Tests
         var suggestedPrompts = GetProperty<IReadOnlyList<string>>(context, "SuggestedPrompts");
 
         Assert.Contains("balanced", snapshotText, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("chua co du lieu routing co cau truc", snapshotText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("chưa có dữ liệu lộ trình có cấu trúc", snapshotText, StringComparison.OrdinalIgnoreCase);
         Assert.InRange(suggestedPrompts.Count, 3, 5);
-        Assert.Contains(suggestedPrompts, prompt => prompt.Contains("phu hop", StringComparison.OrdinalIgnoreCase) || prompt.Contains("khoi hanh", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(suggestedPrompts, prompt => prompt.Contains("phù hợp", StringComparison.OrdinalIgnoreCase) || prompt.Contains("khởi hành", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -125,9 +125,9 @@ public class TourAiRouteAdvisorPhase8Tests
 
         Assert.Contains("ITourAiRouteAdvisorContextBuilder", source, StringComparison.Ordinal);
         Assert.Contains("BuildPromptMessages", source, StringComparison.Ordinal);
-        Assert.Contains("route-aware", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("theo lộ trình", source, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("RouteInsight", source, StringComparison.Ordinal);
-        Assert.Contains("khong lo toa do", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("không lộ tọa độ", source, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ITourAiRouteAdvisorContextBuilder", programSource, StringComparison.Ordinal);
     }
 

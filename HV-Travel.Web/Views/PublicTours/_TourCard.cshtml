@@ -94,21 +94,23 @@
                 }
             </div>
 
-            <button type="button"
-                    class="pointer-events-auto inline-flex size-11 items-center justify-center rounded-full border border-white/50 bg-white/90 text-cyan-700 shadow-lg shadow-slate-900/15 backdrop-blur transition hover:-translate-y-0.5 hover:border-cyan-400 hover:text-cyan-600 dark:border-white/10 dark:bg-slate-950/80 dark:text-cyan-200"
-                    data-tour-planner-toggle
-                    aria-pressed="false"
-                    aria-label="Them tour @tour.Name vao planner">
-                <span class="material-symbols-outlined text-[20px]" data-tour-planner-icon>playlist_add</span>
-            </button>
+            <div class="flex flex-col gap-2" data-tour-card-actions>
+                <button type="button"
+                        class="pointer-events-auto order-2 inline-flex size-11 items-center justify-center rounded-full border border-white/50 bg-white/90 text-cyan-700 shadow-lg shadow-slate-900/15 backdrop-blur transition hover:-translate-y-0.5 hover:border-cyan-400 hover:text-cyan-600 dark:border-white/10 dark:bg-slate-950/80 dark:text-cyan-200"
+                        data-tour-planner-toggle
+                        aria-pressed="false"
+                        aria-label="Thêm tour @tour.Name vào planner">
+                    <span class="material-symbols-outlined text-[20px]" data-tour-planner-icon>playlist_add</span>
+                </button>
 
-            <button type="button"
-                    class="pointer-events-auto inline-flex size-11 items-center justify-center rounded-full border border-white/50 bg-white/90 text-slate-600 shadow-lg shadow-slate-900/15 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
-                    data-tour-wishlist-toggle
-                    aria-pressed="false"
-                    aria-label="Lưu tour @tour.Name">
-                <span class="material-symbols-outlined text-[20px]" data-tour-heart-icon>favorite_border</span>
-            </button>
+                <button type="button"
+                        class="pointer-events-auto order-1 inline-flex size-11 items-center justify-center rounded-full border border-white/50 bg-white/90 text-slate-600 shadow-lg shadow-slate-900/15 backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary dark:border-white/10 dark:bg-slate-950/80 dark:text-slate-200"
+                        data-tour-wishlist-toggle
+                        aria-pressed="false"
+                        aria-label="Lưu tour @tour.Name">
+                    <span class="material-symbols-outlined text-[20px]" data-tour-heart-icon>favorite_border</span>
+                </button>
+            </div>
         </div>
     </div>
 

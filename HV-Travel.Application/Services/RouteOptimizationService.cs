@@ -50,7 +50,7 @@ public class RouteOptimizationService : IRouteOptimizationService
 
         if (tour == null || orderedStops.Count == 0)
         {
-            return BuildEmptyResult(profile, "No valid routing data to optimize.");
+            return BuildEmptyResult(profile, "Chưa có dữ liệu lộ trình hợp lệ để tối ưu.");
         }
 
         var currentTour = CloneTour(tour, orderedStops);
@@ -159,7 +159,7 @@ public class RouteOptimizationService : IRouteOptimizationService
                 Code = "missing_coordinates",
                 Day = original[0].Day,
                 ClientKey = original.FirstOrDefault(stop => !HasCoordinatePair(stop.Coordinates))?.Id ?? string.Empty,
-                Message = $"Day {original[0].Day} was skipped because at least one stop is missing coordinates."
+                Message = $"Ngày {original[0].Day} bị bỏ qua vì có ít nhất một điểm dừng thiếu tọa độ."
             });
             return fallback;
         }
@@ -545,7 +545,7 @@ public class RouteOptimizationService : IRouteOptimizationService
         var day = stops.Count > 0 ? stops.Min(stop => stop.Day) : 1;
         var tour = CloneTour(templateTour ?? new Tour
         {
-            Schedule = [new ScheduleItem { Day = day, Title = $"Day {day}", Description = string.Empty }]
+            Schedule = [new ScheduleItem { Day = day, Title = $"Ngày {day}", Description = string.Empty }]
         }, stops);
 
         return _routeInsightService.Build(tour);
@@ -597,17 +597,17 @@ public class RouteOptimizationService : IRouteOptimizationService
     {
         if (stopCount == 0)
         {
-            return "No valid routing data to optimize.";
+            return "Chưa có dữ liệu lộ trình hợp lệ để tối ưu.";
         }
 
         if (warnings.Count > 0 && !hasOptimizableDay)
         {
-            return "No route day had enough coordinate data for optimization.";
+            return "Không có ngày nào đủ dữ liệu tọa độ để tối ưu.";
         }
 
         if (!hasOptimizableDay)
         {
-            return "No route day had enough stops to optimize.";
+            return "Không có ngày nào đủ điểm dừng để tối ưu.";
         }
 
         return "Current routing is already optimal for the selected profile.";
