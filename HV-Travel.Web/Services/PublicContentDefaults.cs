@@ -259,10 +259,9 @@ public static class PublicContentDefaults
             Section("publicTours", "collectionChips", "Chip bộ sưu tập tour", 2, new List<ContentField>
             {
                 Text("domesticLabel", "Chip trong nước", "Trong nước"),
+                Text("internationalLabel", "Chip quốc tế", "Quốc tế"),
                 Text("premiumLabel", "Chip premium", "Premium"),
-                Text("familyLabel", "Chip gia đình", "Gia đình"),
-                Text("coupleLabel", "Chip cặp đôi", "Cặp đôi"),
-                Text("seasonalLabel", "Chip mùa lễ hội", "Mùa lễ hội"),
+                Text("budgetLabel", "Chip tiết kiệm", "Tiết kiệm"),
                 Text("dealLabel", "Chip săn deal", "Săn deal")
             }),
             Section("publicTours", "filterPanel", "Nhãn bộ lọc tour", 3, new List<ContentField>

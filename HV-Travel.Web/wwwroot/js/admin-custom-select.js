@@ -59,6 +59,42 @@
         });
     }
 
+    function measureMenuHeight(menu) {
+        if (!menu) return 0;
+
+        const previousDisplay = menu.style.display;
+        const previousVisibility = menu.style.visibility;
+        const previousPointerEvents = menu.style.pointerEvents;
+
+        menu.style.visibility = 'hidden';
+        menu.style.pointerEvents = 'none';
+        menu.style.display = 'block';
+
+        const height = menu.getBoundingClientRect().height || menu.scrollHeight || 0;
+
+        menu.style.display = previousDisplay;
+        menu.style.visibility = previousVisibility;
+        menu.style.pointerEvents = previousPointerEvents;
+
+        return height;
+    }
+
+    function updateMenuDirection(container) {
+        const menu = container?.querySelector('.options-menu');
+        if (!container || !menu) return;
+
+        container.classList.remove('drop-up');
+
+        const menuHeight = measureMenuHeight(menu);
+        const triggerRect = container.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const spaceBelow = viewportHeight - triggerRect.bottom;
+        const spaceAbove = triggerRect.top;
+        const shouldDropUp = menuHeight > 0 && spaceBelow < menuHeight + 16 && spaceAbove > spaceBelow;
+
+        container.classList.toggle('drop-up', shouldDropUp);
+    }
+
     function toggleCustomSelect(idOrContainer) {
         const container = resolveContainer(idOrContainer);
         if (!container || container.classList.contains('disabled')) return;
@@ -70,6 +106,10 @@
         const willOpen = !!menu && !menu.classList.contains('visible');
 
         closeAllCustomSelects(willOpen ? container : null);
+
+        if (willOpen) {
+            updateMenuDirection(container);
+        }
 
         menu?.classList.toggle('visible', willOpen);
         container.classList.toggle('active', willOpen);

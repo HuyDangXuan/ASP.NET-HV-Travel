@@ -140,7 +140,7 @@ public class PublicToursController : Controller
             : tour.Images?.FirstOrDefault();
         ViewData["RelatedToursRouteStyleText"] = GetRelatedToursRouteStyleText(normalizedRouteStyle);
 
-        var searchContext = await _tourRepository.SearchAsync(new TourSearchRequest
+        var searchContext = await _tourSearchService.SearchAsync(new TourSearchRequest
         {
             Region = tour.Destination?.Region,
             Page = 1,

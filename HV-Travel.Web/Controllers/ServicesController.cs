@@ -1,4 +1,5 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Application.Interfaces;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,16 @@ public class ServicesController : Controller
 {
     private readonly IRepository<AncillaryLead> _leadRepository;
     private readonly IRepository<Notification> _notificationRepository;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
-    public ServicesController(IRepository<AncillaryLead> leadRepository, IRepository<Notification> notificationRepository)
+    public ServicesController(
+        IRepository<AncillaryLead> leadRepository,
+        IRepository<Notification> notificationRepository,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _leadRepository = leadRepository;
         _notificationRepository = notificationRepository;
+        _searchIndexingService = searchIndexingService;
     }
 
     [HttpGet]
@@ -60,6 +66,7 @@ public class ServicesController : Controller
         };
 
         await _leadRepository.AddAsync(lead);
+        await (_searchIndexingService?.UpsertServiceLeadAsync(lead) ?? Task.CompletedTask);
         await _notificationRepository.AddAsync(new Notification
         {
             RecipientId = "ALL",

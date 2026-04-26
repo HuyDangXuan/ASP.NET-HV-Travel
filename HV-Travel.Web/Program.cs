@@ -23,6 +23,7 @@ builder.Services.AddHttpClient<IGroqChatClient, GroqChatClient>();
 builder.Services.AddSingleton<ITourAiJobQueue, TourAiJobQueue>();
 builder.Services.AddSingleton<ITourAiPendingTracker, TourAiPendingTracker>();
 builder.Services.AddHostedService<TourAiReplyWorker>();
+builder.Services.AddHostedService<MeilisearchBootstrapHostedService>();
 
 // Add Layered Services
 builder.Services.AddInfrastructure(builder.Configuration);

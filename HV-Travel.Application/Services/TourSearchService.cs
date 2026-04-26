@@ -9,11 +9,18 @@ public class TourSearchService : ITourSearchService
 {
     private readonly ITourRepository _tourRepository;
     private readonly IRouteRecommendationService _routeRecommendationService;
+    private readonly IReadOnlyList<ITourSearchBackend> _searchBackends;
 
-    public TourSearchService(ITourRepository tourRepository, IRouteRecommendationService? routeRecommendationService = null)
+    public TourSearchService(
+        ITourRepository tourRepository,
+        IRouteRecommendationService? routeRecommendationService = null,
+        IEnumerable<ITourSearchBackend>? searchBackends = null)
     {
         _tourRepository = tourRepository;
         _routeRecommendationService = routeRecommendationService ?? new RouteRecommendationService(new RouteInsightService());
+        _searchBackends = (searchBackends ?? Array.Empty<ITourSearchBackend>())
+            .OrderByDescending(static backend => backend.Priority)
+            .ToList();
     }
 
     public async Task<TourSearchResult> SearchAsync(TourSearchRequest request)
@@ -23,7 +30,7 @@ public class TourSearchService : ITourSearchService
 
         if (!request.UseRecommendationRanking)
         {
-            return await _tourRepository.SearchAsync(request);
+            return await SearchWithFallbackAsync(request);
         }
 
         var candidateRequest = CloneRequest(request);
@@ -31,7 +38,7 @@ public class TourSearchService : ITourSearchService
         candidateRequest.PageSize = int.MaxValue;
         candidateRequest.UseRecommendationRanking = true;
 
-        var candidateResult = await _tourRepository.SearchAsync(candidateRequest);
+        var candidateResult = await SearchWithFallbackAsync(candidateRequest);
         var recommendation = _routeRecommendationService.Recommend(candidateResult.Items, new RouteRecommendationRequest
         {
             RouteStyle = request.RouteStyle,
@@ -85,5 +92,45 @@ public class TourSearchService : ITourSearchService
             Page = request.Page,
             PageSize = request.PageSize
         };
+    }
+
+    private async Task<TourSearchResult> SearchWithFallbackAsync(TourSearchRequest request)
+    {
+        if (_searchBackends.Count == 0)
+        {
+            return await _tourRepository.SearchAsync(request);
+        }
+
+        Exception? lastException = null;
+        foreach (var backend in _searchBackends)
+        {
+            if (!await backend.IsAvailableAsync())
+            {
+                continue;
+            }
+
+            try
+            {
+                return await backend.SearchAsync(request);
+            }
+            catch (Exception ex)
+            {
+                lastException = ex;
+            }
+        }
+
+        if (lastException == null)
+        {
+            return await _tourRepository.SearchAsync(request);
+        }
+
+        try
+        {
+            return await _tourRepository.SearchAsync(request);
+        }
+        catch
+        {
+            throw lastException;
+        }
     }
 }

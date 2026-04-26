@@ -16,6 +16,7 @@ public class BookingController : Controller
     private readonly ICheckoutService _checkoutService;
     private readonly IPricingService _pricingService;
     private readonly IRepository<CheckoutSession> _checkoutSessionRepository;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
     public BookingController(
         ITourRepository tourRepository,
@@ -23,7 +24,8 @@ public class BookingController : Controller
         BookingWorkflowService bookingWorkflowService,
         ICheckoutService checkoutService,
         IPricingService pricingService,
-        IRepository<CheckoutSession> checkoutSessionRepository)
+        IRepository<CheckoutSession> checkoutSessionRepository,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _tourRepository = tourRepository;
         _bookingRepository = bookingRepository;
@@ -31,6 +33,7 @@ public class BookingController : Controller
         _checkoutService = checkoutService;
         _pricingService = pricingService;
         _checkoutSessionRepository = checkoutSessionRepository;
+        _searchIndexingService = searchIndexingService;
     }
 
     public IRepository<Booking> Bookings => _bookingRepository;
@@ -248,6 +251,7 @@ public class BookingController : Controller
                 booking.ConfirmedAt ??= DateTime.UtcNow;
                 AddBookingEntry(booking, "payment", "Giữ chỗ thanh toán tiền mặt", "Booking đã được giữ chỗ, thanh toán tại quầy hoặc khi khởi hành.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
+                await SyncSearchUpsertAsync(booking);
                 break;
 
             case "BankTransfer":
@@ -266,6 +270,7 @@ public class BookingController : Controller
                 });
                 AddBookingEntry(booking, "payment", "Chờ xác nhận chuyển khoản", "Khách đã chọn chuyển khoản và chờ tải minh chứng thanh toán.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
+                await SyncSearchUpsertAsync(booking);
                 break;
 
             default:
@@ -281,6 +286,7 @@ public class BookingController : Controller
 
                 AddBookingEntry(booking, "payment", "Khởi tạo thanh toán online", "Hệ thống đã tạo phiên thanh toán online và đang chờ callback.", actor);
                 await _bookingRepository.UpdateAsync(booking.Id, booking);
+                await SyncSearchUpsertAsync(booking);
 
                 await _bookingWorkflowService.ProcessGatewayCallbackAsync(new PaymentGatewayWebhookModel
                 {
@@ -326,6 +332,7 @@ public class BookingController : Controller
         booking.UpdatedAt = DateTime.UtcNow;
         AddBookingEntry(booking, "payment", "Đã tải minh chứng chuyển khoản", note ?? proofFile.FileName, booking.ContactInfo?.Name ?? "Khách");
         await _bookingRepository.UpdateAsync(booking.Id, booking);
+        await SyncSearchUpsertAsync(booking);
 
         TempData["PaymentSuccess"] = "Đã tải minh chứng chuyển khoản. Bộ phận vận hành sẽ đối soát và cập nhật trạng thái.";
         return RedirectToAction(nameof(Payment), new { bookingId });
@@ -543,6 +550,11 @@ public class BookingController : Controller
             Timestamp = DateTime.UtcNow
         });
         booking.UpdatedAt = DateTime.UtcNow;
+    }
+
+    private Task SyncSearchUpsertAsync(Booking? booking)
+    {
+        return _searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask;
     }
 }
 

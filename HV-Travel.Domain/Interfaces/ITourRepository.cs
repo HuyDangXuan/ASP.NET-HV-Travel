@@ -6,6 +6,7 @@ namespace HVTravel.Domain.Interfaces
     public interface ITourRepository : IRepository<Tour>
     {
         Task<TourSearchResult> SearchAsync(TourSearchRequest request);
+        new Task<IReadOnlyList<Tour>> GetByIdsAsync(IEnumerable<string> ids);
         Task<Tour?> GetBySlugAsync(string slug);
 
         /// <summary>

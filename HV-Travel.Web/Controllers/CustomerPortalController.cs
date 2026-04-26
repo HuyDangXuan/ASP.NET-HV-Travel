@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
+using HVTravel.Application.Interfaces;
 using HVTravel.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +18,22 @@ public class CustomerPortalController : Controller
     private readonly IRepository<Review> _reviewRepository;
     private readonly IRepository<Booking> _bookingRepository;
     private readonly IRepository<Customer> _customerRepository;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
     public CustomerPortalController(
         CustomerPortalService portalService,
         IRepository<SavedTravellerProfile> travellerRepository,
         IRepository<Review> reviewRepository,
         IRepository<Booking> bookingRepository,
-        IRepository<Customer> customerRepository)
+        IRepository<Customer> customerRepository,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _portalService = portalService;
         _travellerRepository = travellerRepository;
         _reviewRepository = reviewRepository;
         _bookingRepository = bookingRepository;
         _customerRepository = customerRepository;
+        _searchIndexingService = searchIndexingService;
     }
 
     [HttpGet]
@@ -107,7 +111,7 @@ public class CustomerPortalController : Controller
         }
 
         var customer = await _customerRepository.GetByIdAsync(customerId);
-        await _reviewRepository.AddAsync(new Review
+        var review = new Review
         {
             TourId = model.TourId,
             CustomerId = customerId,
@@ -119,7 +123,9 @@ public class CustomerPortalController : Controller
             IsVerifiedBooking = true,
             ModerationStatus = "Pending",
             CreatedAt = DateTime.UtcNow
-        });
+        };
+        await _reviewRepository.AddAsync(review);
+        await (_searchIndexingService?.UpsertReviewAsync(review) ?? Task.CompletedTask);
 
         TempData["PortalSuccess"] = "Đánh giá đã được gửi và đang chờ duyệt.";
         return RedirectToAction(nameof(Index));
@@ -165,6 +171,7 @@ public class CustomerPortalController : Controller
         booking.UpdatedAt = DateTime.UtcNow;
 
         await _bookingRepository.UpdateAsync(booking.Id, booking);
+        await (_searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask);
         TempData["PortalSuccess"] = "Yêu cầu hủy đã được ghi nhận.";
         return RedirectToAction(nameof(Index));
     }

@@ -370,6 +370,12 @@ public class TripPlannerPhase9Tests
             });
         }
 
+        public Task<IReadOnlyList<Tour>> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            var orderedIds = ids.ToList();
+            return Task.FromResult<IReadOnlyList<Tour>>(orderedIds.Where(id => _tours.Any(item => item.Id == id)).Select(id => _tours.First(item => item.Id == id)).ToList());
+        }
+
         public Task<Tour?> GetBySlugAsync(string slug)
         {
             return Task.FromResult<Tour?>(_tours.FirstOrDefault(item => string.Equals(item.Slug, slug, StringComparison.Ordinal)));

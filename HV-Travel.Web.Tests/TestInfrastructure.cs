@@ -92,6 +92,13 @@ internal sealed class RecordingTourRepository : ITourRepository
         });
     }
 
+    public Task<IReadOnlyList<Tour>> GetByIdsAsync(IEnumerable<string> ids)
+    {
+        var orderedIds = ids.ToList();
+        var items = orderedIds.Where(_byId.ContainsKey).Select(id => _byId[id]).ToList();
+        return Task.FromResult<IReadOnlyList<Tour>>(items);
+    }
+
     public Task<Tour?> GetBySlugAsync(string slug)
     {
         GetBySlugCallCount++;

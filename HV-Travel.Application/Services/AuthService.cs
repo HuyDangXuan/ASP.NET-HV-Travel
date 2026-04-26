@@ -8,10 +8,14 @@ namespace HVTravel.Application.Services
     public class AuthService : IAuthService
     {
         private readonly IRepository<User> _userRepository;
+        private readonly ISearchIndexingService? _searchIndexingService;
 
-        public AuthService(IRepository<User> userRepository)
+        public AuthService(
+            IRepository<User> userRepository,
+            ISearchIndexingService? searchIndexingService = null)
         {
             _userRepository = userRepository;
+            _searchIndexingService = searchIndexingService;
         }
 
         public async Task<User> ValidateUserAsync(string email, string password)
@@ -39,6 +43,7 @@ namespace HVTravel.Application.Services
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             
             await _userRepository.AddAsync(user);
+            await (_searchIndexingService?.UpsertUserAsync(user) ?? Task.CompletedTask);
             return user;
         }
 
@@ -62,6 +67,7 @@ namespace HVTravel.Application.Services
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
             
             await _userRepository.UpdateAsync(user.Id, user);
+            await (_searchIndexingService?.UpsertUserAsync(user) ?? Task.CompletedTask);
             return true;
         }
     }

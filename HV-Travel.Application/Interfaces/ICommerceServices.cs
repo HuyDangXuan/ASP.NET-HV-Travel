@@ -1,4 +1,5 @@
 using HVTravel.Application.Models;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
 
 namespace HVTravel.Application.Interfaces;
@@ -64,4 +65,39 @@ public interface ITripPlannerService
 public interface IAnalyticsTracker
 {
     Task TrackAsync(string eventName, IReadOnlyDictionary<string, string?> properties);
+}
+
+public interface ITourSearchBackend
+{
+    string Name { get; }
+
+    int Priority { get; }
+
+    Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default);
+
+    Task<TourSearchResult> SearchAsync(TourSearchRequest request, CancellationToken cancellationToken = default);
+}
+
+public interface ITourSearchIndexingService
+{
+    Task UpsertTourAsync(Tour? tour, CancellationToken cancellationToken = default);
+
+    Task DeleteTourAsync(string? tourId, CancellationToken cancellationToken = default);
+
+    Task RebuildAsync(CancellationToken cancellationToken = default);
+}
+
+public interface IMeilisearchTourIndexClient
+{
+    Task<bool> IsHealthyAsync(CancellationToken cancellationToken = default);
+
+    Task EnsureConfiguredAsync(CancellationToken cancellationToken = default);
+
+    Task<MeilisearchTourSearchResponse> SearchAsync(MeilisearchTourSearchCommand command, CancellationToken cancellationToken = default);
+
+    Task UpsertDocumentsAsync(IReadOnlyCollection<TourSearchDocument> documents, CancellationToken cancellationToken = default);
+
+    Task DeleteDocumentsAsync(IReadOnlyCollection<string> ids, CancellationToken cancellationToken = default);
+
+    Task ReplaceAllDocumentsAsync(IReadOnlyCollection<TourSearchDocument> documents, CancellationToken cancellationToken = default);
 }

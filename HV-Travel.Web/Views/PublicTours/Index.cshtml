@@ -74,10 +74,9 @@
     var chips = new[]
     {
         new { Key = "domestic", Label = CmsText(collectionChips, "domesticLabel", "Trong nước") },
+        new { Key = "international", Label = CmsText(collectionChips, "internationalLabel", "Quốc tế") },
         new { Key = "premium", Label = CmsText(collectionChips, "premiumLabel", "Premium") },
-        new { Key = "family", Label = CmsText(collectionChips, "familyLabel", "Gia đình") },
-        new { Key = "couple", Label = CmsText(collectionChips, "coupleLabel", "Cặp đôi") },
-        new { Key = "seasonal", Label = CmsText(collectionChips, "seasonalLabel", "Mùa lễ hội") },
+        new { Key = "budget", Label = CmsText(collectionChips, "budgetLabel", "Tiết kiệm") },
         new { Key = "deal", Label = CmsText(collectionChips, "dealLabel", "Săn deal") }
     }.Where(chip => !string.IsNullOrWhiteSpace(chip.Label)).ToArray();
 }

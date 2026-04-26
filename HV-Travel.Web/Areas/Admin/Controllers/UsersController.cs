@@ -1,10 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using HVTravel.Domain.Interfaces;
-using HVTravel.Domain.Entities;
-using HVTravel.Web.Models;
 using BCrypt.Net;
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
+using HVTravel.Domain.Entities;
+using HVTravel.Domain.Interfaces;
+using HVTravel.Web.Models;
 using HVTravel.Web.Security;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
 {
@@ -13,13 +15,19 @@ namespace HVTravel.Web.Areas.Admin.Controllers
     public class UsersController : Controller
     {
         private readonly IRepository<User> _userRepository;
+        private readonly IAdminUserSearchService? _adminUserSearchService;
+        private readonly ISearchIndexingService? _searchIndexingService;
 
-        public UsersController(IRepository<User> userRepository)
+        public UsersController(
+            IRepository<User> userRepository,
+            IAdminUserSearchService? adminUserSearchService = null,
+            ISearchIndexingService? searchIndexingService = null)
         {
             _userRepository = userRepository;
+            _adminUserSearchService = adminUserSearchService;
+            _searchIndexingService = searchIndexingService;
         }
 
-        // Index - Chỉ Admin và Manager được xem
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Index(
             string status = "all",
@@ -29,10 +37,47 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             int page = 1,
             int pageSize = 10)
         {
+            if (_adminUserSearchService != null)
+            {
+                var result = await _adminUserSearchService.SearchAsync(new AdminUserSearchRequest
+                {
+                    Status = status,
+                    SearchQuery = searchQuery,
+                    RoleFilter = roleFilter,
+                    SortOrder = sortOrder,
+                    Page = page,
+                    PageSize = pageSize
+                });
+
+                ApplySortViewBags(sortOrder);
+                ViewData["CurrentStatus"] = status;
+                ViewData["CurrentSearch"] = searchQuery;
+                ViewData["CurrentRole"] = roleFilter;
+                ViewData["CurrentPageSize"] = result.PageSize;
+
+                return View(new UserIndexViewModel
+                {
+                    Users = result.Users,
+                    Pagination = new PaginationMetadata
+                    {
+                        CurrentPage = result.CurrentPage,
+                        TotalPages = result.TotalPages,
+                        PageSize = result.PageSize,
+                        TotalCount = result.TotalCount
+                    },
+                    Stats = new UserStatsSummary
+                    {
+                        TotalUsers = result.TotalUsers,
+                        ActiveCount = result.ActiveCount,
+                        InactiveCount = result.InactiveCount,
+                        RoleCounts = result.RoleCounts.ToDictionary(item => item.Key, item => item.Value)
+                    }
+                });
+            }
+
             var allUsersList = (await _userRepository.GetAllAsync()).ToList();
             var users = allUsersList.AsEnumerable();
 
-            // Filter by status tab
             if (status == "active")
             {
                 users = users.Where(u => u.Status == "Active");
@@ -42,7 +87,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 users = users.Where(u => u.Status == "Inactive");
             }
 
-            // Filter by search query
             if (!string.IsNullOrEmpty(searchQuery))
             {
                 users = users.Where(u =>
@@ -50,21 +94,12 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     u.Email.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
             }
 
-            // Filter by role
             if (!string.IsNullOrEmpty(roleFilter))
             {
                 users = users.Where(u => u.Role == roleFilter);
             }
 
-            // Sorting ViewBags
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.AccountSortParm = string.IsNullOrEmpty(sortOrder) ? "account_desc" : "";
-            ViewBag.EmailSortParm = sortOrder == "email" ? "email_desc" : "email";
-            ViewBag.RoleSortParm = sortOrder == "role" ? "role_desc" : "role";
-            ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
-            ViewBag.DateSortParm = sortOrder == "date" ? "date_desc" : "date";
-
-            // Sort
+            ApplySortViewBags(sortOrder);
             users = sortOrder switch
             {
                 "account_desc" => users.OrderByDescending(u => u.FullName),
@@ -79,46 +114,39 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 _ => users.OrderBy(u => u.FullName)
             };
 
-            // Stats (reuse initial fetch, no second DB call)
             var stats = new UserStatsSummary
             {
-                TotalUsers = allUsersList.Count(),
+                TotalUsers = allUsersList.Count,
                 ActiveCount = allUsersList.Count(u => u.Status == "Active"),
                 InactiveCount = allUsersList.Count(u => u.Status == "Inactive"),
-                RoleCounts = allUsersList.GroupBy(u => u.Role)
-                    .ToDictionary(g => g.Key, g => g.Count())
+                RoleCounts = allUsersList
+                    .GroupBy(u => u.Role)
+                    .ToDictionary(group => group.Key, group => group.Count())
             };
 
-            // Pagination
             var totalCount = users.Count();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             var items = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            var pagination = new PaginationMetadata
-            {
-                CurrentPage = page,
-                TotalPages = totalPages,
-                PageSize = pageSize,
-                TotalCount = totalCount
-            };
-
-            // ViewBag for filters
             ViewData["CurrentStatus"] = status;
             ViewData["CurrentSearch"] = searchQuery;
             ViewData["CurrentRole"] = roleFilter;
             ViewData["CurrentPageSize"] = pageSize;
 
-            var viewModel = new UserIndexViewModel
+            return View(new UserIndexViewModel
             {
                 Users = items,
-                Pagination = pagination,
+                Pagination = new PaginationMetadata
+                {
+                    CurrentPage = page,
+                    TotalPages = totalPages,
+                    PageSize = pageSize,
+                    TotalCount = totalCount
+                },
                 Stats = stats
-            };
-
-            return View(viewModel);
+            });
         }
 
-        // Create - Chỉ Admin và Manager
         [HttpGet]
         [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create()
@@ -131,7 +159,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Create(User user, string password, string confirmPassword)
         {
-            // Password validation
             if (string.IsNullOrEmpty(password))
             {
                 ModelState.AddModelError("password", "Mật khẩu là bắt buộc");
@@ -144,7 +171,6 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 return View(user);
             }
 
-            // Check email exists
             var existingUser = await _userRepository.FindAsync(u => u.Email == user.Email);
             if (existingUser.Any())
             {
@@ -152,32 +178,33 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 return View(user);
             }
 
-            // Hash password
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
             user.CreatedAt = DateTime.UtcNow;
             user.Status = "Active";
 
             await _userRepository.AddAsync(user);
+            await SyncSearchUpsertAsync(user);
             TempData["Success"] = "Tạo tài khoản thành công!";
             return RedirectToAction(nameof(Index));
         }
 
-        // Edit - Chỉ Admin và Manager (Manager không được sửa tài khoản Admin)
         [HttpGet]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(string id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) return NotFound();
-            
-            // Manager không được sửa tài khoản Admin
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
             if (currentUserRole == "Manager" && user.Role == "Admin")
             {
                 TempData["Error"] = "Bạn không có quyền chỉnh sửa tài khoản Admin!";
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(user);
         }
 
@@ -187,9 +214,11 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(string id, User user, string password, string confirmPassword)
         {
             var existingUser = await _userRepository.GetByIdAsync(id);
-            if (existingUser == null) return NotFound();
-            
-            // Manager không được sửa tài khoản Admin
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
             var currentUserRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
             if (currentUserRole == "Manager" && existingUser.Role == "Admin")
             {
@@ -197,13 +226,11 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Update fields
             existingUser.FullName = user.FullName;
             existingUser.Role = user.Role;
             existingUser.Status = user.Status;
             existingUser.AvatarUrl = user.AvatarUrl;
 
-            // Update password if provided
             if (!string.IsNullOrEmpty(password))
             {
                 if (password != confirmPassword)
@@ -211,45 +238,67 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không khớp");
                     return View(user);
                 }
+
                 existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
             }
 
             await _userRepository.UpdateAsync(id, existingUser);
+            await SyncSearchUpsertAsync(existingUser);
             TempData["Success"] = "Cập nhật tài khoản thành công!";
             return RedirectToAction(nameof(Index));
         }
 
-        // Delete - Chỉ Admin và Manager (Manager không được xóa tài khoản Admin)
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-            // Soft delete - set status to Inactive
             user.Status = "Inactive";
             await _userRepository.UpdateAsync(id, user);
+            await SyncSearchUpsertAsync(user);
 
             TempData["Success"] = "Đã vô hiệu hóa tài khoản!";
             return RedirectToAction(nameof(Index));
         }
 
-        // Restore - Chỉ Admin và Manager
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Restore(string id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             user.Status = "Active";
             await _userRepository.UpdateAsync(id, user);
+            await SyncSearchUpsertAsync(user);
 
             TempData["Success"] = "Đã khôi phục tài khoản!";
             return RedirectToAction(nameof(Index), new { status = "active" });
+        }
+
+        private void ApplySortViewBags(string sortOrder)
+        {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.AccountSortParm = string.IsNullOrEmpty(sortOrder) ? "account_desc" : "";
+            ViewBag.EmailSortParm = sortOrder == "email" ? "email_desc" : "email";
+            ViewBag.RoleSortParm = sortOrder == "role" ? "role_desc" : "role";
+            ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+            ViewBag.DateSortParm = sortOrder == "date" ? "date_desc" : "date";
+        }
+
+        private Task SyncSearchUpsertAsync(User? user)
+        {
+            return _searchIndexingService?.UpsertUserAsync(user) ?? Task.CompletedTask;
         }
     }
 }

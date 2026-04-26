@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HVTravel.Application.Interfaces;
 using HVTravel.Application.Models;
 using HVTravel.Application.Services;
 using HVTravel.Web.Models;
@@ -24,11 +25,18 @@ namespace HVTravel.Web.Areas.Admin.Controllers
     [Route("Admin/[controller]")]
     public class ToursController : Controller
     {
-        private readonly IRepository<Tour> _tourRepository;
+        private readonly ITourRepository _tourRepository;
+        private readonly ITourSearchIndexingService? _tourSearchIndexingService;
+        private readonly IAdminTourSearchService? _adminTourSearchService;
 
-        public ToursController(IRepository<Tour> tourRepository)
+        public ToursController(
+            ITourRepository tourRepository,
+            ITourSearchIndexingService? tourSearchIndexingService = null,
+            IAdminTourSearchService? adminTourSearchService = null)
         {
             _tourRepository = tourRepository;
+            _tourSearchIndexingService = tourSearchIndexingService;
+            _adminTourSearchService = adminTourSearchService;
         }
 
         // Index - Tất cả roles đều xem được
@@ -49,6 +57,23 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.PriceSortParm = sortOrder == "price" ? "price_desc" : "price";
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+
+            if (_adminTourSearchService != null)
+            {
+                var indexedTours = await _adminTourSearchService.SearchAsync(new AdminTourSearchRequest
+                {
+                    Status = status,
+                    Page = page,
+                    PageSize = pageSize,
+                    SearchString = searchString,
+                    SortOrder = sortOrder
+                });
+
+                ViewData["CurrentStatus"] = status;
+                ViewData["CurrentPageSize"] = pageSize;
+                ViewData["CurrentSearch"] = searchString;
+                return View(indexedTours);
+            }
 
             var statusLower = status.ToLower();
             string? targetStatus = null;
@@ -131,6 +156,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             {
                 tour.Status = "Deleted";
                 await _tourRepository.UpdateAsync(id, tour);
+                await SyncSearchUpsertAsync(tour);
             }
             return RedirectToAction(nameof(Index));
         }
@@ -149,6 +175,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 {
                     tour.Status = "Deleted";
                     await _tourRepository.UpdateAsync(id, tour);
+                    await SyncSearchUpsertAsync(tour);
                 }
             }
             return RedirectToAction(nameof(Index));
@@ -168,6 +195,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 {
                     tour.Status = newStatus;
                     await _tourRepository.UpdateAsync(id, tour);
+                    await SyncSearchUpsertAsync(tour);
                 }
             }
             return RedirectToAction(nameof(Index));
@@ -183,6 +211,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             {
                 tour.Status = "Draft"; // Restore to Draft to be safe
                 await _tourRepository.UpdateAsync(id, tour);
+                await SyncSearchUpsertAsync(tour);
             }
             return RedirectToAction(nameof(Index), new { status = "deleted" });
         }
@@ -237,6 +266,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             NormalizeRichTextFields(tour);
 
             await _tourRepository.AddAsync(tour);
+            await SyncSearchUpsertAsync(tour);
             return RedirectToAction(nameof(Index));
         }
 
@@ -252,6 +282,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 tour.Name = $"{tour.Name} (Copy)";
                 tour.Status = "Draft";
                 await _tourRepository.AddAsync(tour);
+                await SyncSearchUpsertAsync(tour);
             }
              return RedirectToAction(nameof(Index));
         }
@@ -272,6 +303,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     tour.Name = $"{tour.Name} (Copy)";
                     tour.Status = "Draft";
                     await _tourRepository.AddAsync(tour);
+                    await SyncSearchUpsertAsync(tour);
                 }
             }
             return RedirectToAction(nameof(Index));
@@ -316,6 +348,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             NormalizeRichTextFields(tour);
 
             await _tourRepository.UpdateAsync(id, tour);
+            await SyncSearchUpsertAsync(tour);
             return RedirectToAction(nameof(Index));
         }
 
@@ -352,6 +385,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
              tour.UpdatedAt = DateTime.UtcNow;
              
              await _tourRepository.UpdateAsync(id, tour);
+             await SyncSearchUpsertAsync(tour);
              return RedirectToAction(nameof(Details), new { id = id });
         }
 
@@ -423,6 +457,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteForever(string id)
         {
             await _tourRepository.DeleteAsync(id);
+            await SyncSearchDeleteAsync(id);
             return RedirectToAction(nameof(Index), new { status = "deleted" });
         }
 
@@ -436,14 +471,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
 
             if (idList.Any())
             {
-                // In a real app we'd have a GetByIdsAsync, loop for now
-                var list = new List<Tour>();
-                foreach(var id in idList)
-                {
-                   var t = await _tourRepository.GetByIdAsync(id);
-                   if(t != null) list.Add(t);
-                }
-                tours = list;
+                tours = await _tourRepository.GetByIdsAsync(idList);
             }
             else
             {
@@ -496,6 +524,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                                 t.ConfirmationType = string.IsNullOrWhiteSpace(t.ConfirmationType) ? "Instant" : t.ConfirmationType.Trim();
                                 NormalizeTourCollections(t);
                                 await _tourRepository.AddAsync(t);
+                                await SyncSearchUpsertAsync(t);
                             }
                         }
                     }
@@ -825,6 +854,16 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     PropertyNameCaseInsensitive = true
                 });
             }
+        }
+
+        private Task SyncSearchUpsertAsync(Tour? tour)
+        {
+            return _tourSearchIndexingService?.UpsertTourAsync(tour) ?? Task.CompletedTask;
+        }
+
+        private Task SyncSearchDeleteAsync(string? tourId)
+        {
+            return _tourSearchIndexingService?.DeleteTourAsync(tourId) ?? Task.CompletedTask;
         }
 
         private static string GenerateSlug(string? value)

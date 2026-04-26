@@ -3,7 +3,8 @@
 }
 
 .custom-select-container.active {
-    z-index: 1000;
+    z-index: 1200;
+    isolation: isolate;
 }
 
 .section-card.active-section {
@@ -106,7 +107,7 @@
     background: rgb(255 255 255 / 0.96);
     box-shadow: 0 24px 60px rgb(15 23 42 / 0.16);
     backdrop-filter: blur(14px);
-    z-index: 1000;
+    z-index: 1210;
     transform-origin: top;
     transform: scale(0.96) translateY(-8px);
     opacity: 0;
@@ -368,6 +369,7 @@
 .custom-select-container.compact-select .options-menu {
     border-radius: 1rem;
     padding: 0.35rem;
+    z-index: 1210;
 }
 
 .custom-select-container.compact-select .custom-option {
