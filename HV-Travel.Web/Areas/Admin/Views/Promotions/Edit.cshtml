@@ -45,24 +45,20 @@
             <div class="grid gap-5 md:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Hiệu lực từ</label>
-                    <div class="admin-datetime-field">
-                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
-                        <input asp-for="ValidFrom" type="datetime-local" class="date-field-custom admin-datetime-input" />
-                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    <div class="admin-picker" data-admin-picker="datetime" data-picker-placeholder="Chọn thời điểm hiệu lực" data-picker-icon="schedule">
+                        <input asp-for="ValidFrom" type="datetime-local" step="300" class="admin-picker-input" />
                     </div>
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-semibold">Hiệu lực đến</label>
-                    <div class="admin-datetime-field">
-                        <span class="material-symbols-outlined admin-datetime-icon">schedule</span>
-                        <input asp-for="ValidTo" type="datetime-local" class="date-field-custom admin-datetime-input" />
-                        <span class="material-symbols-outlined admin-datetime-suffix">calendar_month</span>
+                    <div class="admin-picker" data-admin-picker="datetime" data-picker-placeholder="Chọn thời điểm kết thúc" data-picker-icon="schedule">
+                        <input asp-for="ValidTo" type="datetime-local" step="300" class="admin-picker-input" />
                     </div>
                 </div>
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold">Mô tả</label>
-                <textarea asp-for="Description" rows="5" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700"></textarea>
+                <textarea asp-for="Description" rows="5" class="w-full rounded-2xl border border-slate-200 bg-transparent px-4 py-3 dark:border-slate-700" data-rich-editor="true" data-editor-height="240"></textarea>
             </div>
             <div class="flex items-center gap-3">
                 <button type="submit" class="rounded-2xl bg-primary px-5 py-3 text-sm font-bold text-white">Lưu khuyến mãi</button>

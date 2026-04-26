@@ -249,6 +249,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 tour.Id = ObjectId.GenerateNewId().ToString();
             }
 
+            PrepareTourForLegacyAdminPersistence(tour, !string.IsNullOrEmpty(saveAction) ? saveAction : "Draft");
             EnsureTourStructure(tour);
             tour.Status = !string.IsNullOrEmpty(saveAction) ? saveAction : "Draft";
             tour.Slug = string.IsNullOrWhiteSpace(tour.Slug) ? GenerateSlug(tour.Name) : tour.Slug.Trim();
@@ -513,12 +514,13 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     var content = await stream.ReadToEndAsync();
                     if (file.FileName.EndsWith(".json"))
                     {
-                        var tours = DeserializeTours(content);
+                        var tours = DeserializeImportedTours(content);
                         if (tours != null)
                         {
                             foreach (var t in tours)
                             {
                                 t.Id = ObjectId.GenerateNewId().ToString();
+                                PrepareTourForLegacyAdminPersistence(t, string.IsNullOrWhiteSpace(t.Status) ? "Draft" : t.Status);
                                 EnsureTourStructure(t);
                                 t.Slug = string.IsNullOrWhiteSpace(t.Slug) ? GenerateSlug(t.Name) : t.Slug.Trim();
                                 t.ConfirmationType = string.IsNullOrWhiteSpace(t.ConfirmationType) ? "Instant" : t.ConfirmationType.Trim();
@@ -537,6 +539,35 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private static void PrepareTourForLegacyAdminPersistence(Tour tour, string status)
+        {
+            tour.Destination ??= new Destination();
+            tour.Price ??= new TourPrice();
+            tour.Duration ??= new TourDuration();
+            tour.Seo ??= new SeoMetadata();
+            tour.CancellationPolicy ??= new TourCancellationPolicy();
+            tour.SupplierRef ??= new SupplierReference();
+            tour.Images ??= new List<string>();
+            tour.StartDates ??= new List<DateTime>();
+            tour.Schedule ??= new List<ScheduleItem>();
+            tour.GeneratedInclusions ??= new List<string>();
+            tour.GeneratedExclusions ??= new List<string>();
+            tour.Highlights ??= new List<string>();
+            tour.BadgeSet ??= new List<string>();
+            tour.Departures ??= new List<TourDeparture>();
+            tour.Status = status;
+
+            if (string.IsNullOrWhiteSpace(tour.ConfirmationType))
+            {
+                tour.ConfirmationType = "Instant";
+            }
+
+            if (string.IsNullOrWhiteSpace(tour.Slug))
+            {
+                tour.Slug = GenerateSlug(tour.Name);
+            }
         }
 
         private static void EnsureTourStructure(Tour tour)
@@ -854,6 +885,71 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     PropertyNameCaseInsensitive = true
                 });
             }
+        }
+
+        private static List<Tour>? DeserializeImportedTours(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return null;
+            }
+
+            if (LooksLikeMongoExtendedJson(content))
+            {
+                var documents = BsonSerializer.Deserialize<BsonArray>(content)
+                    .Where(item => item is BsonDocument)
+                    .Select(item => item.AsBsonDocument)
+                    .ToList();
+
+                return documents.Select(DeserializeMongoExtendedTour).ToList();
+            }
+
+            return DeserializeTours(content);
+        }
+
+        private static bool LooksLikeMongoExtendedJson(string content)
+        {
+            return content.Contains("\"$oid\"", StringComparison.Ordinal)
+                || content.Contains("\"$date\"", StringComparison.Ordinal)
+                || content.Contains("\"$numberDecimal\"", StringComparison.Ordinal);
+        }
+
+        private static Tour DeserializeMongoExtendedTour(BsonDocument document)
+        {
+            var tour = BsonSerializer.Deserialize<Tour>(document);
+
+            if (document.TryGetValue("departures", out var departuresValue) && departuresValue is BsonArray departuresArray)
+            {
+                tour.Departures = departuresArray
+                    .Where(item => item is BsonDocument)
+                    .Select(item => DeserializeMongoExtendedDeparture(item.AsBsonDocument))
+                    .ToList();
+            }
+
+            if (document.TryGetValue("routing", out var routingValue) && routingValue is BsonDocument routingDocument)
+            {
+                tour.Routing = BsonSerializer.Deserialize<TourRouting>(routingDocument);
+            }
+
+            return tour;
+        }
+
+        private static TourDeparture DeserializeMongoExtendedDeparture(BsonDocument document)
+        {
+            return new TourDeparture
+            {
+                Id = document.TryGetValue("id", out var idValue) ? idValue.AsString : string.Empty,
+                StartDate = document.TryGetValue("startDate", out var startDateValue) ? startDateValue.ToUniversalTime() : default,
+                AdultPrice = document.TryGetValue("adultPrice", out var adultPriceValue) ? adultPriceValue.ToDecimal() : 0m,
+                ChildPrice = document.TryGetValue("childPrice", out var childPriceValue) ? childPriceValue.ToDecimal() : 0m,
+                InfantPrice = document.TryGetValue("infantPrice", out var infantPriceValue) ? infantPriceValue.ToDecimal() : 0m,
+                DiscountPercentage = document.TryGetValue("discountPercentage", out var discountValue) ? discountValue.ToDecimal() : 0m,
+                Capacity = document.TryGetValue("capacity", out var capacityValue) ? capacityValue.ToInt32() : 0,
+                BookedCount = document.TryGetValue("bookedCount", out var bookedCountValue) ? bookedCountValue.ToInt32() : 0,
+                ConfirmationType = document.TryGetValue("confirmationType", out var confirmationTypeValue) ? confirmationTypeValue.AsString : "Instant",
+                Status = document.TryGetValue("status", out var statusValue) ? statusValue.AsString : "Scheduled",
+                CutoffHours = document.TryGetValue("cutoffHours", out var cutoffValue) ? cutoffValue.ToInt32() : 24
+            };
         }
 
         private Task SyncSearchUpsertAsync(Tour? tour)

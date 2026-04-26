@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>HV_Travel.Web.Tests</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -22,7 +23,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HV-Travel.Web\HV-Travel.Web.csproj" />
+    <Using Include="Xunit" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HV-Travel.Domain\HV-Travel.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\HV-Travel.Web\Services\BookingDisplayTextHelper.cs" Link="Services\BookingDisplayTextHelper.cs" />
+    <Compile Include="..\HV-Travel.Web\Models\AdminNotificationDropdownViewModels.cs" Link="Models\AdminNotificationDropdownViewModels.cs" Condition="Exists('..\HV-Travel.Web\Models\AdminNotificationDropdownViewModels.cs')" />
+    <Compile Include="..\HV-Travel.Web\Services\AdminNotificationDropdownService.cs" Link="Services\AdminNotificationDropdownService.cs" Condition="Exists('..\HV-Travel.Web\Services\AdminNotificationDropdownService.cs')" />
+    <Compile Include="..\HV-Travel.Web\Models\PublicTourRouteOverview.cs" Link="Models\PublicTourRouteOverview.cs" />
+    <Compile Include="..\HV-Travel.Web\Areas\Admin\Controllers\ToursController.cs" Link="Areas\Admin\Controllers\ToursController.cs" />
+    <Compile Include="..\HV-Travel.Web\Controllers\PublicToursController.cs" Link="Controllers\PublicToursController.cs" />
+    <Compile Include="..\HV-Travel.Web\Security\AuthSchemes.cs" Link="Security\AuthSchemes.cs" />
+    <Compile Include="..\HV-Travel.Web\Services\PublicTourIdentifierHelper.cs" Link="Services\PublicTourIdentifierHelper.cs" Condition="Exists('..\HV-Travel.Web\Services\PublicTourIdentifierHelper.cs')" />
+    <Compile Include="..\HV-Travel.Web\Services\PublicTextSanitizer.cs" Link="Services\PublicTextSanitizer.cs" />
+    <Compile Include="..\HV-Travel.Web\Services\PublicTourRouteOverviewBuilder.cs" Link="Services\PublicTourRouteOverviewBuilder.cs" />
+    <Compile Include="..\HV-Travel.Web\Services\RichTextContentFormatter.cs" Link="Services\RichTextContentFormatter.cs" />
   </ItemGroup>
 
 </Project>

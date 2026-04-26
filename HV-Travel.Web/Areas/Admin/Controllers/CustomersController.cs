@@ -40,8 +40,9 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             int page = 1,
             int pageSize = 10)
         {
-            page = Math.Max(page, 1);
-            pageSize = pageSize <= 0 ? 10 : pageSize;
+            if (page < 1) page = 1;
+            if (pageSize < 5) pageSize = 10;
+            if (pageSize > 100) pageSize = 100;
 
             ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";

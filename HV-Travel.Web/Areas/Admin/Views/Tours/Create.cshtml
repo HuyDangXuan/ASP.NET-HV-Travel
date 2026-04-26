@@ -214,39 +214,8 @@
                             for (int i = 0; i < Model.StartDates.Count; i++)
                             {
                                 <div class="flex gap-2 items-start date-item">
-                                    <div class="relative w-full md:w-[21rem] custom-date-picker" data-selected="@Model.StartDates[i].ToString("yyyy-MM-dd")">
-                                        <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="hidden" class="start-date-value" />
-                                        <button type="button" class="date-trigger custom-date-trigger">
-                                            <span class="flex items-center gap-3 min-w-0">
-                                                <span class="material-symbols-outlined text-primary">calendar_month</span>
-                                                <span class="custom-date-label truncate">@Model.StartDates[i].ToString("dd/MM/yyyy")</span>
-                                            </span>
-                                            <span class="material-symbols-outlined text-slate-400">expand_more</span>
-                                        </button>
-                                        <div class="date-picker-panel custom-date-panel hidden">
-                                            <div class="flex items-center justify-between mb-4">
-                                                <button type="button" class="date-nav-btn custom-date-prev">
-                                                    <span class="material-symbols-outlined text-lg">chevron_left</span>
-                                                </button>
-                                                <div class="text-center">
-                                                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-[#618389]">Lịch khởi hành</p>
-                                                    <p class="custom-date-title text-lg font-black text-[#111718] dark:text-white"></p>
-                                                </div>
-                                                <button type="button" class="date-nav-btn custom-date-next">
-                                                    <span class="material-symbols-outlined text-lg">chevron_right</span>
-                                                </button>
-                                            </div>
-                                            <div class="grid grid-cols-7 gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                <span class="text-center">T2</span>
-                                                <span class="text-center">T3</span>
-                                                <span class="text-center">T4</span>
-                                                <span class="text-center">T5</span>
-                                                <span class="text-center">T6</span>
-                                                <span class="text-center">T7</span>
-                                                <span class="text-center">CN</span>
-                                            </div>
-                                            <div class="custom-date-grid grid grid-cols-7 gap-2"></div>
-                                        </div>
+                                    <div class="w-full md:w-[21rem] admin-picker" data-admin-picker="date" data-picker-placeholder="Chọn ngày khởi hành" data-picker-icon="calendar_month">
+                                        <input name="StartDates[@i]" value="@Model.StartDates[i].ToString("yyyy-MM-dd")" type="hidden" class="admin-picker-input start-date-value" />
                                     </div>
                                     <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
                                 </div>
@@ -369,43 +338,10 @@
 <script>
     // --- Start Dates ---
     function createStartDateMarkup(index, value = '') {
-        const displayValue = formatDisplayDate(value);
-
         return `
             <div class="flex gap-2 items-start date-item">
-                <div class="relative w-full md:w-[21rem] custom-date-picker" data-selected="${value}">
-                    <input name="StartDates[${index}]" value="${value}" type="hidden" class="start-date-value" />
-                    <button type="button" class="date-trigger custom-date-trigger">
-                        <span class="flex items-center gap-3 min-w-0">
-                            <span class="material-symbols-outlined text-primary">calendar_month</span>
-                            <span class="custom-date-label truncate">${displayValue}</span>
-                        </span>
-                        <span class="material-symbols-outlined text-slate-400">expand_more</span>
-                    </button>
-                    <div class="date-picker-panel custom-date-panel hidden">
-                        <div class="flex items-center justify-between mb-4">
-                            <button type="button" class="date-nav-btn custom-date-prev">
-                                <span class="material-symbols-outlined text-lg">chevron_left</span>
-                            </button>
-                            <div class="text-center">
-                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-[#618389]">Lịch khởi hành</p>
-                                <p class="custom-date-title text-lg font-black text-[#111718] dark:text-white"></p>
-                            </div>
-                            <button type="button" class="date-nav-btn custom-date-next">
-                                <span class="material-symbols-outlined text-lg">chevron_right</span>
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-7 gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                            <span class="text-center">T2</span>
-                            <span class="text-center">T3</span>
-                            <span class="text-center">T4</span>
-                            <span class="text-center">T5</span>
-                            <span class="text-center">T6</span>
-                            <span class="text-center">T7</span>
-                            <span class="text-center">CN</span>
-                        </div>
-                        <div class="custom-date-grid grid grid-cols-7 gap-2"></div>
-                    </div>
+                <div class="w-full md:w-[21rem] admin-picker" data-admin-picker="date" data-picker-placeholder="Chọn ngày khởi hành" data-picker-icon="calendar_month">
+                    <input name="StartDates[${index}]" value="${value}" type="hidden" class="admin-picker-input start-date-value" />
                 </div>
                 <button type="button" onclick="removeDate(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-full"><span class="material-symbols-outlined">delete</span></button>
             </div>
@@ -417,10 +353,11 @@
         const index = container.querySelectorAll('.date-item').length;
         const html = createStartDateMarkup(index);
         container.insertAdjacentHTML('beforeend', html);
-        initializeDatePicker(container.lastElementChild.querySelector('.custom-date-picker'));
+        window.AdminDateTimePicker?.init(container.lastElementChild);
     }
 
     function removeDate(btn) {
+        window.AdminDateTimePicker?.close();
         btn.closest('.date-item').remove();
         reindexItems('#start-dates-container .date-item .start-date-value', 'StartDates');
     }
@@ -755,143 +692,6 @@
          });
     }
 
-    function formatDisplayDate(value) {
-        if (!value) return 'Chọn ngày khởi hành';
-
-        const [year, month, day] = value.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        return new Intl.DateTimeFormat('vi-VN', {
-            weekday: 'short',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        }).format(date);
-    }
-
-    function parseIsoDate(value) {
-        if (!value) return null;
-
-        const [year, month, day] = value.split('-').map(Number);
-        return new Date(year, month - 1, day);
-    }
-
-    function formatMonthTitle(date) {
-        return new Intl.DateTimeFormat('vi-VN', {
-            month: 'long',
-            year: 'numeric'
-        }).format(date);
-    }
-
-    function getPickerViewDate(picker) {
-        const viewValue = picker.dataset.view;
-        const selected = picker.dataset.selected;
-        const baseDate = parseIsoDate(viewValue) || parseIsoDate(selected) || new Date();
-        return new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
-    }
-
-    function setPickerViewDate(picker, date) {
-        picker.dataset.view = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
-    }
-
-    function closeAllDatePickers(exceptPicker = null) {
-        document.querySelectorAll('.custom-date-picker').forEach((picker) => {
-            if (picker !== exceptPicker) {
-                picker.querySelector('.custom-date-panel')?.classList.add('hidden');
-            }
-        });
-    }
-
-    function renderDatePicker(picker) {
-        const panel = picker.querySelector('.custom-date-panel');
-        const grid = picker.querySelector('.custom-date-grid');
-        const title = picker.querySelector('.custom-date-title');
-        const selectedValue = picker.dataset.selected || '';
-        const selectedDate = parseIsoDate(selectedValue);
-        const viewDate = getPickerViewDate(picker);
-        const today = new Date();
-        const firstDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
-        const startOffset = (firstDay.getDay() + 6) % 7;
-        const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
-
-        title.textContent = formatMonthTitle(viewDate);
-        grid.innerHTML = '';
-
-        for (let i = 0; i < startOffset; i++) {
-            const filler = document.createElement('span');
-            filler.className = 'date-day-btn date-day-btn-muted';
-            grid.appendChild(filler);
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-            const isoValue = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isToday = date.toDateString() === today.toDateString();
-            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.dataset.value = isoValue;
-            button.textContent = day;
-            button.className = 'date-day-btn ' + (isSelected
-                ? 'date-day-btn-active'
-                : isToday
-                    ? 'date-day-btn-today'
-                    : 'date-day-btn-normal');
-
-            button.addEventListener('click', function() {
-                picker.dataset.selected = isoValue;
-                picker.querySelector('.start-date-value').value = isoValue;
-                picker.querySelector('.custom-date-label').textContent = formatDisplayDate(isoValue);
-                setPickerViewDate(picker, date);
-                renderDatePicker(picker);
-                panel.classList.add('hidden');
-            });
-
-            grid.appendChild(button);
-        }
-    }
-
-    function initializeDatePicker(picker) {
-        if (!picker || picker.dataset.initialized === 'true') return;
-
-        const trigger = picker.querySelector('.custom-date-trigger');
-        const panel = picker.querySelector('.custom-date-panel');
-        const prevBtn = picker.querySelector('.custom-date-prev');
-        const nextBtn = picker.querySelector('.custom-date-next');
-        const input = picker.querySelector('.start-date-value');
-
-        picker.dataset.selected = input.value || picker.dataset.selected || '';
-        setPickerViewDate(picker, parseIsoDate(picker.dataset.selected) || new Date());
-        picker.querySelector('.custom-date-label').textContent = formatDisplayDate(picker.dataset.selected);
-
-        trigger.addEventListener('click', function(event) {
-            event.stopPropagation();
-            const willOpen = panel.classList.contains('hidden');
-            closeAllDatePickers(willOpen ? picker : null);
-            panel.classList.toggle('hidden', !willOpen);
-            if (willOpen) renderDatePicker(picker);
-        });
-
-        prevBtn.addEventListener('click', function() {
-            const currentView = getPickerViewDate(picker);
-            setPickerViewDate(picker, new Date(currentView.getFullYear(), currentView.getMonth() - 1, 1));
-            renderDatePicker(picker);
-        });
-
-        nextBtn.addEventListener('click', function() {
-            const currentView = getPickerViewDate(picker);
-            setPickerViewDate(picker, new Date(currentView.getFullYear(), currentView.getMonth() + 1, 1));
-            renderDatePicker(picker);
-        });
-
-        panel.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-
-        picker.dataset.initialized = 'true';
-        renderDatePicker(picker);
-    }
-
     function reindexSchedule() {
         const items = document.querySelectorAll('#schedule-container .schedule-item');
         items.forEach((item, idx) => {
@@ -1014,10 +814,7 @@
 
         // Initialize
         enableImageReordering(document.getElementById('images-container'));
-        document.querySelectorAll('.custom-date-picker').forEach(initializeDatePicker);
-        document.addEventListener('click', function() {
-            closeAllDatePickers();
-        });
+        window.AdminDateTimePicker?.init(document);
         updatePreview();
         calculateActualPrice();
     });
