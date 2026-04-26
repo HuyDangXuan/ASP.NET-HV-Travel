@@ -1,6 +1,12 @@
 @using HVTravel.Web.Models
 @model CustomerIndexViewModel
 @{
+    var currentFilter = ViewBag.CurrentFilter as string ?? string.Empty;
+    var currentSort = ViewBag.CurrentSort as string ?? string.Empty;
+    var selectedSegments = ViewBag.SelectedSegments as string[] ?? Array.Empty<string>();
+    decimal? currentMinSpending = ViewBag.MinSpending is decimal minSpendingValue ? minSpendingValue : null;
+    int? currentMinOrders = ViewBag.MinOrders is int minOrdersValue ? minOrdersValue : null;
+    int currentPageSize = ViewBag.CurrentPageSize is int pageSizeValue ? pageSizeValue : Model.Pagination.PageSize;
     ViewData["Title"] = "Khách Hàng";
 }
 
@@ -134,15 +140,15 @@
         <!-- Segment Tabs -->
         <!-- Replaced Segment Tabs with Toolbar -->
         <form data-animate="fade-in-up" data-delay="0.2" method="get" action="@Url.Action("Index")" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
-            <input type="hidden" name="pageSize" value="@Model.Pagination.PageSize" />
-            <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+            <input type="hidden" name="sortOrder" value="@currentSort" />
+            <input type="hidden" name="pageSize" value="@currentPageSize" />
 
             <!-- Search Bar -->
             <div class="flex-1 min-w-[200px]">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
                     <input name="searchQuery" 
-                           value="@ViewBag.CurrentFilter"
+                           value="@currentFilter"
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-primary focus:border-primary outline-none transition-all"
                            placeholder="Tìm kiếm theo tên, email, hoặc sđt..."
                            type="text" 
@@ -153,11 +159,11 @@
             <div class="flex items-center gap-3">
                 <!-- Filter Dropdown -->
                 <div class="relative group">
-                    <button id="filter-menu-trigger" type="button" data-menu-target="filter-menu" aria-controls="filter-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                     </button>
 
-                    <div id="filter-menu" data-menu-anchor-id="filter-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
+                    <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                         </div>
@@ -167,9 +173,6 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Phân Khúc</label>
                                 <div class="space-y-2">
-                                    @{
-                                        var selectedSegments = ViewBag.SelectedSegments as string[] ?? new string[0];
-                                    }
                                     <label class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="segments" value="VIP" class="rounded border-slate-300 text-primary focus:ring-primary" @(selectedSegments.Contains("VIP") ? "checked" : "") />
                                         <span class="text-sm text-slate-700 dark:text-slate-300">VIP</span>
@@ -193,12 +196,12 @@
                             <div>
                                 <div class="flex justify-between mb-2">
                                     <label class="text-xs font-bold text-slate-500 uppercase">Chi Tiêu Tối Thiểu</label>
-                                    <span id="spending-label" class="text-xs font-bold text-primary">@((ViewBag.MinSpending ?? 0).ToString("N0"))₫+</span>
+                                    <span id="spending-label" class="text-xs font-bold text-primary">@((currentMinSpending ?? 0).ToString("N0"))₫+</span>
                                 </div>
                                 <input type="range" id="minSpending" 
                                        class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
                                        min="0" max="100000000" step="1000000" 
-                                       value="@(ViewBag.MinSpending ?? 0)"
+                                       value="@(currentMinSpending ?? 0)"
                                        oninput="updateSpendingLabel(this)" />
                             </div>
 
@@ -206,12 +209,12 @@
                             <div>
                                 <div class="flex justify-between mb-2">
                                     <label class="text-xs font-bold text-slate-500 uppercase">Số Đơn Tối Thiểu</label>
-                                    <span id="orders-label" class="text-xs font-bold text-primary">@(ViewBag.MinOrders ?? 0)+</span>
+                                    <span id="orders-label" class="text-xs font-bold text-primary">@(currentMinOrders ?? 0)+</span>
                                 </div>
                                 <input type="range" id="minOrders" 
                                        class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
                                        min="0" max="50" step="1"
-                                       value="@(ViewBag.MinOrders ?? 0)"
+                                       value="@(currentMinOrders ?? 0)"
                                        oninput="updateOrdersLabel(this)" />
                             </div>
                         </div>
@@ -225,10 +228,10 @@
                 </div>
                 
                 <div class="relative">
-                    <button id="column-menu-trigger" type="button" data-menu-target="column-menu" aria-controls="column-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">view_column</span>
                     </button>
-                    <div id="column-menu" data-menu-anchor-id="column-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-customer')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Khách Hàng</span>
@@ -417,13 +420,13 @@
                 </table>
             </div>
 
-            @{
-                var startItem = Model.Pagination.TotalCount == 0 ? 0 : ((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1;
-                var endItem = Model.Pagination.TotalCount == 0 ? 0 : Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount);
-                int[] pageSizes = { 10, 15, 20, 50, 100 };
-                int currentPageSize = (int?)ViewData["CurrentPageSize"] ?? Model.Pagination.PageSize;
-            }
+            <!-- Pagination -->
             <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
+                @{
+                    var startItem = Model.Pagination.TotalCount == 0 ? 0 : ((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1;
+                    var endItem = Model.Pagination.TotalCount == 0 ? 0 : Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount);
+                    int[] pageSizes = [10, 15, 20, 50, 100];
+                }
                 <div class="flex items-center gap-4">
                     <p class="text-xs text-slate-500 dark:text-slate-400">
                         Hi&#7875;n th&#7883; <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span>
@@ -443,46 +446,8 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button type="button"
-                            onclick="changePage(@(Model.Pagination.CurrentPage - 1))"
-                            @(Model.Pagination.HasPrevious ? "" : "disabled")
-                            class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="material-symbols-outlined text-lg">chevron_left</span>
-                    </button>
-
-                    @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
-                    {
-                        if (Math.Abs(i - Model.Pagination.CurrentPage) <= 2 || i == 1 || i == Model.Pagination.TotalPages)
-                        {
-                            <button type="button"
-                                    onclick="changePage(@i)"
-                                    class="w-8 h-8 rounded-lg @(i == Model.Pagination.CurrentPage ? "bg-primary text-white shadow-sm shadow-primary/30" : "hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400") text-xs font-bold transition-colors">@i</button>
-                        }
-                        else if (Math.Abs(i - Model.Pagination.CurrentPage) == 3)
-                        {
-                            <span class="text-slate-400 text-xs">...</span>
-                        }
-                    }
-
-                    <button type="button"
-                            onclick="changePage(@(Model.Pagination.CurrentPage + 1))"
-                            @(Model.Pagination.HasNext ? "" : "disabled")
-                            class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="material-symbols-outlined text-lg">chevron_right</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <div class="hidden p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
-                <p class="text-xs text-slate-500 dark:text-slate-400">
-                    Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
-                    trong số <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> kết quả
-                </p>
-
-                <div class="flex items-center gap-2">
                     <!-- Prev -->
-                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1 })"
+                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                        class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasPrevious ? "" : "pointer-events-none opacity-50")">
                         <span class="material-symbols-outlined text-lg">chevron_left</span>
                     </a>
@@ -497,7 +462,7 @@
                         {
                             if (i <= 3 || i == Model.Pagination.TotalPages || (i >= Model.Pagination.CurrentPage - 1 && i <= Model.Pagination.CurrentPage + 1))
                             {
-                                <a href="@Url.Action("Index", new { page = i })"
+                                <a href="@Url.Action("Index", new { page = i, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">@i</a>
                             }
                             else if (i == 4 && Model.Pagination.TotalPages > 6)
@@ -508,7 +473,7 @@
                     }
 
                     <!-- Next -->
-                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1 })"
+                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                        class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasNext ? "" : "pointer-events-none opacity-50")">
                         <span class="material-symbols-outlined text-lg">chevron_right</span>
                     </a>
@@ -734,6 +699,32 @@
         window.AdminMenu?.toggle(menu);
     }
 
+    // Close filter menu AND sidebar when clicking outside
+    document.addEventListener('click', function (event) {
+        // Filter Menu Logic
+        const menu = document.getElementById('filter-menu');
+        const button = event.target.closest('button[onclick="toggleFilterMenu()"]');
+        const insideMenu = event.target.closest('#filter-menu');
+
+        if (menu && !button && !insideMenu && menu.classList.contains('menu-visible')) {
+            window.AdminMenu?.close(menu);
+        }
+        
+        // Column Menu Logic
+        const colMenu = document.getElementById('column-menu');
+        const colButton = event.target.closest('button[onclick="toggleColumnMenu()"]');
+        const insideColMenu = event.target.closest('#column-menu');
+        
+        if (colMenu && !colButton && !insideColMenu && colMenu.classList.contains('menu-visible')) {
+            window.AdminMenu?.close(colMenu);
+        }
+
+        // Sidebar Logic (Closed when handled by Overlay, but keep this for extra safety or programmatic closing if needed)
+        const sidebar = document.getElementById('customer-detail-sidebar');
+        // If clicking a row while sidebar IS ALREADY OPEN, the overlay will technically catch it if we want to force closure first.
+        // The current implementation uses onclick on Overlay to close.
+    });
+
     function updateSpendingLabel(input) {
         document.getElementById('spending-label').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(input.value) + "+";
     }
@@ -770,10 +761,6 @@
         const sortOrder = new URLSearchParams(window.location.search).get('sortOrder');
         if(sortOrder) params.set('sortOrder', sortOrder);
 
-        // Page Size (Preserve)
-        const pageSize = new URLSearchParams(window.location.search).get('pageSize');
-        if (pageSize) params.set('pageSize', pageSize);
-
         // Reset page
         params.delete('page');
 
@@ -786,26 +773,14 @@
         window.location.href = '@Url.Action("Index")' + '?' + params.toString();
     }
 
-    function changePage(page) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', page);
-        window.location.href = url.toString();
-    }
-
     function changePageSize(size) {
         const url = new URL(window.location.href);
         url.searchParams.set('pageSize', size);
-        url.searchParams.set('page', 1);
+        url.searchParams.set('page', '1');
         window.location.href = url.toString();
     }
 
     function resetFilters() {
-        const url = new URL(window.location.origin + '@Url.Action("Index")');
-        const pageSize = new URLSearchParams(window.location.search).get('pageSize');
-        if (pageSize) {
-            url.searchParams.set('pageSize', pageSize);
-        }
-
-        window.location.href = url.toString();
+        window.location.href = '@Url.Action("Index")';
     }
 </script>

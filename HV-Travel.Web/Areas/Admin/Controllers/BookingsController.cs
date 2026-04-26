@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Models;
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
 using HVTravel.Web.Security;
 
 namespace HVTravel.Web.Areas.Admin.Controllers
@@ -17,6 +19,8 @@ namespace HVTravel.Web.Areas.Admin.Controllers
     public class BookingsController : Controller
     {
         private readonly IRepository<Booking> _bookingRepository;
+        private readonly IAdminBookingSearchService? _adminBookingSearchService;
+        private readonly ISearchIndexingService? _searchIndexingService;
         private static readonly HashSet<string> AllowedBulkStatuses = new(StringComparer.OrdinalIgnoreCase)
         {
             "Confirmed",
@@ -24,9 +28,14 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             "Cancelled"
         };
 
-        public BookingsController(IRepository<Booking> bookingRepository)
+        public BookingsController(
+            IRepository<Booking> bookingRepository,
+            IAdminBookingSearchService? adminBookingSearchService = null,
+            ISearchIndexingService? searchIndexingService = null)
         {
             _bookingRepository = bookingRepository;
+            _adminBookingSearchService = adminBookingSearchService;
+            _searchIndexingService = searchIndexingService;
         }
 
         private static string EnsureBookingCode(Booking booking)
@@ -85,6 +94,32 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             ViewBag.DateSortParm = string.IsNullOrEmpty(sortOrder) ? "date_asc" : "";
             ViewBag.TotalSortParm = sortOrder == "total" ? "total_desc" : "total";
             ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+
+            if (_adminBookingSearchService != null)
+            {
+                var result = await _adminBookingSearchService.SearchAsync(new AdminBookingSearchRequest
+                {
+                    Status = status,
+                    SearchString = searchString,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    SortOrder = sortOrder,
+                    Page = page,
+                    PageSize = pageSize
+                });
+
+                ViewBag.TodayBookingsCount = result.TodayBookingsCount;
+                ViewBag.PendingPaymentCount = result.PendingPaymentCount;
+                ViewBag.PendingPaymentTotal = result.PendingPaymentTotal;
+                ViewBag.RefundRequestCount = result.RefundRequestCount;
+                ViewData["CurrentStatus"] = status;
+                ViewData["CurrentSearch"] = searchString;
+                ViewData["CurrentStartDate"] = startDate;
+                ViewData["CurrentEndDate"] = endDate;
+                ViewData["CurrentPageSize"] = pageSize;
+
+                return View(result.Page);
+            }
 
             var statusLower = status?.ToLower() ?? "all";
             string? targetStatus = null;
@@ -209,6 +244,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
             existingBooking.UpdatedAt = DateTime.UtcNow;
 
             await _bookingRepository.UpdateAsync(id, existingBooking);
+            await SyncSearchUpsertAsync(existingBooking);
             return RedirectToAction(nameof(Index));
         }
 
@@ -225,6 +261,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                 booking.DeletedAt = DateTime.UtcNow;
                 booking.UpdatedAt = DateTime.UtcNow;
                 await _bookingRepository.UpdateAsync(id, booking);
+                await SyncSearchUpsertAsync(booking);
             }
             return RedirectToAction(nameof(Index));
         }
@@ -249,6 +286,7 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     booking.DeletedAt = DateTime.UtcNow;
                     booking.UpdatedAt = DateTime.UtcNow;
                     await _bookingRepository.UpdateAsync(id, booking);
+                    await SyncSearchUpsertAsync(booking);
                 }
             }
             return RedirectToAction(nameof(Index));
@@ -277,9 +315,15 @@ namespace HVTravel.Web.Areas.Admin.Controllers
                     booking.Status = newStatus;
                     booking.UpdatedAt = DateTime.UtcNow;
                     await _bookingRepository.UpdateAsync(id, booking);
+                    await SyncSearchUpsertAsync(booking);
                 }
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        private Task SyncSearchUpsertAsync(Booking? booking)
+        {
+            return _searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask;
         }
     }
 }

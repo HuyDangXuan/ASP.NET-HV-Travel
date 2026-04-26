@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text;
+using HVTravel.Application.Models;
+using HVTravel.Application.Services;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Utils;
@@ -18,6 +20,7 @@ public sealed class TourAiChatService : ITourAiChatService
     private readonly IRepository<ChatConversation> _conversationRepository;
     private readonly IRepository<ChatMessage> _messageRepository;
     private readonly ITourRepository _tourRepository;
+    private readonly ITourAiRouteAdvisorContextBuilder _routeAdvisorContextBuilder;
     private readonly IGroqChatClient _groqChatClient;
     private readonly ITourAiJobQueue _jobQueue;
     private readonly ITourAiPendingTracker _pendingTracker;
@@ -27,6 +30,7 @@ public sealed class TourAiChatService : ITourAiChatService
         IRepository<ChatConversation> conversationRepository,
         IRepository<ChatMessage> messageRepository,
         ITourRepository tourRepository,
+        ITourAiRouteAdvisorContextBuilder routeAdvisorContextBuilder,
         IGroqChatClient groqChatClient,
         ITourAiJobQueue jobQueue,
         ITourAiPendingTracker pendingTracker,
@@ -35,21 +39,24 @@ public sealed class TourAiChatService : ITourAiChatService
         _conversationRepository = conversationRepository;
         _messageRepository = messageRepository;
         _tourRepository = tourRepository;
+        _routeAdvisorContextBuilder = routeAdvisorContextBuilder;
         _groqChatClient = groqChatClient;
         _jobQueue = jobQueue;
         _pendingTracker = pendingTracker;
         _logger = logger;
     }
 
-    public async Task<ChatConversation> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user)
+    public async Task<TourAiBootstrapResult> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user)
     {
         var tourId = request.TourId.Trim();
         if (string.IsNullOrWhiteSpace(tourId))
         {
-            throw new ArgumentException("TourId is required.", nameof(request));
+            throw new ArgumentException("Thiếu TourId.", nameof(request));
         }
 
         var tour = await GetPublicTourAsync(tourId);
+        var routeStyle = ResolveRouteStyle(request.RouteStyle, request.SourcePage);
+        var routeAdvisorContext = await _routeAdvisorContextBuilder.BuildAsync(tour, routeStyle);
         var participant = ResolveParticipant(user, request.VisitorSessionId);
 
         var conversation = await FindConversationAsync(tour.Id, participant.CustomerId, participant.VisitorSessionId);
@@ -64,7 +71,7 @@ public sealed class TourAiChatService : ITourAiChatService
                 CustomerId = participant.CustomerId,
                 VisitorSessionId = participant.VisitorSessionId,
                 GuestProfile = participant.Profile,
-                SourcePage = ResolveSourcePage(request.SourcePage),
+                SourcePage = ResolveSourcePage(request.SourcePage, routeStyle),
                 ContextType = TourContextType,
                 ContextId = tour.Id,
                 ContextLabel = tour.Name,
@@ -79,7 +86,7 @@ public sealed class TourAiChatService : ITourAiChatService
         {
             conversation.Channel = TourAiChannel;
             conversation.Status = "open";
-            conversation.SourcePage = ResolveSourcePage(request.SourcePage);
+            conversation.SourcePage = ResolveSourcePage(request.SourcePage, routeStyle);
             conversation.ContextType = TourContextType;
             conversation.ContextId = tour.Id;
             conversation.ContextLabel = tour.Name;
@@ -111,7 +118,11 @@ public sealed class TourAiChatService : ITourAiChatService
             await UpdateConversationSummaryAsync(conversation, welcomeMessage);
         }
 
-        return conversation;
+        return new TourAiBootstrapResult
+        {
+            Conversation = conversation,
+            SuggestedPrompts = routeAdvisorContext.SuggestedPrompts
+        };
     }
 
     public async Task<ChatConversation?> GetConversationAsync(string conversationId)
@@ -140,12 +151,12 @@ public sealed class TourAiChatService : ITourAiChatService
     {
         if (string.IsNullOrWhiteSpace(request.ConversationId))
         {
-            throw new ArgumentException("ConversationId is required.", nameof(request));
+            throw new ArgumentException("Thiếu ConversationId.", nameof(request));
         }
 
         if (string.IsNullOrWhiteSpace(request.Content))
         {
-            throw new ArgumentException("Content is required.", nameof(request));
+            throw new ArgumentException("Vui lòng nhập nội dung câu hỏi.", nameof(request));
         }
 
         var conversation = await RequireConversationAsync(request.ConversationId);
@@ -304,7 +315,9 @@ public sealed class TourAiChatService : ITourAiChatService
             }
 
             var recentMessages = await GetMessagesAsync(conversation.Id, PromptHistoryLimit);
-            var promptMessages = BuildPromptMessages(tour, recentMessages);
+            var routeStyle = ResolveRouteStyle(null, conversation.SourcePage);
+            var routeAdvisorContext = await _routeAdvisorContextBuilder.BuildAsync(tour, routeStyle, cancellationToken);
+            var promptMessages = BuildPromptMessages(routeAdvisorContext, recentMessages);
             return await _groqChatClient.CompleteChatAsync(promptMessages, cancellationToken);
         }
         catch (Exception ex)
@@ -314,7 +327,7 @@ public sealed class TourAiChatService : ITourAiChatService
         }
     }
 
-    private static List<GroqChatMessage> BuildPromptMessages(Tour tour, IReadOnlyList<ChatMessage> recentMessages)
+    private static List<GroqChatMessage> BuildPromptMessages(TourAiRouteAdvisorContext routeAdvisorContext, IReadOnlyList<ChatMessage> recentMessages)
     {
         var promptMessages = new List<GroqChatMessage>
         {
@@ -329,7 +342,17 @@ public sealed class TourAiChatService : ITourAiChatService
                 Không bịa thêm giá, lịch trình, điều khoản, giờ giấc, dịch vụ, khách sạn, phương tiện hoặc ưu đãi.
                 Nếu cần xác nhận sâu hơn hoặc dữ liệu đang thiếu, hãy mời người dùng mở khung chat hỗ trợ bên dưới để gặp tư vấn viên thật.
                 """),
-            new("system", BuildTourSnapshot(tour))
+            new("system", routeAdvisorContext.SnapshotText),
+            new(
+                "system",
+                """
+                Quy tắc theo lộ trình: nếu người dùng hỏi về di chuyển, lịch trình, thời gian hành trình hoặc traffic, ưu tiên RouteInsight trong context.
+                Nếu người dùng hỏi tour phù hợp kiểu hành trình nào, dùng routeStyle và recommendation signals đã cung cấp.
+                Nếu so sánh tour khác, chỉ dùng related tour summaries trong context; không tự thêm tour ngoài context.
+                Nếu tour chưa có routing, nói rõ tour này chưa có dữ liệu lộ trình có cấu trúc.
+                Không bịa ETA thời gian thực, giao thông thời gian thực, khách sạn, phương tiện hoặc dịch vụ ngoài dữ liệu.
+                Không lộ tọa độ, lat/lng, raw coordinates hoặc dữ liệu nội bộ không dành cho public.
+                """)
         };
 
         foreach (var message in recentMessages)
@@ -355,6 +378,7 @@ public sealed class TourAiChatService : ITourAiChatService
 
     private static string BuildTourSnapshot(Tour tour)
     {
+        var routeInsight = new RouteInsightService().Build(tour);
         var departures = (tour.Departures?.Count > 0 ? tour.Departures : tour.EffectiveDepartures.ToList())
             .OrderBy(item => item.StartDate)
             .Take(6)
@@ -405,6 +429,26 @@ public sealed class TourAiChatService : ITourAiChatService
             builder.AppendLine("  * Chưa có lịch khởi hành đang mở bán.");
         }
 
+        if (routeInsight.HasRouting)
+        {
+            builder.AppendLine("- Tóm tắt lộ trình:");
+            builder.AppendLine($"  * Tổng số điểm dừng: {routeInsight.StopCount}");
+            builder.AppendLine($"  * Tổng phút tham quan: {routeInsight.TotalVisitMinutes}");
+            builder.AppendLine($"  * Tổng phút di chuyển ước lượng: {routeInsight.TotalTravelMinutes}");
+            builder.AppendLine($"  * Tổng thời lượng hành trình: {routeInsight.TotalJourneyMinutes}");
+
+            foreach (var day in routeInsight.Days.Take(6))
+            {
+                builder.AppendLine(
+                    $"  * Ngày {day.Day:00}: {day.StopCount} điểm dừng, tham quan {day.VisitMinutes} phút, di chuyển {day.TravelMinutes} phút.");
+            }
+        }
+
+        if (routeInsight.HasRouting && routeInsight.Days.Any(day => !string.IsNullOrWhiteSpace(day.PeakDayPart)))
+        {
+            builder.AppendLine($"- Peak traffic: {BuildTrafficSummary(routeInsight.Days)}");
+        }
+
         return builder.ToString().Trim();
     }
 
@@ -413,7 +457,7 @@ public sealed class TourAiChatService : ITourAiChatService
         var tour = await _tourRepository.GetByIdAsync(tourId);
         if (tour == null || !IsPubliclyVisible(tour.Status))
         {
-            throw new KeyNotFoundException("Tour not found.");
+            throw new KeyNotFoundException("Không tìm thấy tour.");
         }
 
         return tour;
@@ -424,7 +468,7 @@ public sealed class TourAiChatService : ITourAiChatService
         var conversation = await GetConversationAsync(conversationId);
         if (conversation == null)
         {
-            throw new KeyNotFoundException("Conversation not found.");
+            throw new KeyNotFoundException("Không tìm thấy cuộc trò chuyện.");
         }
 
         return conversation;
@@ -446,7 +490,7 @@ public sealed class TourAiChatService : ITourAiChatService
             return;
         }
 
-        throw new UnauthorizedAccessException("Conversation not found.");
+        throw new UnauthorizedAccessException("Không tìm thấy cuộc trò chuyện.");
     }
 
     private async Task UpdateConversationSummaryAsync(ChatConversation conversation, ChatMessage lastMessage)
@@ -532,9 +576,65 @@ public sealed class TourAiChatService : ITourAiChatService
         };
     }
 
-    private static string ResolveSourcePage(string? sourcePage)
+    private static string ResolveSourcePage(string? sourcePage, string routeStyle)
     {
-        return string.IsNullOrWhiteSpace(sourcePage) ? "/" : sourcePage.Trim();
+        var resolved = string.IsNullOrWhiteSpace(sourcePage) ? "/" : sourcePage.Trim();
+        if (TryReadRouteStyleFromSourcePage(resolved, out _))
+        {
+            return resolved;
+        }
+
+        var separator = resolved.Contains('?') ? "&" : "?";
+        return $"{resolved}{separator}routeStyle={Uri.EscapeDataString(RouteRecommendationStyles.Normalize(routeStyle))}";
+    }
+
+    private static string ResolveRouteStyle(string? routeStyle, string? sourcePage)
+    {
+        if (!string.IsNullOrWhiteSpace(routeStyle))
+        {
+            return RouteRecommendationStyles.Normalize(routeStyle);
+        }
+
+        return TryReadRouteStyleFromSourcePage(sourcePage, out var routeStyleFromSourcePage)
+            ? RouteRecommendationStyles.Normalize(routeStyleFromSourcePage)
+            : RouteRecommendationStyles.Balanced;
+    }
+
+    private static bool TryReadRouteStyleFromSourcePage(string? sourcePage, out string routeStyle)
+    {
+        routeStyle = string.Empty;
+        if (string.IsNullOrWhiteSpace(sourcePage))
+        {
+            return false;
+        }
+
+        var queryStart = sourcePage.IndexOf('?');
+        if (queryStart < 0 || queryStart >= sourcePage.Length - 1)
+        {
+            return false;
+        }
+
+        var query = sourcePage[(queryStart + 1)..];
+        var fragmentStart = query.IndexOf('#');
+        if (fragmentStart >= 0)
+        {
+            query = query[..fragmentStart];
+        }
+
+        foreach (var pair in query.Split('&', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var separator = pair.IndexOf('=');
+            var key = separator >= 0 ? pair[..separator] : pair;
+            if (!string.Equals(Uri.UnescapeDataString(key), "routeStyle", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            routeStyle = separator >= 0 ? Uri.UnescapeDataString(pair[(separator + 1)..]) : string.Empty;
+            return !string.IsNullOrWhiteSpace(routeStyle);
+        }
+
+        return false;
     }
 
     private static bool IsPubliclyVisible(string? status)
@@ -565,6 +665,41 @@ public sealed class TourAiChatService : ITourAiChatService
     {
         var amount = value.GetValueOrDefault();
         return amount > 0m ? $"{amount:N0} VND" : "Chưa có dữ liệu";
+    }
+
+    private static string BuildTrafficSummary(IEnumerable<RouteInsightDay> days)
+    {
+        var highlights = days
+            .Where(day => !string.IsNullOrWhiteSpace(day.PeakDayPart))
+            .Take(3)
+            .Select(day => $"ngày {day.Day:00} {TranslateDayPart(day.PeakDayPart)} {TranslateCongestion(day.PeakCongestionLevel)}")
+            .ToList();
+
+        return highlights.Count > 0 ? string.Join("; ", highlights) : "ổn định";
+    }
+
+    private static string TranslateDayPart(string? value)
+    {
+        return value switch
+        {
+            "early_morning" => "sáng sớm",
+            "morning_peak" => "giờ cao điểm sáng",
+            "late_morning" => "cuối buổi sáng",
+            "midday" => "giữa ngày",
+            "afternoon" => "buổi chiều",
+            "evening_peak" => "giờ cao điểm tối",
+            _ => "buổi tối"
+        };
+    }
+
+    private static string TranslateCongestion(string? value)
+    {
+        return value switch
+        {
+            "high" => "mật độ cao",
+            "moderate" => "mật độ vừa",
+            _ => "mật độ thấp"
+        };
     }
 
     private static string NormalizeAssistantContent(string content)

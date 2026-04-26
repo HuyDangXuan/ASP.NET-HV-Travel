@@ -7,7 +7,12 @@ public static class PublicTourIdentifierHelper
 {
     public static string GetDetailIdentifier(Tour? tour)
     {
-        return string.IsNullOrWhiteSpace(tour?.Slug) ? tour?.Id ?? string.Empty : tour.Slug;
+        if (tour == null)
+        {
+            return string.Empty;
+        }
+
+        return string.IsNullOrWhiteSpace(tour.Slug) ? tour.Id ?? string.Empty : tour.Slug;
     }
 
     public static bool IsObjectId(string? value)

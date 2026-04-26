@@ -6,6 +6,7 @@ public class TourSearchRequest
 {
     public string? Search { get; set; }
     public string? Sort { get; set; }
+    public string? RouteStyle { get; set; }
     public string? Region { get; set; }
     public string? Destination { get; set; }
     public decimal? MinPrice { get; set; }
@@ -18,6 +19,7 @@ public class TourSearchRequest
     public int Travellers { get; set; }
     public string? ConfirmationType { get; set; }
     public string? CancellationType { get; set; }
+    public bool UseRecommendationRanking { get; set; }
     public bool PublicOnly { get; set; } = true;
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 9;

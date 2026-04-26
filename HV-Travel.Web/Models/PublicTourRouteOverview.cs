@@ -12,7 +12,13 @@ public class PublicTourRouteOverview
 
     public int TotalVisitMinutes { get; set; }
 
-    public List<PublicTourRouteDay> Days { get; set; } = new();
+    public int TotalTravelMinutes { get; set; }
+
+    public int TotalJourneyMinutes { get; set; }
+
+    public double TotalDistanceKm { get; set; }
+
+    public IReadOnlyList<PublicTourRouteDay> Days { get; set; } = Array.Empty<PublicTourRouteDay>();
 }
 
 public class PublicTourRouteDay
@@ -21,7 +27,17 @@ public class PublicTourRouteDay
 
     public string DayTitle { get; set; } = string.Empty;
 
-    public List<PublicTourRouteStopViewModel> Stops { get; set; } = new();
+    public int TravelMinutes { get; set; }
+
+    public int JourneyMinutes { get; set; }
+
+    public double DistanceKm { get; set; }
+
+    public string PeakDayPart { get; set; } = string.Empty;
+
+    public string PeakCongestionLevel { get; set; } = string.Empty;
+
+    public IReadOnlyList<PublicTourRouteStopViewModel> Stops { get; set; } = Array.Empty<PublicTourRouteStopViewModel>();
 }
 
 public class PublicTourRouteStopViewModel
@@ -33,4 +49,21 @@ public class PublicTourRouteStopViewModel
     public int VisitMinutes { get; set; }
 
     public string Note { get; set; } = string.Empty;
+
+    public PublicTourRouteTransferViewModel? TransferFromPrevious { get; set; }
+}
+
+public class PublicTourRouteTransferViewModel
+{
+    public double DistanceKm { get; set; }
+
+    public int DriveMinutes { get; set; }
+
+    public int JunctionDelayMinutes { get; set; }
+
+    public int TravelMinutes { get; set; }
+
+    public string DayPart { get; set; } = string.Empty;
+
+    public string CongestionLevel { get; set; } = string.Empty;
 }

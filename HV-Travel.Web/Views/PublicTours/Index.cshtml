@@ -13,6 +13,7 @@
 
     var currentSearch = ViewData["CurrentSearch"]?.ToString();
     var currentSort = ViewData["CurrentSort"]?.ToString();
+    var currentRouteStyle = ViewData["CurrentRouteStyle"]?.ToString();
     var currentPage = (int)(ViewData["CurrentPage"] ?? 1);
     var totalPages = (int)(ViewData["TotalPages"] ?? 1);
     var totalItems = (int)(ViewData["TotalItems"] ?? 0);
@@ -47,6 +48,19 @@
     var resultsTitle = string.IsNullOrWhiteSpace(resultsTitleFormat)
         ? string.Empty
         : string.Format(resultsTitleFormat, totalItems);
+    var routeStyleCompactLabel = filterPanel?.Fields.GetVisibleFieldValue("routeStyleCompactLabel", "Gọn, ít di chuyển") ?? "Gọn, ít di chuyển";
+    var routeStyleBalancedLabel = filterPanel?.Fields.GetVisibleFieldValue("routeStyleBalancedLabel", "Cân bằng") ?? "Cân bằng";
+    var routeStyleHighlightsLabel = filterPanel?.Fields.GetVisibleFieldValue("routeStyleHighlightsLabel", "Ưu tiên điểm nổi bật") ?? "Ưu tiên điểm nổi bật";
+    var routeStyleSummaryFormat = CmsText(resultsPanel, "routeStyleSummaryFormat", "Phù hợp với kiểu hành trình {0}");
+    var currentRouteStyleLabel = currentRouteStyle switch
+    {
+        "compact" => routeStyleCompactLabel,
+        "highlights" => routeStyleHighlightsLabel,
+        _ => routeStyleBalancedLabel
+    };
+    var routeStyleSummary = string.IsNullOrWhiteSpace(routeStyleSummaryFormat)
+        ? string.Empty
+        : string.Format(routeStyleSummaryFormat, currentRouteStyleLabel);
     var wishlistEyebrow = CmsText(resultsPanel, "wishlistEyebrow", "Wishlist");
     var wishlistTitle = CmsText(resultsPanel, "wishlistTitle", "Tour đã lưu");
     var wishlistEmptyText = CmsText(resultsPanel, "wishlistEmptyText", "Chưa có tour nào trong wishlist.");
@@ -60,10 +74,9 @@
     var chips = new[]
     {
         new { Key = "domestic", Label = CmsText(collectionChips, "domesticLabel", "Trong nước") },
+        new { Key = "international", Label = CmsText(collectionChips, "internationalLabel", "Quốc tế") },
         new { Key = "premium", Label = CmsText(collectionChips, "premiumLabel", "Premium") },
-        new { Key = "family", Label = CmsText(collectionChips, "familyLabel", "Gia đình") },
-        new { Key = "couple", Label = CmsText(collectionChips, "coupleLabel", "Cặp đôi") },
-        new { Key = "seasonal", Label = CmsText(collectionChips, "seasonalLabel", "Mùa lễ hội") },
+        new { Key = "budget", Label = CmsText(collectionChips, "budgetLabel", "Tiết kiệm") },
         new { Key = "deal", Label = CmsText(collectionChips, "dealLabel", "Săn deal") }
     }.Where(chip => !string.IsNullOrWhiteSpace(chip.Label)).ToArray();
 }
@@ -106,6 +119,7 @@
                 <div class="mt-10 w-full max-w-4xl">
                     <form asp-controller="PublicTours" asp-action="Index" method="get" class="w-full">
                         <input type="hidden" name="sort" value="@currentSort" />
+                        <input type="hidden" name="routeStyle" value="@currentRouteStyle" />
                         <input type="hidden" name="region" value="@currentRegion" />
                         <input type="hidden" name="destination" value="@currentDestination" />
                         <input type="hidden" name="collection" value="@currentCollection" />
@@ -140,6 +154,7 @@
                        asp-route-collection="@chip.Key"
                        asp-route-search="@currentSearch"
                        asp-route-sort="@currentSort"
+                       asp-route-routeStyle="@currentRouteStyle"
                        asp-route-region="@currentRegion"
                        asp-route-destination="@currentDestination"
                        asp-route-minPrice="@currentMinPrice"
@@ -175,12 +190,16 @@
                         {
                             <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">@resultsTitle</h2>
                         }
+                        @if (!string.IsNullOrWhiteSpace(routeStyleSummary))
+                        {
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">@routeStyleSummary</p>
+                        }
                     </div>
                 </div>
 
                 @if (Model != null && Model.Any())
                 {
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" data-animate="fade-in" data-stagger>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2" data-animate="fade-in" data-stagger>
                         @foreach (var tour in Model)
                         {
                             @await Html.PartialAsync("_TourCard", tour)
@@ -196,6 +215,7 @@
                                    asp-route-page="@pageNumber"
                                    asp-route-search="@currentSearch"
                                    asp-route-sort="@currentSort"
+                                   asp-route-routeStyle="@currentRouteStyle"
                                    asp-route-region="@currentRegion"
                                    asp-route-destination="@currentDestination"
                                    asp-route-minPrice="@currentMinPrice"
@@ -229,7 +249,7 @@
                         }
                         @if (!string.IsNullOrWhiteSpace(emptyStateCtaText))
                         {
-                            <a asp-action="Index" class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-dark">
+                            <a asp-action="Index" asp-route-routeStyle="@currentRouteStyle" class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-dark">
                                 <span class="material-symbols-outlined text-[18px]">refresh</span>
                                 @emptyStateCtaText
                             </a>

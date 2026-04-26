@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+    <Compile Remove="**/bin/**/*.cs;**/obj/**/*.cs;**/.artifacts/**/*.cs;**/.codex-build/**/*.cs;**/.verify/**/*.cs;**/.verify-build/**/*.cs" />
+    <Content Remove="**/bin/**/*;**/obj/**/*;**/.artifacts/**/*;**/.codex-build/**/*;**/.verify/**/*;**/.verify-build/**/*" />
+    <EmbeddedResource Remove="**/bin/**/*;**/obj/**/*;**/.artifacts/**/*;**/.codex-build/**/*;**/.verify/**/*;**/.verify-build/**/*" />
+    <None Remove="**/bin/**/*;**/obj/**/*;**/.artifacts/**/*;**/.codex-build/**/*;**/.verify/**/*;**/.verify-build/**/*" />
+  </ItemGroup>
+</Project>

@@ -1,4 +1,7 @@
 @model Tour
+@{
+    var currentRouteStyle = ViewData["CurrentRouteStyle"]?.ToString() ?? "balanced";
+}
 
 <style>
     @@media (min-width: 640px) {
@@ -11,6 +14,7 @@
 <div id="tour-ai-chat-widget"
      data-tour-id="@Model.Id"
      data-tour-name="@Model.Name"
+     data-route-style="@currentRouteStyle"
      data-state="closed"
      class="public-chat-widget public-chat-widget--ai fixed bottom-[5.75rem] left-2 right-2 z-[71] sm:bottom-[6.5rem] sm:left-auto sm:right-4">
     <div id="tour-ai-chat-panel" class="public-chat-panel hidden h-[calc(100dvh-1rem)] w-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_28px_90px_-45px_rgba(15,23,42,0.7)] sm:h-[min(52rem,calc(100dvh-1.5rem))] sm:w-[min(100vw-1.5rem,34rem)] sm:rounded-[2rem] lg:h-[min(54rem,calc(100dvh-2rem))] lg:w-[min(100vw-2rem,36rem)] dark:border-slate-800 dark:bg-slate-950">
@@ -40,6 +44,8 @@
                         <span>Chat với tư vấn viên</span>
                     </button>
                 </div>
+
+                <div id="tour-ai-suggested-prompts" class="mb-3 hidden flex-wrap gap-2"></div>
 
                 <form id="tour-ai-chat-form">
                     <div class="public-chat-input-shell rounded-[1.5rem] border border-slate-200 bg-slate-50 px-3 py-3 shadow-inner shadow-slate-200/20 dark:border-slate-800 dark:bg-slate-900 sm:px-4">
@@ -84,6 +90,7 @@
         const inputEl = document.getElementById('tour-ai-chat-input');
         const sendButtonEl = document.getElementById('tour-ai-chat-send');
         const hintEl = document.getElementById('tour-ai-chat-hint');
+        const suggestedPromptsEl = document.getElementById('tour-ai-suggested-prompts');
 
         const bubbleToneClasses = {
             user: 'bg-primary text-white shadow-lg shadow-primary/20',
@@ -121,10 +128,16 @@
             return `msg-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
         };
 
+        const resolveRouteStyle = () => {
+            const queryRouteStyle = new URLSearchParams(window.location.search).get('routeStyle');
+            return queryRouteStyle || root.dataset.routeStyle || 'balanced';
+        };
+
         const state = {
             bootstrapped: false,
             conversation: null,
             messages: [],
+            suggestedPrompts: [],
             connection: null,
             joinedConversationId: '',
             visitorSessionId: localStorage.getItem('hvtravel.supportChat.visitorSessionId') || createSessionId(),
@@ -219,6 +232,30 @@
             hintEl.textContent = 'Enter để gửi, Shift+Enter để xuống dòng.';
         };
 
+        const renderSuggestedPrompts = () => {
+            if (!suggestedPromptsEl) {
+                return;
+            }
+
+            const prompts = (state.suggestedPrompts || [])
+                .filter((prompt) => typeof prompt === 'string' && prompt.trim().length > 0)
+                .slice(0, 5);
+
+            if (!state.bootstrapped || prompts.length === 0) {
+                suggestedPromptsEl.classList.add('hidden');
+                suggestedPromptsEl.classList.remove('flex');
+                suggestedPromptsEl.innerHTML = '';
+                return;
+            }
+
+            suggestedPromptsEl.classList.remove('hidden');
+            suggestedPromptsEl.classList.add('flex');
+            suggestedPromptsEl.innerHTML = prompts.map((prompt) => `
+                <button type="button" data-prompt="${escapeHtml(prompt)}" class="rounded-full border border-cyan-100 bg-white px-3 py-2 text-left text-xs font-bold text-slate-600 transition hover:border-cyan-300 hover:text-cyan-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-cyan-900/40 dark:bg-slate-900 dark:text-slate-200">
+                    ${escapeHtml(prompt)}
+                </button>`).join('');
+        };
+
         const sortMessages = () => {
             const typingIndicators = state.messages.filter((message) => message.isTypingIndicator);
             const regularMessages = state.messages
@@ -297,10 +334,15 @@
                 state.conversation = payload.conversation;
             }
 
+            if (Array.isArray(payload?.suggestedPrompts)) {
+                state.suggestedPrompts = payload.suggestedPrompts;
+            }
+
             (payload?.messages || []).forEach(upsertServerMessage);
             state.isAssistantPending = !!payload?.isAssistantPending;
             ensureTypingIndicator();
             renderMessages();
+            renderSuggestedPrompts();
             updateComposerState();
         };
 
@@ -368,7 +410,8 @@
                 body: JSON.stringify({
                     tourId: root.dataset.tourId,
                     visitorSessionId: state.visitorSessionId,
-                    sourcePage: `${window.location.pathname}${window.location.search}`
+                    sourcePage: `${window.location.pathname}${window.location.search}`,
+                    routeStyle: resolveRouteStyle()
                 })
             });
 
@@ -523,6 +566,18 @@
             window.dispatchEvent(new Event('hvtravel:open-support-chat'));
         });
 
+        suggestedPromptsEl?.addEventListener('click', (event) => {
+            const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+            const button = target?.closest('[data-prompt]');
+            if (!button || state.isSending || state.isAssistantPending) {
+                return;
+            }
+
+            inputEl.value = button.dataset.prompt || '';
+            adjustComposerHeight();
+            formEl.requestSubmit();
+        });
+
         window.addEventListener('hvtravel:chat-widget-open', (event) => {
             if (event.detail?.id && event.detail.id !== widgetId) {
                 closePanel();
@@ -630,6 +685,7 @@
         }
 
         renderMessages();
+        renderSuggestedPrompts();
         adjustComposerHeight();
         updateComposerState();
         syncBodyChatState();

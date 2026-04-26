@@ -37,11 +37,11 @@
         <div class="flex items-center gap-2">
             <!-- Filter Panel -->
             <div class="relative group">
-                <button id="filter-menu-trigger" type="button" data-menu-target="filter-menu" aria-controls="filter-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                 </button>
 
-                <div id="filter-menu" data-menu-anchor-id="filter-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
+                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                     <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                     </div>
@@ -113,10 +113,10 @@
 
                 <!-- Columns -->
                 <div class="relative">
-                    <button id="column-menu-trigger" type="button" data-menu-target="column-menu" aria-controls="column-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
                     </button>
-                    <div id="column-menu" data-menu-anchor-id="column-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-info')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Thông Tin</span>
@@ -240,14 +240,14 @@
                                         <span class="material-symbols-outlined text-[14px]">location_on</span> @tour.Destination?.City
                                     </div>
                                     <div class="text-[10px] text-slate-400">ID: @tour.Id</div>
-                                    <div class="mt-2 flex flex-wrap gap-1.5">
-                                        @if (tour.Routing != null)
-                                        {
-                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">Routing</span>
-                                        }
+                                    <div class="mt-2 flex flex-wrap items-center gap-2">
                                         @if (tour.Departures != null && tour.Departures.Count > 0)
                                         {
-                                            <span class="inline-flex items-center rounded-full bg-slate-200 px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-slate-700 dark:bg-slate-800 dark:text-slate-300">@tour.Departures.Count departures</span>
+                                            <span class="rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-900/20 dark:text-sky-300">Departures: @tour.Departures.Count</span>
+                                        }
+                                        @if (tour.Routing?.Stops != null && tour.Routing.Stops.Count > 0)
+                                        {
+                                            <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300">Routing ready</span>
                                         }
                                     </div>
                                 </div>
@@ -397,12 +397,8 @@
         </form>
 
         <form id="bulk-status-form" asp-action="BulkUpdateStatus" method="post" class="flex flex-wrap items-center justify-center gap-2">
-            <div class="min-w-[190px]">
-                <select name="newStatus"
-                        class="w-full"
-                        data-admin-select="bulk"
-                        data-admin-select-placeholder="-- Đổi trạng thái --"
-                        data-admin-select-icon="swap_horiz">
+            <div class="custom-select-container bulk-select drop-up min-w-[190px]" data-id="BulkTourStatus">
+                <select name="newStatus" class="hidden">
                     <option value="">-- Đổi trạng thái --</option>
                     <option value="Active">Hoạt động</option>
                     <option value="Draft">Bản nháp</option>
@@ -411,6 +407,51 @@
                     <option value="Hidden">Ẩn</option>
                     <option value="Deleted">Đã xóa</option>
                 </select>
+                <div class="custom-select-trigger" onclick="toggleCustomSelect('BulkTourStatus')">
+                    <div class="flex min-w-0 items-center gap-2">
+                        <span class="custom-select-leading material-symbols-outlined text-[18px]">swap_horiz</span>
+                        <span class="selected-label">-- Đổi trạng thái --</span>
+                    </div>
+                    <span class="material-symbols-outlined arrow-icon text-[18px] transition-transform duration-300">expand_more</span>
+                </div>
+                <div class="options-menu">
+                    <div class="custom-option" data-value="Active" onclick="selectCustomOption('BulkTourStatus', 'Active', 'Hoạt động')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Hoạt động</span>
+                        </span>
+                    </div>
+                    <div class="custom-option" data-value="Draft" onclick="selectCustomOption('BulkTourStatus', 'Draft', 'Bản nháp')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Bản nháp</span>
+                        </span>
+                    </div>
+                    <div class="custom-option" data-value="SoldOut" onclick="selectCustomOption('BulkTourStatus', 'SoldOut', 'Hết chỗ')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Hết chỗ</span>
+                        </span>
+                    </div>
+                    <div class="custom-option" data-value="ComingSoon" onclick="selectCustomOption('BulkTourStatus', 'ComingSoon', 'Sắp ra mắt')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Sắp ra mắt</span>
+                        </span>
+                    </div>
+                    <div class="custom-option" data-value="Hidden" onclick="selectCustomOption('BulkTourStatus', 'Hidden', 'Ẩn')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Ẩn</span>
+                        </span>
+                    </div>
+                    <div class="custom-option" data-value="Deleted" onclick="selectCustomOption('BulkTourStatus', 'Deleted', 'Đã xóa')">
+                        <span class="custom-option-main">
+                            <span class="custom-option-dot"></span>
+                            <span>Đã xóa</span>
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
@@ -440,7 +481,17 @@
         function toggleFilterMenu() {
             const menu = document.getElementById('filter-menu');
             if (!menu) return;
-            window.AdminMenu?.toggle(menu);
+            if (menu.classList.contains('menu-visible')) {
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-hidden');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            } else {
+                menu.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    menu.classList.remove('menu-hidden');
+                    menu.classList.add('menu-visible');
+                });
+            }
         }
 
         function resetFilters() {
@@ -457,8 +508,41 @@
         function toggleColumnMenu() {
             const menu = document.getElementById('column-menu');
             if (!menu) return;
-            window.AdminMenu?.toggle(menu);
+            if (menu.classList.contains('menu-visible')) {
+                menu.classList.remove('menu-visible');
+                menu.classList.add('menu-hidden');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            } else {
+                menu.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    menu.classList.remove('menu-hidden');
+                    menu.classList.add('menu-visible');
+                });
+            }
         }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const filterMenu = document.getElementById('filter-menu');
+            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
+            const insideFilter = event.target.closest('#filter-menu');
+            
+            if (filterMenu && !filterBtn && !insideFilter && filterMenu.classList.contains('menu-visible')) {
+                filterMenu.classList.remove('menu-visible');
+                filterMenu.classList.add('menu-hidden');
+                setTimeout(() => filterMenu.classList.add('hidden'), 200);
+            }
+
+            const colMenu = document.getElementById('column-menu');
+            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
+            const insideCol = event.target.closest('#column-menu');
+            
+            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
+                colMenu.classList.remove('menu-visible');
+                colMenu.classList.add('menu-hidden');
+                setTimeout(() => colMenu.classList.add('hidden'), 200);
+            }
+        });
 
         // --- Bulk Actions ---
         function toggleSelectAll(source) {

@@ -5,6 +5,7 @@ namespace HVTravel.Domain.Entities;
 public partial class Tour
 {
     [BsonElement("routing")]
+    [BsonIgnoreIfNull]
     public TourRouting? Routing { get; set; }
 }
 
@@ -53,8 +54,10 @@ public class TourRouteStop
 public class GeoPoint
 {
     [BsonElement("lat")]
-    public double Lat { get; set; }
+    [BsonIgnoreIfNull]
+    public double? Lat { get; set; }
 
     [BsonElement("lng")]
-    public double Lng { get; set; }
+    [BsonIgnoreIfNull]
+    public double? Lng { get; set; }
 }

@@ -13,6 +13,11 @@
     position: relative;
 }
 
+.custom-select-container.active {
+    z-index: 1200;
+    isolation: isolate;
+}
+
 .custom-select-trigger {
     display: flex;
     align-items: center;

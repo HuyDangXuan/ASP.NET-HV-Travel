@@ -1,3 +1,5 @@
+using HVTravel.Application.Models;
+using HVTravel.Application.Services;
 using HVTravel.Domain.Entities;
 using HVTravel.Web.Models;
 
@@ -5,56 +7,79 @@ namespace HVTravel.Web.Services;
 
 public static class PublicTourRouteOverviewBuilder
 {
-    public static PublicTourRouteOverview Build(Tour? tour)
+    public static PublicTourRouteOverview Build(Tour? tour, RouteInsightResult? routeInsight = null)
     {
         if (tour?.Routing?.Stops == null || tour.Routing.Stops.Count == 0)
         {
             return PublicTourRouteOverview.Empty;
         }
 
-        var dayTitles = (tour.Schedule ?? [])
-            .Where(item => item.Day > 0 && !string.IsNullOrWhiteSpace(item.Title))
-            .GroupBy(item => item.Day)
-            .ToDictionary(group => group.Key, group => group.First().Title);
+        routeInsight ??= new RouteInsightService().Build(tour);
 
-        var routeDays = tour.Routing.Stops
-            .Where(IsValidStop)
+        var validStops = tour.Routing.Stops
+            .Where(stop => stop != null && stop.Day > 0 && stop.Order > 0 && !string.IsNullOrWhiteSpace(stop.Name))
             .OrderBy(stop => stop.Day)
             .ThenBy(stop => stop.Order)
-            .GroupBy(stop => stop.Day)
-            .Select(group => new PublicTourRouteDay
-            {
-                Day = group.Key,
-                DayTitle = dayTitles.TryGetValue(group.Key, out var title) ? title : $"Day {group.Key}",
-                Stops = group.Select(stop => new PublicTourRouteStopViewModel
-                {
-                    Name = stop.Name,
-                    Type = stop.Type,
-                    VisitMinutes = Math.Max(0, stop.VisitMinutes),
-                    Note = stop.Note
-                }).ToList()
-            })
             .ToList();
 
-        if (routeDays.Count == 0)
+        if (validStops.Count == 0)
         {
             return PublicTourRouteOverview.Empty;
         }
 
+        var days = validStops
+            .GroupBy(stop => stop.Day)
+            .OrderBy(group => group.Key)
+            .Select(group =>
+            {
+                var matchingSchedule = tour.Schedule?.FirstOrDefault(item => item.Day == group.Key);
+                var routeDayInsight = routeInsight.Days.FirstOrDefault(item => item.Day == group.Key);
+                var legLookup = (routeDayInsight?.Legs ?? Array.Empty<RouteInsightLeg>())
+                    .ToDictionary(leg => leg.ToStopId, StringComparer.Ordinal);
+                return new PublicTourRouteDay
+                {
+                    Day = group.Key,
+                    DayTitle = string.IsNullOrWhiteSpace(matchingSchedule?.Title) ? $"Day {group.Key}" : matchingSchedule.Title,
+                    TravelMinutes = routeDayInsight?.TravelMinutes ?? 0,
+                    JourneyMinutes = routeDayInsight?.JourneyMinutes ?? 0,
+                    DistanceKm = routeDayInsight?.DistanceKm ?? 0d,
+                    PeakDayPart = routeDayInsight?.PeakDayPart ?? string.Empty,
+                    PeakCongestionLevel = routeDayInsight?.PeakCongestionLevel ?? string.Empty,
+                    Stops = group
+                        .OrderBy(stop => stop.Order)
+                        .Select(stop => new PublicTourRouteStopViewModel
+                        {
+                            Name = stop.Name,
+                            Type = stop.Type,
+                            VisitMinutes = stop.VisitMinutes,
+                            Note = stop.Note,
+                            TransferFromPrevious = legLookup.TryGetValue(stop.Id ?? string.Empty, out var transferLeg)
+                                ? new PublicTourRouteTransferViewModel
+                                {
+                                    DistanceKm = transferLeg.DistanceKm,
+                                    DriveMinutes = transferLeg.DriveMinutes,
+                                    JunctionDelayMinutes = transferLeg.JunctionDelayMinutes,
+                                    TravelMinutes = transferLeg.TravelMinutes,
+                                    DayPart = transferLeg.DayPart,
+                                    CongestionLevel = transferLeg.CongestionLevel
+                                }
+                                : null
+                        })
+                        .ToList()
+                };
+            })
+            .ToList();
+
         return new PublicTourRouteOverview
         {
-            HasRouting = true,
-            DayCount = routeDays.Count,
-            StopCount = routeDays.Sum(day => day.Stops.Count),
-            TotalVisitMinutes = routeDays.Sum(day => day.Stops.Sum(stop => stop.VisitMinutes)),
-            Days = routeDays
+            HasRouting = routeInsight.HasRouting,
+            DayCount = days.Count,
+            StopCount = validStops.Count,
+            TotalVisitMinutes = routeInsight.TotalVisitMinutes,
+            TotalTravelMinutes = routeInsight.TotalTravelMinutes,
+            TotalJourneyMinutes = routeInsight.TotalJourneyMinutes,
+            TotalDistanceKm = routeInsight.TotalDistanceKm,
+            Days = days
         };
-    }
-
-    private static bool IsValidStop(TourRouteStop? stop)
-    {
-        return stop != null
-            && stop.Day > 0
-            && !string.IsNullOrWhiteSpace(stop.Name);
     }
 }

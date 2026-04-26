@@ -6,7 +6,7 @@ namespace HVTravel.Web.Services;
 
 public interface ITourAiChatService
 {
-    Task<ChatConversation> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user);
+    Task<TourAiBootstrapResult> BootstrapConversationAsync(TourAiBootstrapRequest request, ClaimsPrincipal user);
 
     Task<ChatConversation?> GetConversationAsync(string conversationId);
 
@@ -15,6 +15,13 @@ public interface ITourAiChatService
     Task<TourAiChatSendAcceptedResult> EnqueueMessageAsync(TourAiSendMessageRequest request, ClaimsPrincipal user, CancellationToken cancellationToken = default);
 
     Task<TourAiAssistantReplyResult?> GenerateAssistantReplyAsync(string conversationId, string userMessageId, CancellationToken cancellationToken = default);
+}
+
+public sealed class TourAiBootstrapResult
+{
+    public ChatConversation Conversation { get; init; } = new();
+
+    public IReadOnlyList<string> SuggestedPrompts { get; init; } = Array.Empty<string>();
 }
 
 public sealed class TourAiChatSendAcceptedResult
