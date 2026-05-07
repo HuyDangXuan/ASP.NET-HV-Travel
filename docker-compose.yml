@@ -10,11 +10,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
-      - HVTravelDatabase__ConnectionString=${HVTravelDatabase__ConnectionString}
+      - HVTravelDatabase__ConnectionString=${HVTravelDatabase__DockerConnectionString:-mongodb://mongodb:27017}
       - HVTravelDatabase__DatabaseName=HV-Travel
       - Meilisearch__Enabled=true
       - Meilisearch__Url=http://meilisearch:7700
-      - Meilisearch__ApiKey=${Meilisearch__ApiKey:-masterKey}
+      - Meilisearch__ApiKey=${Meilisearch__ApiKey}
       - Meilisearch__BootstrapOnStartup=true
       - Meilisearch__Indexes__Tours=hv_travel_tours
       - Meilisearch__Indexes__Bookings=hv_travel_bookings
@@ -24,17 +24,24 @@ services:
       - Meilisearch__Indexes__Customers=hv_travel_customers
       - Meilisearch__Indexes__Payments=hv_travel_payments
     depends_on:
-      - meilisearch
+      mongodb:
+        condition: service_started
+      meilisearch:
+        condition: service_healthy
 
   mongodb:
     image: mongo:latest
-    restart: "no"
-    profiles:
-      - local-db
+    restart: unless-stopped
     ports:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
   meilisearch:
     image: getmeili/meilisearch:v1.37
@@ -42,16 +49,24 @@ services:
     ports:
       - "7700:7700"
     environment:
-      - MEILI_MASTER_KEY=${Meilisearch__ApiKey:-masterKey}
+      - MEILI_MASTER_KEY=${Meilisearch__ApiKey}
       - MEILI_ENV=development
       - MEILI_NO_ANALYTICS=true
     volumes:
       - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://127.0.0.1:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   tunnel:
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     restart: unless-stopped
+    profiles:
+      - tunnel
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN} # Token will be read from .env file
     depends_on:
