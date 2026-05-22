@@ -157,6 +157,7 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
     <script src="~/js/tailwind.theme.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="~/css/public-select.css" asp-append-version="true" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -493,6 +494,8 @@
     @await Html.PartialAsync("_SupportChatWidget")
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/public-select.js" asp-append-version="true"></script>
 
     <script>
         (() => {

@@ -103,6 +103,26 @@ namespace HVTravel.Infrastructure.Repositories
                 tours = tours.Where(HasPromotion);
             }
 
+            if (request.UseRecommendationRanking)
+            {
+                var candidateItems = tours.ToList();
+                return new TourSearchResult
+                {
+                    Items = candidateItems,
+                    TotalItems = candidateItems.Count,
+                    TotalPages = candidateItems.Count == 0 ? 0 : 1,
+                    CurrentPage = 1,
+                    Regions = BuildFacetOptions(visibleTours.Select(tour => tour.Destination?.Region), request.Region),
+                    Destinations = BuildFacetOptions(visibleTours.Select(tour => tour.Destination?.City), request.Destination),
+                    ConfirmationTypes = BuildFacetOptions(
+                        visibleTours.SelectMany(tour => tour.EffectiveDepartures.Select(departure => departure.ConfirmationType).Append(tour.ConfirmationType)),
+                        request.ConfirmationType),
+                    CancellationTypes = BuildFacetOptions(
+                        visibleTours.Select(tour => tour.CancellationPolicy?.IsFreeCancellation == true ? "FreeCancellation" : "Strict"),
+                        request.CancellationType)
+                };
+            }
+
             tours = request.Sort switch
             {
                 "price_asc" => tours.OrderBy(GetStartingAdultPrice),
@@ -138,6 +158,31 @@ namespace HVTravel.Infrastructure.Repositories
                     visibleTours.Select(tour => tour.CancellationPolicy?.IsFreeCancellation == true ? "FreeCancellation" : "Strict"),
                     request.CancellationType)
             };
+        }
+
+    public new async Task<IReadOnlyList<Tour>> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            var orderedIds = ids?
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .ToList() ?? new List<string>();
+            if (orderedIds.Count == 0)
+            {
+                return Array.Empty<Tour>();
+            }
+
+            var matches = await _collection
+                .Find(Builders<Tour>.Filter.In(item => item.Id, orderedIds))
+                .ToListAsync();
+
+            var byId = matches
+                .Where(item => !string.IsNullOrWhiteSpace(item.Id))
+                .GroupBy(item => item.Id, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+
+            return orderedIds
+                .Where(byId.ContainsKey)
+                .Select(id => byId[id])
+                .ToList();
         }
 
         public Task<Tour?> GetBySlugAsync(string slug)

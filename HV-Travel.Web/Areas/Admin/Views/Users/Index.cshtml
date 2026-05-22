@@ -59,11 +59,11 @@
         <div class="flex items-center gap-3">
             <!-- Filter Panel -->
             <div class="relative group">
-                <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <button id="filter-menu-trigger" type="button" data-menu-target="filter-menu" aria-controls="filter-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                 </button>
 
-                <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
+                <div id="filter-menu" data-menu-anchor-id="filter-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden origin-top-right transition-all menu-hidden animate-scale-in">
                     <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                         <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                     </div>
@@ -125,10 +125,10 @@
             </div>
             
             <div class="relative">
-                <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <button id="column-menu-trigger" type="button" data-menu-target="column-menu" aria-controls="column-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <span class="material-symbols-outlined text-[20px] text-slate-500">view_column</span>
                 </button>
-                <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                <div id="column-menu" data-menu-anchor-id="column-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                     <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                         <input type="checkbox" checked onchange="toggleColumn('col-account')" class="text-primary focus:ring-primary rounded">
                         <span class="text-sm text-slate-700 dark:text-slate-300">Tài Khoản</span>
@@ -375,16 +375,6 @@
             window.AdminMenu?.toggle(menu);
         }
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
-            const colMenu = document.getElementById('column-menu');
-            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
-            const insideCol = event.target.closest('#column-menu');
-            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
-                window.AdminMenu?.close(colMenu);
-            }
-        });
-
         // ===== Filter Menu =====
         function toggleFilterMenu() {
             const menu = document.getElementById('filter-menu');
@@ -406,27 +396,6 @@
             
             form.submit();
         }
-
-        // Close dropdowns on outside click
-        document.addEventListener('click', function(event) {
-            // Filter Menu Logic
-            const filterMenu = document.getElementById('filter-menu');
-            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
-            const insideFilter = event.target.closest('#filter-menu');
-
-            if (filterMenu && !filterBtn && !insideFilter && filterMenu.classList.contains('menu-visible')) {
-                window.AdminMenu?.close(filterMenu);
-            }
-
-            // Column Menu Logic
-            const colMenu = document.getElementById('column-menu');
-            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
-            const insideCol = event.target.closest('#column-menu');
-
-            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
-                window.AdminMenu?.close(colMenu);
-            }
-        });
 
         function applySort(sortOrder) {
             const form = document.getElementById('filter-form');

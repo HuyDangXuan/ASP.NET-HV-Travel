@@ -1,4 +1,5 @@
 @model HVTravel.Domain.Models.PaginatedResult<HVTravel.Domain.Entities.Booking>
+@using HVTravel.Web.Services
 @{
     ViewData["Title"] = "Thanh Toán";
     var refundBookings = ViewBag.RefundBookings as IEnumerable<HVTravel.Domain.Entities.Booking> ?? new List<HVTravel.Domain.Entities.Booking>();
@@ -37,6 +38,10 @@
             "Unpaid" => "Chưa thanh toán",
             _ => status
         };
+    }
+
+    public string GetAdminBookingStatusText(string status) {
+        return BookingDisplayTextHelper.BookingStatus(status);
     }
 }
 
@@ -165,11 +170,11 @@
             <div class="flex items-center gap-3">
                 <!-- Filter Dropdown -->
                 <div class="relative group">
-                    <button type="button" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button id="filter-menu-trigger" type="button" data-menu-target="filter-menu" aria-controls="filter-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleFilterMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">filter_list</span>
                     </button>
 
-                    <div id="filter-menu" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden menu-hidden animate-scale-in origin-top-right transition-all">
+                    <div id="filter-menu" data-menu-anchor-id="filter-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-30 hidden menu-hidden animate-scale-in origin-top-right transition-all">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-800">
                             <h3 class="font-bold text-slate-900 dark:text-white">Bộ Lọc</h3>
                         </div>
@@ -261,10 +266,10 @@
                 </div>
 
                 <div class="relative">
-                    <button type="button" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button id="column-menu-trigger" type="button" data-menu-target="column-menu" aria-controls="column-menu" aria-haspopup="menu" aria-expanded="false" onclick="toggleColumnMenu()" class="flex items-center justify-center size-10 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <span class="material-symbols-outlined !text-[20px]">view_column</span>
                     </button>
-                    <div id="column-menu" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
+                    <div id="column-menu" data-menu-anchor-id="column-menu-trigger" data-menu-align="right" data-menu-placement="auto" class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 hidden origin-top-right transition-all menu-hidden animate-scale-in z-50 p-2">
                         <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
                             <input type="checkbox" checked onchange="toggleColumn('col-trans-id')" class="text-primary focus:ring-primary rounded">
                             <span class="text-sm text-slate-700 dark:text-slate-300">Mã Giao Dịch</span>
@@ -398,17 +403,17 @@
                                    }
                                </td>
                                 <td class="p-4 col-booking-status">
-                                   @if(item.Status == "Completed" || item.Status == "Paid") {
-                                       <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"><span class="size-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>@GetStatusText(item.Status)</span>
-                                   } else if(item.Status == "Confirmed") {
-                                       <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"><span class="size-1.5 rounded-full bg-blue-600 dark:bg-blue-400"></span>@GetStatusText(item.Status)</span>
-                                   } else if(item.Status == "Pending") {
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"><span class="size-1.5 rounded-full bg-yellow-600 dark:bg-yellow-400"></span>@GetStatusText(item.Status)</span>
-                                   } else if(item.Status == "Refunded") {
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"><span class="size-1.5 rounded-full bg-orange-600 dark:bg-orange-400"></span>@GetStatusText(item.Status)</span>
-                                   } else {
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"><span class="size-1.5 rounded-full bg-red-600 dark:bg-red-400"></span>@GetStatusText(item.Status)</span>
-                                   }
+                                    @if(item.Status == "Completed" || item.Status == "Paid") {
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"><span class="size-1.5 rounded-full bg-green-600 dark:bg-green-400"></span>@GetAdminBookingStatusText(item.Status)</span>
+                                    } else if(item.Status == "Confirmed") {
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"><span class="size-1.5 rounded-full bg-blue-600 dark:bg-blue-400"></span>@GetAdminBookingStatusText(item.Status)</span>
+                                    } else if(item.Status == "Pending" || item.Status == "PendingPayment") {
+                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"><span class="size-1.5 rounded-full bg-yellow-600 dark:bg-yellow-400"></span>@GetAdminBookingStatusText(item.Status)</span>
+                                    } else if(item.Status == "Refunded") {
+                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300"><span class="size-1.5 rounded-full bg-orange-600 dark:bg-orange-400"></span>@GetAdminBookingStatusText(item.Status)</span>
+                                    } else {
+                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"><span class="size-1.5 rounded-full bg-red-600 dark:bg-red-400"></span>@GetAdminBookingStatusText(item.Status)</span>
+                                    }
                                </td>
                                <td class="p-4 text-right col-amount"><span class="text-sm font-bold text-slate-900 dark:text-white">@item.TotalAmount.ToString("N0") ₫</span></td>
                                <td class="p-4 text-center"><button class="text-slate-500 hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]">more_vert</span></button></td>
@@ -562,26 +567,6 @@
             url.searchParams.set('page', 1);
             window.location.href = url.toString();
         }
-
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
-            // Filter Menu
-            const filterMenu = document.getElementById('filter-menu');
-            const filterBtn = event.target.closest('button[onclick="toggleFilterMenu()"]');
-            const insideFilter = event.target.closest('#filter-menu');
-
-            if (!filterBtn && !insideFilter && filterMenu && filterMenu.classList.contains('menu-visible')) {
-                window.AdminMenu?.close(filterMenu);
-            }
-
-            // Column Menu
-            const colMenu = document.getElementById('column-menu');
-            const colBtn = event.target.closest('button[onclick="toggleColumnMenu()"]');
-            const insideCol = event.target.closest('#column-menu');
-            if (colMenu && !colBtn && !insideCol && colMenu.classList.contains('menu-visible')) {
-                window.AdminMenu?.close(colMenu);
-            }
-        });
 
         function switchTab(tabName, btn) {
             // Hide all tab content

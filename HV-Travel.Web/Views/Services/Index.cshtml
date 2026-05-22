@@ -111,7 +111,7 @@
                         @Html.AntiForgeryToken()
                         <div>
                             <label asp-for="Request.ServiceType" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Dịch vụ</label>
-                            <select asp-for="Request.ServiceType" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark">
+                            <select asp-for="Request.ServiceType" class="public-select w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:shadow-black/20">
                                 <option value="">Chọn dịch vụ</option>
                                 <option value="Flight">Vé máy bay</option>
                                 <option value="Hotel">Khách sạn</option>
@@ -122,44 +122,44 @@
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label asp-for="Request.FullName" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Họ tên</label>
-                                <input asp-for="Request.FullName" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.FullName" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                             </div>
                             <div>
                                 <label asp-for="Request.Phone" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Số điện thoại</label>
-                                <input asp-for="Request.Phone" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.Phone" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                             </div>
                         </div>
                         <div>
                             <label asp-for="Request.Email" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Email</label>
-                            <input asp-for="Request.Email" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            <input asp-for="Request.Email" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                         </div>
                         <div>
                             <label asp-for="Request.Destination" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Điểm đến / quốc gia</label>
-                            <input asp-for="Request.Destination" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                            <input asp-for="Request.Destination" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                         </div>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label asp-for="Request.DepartureDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày đi</label>
-                                <input asp-for="Request.DepartureDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.DepartureDate" type="date" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:shadow-black/20" />
                             </div>
                             <div>
                                 <label asp-for="Request.ReturnDate" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngày về</label>
-                                <input asp-for="Request.ReturnDate" type="date" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.ReturnDate" type="date" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:shadow-black/20" />
                             </div>
                         </div>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <label asp-for="Request.TravellersCount" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Số khách</label>
-                                <input asp-for="Request.TravellersCount" type="number" min="1" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.TravellersCount" type="number" min="1" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                             </div>
                             <div>
                                 <label asp-for="Request.BudgetText" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Ngân sách</label>
-                                <input asp-for="Request.BudgetText" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark" />
+                                <input asp-for="Request.BudgetText" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20" />
                             </div>
                         </div>
                         <div>
                             <label asp-for="Request.RequestNote" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Brief</label>
-                            <textarea asp-for="Request.RequestNote" rows="4" class="w-full rounded-2xl border border-border-light bg-transparent px-4 py-3 text-sm dark:border-border-dark"></textarea>
+                            <textarea asp-for="Request.RequestNote" rows="4" class="w-full rounded-2xl border border-sky-200/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-900 shadow-sm shadow-sky-100/50 outline-none transition placeholder:text-slate-500 placeholder:font-semibold focus:border-primary focus:ring-4 focus:ring-primary/15 dark:border-border-dark dark:bg-slate-950/70 dark:text-white dark:placeholder:text-slate-400 dark:shadow-black/20"></textarea>
                         </div>
                         <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary-dark">
                             <span class="material-symbols-outlined text-[18px]">send</span>

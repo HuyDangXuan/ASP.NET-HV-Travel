@@ -1,0 +1,2686 @@
+[
+  {
+    "_id": {
+      "$oid": "bf3c4c06434308bc89fa6a68"
+    },
+    "customerCode": "CUS-7000",
+    "fullName": "Pham Tuan Nam",
+    "email": "pham-tuan-nam.1000@company.vn",
+    "password": "pbkdf2_sha256$600000$179d7e572f7549d9$7ab02c63787ffb9cba140ef9dc41236b",
+    "phoneNumber": "0969653287",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/000.jpg",
+    "address": {
+      "street": "94 Le Loi",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0001",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-21T08:31:05.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-06-16T00:33:40.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T17:25:10.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "61b1cd2262801c4510435a10"
+    },
+    "customerCode": "CUS-7001",
+    "fullName": "Do Linh Phuc",
+    "email": "do-linh-phuc.1001@company.vn",
+    "password": "pbkdf2_sha256$600000$66dd76baed1b0c2a$7387f5bc12a76e3f068b6689dbf30986",
+    "phoneNumber": "0968480184",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/001.jpg",
+    "address": {
+      "street": "788 Pham Van Dong",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 11100000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0002",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-26T17:57:08.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-21T22:09:10.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-06-13T04:32:54.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-20T12:18:47.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8026695ff8cda88b436d76e2"
+    },
+    "customerCode": "CUS-7002",
+    "fullName": "Nguyen Tuan Tuan",
+    "email": "nguyen-tuan-tuan.1002@outlook.com",
+    "password": "pbkdf2_sha256$600000$39c6235b521584ab$87b9fcffccb23e2cb35a8a9f5eac1060",
+    "phoneNumber": "0971489325",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/002.jpg",
+    "address": {
+      "street": "781 Hai Ba Trung",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 29400000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0003",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-22T07:09:56.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-12T11:37:38.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2023-10-12T09:19:18.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T00:54:37.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5cec4eb5edd968311ca35cfb"
+    },
+    "customerCode": "CUS-7003",
+    "fullName": "Phan Mai Anh",
+    "email": "phan-mai-anh.1003@yahoo.com",
+    "password": "pbkdf2_sha256$600000$08c6f367563d9b77$e8744edc93bcaff2c6682c8d5fbf9126",
+    "phoneNumber": "0910391171",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/003.jpg",
+    "address": {
+      "street": "779 Hai Ba Trung",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 6100000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0004",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-16T12:39:55.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-01T18:58:35.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2026-02-11T14:09:49.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-13T12:11:36.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "36386821f6e07cc06c52c49f"
+    },
+    "customerCode": "CUS-7004",
+    "fullName": "Hoang Minh Phuc",
+    "email": "hoang-minh-phuc.1004@company.vn",
+    "password": "pbkdf2_sha256$600000$267091c2bca18629$310bc05da4d1f0f2d68243d730d7d01c",
+    "phoneNumber": "0983465787",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/004.jpg",
+    "address": {
+      "street": "124 Nguyen Hue",
+      "city": "Hai Phong",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 29200000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0005",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-02-15T14:35:44.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-03T03:35:34.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2023-11-13T04:12:50.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-23T18:42:52.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "122c9a5601d7425638602ab6"
+    },
+    "customerCode": "CUS-7005",
+    "fullName": "Dang Hanh Ngoc",
+    "email": "dang-hanh-ngoc.1005@fpt.vn",
+    "password": "pbkdf2_sha256$600000$e5475040f34610c3$eccf0393f93ac912a56c2865206990fc",
+    "phoneNumber": "0980310518",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/005.jpg",
+    "address": {
+      "street": "244 Vo Nguyen Giap",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 17500000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0006",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-22T21:36:14.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-14T05:00:44.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-05-04T00:56:35.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-27T01:23:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "7914c120c8dcd19f3e351128"
+    },
+    "customerCode": "CUS-7006",
+    "fullName": "Bui Ngoc Mai",
+    "email": "bui-ngoc-mai.1006@icloud.com",
+    "password": "pbkdf2_sha256$600000$8f898c53d5918ba0$ef099c326d0f47a38c114962472c13d8",
+    "phoneNumber": "0911165667",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/006.jpg",
+    "address": {
+      "street": "885 Le Loi",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 7400000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 60,
+      "tier": "Explorer",
+      "referralCode": "REF-0007",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-15T10:37:07.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-15T16:21:04.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-03-21T14:07:04.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T22:22:44.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "72d8567d894a05e430b187ef"
+    },
+    "customerCode": "CUS-7007",
+    "fullName": "Tran Hanh Ha",
+    "email": "tran-hanh-ha.1007@outlook.com",
+    "password": "pbkdf2_sha256$600000$79693c6e560ee604$94812c0428c4083d19481d2e3a497888",
+    "phoneNumber": "0962473178",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/007.jpg",
+    "address": {
+      "street": "101 Le Loi",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "Guests requested a balanced itinerary with enough free time in the evening.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 24500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0008",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-17T00:39:32.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-14T09:36:29.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2024-06-25T20:31:39.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-19T08:45:12.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "e7067ef466aa9385dd59ba71"
+    },
+    "customerCode": "CUS-7008",
+    "fullName": "Vo Mai Ha",
+    "email": "vo-mai-ha.1008@gmail.com",
+    "password": "pbkdf2_sha256$600000$47c68f32cc9e8cf8$059c4459705b4049b50343bb0170e0a9",
+    "phoneNumber": "0916064746",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/008.jpg",
+    "address": {
+      "street": "714 Ly Thuong Kiet",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0009",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-21T19:18:42.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2025-01-14T10:04:10.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-14T18:49:11.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "bf7b539b0f9aea4b8acd4e10"
+    },
+    "customerCode": "CUS-7009",
+    "fullName": "Nguyen Ngoc Tuan",
+    "email": "nguyen-ngoc-tuan.1009@yahoo.com",
+    "password": "pbkdf2_sha256$600000$8c0a7d887d493228$39bd1ad8ef59f4c85928fff99cbc0a22",
+    "phoneNumber": "0900978820",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/009.jpg",
+    "address": {
+      "street": "984 Tran Phu",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 21900000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0010",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-15T19:49:59.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-25T01:03:52.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-01-25T01:45:52.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-25T21:20:23.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "91d63f78e3e9de99f10c718b"
+    },
+    "customerCode": "CUS-7010",
+    "fullName": "Pham Lan Chi",
+    "email": "pham-lan-chi.1010@outlook.com",
+    "password": "pbkdf2_sha256$600000$2576ff0f2a9b9332$d1930e0294946ff619594dc4fc9d83c7",
+    "phoneNumber": "0979091699",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/010.jpg",
+    "address": {
+      "street": "536 Pham Van Dong",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 15000000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0011",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-22T09:58:45.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-29T12:12:10.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-10-16T06:51:26.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-15T22:43:54.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "750cab754ccc9bc2a53f8a28"
+    },
+    "customerCode": "CUS-7011",
+    "fullName": "Vu Dung Quang",
+    "email": "vu-dung-quang.1011@yahoo.com",
+    "password": "pbkdf2_sha256$600000$272b00d0ce4119c6$b34d75a3524d2178dff702d75d9cff7b",
+    "phoneNumber": "0900799118",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/011.jpg",
+    "address": {
+      "street": "219 Vo Nguyen Giap",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Inactive",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 3700000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0012",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-01T10:37:29.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-12T20:35:26.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-10-24T23:34:59.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-18T11:15:54.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "b41b31438b10550cd5704f32"
+    },
+    "customerCode": "CUS-7012",
+    "fullName": "Hoang Giang Long",
+    "email": "hoang-giang-long.1012@yahoo.com",
+    "password": "pbkdf2_sha256$600000$420c15fbe9214550$e5b33fe74b4de7ff107160bc878f357d",
+    "phoneNumber": "0978084124",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/012.jpg",
+    "address": {
+      "street": "119 Tran Phu",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 19600000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 60,
+      "tier": "Silver",
+      "referralCode": "REF-0013",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-02-20T01:06:35.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-21T09:14:04.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-12-22T04:38:06.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T04:20:20.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "a25d6b29afffcfd2341ef40b"
+    },
+    "customerCode": "CUS-7013",
+    "fullName": "Pham Trang Khanh",
+    "email": "pham-trang-khanh.1013@yahoo.com",
+    "password": "pbkdf2_sha256$600000$585c3e5da550be03$19e56511e50a0efbe45dbb84c0b39abb",
+    "phoneNumber": "0977401640",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/013.jpg",
+    "address": {
+      "street": "4 Pham Van Dong",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "The support team shared check-in guidance and baggage notes after payment cleared.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 42700000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Platinum",
+      "referralCode": "REF-0014",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-25T05:12:00.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-30T21:01:35.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2025-08-27T20:49:18.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-22T21:22:37.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "13432e611ca3c4480279b6a6"
+    },
+    "customerCode": "CUS-7014",
+    "fullName": "Ho Linh Nam",
+    "email": "ho-linh-nam.1014@fpt.vn",
+    "password": "pbkdf2_sha256$600000$d85bdeace2776d5c$a7c739a8affde7c76ff4bbc2209d036e",
+    "phoneNumber": "0918059826",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/014.jpg",
+    "address": {
+      "street": "131 Le Loi",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "The customer preferred a later departure so the group could avoid morning traffic.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 14600000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0015",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-28T03:23:21.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-07T05:55:24.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2025-04-19T08:05:42.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-14T14:22:42.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "c7b5b2bc5a8aaeca1a50aec3"
+    },
+    "customerCode": "CUS-7015",
+    "fullName": "Do Hanh Quang",
+    "email": "do-hanh-quang.1015@company.vn",
+    "password": "pbkdf2_sha256$600000$b84db89ec3e877ab$5a963979b8fa58aeeea703038b94147e",
+    "phoneNumber": "0969232260",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/015.jpg",
+    "address": {
+      "street": "184 Pham Van Dong",
+      "city": "Can Tho",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 12500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0016",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-23T10:40:18.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-16T16:32:35.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-11-28T23:14:16.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-13T08:44:22.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "dbccc47709e9db0adf465290"
+    },
+    "customerCode": "CUS-7016",
+    "fullName": "Ho Chi Lan",
+    "email": "ho-chi-lan.1016@icloud.com",
+    "password": "pbkdf2_sha256$600000$1254317b4afe899a$244e4479b8b405ab924b6985db955012",
+    "phoneNumber": "0913754330",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/016.jpg",
+    "address": {
+      "street": "676 Nguyen Hue",
+      "city": "Can Tho",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0017",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-23T11:36:47.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-12-17T07:04:29.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-11T04:26:25.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "adf4e62d6651529e8268690b"
+    },
+    "customerCode": "CUS-7017",
+    "fullName": "Hoang Lam Phuong",
+    "email": "hoang-lam-phuong.1017@company.vn",
+    "password": "pbkdf2_sha256$600000$4b66e4da71a7a04c$329c96fc49954df6e001367071adec61",
+    "phoneNumber": "0930142940",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/017.jpg",
+    "address": {
+      "street": "112 Bach Dang",
+      "city": "Hue",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 14700000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0018",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-19T20:48:59.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-29T09:50:32.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-08-19T09:56:35.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T05:08:32.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "30a900ad939b462de645f129"
+    },
+    "customerCode": "CUS-7018",
+    "fullName": "Dang Chi Lan",
+    "email": "dang-chi-lan.1018@yahoo.com",
+    "password": "pbkdf2_sha256$600000$af9877f3c0d883ce$57bd2ff489979f8a6623d091cbdcf12b",
+    "phoneNumber": "0906088356",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/018.jpg",
+    "address": {
+      "street": "72 Pham Van Dong",
+      "city": "Vung Tau",
+      "country": "Vietnam"
+    },
+    "notes": "The customer preferred a later departure so the group could avoid morning traffic.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 36600000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 60,
+      "tier": "Gold",
+      "referralCode": "REF-0019",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-16T16:54:08.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-23T16:47:45.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2025-01-20T00:49:32.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-21T19:25:12.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "b27c40266703b6365380b904"
+    },
+    "customerCode": "CUS-7019",
+    "fullName": "Hoang Quang Linh",
+    "email": "hoang-quang-linh.1019@yahoo.com",
+    "password": "pbkdf2_sha256$600000$4b430b21cb4c1aec$63a6f774f20eba020a494bb16e4647d0",
+    "phoneNumber": "0972366299",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/019.jpg",
+    "address": {
+      "street": "309 Bach Dang",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 7300000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0020",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-24T23:21:36.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-11-29T13:53:30.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2025-01-25T13:16:45.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-16T11:08:21.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "527eecfaa79ac9aa9b4e2c24"
+    },
+    "customerCode": "CUS-7020",
+    "fullName": "Pham Linh Ngoc",
+    "email": "pham-linh-ngoc.1020@icloud.com",
+    "password": "pbkdf2_sha256$600000$ff2df222f4226da6$a65332dbf4103a48968399ea411e9ecd",
+    "phoneNumber": "0967387214",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/020.jpg",
+    "address": {
+      "street": "528 Pham Van Dong",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 10000000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0021",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-24T05:31:56.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-14T02:34:01.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-02-04T17:16:35.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-14T22:51:45.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "fbe33b243eae00320bd4a990"
+    },
+    "customerCode": "CUS-7021",
+    "fullName": "Pham Dung Anh",
+    "email": "pham-dung-anh.1021@icloud.com",
+    "password": "pbkdf2_sha256$600000$89a1e3e61e258e3b$6b234eb14a883db24be9dfc0918bcadb",
+    "phoneNumber": "0971769367",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/021.jpg",
+    "address": {
+      "street": "410 Nguyen Hue",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "The support team shared check-in guidance and baggage notes after payment cleared.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 25900000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0022",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-17T21:08:17.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-11-30T13:50:26.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2024-03-25T01:51:44.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T09:27:45.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "b227462cf53d4330cdda24ba"
+    },
+    "customerCode": "CUS-7022",
+    "fullName": "Vu Hanh Giang",
+    "email": "vu-hanh-giang.1022@company.vn",
+    "password": "pbkdf2_sha256$600000$6fe63396a95f223d$11408e6ccd5705cba79b7f1264a2a250",
+    "phoneNumber": "0960831727",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/022.jpg",
+    "address": {
+      "street": "684 Pham Van Dong",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Inactive",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 9800000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0023",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-14T05:47:30.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-07T12:26:12.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-08-04T10:02:54.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-22T19:09:30.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "7337c59979844388dc8aee30"
+    },
+    "customerCode": "CUS-7023",
+    "fullName": "Vo Giang Tuan",
+    "email": "vo-giang-tuan.1023@yahoo.com",
+    "password": "pbkdf2_sha256$600000$6984285dc8593552$eb0a869b23dad4fc8c9b26b9ba47c893",
+    "phoneNumber": "0914873471",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/023.jpg",
+    "address": {
+      "street": "731 Vo Nguyen Giap",
+      "city": "Hai Phong",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 30500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0024",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-25T16:34:15.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-02T17:09:46.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-02-19T03:38:11.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-22T14:39:41.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "b1a6b1f1620e99d33b33f3d8"
+    },
+    "customerCode": "CUS-7024",
+    "fullName": "Tran Dung Dung",
+    "email": "tran-dung-dung.1024@outlook.com",
+    "password": "pbkdf2_sha256$600000$7a98b8e010dfce02$47d1ca9022fb8688f7c43717a36fe6fa",
+    "phoneNumber": "0983166587",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/024.jpg",
+    "address": {
+      "street": "426 Le Loi",
+      "city": "Hai Phong",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0025",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-24T14:22:32.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2025-06-07T12:44:52.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T04:26:18.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "c3fe0183e172b725db52ca58"
+    },
+    "customerCode": "CUS-7025",
+    "fullName": "Bui Trang Anh",
+    "email": "bui-trang-anh.1025@company.vn",
+    "password": "pbkdf2_sha256$600000$41466dc09d08c187$1a0c15bd7b28e8eb2b5e27a9de021aef",
+    "phoneNumber": "0967054668",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/025.jpg",
+    "address": {
+      "street": "766 Nguyen Hue",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 7500000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0026",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-23T03:38:41.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-21T11:58:14.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-08-18T13:08:34.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-21T06:54:25.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "cc530e36addc3e13ab3b4d37"
+    },
+    "customerCode": "CUS-7026",
+    "fullName": "Nguyen Lan Khanh",
+    "email": "nguyen-lan-khanh.1026@icloud.com",
+    "password": "pbkdf2_sha256$600000$9d5e159408ad503a$9ff4dc0984546676689625313b8d4644",
+    "phoneNumber": "0982729806",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/026.jpg",
+    "address": {
+      "street": "607 Le Loi",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 22200000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0027",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-15T16:51:27.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-20T17:28:49.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-05-09T07:14:36.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-20T16:57:31.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "362f5e5c53cd6268610cf373"
+    },
+    "customerCode": "CUS-7027",
+    "fullName": "Le Bao Hoa",
+    "email": "le-bao-hoa.1027@icloud.com",
+    "password": "pbkdf2_sha256$600000$6dd947e0d1af5aef$04bf60eb5e48f04a3a4c3f6615f8c672",
+    "phoneNumber": "0935646417",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/027.jpg",
+    "address": {
+      "street": "20 Le Loi",
+      "city": "Hue",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 4900000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0028",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-23T09:14:15.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-12T19:47:05.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2023-12-13T00:55:55.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-27T19:22:21.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "9f0fda8d05379ff6d6d7b3b8"
+    },
+    "customerCode": "CUS-7028",
+    "fullName": "Nguyen Hanh Ha",
+    "email": "nguyen-hanh-ha.1028@outlook.com",
+    "password": "pbkdf2_sha256$600000$bacce89a5f2d28b2$7cc217667e5d10843d587bde0c43f160",
+    "phoneNumber": "0912719374",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/028.jpg",
+    "address": {
+      "street": "786 Pham Van Dong",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "The promotion was created for guests comparing multiple departures in the same month.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 24400000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0029",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-13T23:29:40.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-21T17:45:42.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2024-06-21T21:37:54.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-17T01:11:35.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "93676a024fdc6e1bedcb8cb6"
+    },
+    "customerCode": "CUS-7029",
+    "fullName": "Tran Ngoc Anh",
+    "email": "tran-ngoc-anh.1029@fpt.vn",
+    "password": "pbkdf2_sha256$600000$a831e4e193cc04d8$11f715b8f599e978ef5de9b0d64217a2",
+    "phoneNumber": "0966319314",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/029.jpg",
+    "address": {
+      "street": "871 Tran Phu",
+      "city": "Vung Tau",
+      "country": "Vietnam"
+    },
+    "notes": "Guests requested a balanced itinerary with enough free time in the evening.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 51100000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Platinum",
+      "referralCode": "REF-0030",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-01T08:31:18.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-12T22:46:22.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2025-08-06T23:05:23.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-25T13:21:50.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "033d2bce575aed2ca5c5650c"
+    },
+    "customerCode": "CUS-7030",
+    "fullName": "Phan Binh Minh",
+    "email": "phan-binh-minh.1030@icloud.com",
+    "password": "pbkdf2_sha256$600000$d938a34d5c0e1f92$f5ca249321599c39f511220d45161644",
+    "phoneNumber": "0961657262",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/030.jpg",
+    "address": {
+      "street": "752 Vo Nguyen Giap",
+      "city": "Vung Tau",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 5000000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 60,
+      "tier": "Explorer",
+      "referralCode": "REF-0031",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-23T17:37:13.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-14T00:04:03.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-10-31T14:05:36.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-20T18:48:30.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "da09dfa052828d8044b591f7"
+    },
+    "customerCode": "CUS-7031",
+    "fullName": "Vu Tuan Ngoc",
+    "email": "vu-tuan-ngoc.1031@outlook.com",
+    "password": "pbkdf2_sha256$600000$849a519c560f340d$9b35630022c390e3ef3efb1fd6f9964f",
+    "phoneNumber": "0904737996",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/031.jpg",
+    "address": {
+      "street": "345 Le Loi",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 18500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0032",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-25T19:25:54.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-31T14:40:32.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-07-19T23:28:52.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-21T08:01:06.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "e15ca6664797b2c957207246"
+    },
+    "customerCode": "CUS-7032",
+    "fullName": "Pham Lam Hoa",
+    "email": "pham-lam-hoa.1032@company.vn",
+    "password": "pbkdf2_sha256$600000$363fe10501d9dfa5$8ae3936f9630d8910e5698e22bcfa86b",
+    "phoneNumber": "0984808313",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/032.jpg",
+    "address": {
+      "street": "738 Bach Dang",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0033",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-26T05:42:24.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-10-18T19:55:32.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-26T06:18:32.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "cafda61372bb912d7da67785"
+    },
+    "customerCode": "CUS-7033",
+    "fullName": "Vo Phuong Trang",
+    "email": "vo-phuong-trang.1033@gmail.com",
+    "password": "pbkdf2_sha256$600000$7c0253cd8bb3770b$0e26e05e44f6005dd9c75a2a99c79892",
+    "phoneNumber": "0904363495",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/033.jpg",
+    "address": {
+      "street": "485 Pham Van Dong",
+      "city": "Can Tho",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Inactive",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 18300000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0034",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-20T17:04:39.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-16T08:59:46.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-03-08T08:47:36.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-18T00:56:40.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "3b048a8b405bfdc94e7ed827"
+    },
+    "customerCode": "CUS-7034",
+    "fullName": "Ho Long Hoa",
+    "email": "ho-long-hoa.1034@gmail.com",
+    "password": "pbkdf2_sha256$600000$14b2def579f2c330$0ac470f64ed1c6e1daff5edd26a6a987",
+    "phoneNumber": "0983518233",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/034.jpg",
+    "address": {
+      "street": "757 Ly Thuong Kiet",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "The guest asked for vegetarian meals and one room with a sea-facing view.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 43800000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Platinum",
+      "referralCode": "REF-0035",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-13T02:55:06.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-11T08:59:06.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2024-12-24T02:57:22.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-11T22:33:38.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "4d6168bd2defe1935c62b3a2"
+    },
+    "customerCode": "CUS-7035",
+    "fullName": "Pham Huy Hanh",
+    "email": "pham-huy-hanh.1035@gmail.com",
+    "password": "pbkdf2_sha256$600000$d048a01b7f4612c0$d4023708f56fd5293a6b5637aa7dacf1",
+    "phoneNumber": "0988240084",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/035.jpg",
+    "address": {
+      "street": "715 Hai Ba Trung",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "Our operations team confirmed pickup details before the final departure note went out.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 2500000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0036",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-26T20:47:31.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-01T21:09:39.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2026-03-21T06:39:55.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-16T09:38:22.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "f72ada9b2f32751e5738811d"
+    },
+    "customerCode": "CUS-7036",
+    "fullName": "Vo Mai Long",
+    "email": "vo-mai-long.1036@gmail.com",
+    "password": "pbkdf2_sha256$600000$19f4d2cd763ef65f$9318fa72bae7ce94d170be1873e7cd05",
+    "phoneNumber": "0937116719",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/036.jpg",
+    "address": {
+      "street": "645 Le Loi",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 14800000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 60,
+      "tier": "Silver",
+      "referralCode": "REF-0037",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-02-19T17:49:40.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-18T19:01:21.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-01-25T11:48:32.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-11T13:37:17.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "9b37a22b6a8a616fc3b290d0"
+    },
+    "customerCode": "CUS-7037",
+    "fullName": "Pham Chi Nam",
+    "email": "pham-chi-nam.1037@company.vn",
+    "password": "pbkdf2_sha256$600000$07f96b9281652875$9c4fa490c493ba3e3d756fe7dc2fc6d5",
+    "phoneNumber": "0973867749",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/037.jpg",
+    "address": {
+      "street": "440 Vo Nguyen Giap",
+      "city": "Vung Tau",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 34300000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0038",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-14T15:32:57.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-11T04:41:36.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-03-13T15:41:44.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T00:19:35.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "14c8b3b4a911d19243bfd931"
+    },
+    "customerCode": "CUS-7038",
+    "fullName": "Pham Phuong Ha",
+    "email": "pham-phuong-ha.1038@outlook.com",
+    "password": "pbkdf2_sha256$600000$e3c1393d70076536$7ca29a80f74ea4933871ab6a0424f5b6",
+    "phoneNumber": "0912812067",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/038.jpg",
+    "address": {
+      "street": "706 Ly Thuong Kiet",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 12200000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0039",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-14T02:01:41.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-13T10:45:26.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-01-01T01:19:43.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-26T15:49:53.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "3bc1a987aff8754d1238d630"
+    },
+    "customerCode": "CUS-7039",
+    "fullName": "Hoang Trang Long",
+    "email": "hoang-trang-long.1039@yahoo.com",
+    "password": "pbkdf2_sha256$600000$ad24b1b3fe10e429$2328973a8330a2e3f923b47b2126f97d",
+    "phoneNumber": "0989361832",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/039.jpg",
+    "address": {
+      "street": "931 Vo Nguyen Giap",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "Our operations team confirmed pickup details before the final departure note went out.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 36500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0040",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-15T09:29:00.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-31T17:15:22.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2025-01-31T08:35:58.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-23T22:38:17.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "77fc97031fd5a423706c5c56"
+    },
+    "customerCode": "CUS-7040",
+    "fullName": "Ho Ngoc Huy",
+    "email": "ho-ngoc-huy.1040@fpt.vn",
+    "password": "pbkdf2_sha256$600000$e8c8c10950a895fb$7f5e8e89ebbd2907e2b32e3f849911ec",
+    "phoneNumber": "0936488771",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/040.jpg",
+    "address": {
+      "street": "613 Le Loi",
+      "city": "Can Tho",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0041",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-28T09:56:54.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2025-02-23T05:01:10.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T03:41:19.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "ac9ed156f63fce413a9aca5e"
+    },
+    "customerCode": "CUS-7041",
+    "fullName": "Hoang Anh Binh",
+    "email": "hoang-anh-binh.1041@company.vn",
+    "password": "pbkdf2_sha256$600000$c1f48e674924fe58$04663d45346ec38d3c493754a9798ed6",
+    "phoneNumber": "0970490278",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/041.jpg",
+    "address": {
+      "street": "668 Ly Thuong Kiet",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 11100000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0042",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-21T07:27:00.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-23T03:50:01.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-08-18T14:58:12.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T21:47:20.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5553b2fe6889803e5913f9d3"
+    },
+    "customerCode": "CUS-7042",
+    "fullName": "Vo Binh Mai",
+    "email": "vo-binh-mai.1042@yahoo.com",
+    "password": "pbkdf2_sha256$600000$cdcc36dfc48a5a26$2fcd521570bbd697f9f1468966dc95a5",
+    "phoneNumber": "0981256746",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/042.jpg",
+    "address": {
+      "street": "834 Le Loi",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "Our operations team confirmed pickup details before the final departure note went out.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 29400000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 60,
+      "tier": "Gold",
+      "referralCode": "REF-0043",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-27T18:26:20.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-17T12:15:50.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2025-02-24T16:31:13.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-12T07:31:45.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8ae769edde8ede0ba85c6e4a"
+    },
+    "customerCode": "CUS-7043",
+    "fullName": "Vu Minh Anh",
+    "email": "vu-minh-anh.1043@icloud.com",
+    "password": "pbkdf2_sha256$600000$a4c98eb1898b0809$2fdab872813ae895bdb5c229f93a3ee8",
+    "phoneNumber": "0960385977",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/043.jpg",
+    "address": {
+      "street": "779 Le Loi",
+      "city": "Hai Phong",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 6100000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0044",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-25T11:08:35.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-16T03:32:56.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-05-02T00:31:37.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-16T11:47:20.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "f920264c0763fcd01f15c7b6"
+    },
+    "customerCode": "CUS-7044",
+    "fullName": "Vo Trang Mai",
+    "email": "vo-trang-mai.1044@fpt.vn",
+    "password": "pbkdf2_sha256$600000$152dde44166576bb$4cd395b34cf31a9a576236b3ec152bb3",
+    "phoneNumber": "0973248086",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/044.jpg",
+    "address": {
+      "street": "96 Nguyen Hue",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Inactive",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 29200000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0045",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-06T21:37:32.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-22T07:25:54.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-06-06T16:27:34.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-21T14:19:29.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a5d932b45ff2c83b495db4e"
+    },
+    "customerCode": "CUS-7045",
+    "fullName": "Ho Huy Minh",
+    "email": "ho-huy-minh.1045@icloud.com",
+    "password": "pbkdf2_sha256$600000$45c0d5509b301a70$2767a1a3aa88a58201c35b7234ca7844",
+    "phoneNumber": "0963782639",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/045.jpg",
+    "address": {
+      "street": "521 Hai Ba Trung",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 17500000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0046",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-25T21:51:05.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-18T01:46:18.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-03-22T11:28:02.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T14:52:43.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "4c6e27ffb9de7a3a486822b9"
+    },
+    "customerCode": "CUS-7046",
+    "fullName": "Dang Hoa Anh",
+    "email": "dang-hoa-anh.1046@company.vn",
+    "password": "pbkdf2_sha256$600000$2bc06b7b9af9f4bb$e429f99c1fc0dfa6a7ba58a54df40cc4",
+    "phoneNumber": "0977278755",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/046.jpg",
+    "address": {
+      "street": "566 Bach Dang",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 7400000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0047",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-28T02:53:52.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-05T03:11:01.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-10-16T11:18:57.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-23T09:05:46.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "517400f80b2c782a69288e92"
+    },
+    "customerCode": "CUS-7047",
+    "fullName": "Vu Hanh Vy",
+    "email": "vu-hanh-vy.1047@fpt.vn",
+    "password": "pbkdf2_sha256$600000$821b7ef8497d573b$a9bfd77033427760a0934556dcef7973",
+    "phoneNumber": "0966627028",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/047.jpg",
+    "address": {
+      "street": "989 Pham Van Dong",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 24500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0048",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-26T22:30:20.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-22T23:58:32.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-03-14T09:31:17.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-22T06:23:19.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "def5768968f45bce24e75e8e"
+    },
+    "customerCode": "CUS-7048",
+    "fullName": "Vo Anh Tuan",
+    "email": "vo-anh-tuan.1048@fpt.vn",
+    "password": "pbkdf2_sha256$600000$965de5c3ca802afd$9462c7cc01ac7a63ca571681eb16eddc",
+    "phoneNumber": "0911745961",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/048.jpg",
+    "address": {
+      "street": "873 Pham Van Dong",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0049",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-24T02:41:08.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2025-02-14T09:59:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-24T17:08:13.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "0930aef68a80068ddf547e50"
+    },
+    "customerCode": "CUS-7049",
+    "fullName": "Ho Vy Mai",
+    "email": "ho-vy-mai.1049@company.vn",
+    "password": "pbkdf2_sha256$600000$5011bc0c0ae4670a$f79f622cee03c5b42f74ba1295fba5e4",
+    "phoneNumber": "0903431611",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/049.jpg",
+    "address": {
+      "street": "455 Hai Ba Trung",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "Guests requested a balanced itinerary with enough free time in the evening.",
+    "segment": "ChurnRisk",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 21900000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0050",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-14T17:35:00.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-31T11:41:43.000Z"
+      }
+    },
+    "tags": [
+      "churn-watch"
+    ],
+    "createdAt": {
+      "$date": "2024-01-06T16:16:35.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-16T14:53:56.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "87fa841a3e83b91f25440fe0"
+    },
+    "customerCode": "CUS-7050",
+    "fullName": "Phan Lam Linh",
+    "email": "phan-lam-linh.1050@icloud.com",
+    "password": "pbkdf2_sha256$600000$5a45df92f82b8fc8$9b432003dcb1d7006077b84f70b88ad6",
+    "phoneNumber": "0972221969",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/050.jpg",
+    "address": {
+      "street": "700 Nguyen Hue",
+      "city": "Quy Nhon",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 15000000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0051",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-28T19:31:22.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-22T17:42:33.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-05-20T19:48:55.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-15T03:15:34.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "aab612c9415d174a75a66981"
+    },
+    "customerCode": "CUS-7051",
+    "fullName": "Vo Phuong Hoa",
+    "email": "vo-phuong-hoa.1051@gmail.com",
+    "password": "pbkdf2_sha256$600000$c2892cdec752fc46$5c78ae2a2bb9681d4fcf2683c2904e73",
+    "phoneNumber": "0964821759",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/051.jpg",
+    "address": {
+      "street": "307 Bach Dang",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 3700000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0052",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-03-06T16:15:08.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-27T03:59:20.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-08-15T23:20:52.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-18T20:06:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5be4bf519269869861a11729"
+    },
+    "customerCode": "CUS-7052",
+    "fullName": "Vo Chi Hanh",
+    "email": "vo-chi-hanh.1052@company.vn",
+    "password": "pbkdf2_sha256$600000$f4eea6fd6dab3bb3$4af167a0ed56c62182f56c1fb31a67c4",
+    "phoneNumber": "0934064090",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/052.jpg",
+    "address": {
+      "street": "933 Ly Thuong Kiet",
+      "city": "Nha Trang",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 19600000,
+      "tripCount": 4,
+      "loyaltyPoints": 720,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0053",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-22T03:48:13.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-01-13T04:25:45.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-04-10T19:28:38.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-14T19:34:45.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "c16d83edad81f8bd402913ec"
+    },
+    "customerCode": "CUS-7053",
+    "fullName": "Do Ha Phuc",
+    "email": "do-ha-phuc.1053@fpt.vn",
+    "password": "pbkdf2_sha256$600000$80750e5813927156$35a2470d0a68f394d9e1de228eff9091",
+    "phoneNumber": "0982104709",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/053.jpg",
+    "address": {
+      "street": "374 Hai Ba Trung",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "The family asked for child-friendly pacing and a hotel close to the city center.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 42700000,
+      "tripCount": 7,
+      "loyaltyPoints": 1260,
+      "pendingPoints": 0,
+      "tier": "Platinum",
+      "referralCode": "REF-0054",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-02-28T08:39:19.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-18T04:23:05.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2024-07-10T08:20:11.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-14T08:58:17.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "e9da484a80759f1f87e5f0fe"
+    },
+    "customerCode": "CUS-7054",
+    "fullName": "Le Nam Lam",
+    "email": "le-nam-lam.1054@yahoo.com",
+    "password": "pbkdf2_sha256$600000$72b469cbab81a4ef$2a370e72a06e01165b2e453fb761f52b",
+    "phoneNumber": "0914745171",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/054.jpg",
+    "address": {
+      "street": "145 Nguyen Hue",
+      "city": "Can Tho",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 14600000,
+      "tripCount": 2,
+      "loyaltyPoints": 360,
+      "pendingPoints": 60,
+      "tier": "Silver",
+      "referralCode": "REF-0055",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-03-25T13:21:49.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-17T17:15:54.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-05-01T17:04:56.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-11T16:36:18.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "746cdb771fa382e8895ccd99"
+    },
+    "customerCode": "CUS-7055",
+    "fullName": "Vu Anh Hoa",
+    "email": "vu-anh-hoa.1055@yahoo.com",
+    "password": "pbkdf2_sha256$600000$9289c9a170bf5240$a0362d508a39bc44ef0f275f717ff97b",
+    "phoneNumber": "0984965137",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/055.jpg",
+    "address": {
+      "street": "26 Pham Van Dong",
+      "city": "Vung Tau",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Inactive",
+    "status": "Active",
+    "emailVerified": false,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 12500000,
+      "tripCount": 5,
+      "loyaltyPoints": 900,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0056",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-23T05:54:41.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2025-12-11T18:36:45.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2025-10-01T17:08:53.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-26T12:24:25.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "0b9bd93423c86d301dde7969"
+    },
+    "customerCode": "CUS-7056",
+    "fullName": "Hoang Phuong Linh",
+    "email": "hoang-phuong-linh.1056@gmail.com",
+    "password": "pbkdf2_sha256$600000$59e12ad85881279f$6933eccf2a2e4be8c868b4594d570c48",
+    "phoneNumber": "0937113826",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/056.jpg",
+    "address": {
+      "street": "465 Pham Van Dong",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "New",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 0,
+    "stats": {
+      "lifetimeSpend": 0,
+      "tripCount": 0,
+      "loyaltyPoints": 0,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0057",
+      "voucherBalance": 0,
+      "lastActivity": {
+        "$date": "2026-03-24T14:04:46.000Z"
+      },
+      "lastCompletedTripAt": null
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-06-07T13:01:52.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-19T13:41:15.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "f065c817687a48509d9b6231"
+    },
+    "customerCode": "CUS-7057",
+    "fullName": "Do Chi Mai",
+    "email": "do-chi-mai.1057@yahoo.com",
+    "password": "pbkdf2_sha256$600000$7db69aed9072ea46$413fb41247b6faf4c9d81127b5fc668a",
+    "phoneNumber": "0905377351",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/057.jpg",
+    "address": {
+      "street": "703 Pham Van Dong",
+      "city": "Da Lat",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 1,
+    "stats": {
+      "lifetimeSpend": 14700000,
+      "tripCount": 3,
+      "loyaltyPoints": 540,
+      "pendingPoints": 0,
+      "tier": "Silver",
+      "referralCode": "REF-0058",
+      "voucherBalance": 1,
+      "lastActivity": {
+        "$date": "2026-03-28T06:33:08.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-07T03:32:28.000Z"
+      }
+    },
+    "tags": [
+      "returning"
+    ],
+    "createdAt": {
+      "$date": "2024-01-13T13:28:15.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-19T03:55:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "d2fe2fded918b3e5f2f25eef"
+    },
+    "customerCode": "CUS-7058",
+    "fullName": "Hoang Ha Chi",
+    "email": "hoang-ha-chi.1058@icloud.com",
+    "password": "pbkdf2_sha256$600000$b72ac320fa0bb0a6$18d786db4fa300d48a23dd539854519b",
+    "phoneNumber": "0903900532",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/058.jpg",
+    "address": {
+      "street": "806 Nguyen Hue",
+      "city": "Da Nang",
+      "country": "Vietnam"
+    },
+    "notes": "The article focuses on visa timing, budget planning, and the best travel window.",
+    "segment": "VIP",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 2,
+    "stats": {
+      "lifetimeSpend": 36600000,
+      "tripCount": 6,
+      "loyaltyPoints": 1080,
+      "pendingPoints": 0,
+      "tier": "Gold",
+      "referralCode": "REF-0059",
+      "voucherBalance": 2,
+      "lastActivity": {
+        "$date": "2026-02-22T13:21:20.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-03-23T08:44:35.000Z"
+      }
+    },
+    "tags": [
+      "vip"
+    ],
+    "createdAt": {
+      "$date": "2024-09-10T23:14:59.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-29T05:38:15.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "e68933a9c9e48e8c25c61c45"
+    },
+    "customerCode": "CUS-7059",
+    "fullName": "Pham Khanh Vy",
+    "email": "pham-khanh-vy.1059@company.vn",
+    "password": "pbkdf2_sha256$600000$927a8988ac916731$20d89c38f69d805b0f0610942c4acd03",
+    "phoneNumber": "0904228421",
+    "avatarUrl": "https://cdn.hvtravel.vn/mock/customer-avatar/059.jpg",
+    "address": {
+      "street": "677 Le Loi",
+      "city": "Ho Chi Minh City",
+      "country": "Vietnam"
+    },
+    "notes": "",
+    "segment": "Standard",
+    "status": "Active",
+    "emailVerified": true,
+    "tokenVersion": 3,
+    "stats": {
+      "lifetimeSpend": 7300000,
+      "tripCount": 1,
+      "loyaltyPoints": 180,
+      "pendingPoints": 0,
+      "tier": "Explorer",
+      "referralCode": "REF-0060",
+      "voucherBalance": 3,
+      "lastActivity": {
+        "$date": "2026-02-13T05:18:48.000Z"
+      },
+      "lastCompletedTripAt": {
+        "$date": "2026-02-07T01:31:48.000Z"
+      }
+    },
+    "tags": [
+      "lead"
+    ],
+    "createdAt": {
+      "$date": "2024-10-15T02:43:59.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-23T19:01:54.000Z"
+    }
+  }
+]

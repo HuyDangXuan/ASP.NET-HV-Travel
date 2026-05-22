@@ -1,4 +1,5 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Application.Interfaces;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 
@@ -11,19 +12,22 @@ public class BookingWorkflowService
     private readonly IRepository<Payment> _paymentRepository;
     private readonly IRepository<LoyaltyLedgerEntry> _ledgerRepository;
     private readonly IRepository<Notification> _notificationRepository;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
     public BookingWorkflowService(
         IRepository<Booking> bookingRepository,
         IRepository<Customer> customerRepository,
         IRepository<Payment> paymentRepository,
         IRepository<LoyaltyLedgerEntry> ledgerRepository,
-        IRepository<Notification> notificationRepository)
+        IRepository<Notification> notificationRepository,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _bookingRepository = bookingRepository;
         _customerRepository = customerRepository;
         _paymentRepository = paymentRepository;
         _ledgerRepository = ledgerRepository;
         _notificationRepository = notificationRepository;
+        _searchIndexingService = searchIndexingService;
     }
 
     public async Task<bool> ProcessGatewayCallbackAsync(PaymentGatewayWebhookModel model)
@@ -38,8 +42,8 @@ public class BookingWorkflowService
         booking.Events ??= new List<BookingEvent>();
         booking.HistoryLog ??= new List<BookingHistoryLog>();
 
-        var existingTransaction = booking.PaymentTransactions.FirstOrDefault(t =>
-            string.Equals(t.TransactionId, model.TransactionId, StringComparison.OrdinalIgnoreCase));
+        var existingTransaction = booking.PaymentTransactions.FirstOrDefault(transaction =>
+            string.Equals(transaction.TransactionId, model.TransactionId, StringComparison.OrdinalIgnoreCase));
 
         if (existingTransaction != null && string.Equals(existingTransaction.Status, "Success", StringComparison.OrdinalIgnoreCase))
         {
@@ -98,6 +102,7 @@ public class BookingWorkflowService
         }
 
         await _bookingRepository.UpdateAsync(booking.Id, booking);
+        await (_searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask);
         return true;
     }
 
@@ -167,12 +172,13 @@ public class BookingWorkflowService
         });
 
         await _customerRepository.UpdateAsync(customer.Id, customer);
+        await (_searchIndexingService?.UpsertCustomerAsync(customer) ?? Task.CompletedTask);
     }
 
     private async Task EnsureNotificationAsync(Booking booking, string transactionId, string reference)
     {
         var title = $"Thanh toán booking {booking.BookingCode} thành công";
-        var existingNotification = (await _notificationRepository.FindAsync(n => n.RecipientId == booking.CustomerId && n.Title == title)).FirstOrDefault();
+        var existingNotification = (await _notificationRepository.FindAsync(notification => notification.RecipientId == booking.CustomerId && notification.Title == title)).FirstOrDefault();
         if (existingNotification != null)
         {
             return;

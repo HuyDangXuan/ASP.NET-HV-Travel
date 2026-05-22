@@ -77,6 +77,8 @@ public class TourAiBootstrapRequest
     public string VisitorSessionId { get; set; } = string.Empty;
 
     public string SourcePage { get; set; } = "/";
+
+    public string RouteStyle { get; set; } = "balanced";
 }
 
 public class TourAiSendMessageRequest
@@ -95,6 +97,8 @@ public class TourAiBootstrapResponse
     public ChatConversationDto Conversation { get; set; } = new();
 
     public List<ChatMessageDto> Messages { get; set; } = [];
+
+    public List<string> SuggestedPrompts { get; set; } = [];
 
     public bool IsAssistantPending { get; set; }
 }

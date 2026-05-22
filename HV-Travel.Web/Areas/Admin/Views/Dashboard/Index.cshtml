@@ -1,5 +1,6 @@
 @using System.Globalization
 @using System.Text.Json
+@using HVTravel.Web.Services
 @model HVTravel.Web.Models.DashboardViewModel
 @{
     ViewData["Title"] = "Tổng Quan";
@@ -30,6 +31,12 @@
     string GetStatusVietnamese(string status)
     {
         if (string.IsNullOrEmpty(status)) return "Chưa có";
+
+        var bookingStatusText = BookingDisplayTextHelper.BookingStatus(status);
+        if (!string.Equals(bookingStatusText, status, StringComparison.Ordinal))
+        {
+            return bookingStatusText;
+        }
 
         if (bookingStatusMapping.ContainsKey(status)) return bookingStatusMapping[status];
         if (paymentStatusMapping.ContainsKey(status)) return paymentStatusMapping[status];
@@ -313,7 +320,7 @@
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> @GetStatusVietnamese(item.Status)
                                 </span>
                             }
-                            else if (item.Status == "Pending")
+                            else if (item.Status == "Pending" || item.Status == "PendingPayment")
                             {
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-900">
                                     <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> @GetStatusVietnamese(item.Status)

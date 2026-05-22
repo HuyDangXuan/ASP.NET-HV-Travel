@@ -1,4 +1,6 @@
-﻿using HVTravel.Domain.Entities;
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
+using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +10,14 @@ namespace HVTravel.Web.Controllers;
 public class BookingLookupController : Controller
 {
     private readonly IRepository<Booking> _bookingRepository;
+    private readonly IBookingLookupSearchService? _bookingLookupSearchService;
 
-    public BookingLookupController(IRepository<Booking> bookingRepository)
+    public BookingLookupController(
+        IRepository<Booking> bookingRepository,
+        IBookingLookupSearchService? bookingLookupSearchService = null)
     {
         _bookingRepository = bookingRepository;
+        _bookingLookupSearchService = bookingLookupSearchService;
     }
 
     [HttpGet]
@@ -42,11 +48,14 @@ public class BookingLookupController : Controller
             return View("Index", model);
         }
 
-        var normalizedPhone = NormalizePhone(model.QueryPhone);
-        var booking = (await _bookingRepository.FindAsync(b => b.BookingCode == model.QueryBookingCode))
-            .FirstOrDefault(candidate =>
-                (!string.IsNullOrWhiteSpace(model.QueryEmail) && string.Equals(candidate.ContactInfo?.Email?.Trim(), model.QueryEmail, StringComparison.OrdinalIgnoreCase)) ||
-                (!string.IsNullOrWhiteSpace(normalizedPhone) && NormalizePhone(candidate.ContactInfo?.Phone) == normalizedPhone));
+        var booking = _bookingLookupSearchService != null
+            ? await _bookingLookupSearchService.LookupAsync(new BookingLookupSearchRequest
+            {
+                BookingCode = model.QueryBookingCode,
+                Email = model.QueryEmail,
+                Phone = model.QueryPhone
+            })
+            : await LookupWithRepositoryAsync(model.QueryBookingCode, model.QueryEmail, model.QueryPhone);
 
         if (booking == null)
         {
@@ -78,5 +87,15 @@ public class BookingLookupController : Controller
         return string.IsNullOrWhiteSpace(value)
             ? string.Empty
             : new string(value.Where(char.IsDigit).ToArray());
+    }
+
+    private async Task<Booking?> LookupWithRepositoryAsync(string bookingCode, string email, string phone)
+    {
+        var normalizedPhone = NormalizePhone(phone);
+        return (await _bookingRepository.FindAsync(b => b.BookingCode == bookingCode))
+            .Where(static booking => booking.PublicLookupEnabled && !booking.IsDeleted)
+            .FirstOrDefault(candidate =>
+                (!string.IsNullOrWhiteSpace(email) && string.Equals(candidate.ContactInfo?.Email?.Trim(), email, StringComparison.OrdinalIgnoreCase)) ||
+                (!string.IsNullOrWhiteSpace(normalizedPhone) && NormalizePhone(candidate.ContactInfo?.Phone) == normalizedPhone));
     }
 }

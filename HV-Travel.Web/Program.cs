@@ -23,15 +23,18 @@ builder.Services.AddHttpClient<IGroqChatClient, GroqChatClient>();
 builder.Services.AddSingleton<ITourAiJobQueue, TourAiJobQueue>();
 builder.Services.AddSingleton<ITourAiPendingTracker, TourAiPendingTracker>();
 builder.Services.AddHostedService<TourAiReplyWorker>();
+builder.Services.AddHostedService<MeilisearchBootstrapHostedService>();
 
 // Add Layered Services
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddScoped<IPublicContentService, PublicContentService>();
 builder.Services.AddScoped<ISupportChatService, SupportChatService>();
+builder.Services.AddScoped<ITourAiRouteAdvisorContextBuilder, TourAiRouteAdvisorContextBuilder>();
 builder.Services.AddScoped<ITourAiChatService, TourAiChatService>();
 builder.Services.AddScoped<CustomerPortalService>();
 builder.Services.AddScoped<BookingWorkflowService>();
+builder.Services.AddScoped<AdminNotificationDropdownService>();
 builder.Services.AddScoped<IWebQrLoginService, WebQrLoginService>();
 
 // Add Authentication
@@ -141,5 +144,4 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
 

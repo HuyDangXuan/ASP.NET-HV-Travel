@@ -1,4 +1,5 @@
 ﻿@model List<HVTravel.Domain.Entities.Promotion>
+@using HVTravel.Web.Services
 @{
     ViewData["Title"] = "Promotions";
 }
@@ -29,7 +30,9 @@
                 </div>
                 <span class="text-3xl font-black text-primary">@item.DiscountPercentage.ToString("0")%</span>
             </div>
-            <p class="mt-4 text-sm text-slate-500">@item.Description</p>
+            <div class="mt-4 max-w-none text-sm leading-7 text-slate-500 dark:text-slate-400 [&_p]:m-0 [&_p+p]:mt-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1">
+                @Html.Raw(RichTextContentFormatter.ToTrustedHtml(item.Description))
+            </div>
             <div class="mt-5 flex items-center justify-between text-xs text-slate-400">
                 <span>@item.CampaignType</span>
                 <span>@item.ValidTo.ToString("dd/MM/yyyy")</span>

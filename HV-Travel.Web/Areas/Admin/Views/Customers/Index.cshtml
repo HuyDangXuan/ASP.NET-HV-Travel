@@ -1,6 +1,12 @@
 @using HVTravel.Web.Models
 @model CustomerIndexViewModel
 @{
+    var currentFilter = ViewBag.CurrentFilter as string ?? string.Empty;
+    var currentSort = ViewBag.CurrentSort as string ?? string.Empty;
+    var selectedSegments = ViewBag.SelectedSegments as string[] ?? Array.Empty<string>();
+    decimal? currentMinSpending = ViewBag.MinSpending is decimal minSpendingValue ? minSpendingValue : null;
+    int? currentMinOrders = ViewBag.MinOrders is int minOrdersValue ? minOrdersValue : null;
+    int currentPageSize = ViewBag.CurrentPageSize is int pageSizeValue ? pageSizeValue : Model.Pagination.PageSize;
     ViewData["Title"] = "Khách Hàng";
 }
 
@@ -134,13 +140,15 @@
         <!-- Segment Tabs -->
         <!-- Replaced Segment Tabs with Toolbar -->
         <form data-animate="fade-in-up" data-delay="0.2" method="get" action="@Url.Action("Index")" id="filter-form" class="relative z-20 bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex flex-wrap items-center gap-4">
-            
+            <input type="hidden" name="sortOrder" value="@currentSort" />
+            <input type="hidden" name="pageSize" value="@currentPageSize" />
+
             <!-- Search Bar -->
             <div class="flex-1 min-w-[200px]">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
                     <input name="searchQuery" 
-                           value="@ViewBag.CurrentFilter"
+                           value="@currentFilter"
                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-primary focus:border-primary outline-none transition-all"
                            placeholder="Tìm kiếm theo tên, email, hoặc sđt..."
                            type="text" 
@@ -165,9 +173,6 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Phân Khúc</label>
                                 <div class="space-y-2">
-                                    @{
-                                        var selectedSegments = ViewBag.SelectedSegments as string[] ?? new string[0];
-                                    }
                                     <label class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" name="segments" value="VIP" class="rounded border-slate-300 text-primary focus:ring-primary" @(selectedSegments.Contains("VIP") ? "checked" : "") />
                                         <span class="text-sm text-slate-700 dark:text-slate-300">VIP</span>
@@ -191,12 +196,12 @@
                             <div>
                                 <div class="flex justify-between mb-2">
                                     <label class="text-xs font-bold text-slate-500 uppercase">Chi Tiêu Tối Thiểu</label>
-                                    <span id="spending-label" class="text-xs font-bold text-primary">@((ViewBag.MinSpending ?? 0).ToString("N0"))₫+</span>
+                                    <span id="spending-label" class="text-xs font-bold text-primary">@((currentMinSpending ?? 0).ToString("N0"))₫+</span>
                                 </div>
                                 <input type="range" id="minSpending" 
                                        class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
                                        min="0" max="100000000" step="1000000" 
-                                       value="@(ViewBag.MinSpending ?? 0)"
+                                       value="@(currentMinSpending ?? 0)"
                                        oninput="updateSpendingLabel(this)" />
                             </div>
 
@@ -204,12 +209,12 @@
                             <div>
                                 <div class="flex justify-between mb-2">
                                     <label class="text-xs font-bold text-slate-500 uppercase">Số Đơn Tối Thiểu</label>
-                                    <span id="orders-label" class="text-xs font-bold text-primary">@(ViewBag.MinOrders ?? 0)+</span>
+                                    <span id="orders-label" class="text-xs font-bold text-primary">@(currentMinOrders ?? 0)+</span>
                                 </div>
                                 <input type="range" id="minOrders" 
                                        class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary" 
                                        min="0" max="50" step="1"
-                                       value="@(ViewBag.MinOrders ?? 0)"
+                                       value="@(currentMinOrders ?? 0)"
                                        oninput="updateOrdersLabel(this)" />
                             </div>
                         </div>
@@ -416,15 +421,33 @@
             </div>
 
             <!-- Pagination -->
-            <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
-                <p class="text-xs text-slate-500 dark:text-slate-400">
-                    Hiển thị <span class="font-bold text-slate-900 dark:text-white">@(((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1) - @Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount)</span>
-                    trong số <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> kết quả
-                </p>
+            <div class="p-6 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30 dark:bg-slate-800/20 mt-auto">
+                @{
+                    var startItem = Model.Pagination.TotalCount == 0 ? 0 : ((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize) + 1;
+                    var endItem = Model.Pagination.TotalCount == 0 ? 0 : Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalCount);
+                    int[] pageSizes = [10, 15, 20, 50, 100];
+                }
+                <div class="flex items-center gap-4">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        Hi&#7875;n th&#7883; <span class="font-bold text-slate-900 dark:text-white">@startItem - @endItem</span>
+                        trong s&#7889; <span class="font-bold text-slate-900 dark:text-white">@Model.Pagination.TotalCount</span> k&#7871;t qu&#7843;
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <label for="pageSize" class="text-xs font-medium text-slate-500 dark:text-slate-400">Hi&#7875;n th&#7883;:</label>
+                        <div class="min-w-[92px]">
+                            <select id="pageSize" onchange="changePageSize(this.value)" class="w-full" data-admin-select="compact">
+                                @foreach (var size in pageSizes)
+                                {
+                                    <option value="@size" selected="@(size == currentPageSize)">@size</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-2">
                     <!-- Prev -->
-                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1 })"
+                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage - 1, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                        class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasPrevious ? "" : "pointer-events-none opacity-50")">
                         <span class="material-symbols-outlined text-lg">chevron_left</span>
                     </a>
@@ -439,7 +462,7 @@
                         {
                             if (i <= 3 || i == Model.Pagination.TotalPages || (i >= Model.Pagination.CurrentPage - 1 && i <= Model.Pagination.CurrentPage + 1))
                             {
-                                <a href="@Url.Action("Index", new { page = i })"
+                                <a href="@Url.Action("Index", new { page = i, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors">@i</a>
                             }
                             else if (i == 4 && Model.Pagination.TotalPages > 6)
@@ -450,7 +473,7 @@
                     }
 
                     <!-- Next -->
-                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1 })"
+                    <a href="@Url.Action("Index", new { page = Model.Pagination.CurrentPage + 1, pageSize = currentPageSize, searchQuery = currentFilter, segments = selectedSegments, minSpending = currentMinSpending, minOrders = currentMinOrders, sortOrder = currentSort })"
                        class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors @(Model.Pagination.HasNext ? "" : "pointer-events-none opacity-50")">
                         <span class="material-symbols-outlined text-lg">chevron_right</span>
                     </a>
@@ -748,6 +771,13 @@
         const params = new URLSearchParams(window.location.search);
         params.set('sortOrder', sortOrder);
         window.location.href = '@Url.Action("Index")' + '?' + params.toString();
+    }
+
+    function changePageSize(size) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('pageSize', size);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
     }
 
     function resetFilters() {

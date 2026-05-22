@@ -1,0 +1,261 @@
+[
+  {
+    "_id": {
+      "$oid": "6b4cb2424a23d5962217bead"
+    },
+    "code": "TOUR-00001",
+    "name": "Ha Giang Loop Explorer",
+    "slug": "ha-giang-loop-explorer-00001",
+    "description": "<p>Mountain passes, small villages, and a compact 3-day route through the far north.</p><p>The route works well for first-time visitors who want food, scenery, and easy transfers. The article focuses on visa timing, budget planning, and the best travel window.</p>",
+    "shortDescription": "Mountain passes, small villages, and a compact 3-day route through the far north.",
+    "seo": {
+      "title": "Ha Giang Loop Explorer | HV Travel",
+      "description": "Mountain passes, small villages, and a compact 3-day route through the far north.",
+      "canonicalPath": "/PublicTours/ha-giang-loop-explorer-00001",
+      "openGraphImageUrl": "https://cdn.hvtravel.vn/mock/ha-giang/000.jpg"
+    },
+    "destination": {
+      "city": "Ha Giang",
+      "country": "Vietnam",
+      "region": "North"
+    },
+    "images": [
+      "https://cdn.hvtravel.vn/mock/ha-giang/000.jpg",
+      "https://cdn.hvtravel.vn/mock/ha-giang-detail/000.jpg"
+    ],
+    "price": {
+      "adult": {
+        "$numberDecimal": "3800000"
+      },
+      "child": {
+        "$numberDecimal": "2736000"
+      },
+      "infant": {
+        "$numberDecimal": "456000"
+      },
+      "currency": "VND",
+      "discount": 0.0
+    },
+    "duration": {
+      "days": 3,
+      "nights": 2,
+      "text": "3 Days 2 Nights"
+    },
+    "startDates": [
+      {
+        "$date": "2026-04-03T12:00:00.000Z"
+      },
+      {
+        "$date": "2026-05-13T12:00:00.000Z"
+      },
+      {
+        "$date": "2026-06-08T12:00:00.000Z"
+      }
+    ],
+    "departures": [
+      {
+        "id": "ha-giang-loop-explorer-00001-departure-1",
+        "startDate": {
+          "$date": "2026-04-03T12:00:00.000Z"
+        },
+        "adultPrice": {
+          "$numberDecimal": "3800000"
+        },
+        "childPrice": {
+          "$numberDecimal": "2736000"
+        },
+        "infantPrice": {
+          "$numberDecimal": "456000"
+        },
+        "discountPercentage": 0.0,
+        "capacity": 14,
+        "bookedCount": 2,
+        "confirmationType": "Instant",
+        "status": "Scheduled",
+        "cutoffHours": 24
+      },
+      {
+        "id": "ha-giang-loop-explorer-00001-departure-2",
+        "startDate": {
+          "$date": "2026-05-13T12:00:00.000Z"
+        },
+        "adultPrice": {
+          "$numberDecimal": "3800000"
+        },
+        "childPrice": {
+          "$numberDecimal": "2736000"
+        },
+        "infantPrice": {
+          "$numberDecimal": "456000"
+        },
+        "discountPercentage": 0.0,
+        "capacity": 14,
+        "bookedCount": 2,
+        "confirmationType": "Instant",
+        "status": "Scheduled",
+        "cutoffHours": 24
+      },
+      {
+        "id": "ha-giang-loop-explorer-00001-departure-3",
+        "startDate": {
+          "$date": "2026-06-08T12:00:00.000Z"
+        },
+        "adultPrice": {
+          "$numberDecimal": "3800000"
+        },
+        "childPrice": {
+          "$numberDecimal": "2736000"
+        },
+        "infantPrice": {
+          "$numberDecimal": "456000"
+        },
+        "discountPercentage": 0.0,
+        "capacity": 14,
+        "bookedCount": 2,
+        "confirmationType": "Instant",
+        "status": "Scheduled",
+        "cutoffHours": 24
+      }
+    ],
+    "schedule": [
+      {
+        "day": 1,
+        "title": "Ha Giang - Quan Ba - Yen Minh",
+        "description": "Our operations team confirmed pickup details before the final departure note went out. The promotion was created for guests comparing multiple departures in the same month.",
+        "activities": [
+          "Twin Mountains lookout",
+          "Evening market walk"
+        ]
+      },
+      {
+        "day": 2,
+        "title": "Yen Minh - Dong Van - Ma Pi Leng",
+        "description": "The family asked for child-friendly pacing and a hotel close to the city center. The article focuses on visa timing, budget planning, and the best travel window.",
+        "activities": [
+          "Ma Pi Leng pass stop",
+          "Nho Que boat ride"
+        ]
+      },
+      {
+        "day": 3,
+        "title": "Dong Van - Meo Vac - Ha Giang",
+        "description": "The support team shared check-in guidance and baggage notes after payment cleared. The route works well for first-time visitors who want food, scenery, and easy transfers.",
+        "activities": [
+          "Hmong King Palace",
+          "Return to city center"
+        ]
+      }
+    ],
+    "highlights": [
+      "Twin Mountains lookout",
+      "Evening market walk",
+      "Ma Pi Leng pass stop",
+      "Nho Que boat ride"
+    ],
+    "generatedInclusions": [
+      "Sleeper bus",
+      "Homestay",
+      "Local guide",
+      "Breakfast"
+    ],
+    "generatedExclusions": [
+      "Personal drinks",
+      "Travel insurance"
+    ],
+    "cancellationPolicy": {
+      "summary": "Free cancellation up to 48 hours before departure.",
+      "isFreeCancellation": true,
+      "freeCancellationBeforeHours": 48
+    },
+    "confirmationType": "Instant",
+    "meetingPoint": "HV Travel office, 18 Nguyen Trai, Ha Giang City. Meet 30 minutes before departure.",
+    "badgeSet": [],
+    "routing": {
+      "schemaVersion": 1,
+      "stops": [
+        {
+          "id": "ha-giang-loop-explorer-00001-day1-stop1",
+          "day": 1,
+          "order": 1,
+          "name": "Twin Mountains lookout",
+          "type": "viewpoint",
+          "coordinates": {
+            "lat": 23.0324,
+            "lng": 104.8856
+          },
+          "visitMinutes": 35,
+          "attractionScore": 8.4,
+          "note": "Photo stop with a short uphill walk and a wide valley view."
+        },
+        {
+          "id": "ha-giang-loop-explorer-00001-day1-stop2",
+          "day": 1,
+          "order": 2,
+          "name": "Quan Ba town lunch stop",
+          "type": "rest-stop",
+          "coordinates": {
+            "lat": 23.0461,
+            "lng": 104.9538
+          },
+          "visitMinutes": 60,
+          "attractionScore": 6.8,
+          "note": "Refuel and regroup before continuing toward Yen Minh."
+        },
+        {
+          "id": "ha-giang-loop-explorer-00001-day2-stop1",
+          "day": 2,
+          "order": 1,
+          "name": "Ma Pi Leng pass stop",
+          "type": "viewpoint",
+          "coordinates": {
+            "lat": 23.1603,
+            "lng": 105.2748
+          },
+          "visitMinutes": 40,
+          "attractionScore": 9.5,
+          "note": "Main scenic stop with strong photo value and short walking segments."
+        },
+        {
+          "id": "ha-giang-loop-explorer-00001-day2-stop2",
+          "day": 2,
+          "order": 2,
+          "name": "Nho Que boat ride pier",
+          "type": "activity",
+          "coordinates": {
+            "lat": 23.1567,
+            "lng": 105.2864
+          },
+          "visitMinutes": 95,
+          "attractionScore": 9.0,
+          "note": "Longer stop for boarding, river activity, and return transfer."
+        },
+        {
+          "id": "ha-giang-loop-explorer-00001-day3-stop1",
+          "day": 3,
+          "order": 1,
+          "name": "Hmong King Palace",
+          "type": "heritage",
+          "coordinates": {
+            "lat": 23.1355,
+            "lng": 105.2388
+          },
+          "visitMinutes": 50,
+          "attractionScore": 8.1,
+          "note": "Culture-heavy stop before the return leg to Ha Giang City."
+        }
+      ]
+    },
+    "maxParticipants": 14,
+    "currentParticipants": 6,
+    "rating": 4.4,
+    "reviewCount": 18,
+    "createdAt": {
+      "$date": "2024-12-24T13:05:51.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-12T17:36:47.000Z"
+    },
+    "version": 0,
+    "status": "Active"
+  }
+]

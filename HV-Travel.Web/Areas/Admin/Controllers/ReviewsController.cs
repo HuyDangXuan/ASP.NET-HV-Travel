@@ -1,3 +1,5 @@
+using HVTravel.Application.Interfaces;
+using HVTravel.Application.Models;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Domain.Models;
@@ -13,12 +15,19 @@ namespace HVTravel.Web.Areas.Admin.Controllers;
 public class ReviewsController : Controller
 {
     private readonly IRepository<Review> _reviewRepository;
+    private readonly IAdminReviewSearchService? _adminReviewSearchService;
+    private readonly ISearchIndexingService? _searchIndexingService;
     private const int DefaultPageSize = 10;
     private static readonly int[] AllowedPageSizes = [10, 15, 20, 50, 100];
 
-    public ReviewsController(IRepository<Review> reviewRepository)
+    public ReviewsController(
+        IRepository<Review> reviewRepository,
+        IAdminReviewSearchService? adminReviewSearchService = null,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _reviewRepository = reviewRepository;
+        _adminReviewSearchService = adminReviewSearchService;
+        _searchIndexingService = searchIndexingService;
     }
 
     public async Task<IActionResult> Index(
@@ -39,10 +48,35 @@ public class ReviewsController : Controller
             pageSize = DefaultPageSize;
         }
 
-        ViewBag.CurrentSort = sortOrder;
-        ViewBag.DateSortParm = string.IsNullOrEmpty(sortOrder) ? "date_asc" : string.Empty;
-        ViewBag.RatingSortParm = sortOrder == "rating" ? "rating_desc" : "rating";
-        ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+        ApplySortViewBags(sortOrder);
+
+        if (_adminReviewSearchService != null)
+        {
+            var result = await _adminReviewSearchService.SearchAsync(new AdminReviewSearchRequest
+            {
+                Status = status,
+                Verified = verified,
+                SearchString = searchString,
+                StartDate = startDate,
+                EndDate = endDate,
+                SortOrder = sortOrder,
+                Page = page,
+                PageSize = pageSize
+            });
+
+            ViewData["CurrentStatus"] = string.IsNullOrWhiteSpace(status) ? "all" : status.Trim().ToLowerInvariant();
+            ViewData["CurrentVerified"] = string.IsNullOrWhiteSpace(verified) ? "all" : verified.Trim().ToLowerInvariant();
+            ViewData["CurrentSearch"] = searchString;
+            ViewData["CurrentStartDate"] = startDate;
+            ViewData["CurrentEndDate"] = endDate;
+            ViewData["CurrentPageSize"] = pageSize;
+
+            return View(new PaginatedResult<AdminReviewListItemViewModel>(
+                result.Items.Select(ToListItem).ToList(),
+                result.TotalCount,
+                result.PageIndex,
+                result.PageSize));
+        }
 
         var reviews = (await _reviewRepository.GetAllAsync()).AsEnumerable();
         var normalizedStatus = string.IsNullOrWhiteSpace(status) ? "all" : status.Trim().ToLowerInvariant();
@@ -79,8 +113,8 @@ public class ReviewsController : Controller
             _ => reviews.OrderByDescending(review => review.CreatedAt)
         };
 
-        var totalCount = reviews.Count();
-        var items = reviews
+        var ordered = reviews.ToList();
+        var items = ordered
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(ToListItem)
@@ -93,7 +127,7 @@ public class ReviewsController : Controller
         ViewData["CurrentEndDate"] = endDate;
         ViewData["CurrentPageSize"] = pageSize;
 
-        return View(new PaginatedResult<AdminReviewListItemViewModel>(items, totalCount, page, pageSize));
+        return View(new PaginatedResult<AdminReviewListItemViewModel>(items, ordered.Count, page, pageSize));
     }
 
     [HttpPost]
@@ -108,6 +142,7 @@ public class ReviewsController : Controller
 
         ApplyModeration(review, isApproved, User.Identity?.Name ?? "Admin");
         await _reviewRepository.UpdateAsync(review.Id, review);
+        await SyncSearchUpsertAsync(review);
         return RedirectToIndex(returnUrl);
     }
 
@@ -136,6 +171,7 @@ public class ReviewsController : Controller
 
             ApplyModeration(review, isApproved, moderatorName);
             await _reviewRepository.UpdateAsync(review.Id, review);
+            await SyncSearchUpsertAsync(review);
         }
 
         return RedirectToIndex(returnUrl);
@@ -297,5 +333,18 @@ public class ReviewsController : Controller
             "rejected" => "Đã từ chối",
             _ => "Chờ duyệt"
         };
+    }
+
+    private void ApplySortViewBags(string sortOrder)
+    {
+        ViewBag.CurrentSort = sortOrder;
+        ViewBag.DateSortParm = string.IsNullOrEmpty(sortOrder) ? "date_asc" : string.Empty;
+        ViewBag.RatingSortParm = sortOrder == "rating" ? "rating_desc" : "rating";
+        ViewBag.StatusSortParm = sortOrder == "status" ? "status_desc" : "status";
+    }
+
+    private Task SyncSearchUpsertAsync(Review? review)
+    {
+        return _searchIndexingService?.UpsertReviewAsync(review) ?? Task.CompletedTask;
     }
 }

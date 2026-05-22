@@ -1,13 +1,13 @@
 (function () {
     const STORAGE_KEYS = {
         wishlist: 'hvtravel_wishlist',
-        recent: 'hvtravel_recent'
+        recent: 'hvtravel_recent',
+        planner: 'hvtravel_trip_planner'
     };
 
     const currencyFormatter = new Intl.NumberFormat('vi-VN');
     const wishlistActiveClasses = ['border-primary', 'bg-primary', 'text-white', 'shadow-primary/30', 'dark:border-primary', 'dark:bg-primary', 'dark:text-white'];
     const wishlistInactiveClasses = ['border-white/50', 'bg-white/90', 'text-slate-600', 'shadow-slate-900/15', 'dark:border-white/10', 'dark:bg-slate-950/80', 'dark:text-slate-200'];
-
     const parseItems = (key) => {
         try {
             return JSON.parse(localStorage.getItem(key) || '[]');
@@ -28,6 +28,7 @@
     });
 
     const isWishlisted = (id) => parseItems(STORAGE_KEYS.wishlist).some((entry) => entry.id === id);
+    const isInPlanner = (id) => parseItems(STORAGE_KEYS.planner).some((entry) => entry.id === id);
 
     const setHeartState = (button, active) => {
         button.setAttribute('aria-pressed', active ? 'true' : 'false');
@@ -48,6 +49,27 @@
             }
 
             setHeartState(button, isWishlisted(card.dataset.tourId));
+        });
+    };
+
+    const setPlannerState = (button, active) => {
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        button.dataset.plannerActive = active ? 'true' : 'false';
+
+        const icon = button.querySelector('[data-tour-planner-icon]');
+        if (icon) {
+            icon.textContent = active ? 'playlist_add_check' : 'playlist_add';
+        }
+    };
+
+    const syncPlannerButtons = () => {
+        document.querySelectorAll('[data-tour-planner-toggle]').forEach((button) => {
+            const card = button.closest('[data-tour-id]');
+            if (!card) {
+                return;
+            }
+
+            setPlannerState(button, isInPlanner(card.dataset.tourId));
         });
     };
 
@@ -83,6 +105,7 @@
         }
 
         syncWishlistButtons();
+        syncPlannerButtons();
     };
 
     document.querySelectorAll('.record-view').forEach((link) => {
@@ -118,6 +141,30 @@
             }
 
             saveItems(STORAGE_KEYS.wishlist, wishlist);
+            render();
+        });
+    });
+
+    document.querySelectorAll('[data-tour-planner-toggle]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const card = button.closest('[data-tour-id]');
+            if (!card) {
+                return;
+            }
+
+            const item = buildItemFromCard(card);
+            const planner = parseItems(STORAGE_KEYS.planner).filter((entry) => entry.id !== item.id);
+            const currentlySaved = isInPlanner(item.id);
+
+            if (!currentlySaved) {
+                planner.unshift(item);
+            }
+
+            saveItems(STORAGE_KEYS.planner, planner);
+            window.dispatchEvent(new CustomEvent('hvtravel:trip-planner-changed'));
             render();
         });
     });

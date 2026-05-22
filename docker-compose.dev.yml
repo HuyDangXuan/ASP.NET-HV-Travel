@@ -16,6 +16,19 @@ services:
       - NUGET_PACKAGES=/root/.nuget/packages
       - HVTravelDatabase__ConnectionString=${HVTravelDatabase__ConnectionString}
       - HVTravelDatabase__DatabaseName=HV-Travel
+      - Meilisearch__Enabled=true
+      - Meilisearch__Url=http://meilisearch:7700
+      - Meilisearch__ApiKey=${Meilisearch__ApiKey:-masterKey}
+      - Meilisearch__BootstrapOnStartup=true
+      - Meilisearch__Indexes__Tours=hv_travel_tours
+      - Meilisearch__Indexes__Bookings=hv_travel_bookings
+      - Meilisearch__Indexes__Users=hv_travel_users
+      - Meilisearch__Indexes__Reviews=hv_travel_reviews
+      - Meilisearch__Indexes__ServiceLeads=hv_travel_service_leads
+      - Meilisearch__Indexes__Customers=hv_travel_customers
+      - Meilisearch__Indexes__Payments=hv_travel_payments
+    depends_on:
+      - meilisearch
     volumes:
       - .:/src
       - nuget_packages:/root/.nuget/packages
@@ -28,6 +41,18 @@ services:
       - hv_travel_infrastructure_obj:/src/HV-Travel.Infrastructure/obj
       - hv_travel_infrastructure_bin:/src/HV-Travel.Infrastructure/bin
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.37
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${Meilisearch__ApiKey:-masterKey}
+      - MEILI_ENV=development
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - meilisearch_data:/meili_data
+
 volumes:
   nuget_packages:
   hv_travel_web_obj:
@@ -38,3 +63,4 @@ volumes:
   hv_travel_domain_bin:
   hv_travel_infrastructure_obj:
   hv_travel_infrastructure_bin:
+  meilisearch_data:

@@ -7,11 +7,13 @@ namespace HVTravel.Application.Services
 {
     public class TourService : ITourService
     {
-        private readonly IRepository<Tour> _tourRepository;
+        private readonly ITourRepository _tourRepository;
+        private readonly ITourSearchIndexingService? _tourSearchIndexingService;
 
-        public TourService(IRepository<Tour> tourRepository)
+        public TourService(ITourRepository tourRepository, ITourSearchIndexingService? tourSearchIndexingService = null)
         {
             _tourRepository = tourRepository;
+            _tourSearchIndexingService = tourSearchIndexingService;
         }
 
         public async Task<IEnumerable<Tour>> GetAllToursAsync()
@@ -27,16 +29,28 @@ namespace HVTravel.Application.Services
         public async Task CreateTourAsync(Tour tour)
         {
             await _tourRepository.AddAsync(tour);
+            if (_tourSearchIndexingService != null)
+            {
+                await _tourSearchIndexingService.UpsertTourAsync(tour);
+            }
         }
 
         public async Task UpdateTourAsync(Tour tour)
         {
             await _tourRepository.UpdateAsync(tour.Id, tour);
+            if (_tourSearchIndexingService != null)
+            {
+                await _tourSearchIndexingService.UpsertTourAsync(tour);
+            }
         }
 
         public async Task DeleteTourAsync(string id)
         {
             await _tourRepository.DeleteAsync(id);
+            if (_tourSearchIndexingService != null)
+            {
+                await _tourSearchIndexingService.DeleteTourAsync(id);
+            }
         }
     }
 }

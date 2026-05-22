@@ -13,6 +13,7 @@ public class CheckoutService : ICheckoutService
     private readonly IPricingService _pricingService;
     private readonly IInventoryService _inventoryService;
     private readonly IAnalyticsTracker _analyticsTracker;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
     public CheckoutService(
         ITourRepository tourRepository,
@@ -20,7 +21,8 @@ public class CheckoutService : ICheckoutService
         IRepository<CheckoutSession> checkoutSessionRepository,
         IPricingService pricingService,
         IInventoryService inventoryService,
-        IAnalyticsTracker analyticsTracker)
+        IAnalyticsTracker analyticsTracker,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _tourRepository = tourRepository;
         _bookingRepository = bookingRepository;
@@ -28,6 +30,7 @@ public class CheckoutService : ICheckoutService
         _pricingService = pricingService;
         _inventoryService = inventoryService;
         _analyticsTracker = analyticsTracker;
+        _searchIndexingService = searchIndexingService;
     }
 
     public async Task<CreateCheckoutResult> CreateCheckoutAsync(CreateCheckoutRequest request)
@@ -127,6 +130,7 @@ public class CheckoutService : ICheckoutService
         AddTimelineEntry(booking, "inventory", "Gi\u1EEF ch\u1ED7 t\u1EA1m th\u1EDDi", $"\u0110\u00E3 gi\u1EEF {travellerCount} ch\u1ED7 tr\u00EAn departure {selectedDeparture.Id}.", "System", now);
 
         await _bookingRepository.AddAsync(booking);
+        await (_searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask);
 
         var session = new CheckoutSession
         {
@@ -146,6 +150,7 @@ public class CheckoutService : ICheckoutService
 
         booking.CheckoutSessionId = session.Id;
         await _bookingRepository.UpdateAsync(booking.Id, booking);
+        await (_searchIndexingService?.UpsertBookingAsync(booking) ?? Task.CompletedTask);
 
         await _analyticsTracker.TrackAsync("checkout_created", new Dictionary<string, string?>
         {

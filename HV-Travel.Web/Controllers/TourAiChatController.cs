@@ -22,13 +22,15 @@ public sealed class TourAiChatController : Controller
     {
         try
         {
-            var conversation = await _tourAiChatService.BootstrapConversationAsync(request, User);
+            var bootstrapResult = await _tourAiChatService.BootstrapConversationAsync(request, User);
+            var conversation = bootstrapResult.Conversation;
             var messages = await _tourAiChatService.GetMessagesAsync(conversation.Id);
 
             return Json(new TourAiBootstrapResponse
             {
                 Conversation = ToConversationDto(conversation),
                 Messages = messages.Select(ToMessageDto).ToList(),
+                SuggestedPrompts = bootstrapResult.SuggestedPrompts.ToList(),
                 IsAssistantPending = _pendingTracker.IsPending(conversation.Id)
             });
         }
@@ -38,7 +40,7 @@ public sealed class TourAiChatController : Controller
         }
         catch (KeyNotFoundException)
         {
-            return NotFound(new { message = "Tour chat context was not found." });
+            return NotFound(new { message = "Không tìm thấy ngữ cảnh chat của tour." });
         }
     }
 
@@ -65,11 +67,11 @@ public sealed class TourAiChatController : Controller
         }
         catch (UnauthorizedAccessException)
         {
-            return NotFound(new { message = "Conversation not found." });
+            return NotFound(new { message = "Không tìm thấy cuộc trò chuyện." });
         }
         catch (KeyNotFoundException)
         {
-            return NotFound(new { message = "Conversation not found." });
+            return NotFound(new { message = "Không tìm thấy cuộc trò chuyện." });
         }
     }
 
@@ -83,7 +85,7 @@ public sealed class TourAiChatController : Controller
             Status = conversation.Status,
             ParticipantType = conversation.ParticipantType,
             DisplayName = string.IsNullOrWhiteSpace(conversation.GuestProfile.DisplayName)
-                ? "Khach xem tour"
+                ? "Khách xem tour"
                 : conversation.GuestProfile.DisplayName,
             SourcePage = conversation.SourcePage,
             ContextType = conversation.ContextType ?? string.Empty,

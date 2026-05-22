@@ -44,6 +44,36 @@ namespace HVTravel.Infrastructure.Repositories
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
+        public async Task<IReadOnlyList<T>> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            var orderedIds = ids?
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .ToList()
+                ?? new List<string>();
+
+            if (orderedIds.Count == 0)
+            {
+                return Array.Empty<T>();
+            }
+
+            if (IdProperty == null)
+            {
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not contain an Id property.");
+            }
+
+            var filter = Builders<T>.Filter.In(IdProperty.Name, orderedIds);
+            var items = await _collection.Find(filter).ToListAsync();
+            var lookup = items
+                .Where(item => IdProperty.GetValue(item) is string)
+                .ToDictionary(item => (string)IdProperty.GetValue(item)!, StringComparer.Ordinal);
+
+            return orderedIds
+                .Where(lookup.ContainsKey)
+                .Select(id => lookup[id])
+                .ToList();
+        }
+
         public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
             return await _collection.Find(predicate).ToListAsync();

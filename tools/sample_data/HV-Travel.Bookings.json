@@ -1,0 +1,5123 @@
+[
+  {
+    "_id": {
+      "$oid": "0ad45230bdf66ba5dc9c96de"
+    },
+    "bookingCode": "HV20260114040000000",
+    "tourId": {
+      "$oid": "e9c349e03602f8ac10f1bc81"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00005",
+      "name": "Phu Quoc Family Beach Escape",
+      "startDate": {
+        "$date": "2026-04-21T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "9b37a22b6a8a616fc3b290d0"
+    },
+    "bookingDate": {
+      "$date": "2026-01-14T04:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "5800000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Pham Chi Nam",
+        "birthDate": {
+          "$date": "1970-06-30T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000000100"
+      }
+    ],
+    "contactInfo": {
+      "name": "Pham Chi Nam",
+      "email": "pham-chi-nam.1037@company.vn",
+      "phone": "0973867749"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-14T04:00:00.000Z"
+        },
+        "user": "Pham Chi Nam",
+        "note": "Reserved 1 seats on Phu Quoc Family Beach Escape."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-14T04:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to pham-chi-nam.1037@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-01-14T07:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 5,800,000 VND via CreditCard."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-01-15T11:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-04-24T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260114040000000 was created for Phu Quoc Family Beach Escape.",
+        "occurredAt": {
+          "$date": "2026-01-14T04:00:00.000Z"
+        },
+        "actor": "Pham Chi Nam",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-14T04:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-01-14T07:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-01-15T11:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-04-24T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260114040000000-070000",
+        "reference": "PAY-HV20260114040000000",
+        "amount": {
+          "$numberDecimal": "5800000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260114040000000|TXN-HV20260114040000000-070000|Full|5800000",
+        "createdAt": {
+          "$date": "2026-01-14T04:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-01-14T07:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": false,
+    "receiptNumber": "HVT-HV20260114040000000",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-01-15T11:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-04-24T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-01-14T04:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-24T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "f758dce20556daea67b03283"
+    },
+    "bookingCode": "HV20260405210000001",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-04-15T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "5be4bf519269869861a11729"
+    },
+    "bookingDate": {
+      "$date": "2026-04-05T21:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "8400000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Vo Chi Hanh",
+        "birthDate": {
+          "$date": "1998-10-27T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "P000000200"
+      },
+      {
+        "fullName": "Vo Ngoc Lan",
+        "birthDate": {
+          "$date": "1962-09-13T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "E000000201"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vo Chi Hanh",
+      "email": "vo-chi-hanh.1052@company.vn",
+      "phone": "0934064090"
+    },
+    "notes": "The customer preferred a later departure so the group could avoid morning traffic.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-04-05T21:00:00.000Z"
+        },
+        "user": "Vo Chi Hanh",
+        "note": "Reserved 2 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-04-05T21:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to vo-chi-hanh.1052@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-04-06T01:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 8,400,000 VND via BankTransfer."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260405210000001 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-04-05T21:00:00.000Z"
+        },
+        "actor": "Vo Chi Hanh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-04-05T21:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-04-06T01:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260405210000001-010000",
+        "reference": "PAY-HV20260405210000001",
+        "amount": {
+          "$numberDecimal": "8400000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260405210000001|TXN-HV20260405210000001-010000|Full|8400000",
+        "createdAt": {
+          "$date": "2026-04-05T21:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-04-06T01:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260405210000001",
+    "transferProofFileName": "hv20260405210000001-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-04-05T21:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-06T01:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "c77444cb5543fc3c38b8f24e"
+    },
+    "bookingCode": "HV20260105160000002",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "3b048a8b405bfdc94e7ed827"
+    },
+    "bookingDate": {
+      "$date": "2026-01-05T16:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "10880000.0"
+    },
+    "status": "Pending",
+    "paymentStatus": "Pending",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Ho Long Hoa",
+        "birthDate": {
+          "$date": "1973-04-23T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000000300"
+      },
+      {
+        "fullName": "Ho Linh Chi",
+        "birthDate": {
+          "$date": "1987-08-28T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "P000000301"
+      },
+      {
+        "fullName": "Ho Minh Binh",
+        "birthDate": {
+          "$date": "2013-10-25T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "E000000302"
+      }
+    ],
+    "contactInfo": {
+      "name": "Ho Long Hoa",
+      "email": "ho-long-hoa.1034@gmail.com",
+      "phone": "0983518233"
+    },
+    "notes": "The route works well for first-time visitors who want food, scenery, and easy transfers.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-05T16:00:00.000Z"
+        },
+        "user": "Ho Long Hoa",
+        "note": "Reserved 3 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-05T16:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to ho-long-hoa.1034@gmail.com."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260105160000002 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-01-05T16:00:00.000Z"
+        },
+        "actor": "Ho Long Hoa",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-05T16:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260105160000002-163500",
+        "reference": "PAY-HV20260105160000002",
+        "amount": {
+          "$numberDecimal": "5440000.0"
+        },
+        "status": "Pending",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260105160000002|TXN-HV20260105160000002-163500|Pending|5440000",
+        "createdAt": {
+          "$date": "2026-01-05T16:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-05T16:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-05T16:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "9458054ec2874f069050f7ef"
+    },
+    "bookingCode": "HV20260208080000003",
+    "tourId": {
+      "$oid": "e9c349e03602f8ac10f1bc81"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00005",
+      "name": "Phu Quoc Family Beach Escape",
+      "startDate": {
+        "$date": "2026-04-21T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "e7067ef466aa9385dd59ba71"
+    },
+    "bookingDate": {
+      "$date": "2026-02-08T08:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "19952000.0"
+    },
+    "status": "Confirmed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Vo Mai Ha",
+        "birthDate": {
+          "$date": "1969-07-25T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000000400"
+      },
+      {
+        "fullName": "Vo Lam Tuan",
+        "birthDate": {
+          "$date": "1962-01-29T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "D000000401"
+      },
+      {
+        "fullName": "Vo Dung Hoa",
+        "birthDate": {
+          "$date": "2017-01-02T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "P000000402"
+      },
+      {
+        "fullName": "Vo Vy Vy",
+        "birthDate": {
+          "$date": "2018-12-31T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "N000000403"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vo Mai Ha",
+      "email": "vo-mai-ha.1008@gmail.com",
+      "phone": "0916064746"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-08T08:00:00.000Z"
+        },
+        "user": "Vo Mai Ha",
+        "note": "Reserved 4 seats on Phu Quoc Family Beach Escape."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-08T08:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to vo-mai-ha.1008@gmail.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-08T23:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 19,952,000 VND via CreditCard."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-02-10T14:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260208080000003 was created for Phu Quoc Family Beach Escape.",
+        "occurredAt": {
+          "$date": "2026-02-08T08:00:00.000Z"
+        },
+        "actor": "Vo Mai Ha",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-08T08:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-08T23:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-02-10T14:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260208080000003-230000",
+        "reference": "PAY-HV20260208080000003",
+        "amount": {
+          "$numberDecimal": "19952000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260208080000003|TXN-HV20260208080000003-230000|Full|19952000",
+        "createdAt": {
+          "$date": "2026-02-08T08:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-08T23:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260208080000003",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-02-10T14:00:00.000Z"
+    },
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-08T08:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-10T14:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "117b355b70944bdb26a524e3"
+    },
+    "bookingCode": "HV20260115160000004",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-04-15T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "cafda61372bb912d7da67785"
+    },
+    "bookingDate": {
+      "$date": "2026-01-15T16:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "4200000.0"
+    },
+    "status": "Cancelled",
+    "paymentStatus": "Unpaid",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Vo Phuong Trang",
+        "birthDate": {
+          "$date": "1982-05-23T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000000500"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vo Phuong Trang",
+      "email": "vo-phuong-trang.1033@gmail.com",
+      "phone": "0904363495"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-15T16:00:00.000Z"
+        },
+        "user": "Vo Phuong Trang",
+        "note": "Reserved 1 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-15T16:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to vo-phuong-trang.1033@gmail.com."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-01-17T00:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260115160000004 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-01-15T16:00:00.000Z"
+        },
+        "actor": "Vo Phuong Trang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-15T16:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-01-17T00:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260115160000004-163500",
+        "reference": "PAY-HV20260115160000004",
+        "amount": {
+          "$numberDecimal": "2100000.0"
+        },
+        "status": "Rejected",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260115160000004|TXN-HV20260115160000004-163500|Unpaid|2100000",
+        "createdAt": {
+          "$date": "2026-01-15T16:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-01-16T18:00:00.000Z"
+      },
+      "requestedBy": "Vo Phuong Trang",
+      "processedAt": {
+        "$date": "2026-01-17T00:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-15T16:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-15T16:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "d4ea120a5e6596540e9058b6"
+    },
+    "bookingCode": "HV20260202020000005",
+    "tourId": {
+      "$oid": "6123fdf77656af7229d4beef"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00004",
+      "name": "Hue Royal Heritage Journey",
+      "startDate": {
+        "$date": "2026-04-30T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "87fa841a3e83b91f25440fe0"
+    },
+    "bookingDate": {
+      "$date": "2026-02-02T02:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "6400000.0"
+    },
+    "status": "Refunded",
+    "paymentStatus": "Refunded",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Phan Lam Linh",
+        "birthDate": {
+          "$date": "1985-06-10T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "C000000600"
+      },
+      {
+        "fullName": "Phan Minh Binh",
+        "birthDate": {
+          "$date": "1983-08-16T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000000601"
+      }
+    ],
+    "contactInfo": {
+      "name": "Phan Lam Linh",
+      "email": "phan-lam-linh.1050@icloud.com",
+      "phone": "0972221969"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-02T02:00:00.000Z"
+        },
+        "user": "Phan Lam Linh",
+        "note": "Reserved 2 seats on Hue Royal Heritage Journey."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-02T02:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to phan-lam-linh.1050@icloud.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-02T04:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 6,400,000 VND via EWallet."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-02-04T05:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      },
+      {
+        "action": "Refund settled",
+        "timestamp": {
+          "$date": "2026-02-04T05:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Finance completed the refund back to the original payment channel."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260202020000005 was created for Hue Royal Heritage Journey.",
+        "occurredAt": {
+          "$date": "2026-02-02T02:00:00.000Z"
+        },
+        "actor": "Phan Lam Linh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-02T02:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-02T04:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-02-04T05:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "refund",
+        "title": "Refund settled",
+        "description": "Funds were returned after the approved cancellation workflow finished.",
+        "occurredAt": {
+          "$date": "2026-02-04T05:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260202020000005-040000",
+        "reference": "PAY-HV20260202020000005",
+        "amount": {
+          "$numberDecimal": "6400000.0"
+        },
+        "status": "Refunded",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260202020000005|TXN-HV20260202020000005-040000|Refunded|6400000",
+        "createdAt": {
+          "$date": "2026-02-02T02:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-02T04:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-02-03T04:00:00.000Z"
+      },
+      "requestedBy": "Phan Lam Linh",
+      "processedAt": {
+        "$date": "2026-02-04T05:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260202020000005",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-02T02:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-04T05:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "0fd6f47ef52d4af2269ed4c9"
+    },
+    "bookingCode": "HV20260326090000006",
+    "tourId": {
+      "$oid": "27cd813047229389571aa876"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00001",
+      "name": "Ha Giang Loop Explorer",
+      "startDate": {
+        "$date": "2026-04-11T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "d2fe2fded918b3e5f2f25eef"
+    },
+    "bookingDate": {
+      "$date": "2026-03-26T09:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "10064000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Hoang Ha Chi",
+        "birthDate": {
+          "$date": "1963-06-14T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "P000000700"
+      },
+      {
+        "fullName": "Hoang Long Ngoc",
+        "birthDate": {
+          "$date": "1968-03-22T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000000701"
+      },
+      {
+        "fullName": "Hoang Phuong Ha",
+        "birthDate": {
+          "$date": "2014-05-27T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "N000000702"
+      }
+    ],
+    "contactInfo": {
+      "name": "Hoang Ha Chi",
+      "email": "hoang-ha-chi.1058@icloud.com",
+      "phone": "0903900532"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-26T09:00:00.000Z"
+        },
+        "user": "Hoang Ha Chi",
+        "note": "Reserved 3 seats on Ha Giang Loop Explorer."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-26T09:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to hoang-ha-chi.1058@icloud.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-03-27T02:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 10,064,000 VND via CreditCard."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260326090000006 was created for Ha Giang Loop Explorer.",
+        "occurredAt": {
+          "$date": "2026-03-26T09:00:00.000Z"
+        },
+        "actor": "Hoang Ha Chi",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-26T09:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-03-27T02:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260326090000006-020000",
+        "reference": "PAY-HV20260326090000006",
+        "amount": {
+          "$numberDecimal": "10064000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260326090000006|TXN-HV20260326090000006-020000|Full|10064000",
+        "createdAt": {
+          "$date": "2026-03-26T09:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-03-27T02:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260326090000006",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-26T09:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-27T02:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "55ab946da5b5cdc2a181c85e"
+    },
+    "bookingCode": "HV20251226010000007",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-04-15T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "77fc97031fd5a423706c5c56"
+    },
+    "bookingDate": {
+      "$date": "2025-12-26T01:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "14448000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Ho Ngoc Huy",
+        "birthDate": {
+          "$date": "1997-07-21T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000000800"
+      },
+      {
+        "fullName": "Ho Hanh Trang",
+        "birthDate": {
+          "$date": "1974-08-30T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "P000000801"
+      },
+      {
+        "fullName": "Ho Phuc Giang",
+        "birthDate": {
+          "$date": "2014-09-23T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "E000000802"
+      },
+      {
+        "fullName": "Ho Linh Vy",
+        "birthDate": {
+          "$date": "2014-04-19T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "P000000803"
+      }
+    ],
+    "contactInfo": {
+      "name": "Ho Ngoc Huy",
+      "email": "ho-ngoc-huy.1040@fpt.vn",
+      "phone": "0936488771"
+    },
+    "notes": "Our operations team confirmed pickup details before the final departure note went out.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2025-12-26T01:00:00.000Z"
+        },
+        "user": "Ho Ngoc Huy",
+        "note": "Reserved 4 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2025-12-26T01:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to ho-ngoc-huy.1040@fpt.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2025-12-26T03:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 14,448,000 VND via BankTransfer."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2025-12-28T09:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-04-18T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20251226010000007 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2025-12-26T01:00:00.000Z"
+        },
+        "actor": "Ho Ngoc Huy",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2025-12-26T01:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2025-12-26T03:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2025-12-28T09:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-04-18T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20251226010000007-030000",
+        "reference": "PAY-HV20251226010000007",
+        "amount": {
+          "$numberDecimal": "14448000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20251226010000007|TXN-HV20251226010000007-030000|Full|14448000",
+        "createdAt": {
+          "$date": "2025-12-26T01:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2025-12-26T03:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": false,
+    "receiptNumber": "HVT-HV20251226010000007",
+    "transferProofFileName": "hv20251226010000007-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": {
+      "$date": "2025-12-28T09:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-04-18T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2025-12-26T01:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-18T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "e806133cf6e39356a8149562"
+    },
+    "bookingCode": "HV20260419180000008",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-09T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "e68933a9c9e48e8c25c61c45"
+    },
+    "bookingDate": {
+      "$date": "2026-04-19T18:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "4200000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Pham Khanh Vy",
+        "birthDate": {
+          "$date": "1978-11-16T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000000900"
+      }
+    ],
+    "contactInfo": {
+      "name": "Pham Khanh Vy",
+      "email": "pham-khanh-vy.1059@company.vn",
+      "phone": "0904228421"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-04-19T18:00:00.000Z"
+        },
+        "user": "Pham Khanh Vy",
+        "note": "Reserved 1 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-04-19T18:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to pham-khanh-vy.1059@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-04-20T18:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 4,200,000 VND via EWallet."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-04-22T06:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-05-12T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260419180000008 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-04-19T18:00:00.000Z"
+        },
+        "actor": "Pham Khanh Vy",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-04-19T18:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-04-20T18:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-04-22T06:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-05-12T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260419180000008-180000",
+        "reference": "PAY-HV20260419180000008",
+        "amount": {
+          "$numberDecimal": "4200000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260419180000008|TXN-HV20260419180000008-180000|Full|4200000",
+        "createdAt": {
+          "$date": "2026-04-19T18:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-04-20T18:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260419180000008",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-04-22T06:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-05-12T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-04-19T18:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-12T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "15b02530f020e992b576255e"
+    },
+    "bookingCode": "HV20260409010000009",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-05T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "517400f80b2c782a69288e92"
+    },
+    "bookingDate": {
+      "$date": "2026-04-09T01:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "8400000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Vu Hanh Vy",
+        "birthDate": {
+          "$date": "1997-06-11T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000001000"
+      },
+      {
+        "fullName": "Vu Huy Phuong",
+        "birthDate": {
+          "$date": "1960-09-26T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "D000001001"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vu Hanh Vy",
+      "email": "vu-hanh-vy.1047@fpt.vn",
+      "phone": "0966627028"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-04-09T01:00:00.000Z"
+        },
+        "user": "Vu Hanh Vy",
+        "note": "Reserved 2 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-04-09T01:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to vu-hanh-vy.1047@fpt.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-04-09T21:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 8,400,000 VND via CreditCard."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260409010000009 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-04-09T01:00:00.000Z"
+        },
+        "actor": "Vu Hanh Vy",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-04-09T01:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-04-09T21:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260409010000009-210000",
+        "reference": "PAY-HV20260409010000009",
+        "amount": {
+          "$numberDecimal": "8400000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260409010000009|TXN-HV20260409010000009-210000|Full|8400000",
+        "createdAt": {
+          "$date": "2026-04-09T01:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-04-09T21:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260409010000009",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-04-09T01:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-09T21:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "577bc55a36d55494f37fd50d"
+    },
+    "bookingCode": "HV20260205230000010",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "750cab754ccc9bc2a53f8a28"
+    },
+    "bookingDate": {
+      "$date": "2026-02-05T23:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "10880000.0"
+    },
+    "status": "Pending",
+    "paymentStatus": "Pending",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Vu Dung Quang",
+        "birthDate": {
+          "$date": "1961-10-28T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000001100"
+      },
+      {
+        "fullName": "Vu Trang Tuan",
+        "birthDate": {
+          "$date": "1970-02-24T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000001101"
+      },
+      {
+        "fullName": "Vu Lam Anh",
+        "birthDate": {
+          "$date": "2014-10-25T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "D000001102"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vu Dung Quang",
+      "email": "vu-dung-quang.1011@yahoo.com",
+      "phone": "0900799118"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-05T23:00:00.000Z"
+        },
+        "user": "Vu Dung Quang",
+        "note": "Reserved 3 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-05T23:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to vu-dung-quang.1011@yahoo.com."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260205230000010 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-02-05T23:00:00.000Z"
+        },
+        "actor": "Vu Dung Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-05T23:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260205230000010-233500",
+        "reference": "PAY-HV20260205230000010",
+        "amount": {
+          "$numberDecimal": "5440000.0"
+        },
+        "status": "Pending",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260205230000010|TXN-HV20260205230000010-233500|Pending|5440000",
+        "createdAt": {
+          "$date": "2026-02-05T23:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": "hv20260205230000010-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-05T23:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-05T23:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "0b2f6d5c700b5d5fb89f72f3"
+    },
+    "bookingCode": "HV20260328070000011",
+    "tourId": {
+      "$oid": "e9c349e03602f8ac10f1bc81"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00005",
+      "name": "Phu Quoc Family Beach Escape",
+      "startDate": {
+        "$date": "2026-05-02T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "36386821f6e07cc06c52c49f"
+    },
+    "bookingDate": {
+      "$date": "2026-03-28T07:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "19952000.0"
+    },
+    "status": "Confirmed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Hoang Minh Phuc",
+        "birthDate": {
+          "$date": "1994-02-26T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000001200"
+      },
+      {
+        "fullName": "Hoang Minh Vy",
+        "birthDate": {
+          "$date": "1968-07-17T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "C000001201"
+      },
+      {
+        "fullName": "Hoang Khanh Vy",
+        "birthDate": {
+          "$date": "2011-01-25T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "P000001202"
+      },
+      {
+        "fullName": "Hoang Dung Giang",
+        "birthDate": {
+          "$date": "2017-04-11T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "P000001203"
+      }
+    ],
+    "contactInfo": {
+      "name": "Hoang Minh Phuc",
+      "email": "hoang-minh-phuc.1004@company.vn",
+      "phone": "0983465787"
+    },
+    "notes": "The guide confirmed weather conditions were suitable for the outdoor segment.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-28T07:00:00.000Z"
+        },
+        "user": "Hoang Minh Phuc",
+        "note": "Reserved 4 seats on Phu Quoc Family Beach Escape."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-28T07:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to hoang-minh-phuc.1004@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-03-29T09:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 19,952,000 VND via EWallet."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-03-28T23:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260328070000011 was created for Phu Quoc Family Beach Escape.",
+        "occurredAt": {
+          "$date": "2026-03-28T07:00:00.000Z"
+        },
+        "actor": "Hoang Minh Phuc",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-28T07:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-03-29T09:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-03-28T23:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260328070000011-090000",
+        "reference": "PAY-HV20260328070000011",
+        "amount": {
+          "$numberDecimal": "19952000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260328070000011|TXN-HV20260328070000011-090000|Full|19952000",
+        "createdAt": {
+          "$date": "2026-03-28T07:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-03-29T09:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260328070000011",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-03-28T23:00:00.000Z"
+    },
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-28T07:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-28T23:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "c8a723e9bfa016c2c09cb506"
+    },
+    "bookingCode": "HV20260201040000012",
+    "tourId": {
+      "$oid": "6123fdf77656af7229d4beef"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00004",
+      "name": "Hue Royal Heritage Journey",
+      "startDate": {
+        "$date": "2026-05-05T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "13432e611ca3c4480279b6a6"
+    },
+    "bookingDate": {
+      "$date": "2026-02-01T04:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "3200000.0"
+    },
+    "status": "Cancelled",
+    "paymentStatus": "Unpaid",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Ho Linh Nam",
+        "birthDate": {
+          "$date": "1974-06-03T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000001300"
+      }
+    ],
+    "contactInfo": {
+      "name": "Ho Linh Nam",
+      "email": "ho-linh-nam.1014@fpt.vn",
+      "phone": "0918059826"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-01T04:00:00.000Z"
+        },
+        "user": "Ho Linh Nam",
+        "note": "Reserved 1 seats on Hue Royal Heritage Journey."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-01T04:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to ho-linh-nam.1014@fpt.vn."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-02-02T12:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260201040000012 was created for Hue Royal Heritage Journey.",
+        "occurredAt": {
+          "$date": "2026-02-01T04:00:00.000Z"
+        },
+        "actor": "Ho Linh Nam",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-01T04:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-02-02T12:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260201040000012-043500",
+        "reference": "PAY-HV20260201040000012",
+        "amount": {
+          "$numberDecimal": "1600000.0"
+        },
+        "status": "Rejected",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260201040000012|TXN-HV20260201040000012-043500|Unpaid|1600000",
+        "createdAt": {
+          "$date": "2026-02-01T04:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-02-02T06:00:00.000Z"
+      },
+      "requestedBy": "Ho Linh Nam",
+      "processedAt": {
+        "$date": "2026-02-02T12:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-01T04:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-01T04:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "61c2645ac733230448223120"
+    },
+    "bookingCode": "HV20260319180000013",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "8026695ff8cda88b436d76e2"
+    },
+    "bookingDate": {
+      "$date": "2026-03-19T18:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "8000000.0"
+    },
+    "status": "Refunded",
+    "paymentStatus": "Refunded",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Nguyen Tuan Tuan",
+        "birthDate": {
+          "$date": "1987-11-01T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "N000001400"
+      },
+      {
+        "fullName": "Nguyen Lam Quang",
+        "birthDate": {
+          "$date": "1966-08-31T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000001401"
+      }
+    ],
+    "contactInfo": {
+      "name": "Nguyen Tuan Tuan",
+      "email": "nguyen-tuan-tuan.1002@outlook.com",
+      "phone": "0971489325"
+    },
+    "notes": "The article focuses on visa timing, budget planning, and the best travel window.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-19T18:00:00.000Z"
+        },
+        "user": "Nguyen Tuan Tuan",
+        "note": "Reserved 2 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-19T18:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to nguyen-tuan-tuan.1002@outlook.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-03-20T19:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 8,000,000 VND via BankTransfer."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-03-21T21:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      },
+      {
+        "action": "Refund settled",
+        "timestamp": {
+          "$date": "2026-03-21T21:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Finance completed the refund back to the original payment channel."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260319180000013 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-03-19T18:00:00.000Z"
+        },
+        "actor": "Nguyen Tuan Tuan",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-19T18:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-03-20T19:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-03-21T21:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "refund",
+        "title": "Refund settled",
+        "description": "Funds were returned after the approved cancellation workflow finished.",
+        "occurredAt": {
+          "$date": "2026-03-21T21:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260319180000013-190000",
+        "reference": "PAY-HV20260319180000013",
+        "amount": {
+          "$numberDecimal": "8000000.0"
+        },
+        "status": "Refunded",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260319180000013|TXN-HV20260319180000013-190000|Refunded|8000000",
+        "createdAt": {
+          "$date": "2026-03-19T18:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-03-20T19:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-03-20T20:00:00.000Z"
+      },
+      "requestedBy": "Nguyen Tuan Tuan",
+      "processedAt": {
+        "$date": "2026-03-21T21:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260319180000013",
+    "transferProofFileName": "hv20260319180000013-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-19T18:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-21T21:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "7306958845d5a68d290a3abb"
+    },
+    "bookingCode": "HV20260310060000014",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-09T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "c3fe0183e172b725db52ca58"
+    },
+    "bookingDate": {
+      "$date": "2026-03-10T06:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "11424000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Bui Trang Anh",
+        "birthDate": {
+          "$date": "1990-06-02T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000001500"
+      },
+      {
+        "fullName": "Bui Bao Phuong",
+        "birthDate": {
+          "$date": "1972-10-03T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "P000001501"
+      },
+      {
+        "fullName": "Bui Trang Minh",
+        "birthDate": {
+          "$date": "2018-11-06T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "C000001502"
+      }
+    ],
+    "contactInfo": {
+      "name": "Bui Trang Anh",
+      "email": "bui-trang-anh.1025@company.vn",
+      "phone": "0967054668"
+    },
+    "notes": "The article focuses on visa timing, budget planning, and the best travel window.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-10T06:00:00.000Z"
+        },
+        "user": "Bui Trang Anh",
+        "note": "Reserved 3 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-10T06:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to bui-trang-anh.1025@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-03-11T07:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 11,424,000 VND via EWallet."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260310060000014 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-03-10T06:00:00.000Z"
+        },
+        "actor": "Bui Trang Anh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-10T06:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-03-11T07:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260310060000014-070000",
+        "reference": "PAY-HV20260310060000014",
+        "amount": {
+          "$numberDecimal": "11424000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260310060000014|TXN-HV20260310060000014-070000|Full|11424000",
+        "createdAt": {
+          "$date": "2026-03-10T06:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-03-11T07:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": false,
+    "receiptNumber": "HVT-HV20260310060000014",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-10T06:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-11T07:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "d46b415deada79a34970ed9a"
+    },
+    "bookingCode": "HV20260304090000015",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-05T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "ac9ed156f63fce413a9aca5e"
+    },
+    "bookingDate": {
+      "$date": "2026-03-04T09:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "11928000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Hoang Anh Binh",
+        "birthDate": {
+          "$date": "1988-08-20T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000001600"
+      },
+      {
+        "fullName": "Hoang Linh Bao",
+        "birthDate": {
+          "$date": "1977-07-27T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "E000001601"
+      },
+      {
+        "fullName": "Hoang Lan Binh",
+        "birthDate": {
+          "$date": "2014-12-08T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "C000001602"
+      },
+      {
+        "fullName": "Hoang Chi Trang",
+        "birthDate": {
+          "$date": "2023-10-10T12:00:00.000Z"
+        },
+        "type": "Infant",
+        "gender": "Male",
+        "passportNumber": "D000001603"
+      }
+    ],
+    "contactInfo": {
+      "name": "Hoang Anh Binh",
+      "email": "hoang-anh-binh.1041@company.vn",
+      "phone": "0970490278"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-04T09:00:00.000Z"
+        },
+        "user": "Hoang Anh Binh",
+        "note": "Reserved 4 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-04T09:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to hoang-anh-binh.1041@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-03-04T14:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 11,928,000 VND via CreditCard."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-03-04T17:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-05-08T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260304090000015 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-03-04T09:00:00.000Z"
+        },
+        "actor": "Hoang Anh Binh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-04T09:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-03-04T14:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-03-04T17:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-05-08T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260304090000015-140000",
+        "reference": "PAY-HV20260304090000015",
+        "amount": {
+          "$numberDecimal": "11928000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260304090000015|TXN-HV20260304090000015-140000|Full|11928000",
+        "createdAt": {
+          "$date": "2026-03-04T09:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-03-04T14:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260304090000015",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-03-04T17:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-05-08T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-03-04T09:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-08T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "3735262d41843b0304dd7054"
+    },
+    "bookingCode": "HV20260118200000016",
+    "tourId": {
+      "$oid": "e9c349e03602f8ac10f1bc81"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00005",
+      "name": "Phu Quoc Family Beach Escape",
+      "startDate": {
+        "$date": "2026-05-03T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "b1a6b1f1620e99d33b33f3d8"
+    },
+    "bookingDate": {
+      "$date": "2026-01-18T20:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "5800000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Tran Dung Dung",
+        "birthDate": {
+          "$date": "1974-05-31T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "C000001700"
+      }
+    ],
+    "contactInfo": {
+      "name": "Tran Dung Dung",
+      "email": "tran-dung-dung.1024@outlook.com",
+      "phone": "0983166587"
+    },
+    "notes": "The route works well for first-time visitors who want food, scenery, and easy transfers.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-18T20:00:00.000Z"
+        },
+        "user": "Tran Dung Dung",
+        "note": "Reserved 1 seats on Phu Quoc Family Beach Escape."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-18T20:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to tran-dung-dung.1024@outlook.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-01-20T01:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 5,800,000 VND via BankTransfer."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-01-19T07:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-05-06T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260118200000016 was created for Phu Quoc Family Beach Escape.",
+        "occurredAt": {
+          "$date": "2026-01-18T20:00:00.000Z"
+        },
+        "actor": "Tran Dung Dung",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-18T20:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-01-20T01:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-01-19T07:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-05-06T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260118200000016-010000",
+        "reference": "PAY-HV20260118200000016",
+        "amount": {
+          "$numberDecimal": "5800000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260118200000016|TXN-HV20260118200000016-010000|Full|5800000",
+        "createdAt": {
+          "$date": "2026-01-18T20:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-01-20T01:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260118200000016",
+    "transferProofFileName": "hv20260118200000016-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": {
+      "$date": "2026-01-19T07:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-05-06T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-01-18T20:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-06T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "9f708368cb3cf8caa3925731"
+    },
+    "bookingCode": "HV20260131160000017",
+    "tourId": {
+      "$oid": "27cd813047229389571aa876"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00001",
+      "name": "Ha Giang Loop Explorer",
+      "startDate": {
+        "$date": "2026-05-12T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "7914c120c8dcd19f3e351128"
+    },
+    "bookingDate": {
+      "$date": "2026-01-31T16:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "7400000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Bui Ngoc Mai",
+        "birthDate": {
+          "$date": "1969-09-08T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "C000001800"
+      },
+      {
+        "fullName": "Bui Hanh Huy",
+        "birthDate": {
+          "$date": "1996-03-12T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "D000001801"
+      }
+    ],
+    "contactInfo": {
+      "name": "Bui Ngoc Mai",
+      "email": "bui-ngoc-mai.1006@icloud.com",
+      "phone": "0911165667"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-31T16:00:00.000Z"
+        },
+        "user": "Bui Ngoc Mai",
+        "note": "Reserved 2 seats on Ha Giang Loop Explorer."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-31T16:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to bui-ngoc-mai.1006@icloud.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-01T06:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 7,400,000 VND via EWallet."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260131160000017 was created for Ha Giang Loop Explorer.",
+        "occurredAt": {
+          "$date": "2026-01-31T16:00:00.000Z"
+        },
+        "actor": "Bui Ngoc Mai",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-31T16:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-01T06:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260131160000017-060000",
+        "reference": "PAY-HV20260131160000017",
+        "amount": {
+          "$numberDecimal": "7400000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260131160000017|TXN-HV20260131160000017-060000|Full|7400000",
+        "createdAt": {
+          "$date": "2026-01-31T16:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-01T06:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260131160000017",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-31T16:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-01T06:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "2ff3cde46aa42c9f92170475"
+    },
+    "bookingCode": "HV20260410080000018",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "bf3c4c06434308bc89fa6a68"
+    },
+    "bookingDate": {
+      "$date": "2026-04-10T08:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "10880000.0"
+    },
+    "status": "Pending",
+    "paymentStatus": "Pending",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Pham Tuan Nam",
+        "birthDate": {
+          "$date": "1971-06-11T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "P000001900"
+      },
+      {
+        "fullName": "Pham Phuong Minh",
+        "birthDate": {
+          "$date": "1966-12-11T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "D000001901"
+      },
+      {
+        "fullName": "Pham Linh Anh",
+        "birthDate": {
+          "$date": "2010-10-04T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "D000001902"
+      }
+    ],
+    "contactInfo": {
+      "name": "Pham Tuan Nam",
+      "email": "pham-tuan-nam.1000@company.vn",
+      "phone": "0969653287"
+    },
+    "notes": "The support team shared check-in guidance and baggage notes after payment cleared.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-04-10T08:00:00.000Z"
+        },
+        "user": "Pham Tuan Nam",
+        "note": "Reserved 3 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-04-10T08:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to pham-tuan-nam.1000@company.vn."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260410080000018 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-04-10T08:00:00.000Z"
+        },
+        "actor": "Pham Tuan Nam",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-04-10T08:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260410080000018-083500",
+        "reference": "PAY-HV20260410080000018",
+        "amount": {
+          "$numberDecimal": "5440000.0"
+        },
+        "status": "Pending",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260410080000018|TXN-HV20260410080000018-083500|Pending|5440000",
+        "createdAt": {
+          "$date": "2026-04-10T08:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-04-10T08:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-10T08:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "551ff086c1b5b5cabc3536df"
+    },
+    "bookingCode": "HV20260210000000019",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "7337c59979844388dc8aee30"
+    },
+    "bookingDate": {
+      "$date": "2026-02-10T00:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "13760000.0"
+    },
+    "status": "Confirmed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Vo Giang Tuan",
+        "birthDate": {
+          "$date": "1998-07-10T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "P000002000"
+      },
+      {
+        "fullName": "Vo Minh Nam",
+        "birthDate": {
+          "$date": "2001-09-17T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000002001"
+      },
+      {
+        "fullName": "Vo Phuong Lan",
+        "birthDate": {
+          "$date": "2014-11-23T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "C000002002"
+      },
+      {
+        "fullName": "Vo Binh Lam",
+        "birthDate": {
+          "$date": "2016-04-29T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "C000002003"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vo Giang Tuan",
+      "email": "vo-giang-tuan.1023@yahoo.com",
+      "phone": "0914873471"
+    },
+    "notes": "The route works well for first-time visitors who want food, scenery, and easy transfers.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-10T00:00:00.000Z"
+        },
+        "user": "Vo Giang Tuan",
+        "note": "Reserved 4 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-10T00:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to vo-giang-tuan.1023@yahoo.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-11T01:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 13,760,000 VND via BankTransfer."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-02-11T19:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260210000000019 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-02-10T00:00:00.000Z"
+        },
+        "actor": "Vo Giang Tuan",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-10T00:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-11T01:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-02-11T19:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260210000000019-010000",
+        "reference": "PAY-HV20260210000000019",
+        "amount": {
+          "$numberDecimal": "13760000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260210000000019|TXN-HV20260210000000019-010000|Full|13760000",
+        "createdAt": {
+          "$date": "2026-02-10T00:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-11T01:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260210000000019",
+    "transferProofFileName": "hv20260210000000019-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": {
+      "$date": "2026-02-11T19:00:00.000Z"
+    },
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-10T00:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-11T19:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "af475b49c775e395d49405f0"
+    },
+    "bookingCode": "HV20260320180000020",
+    "tourId": {
+      "$oid": "27cd813047229389571aa876"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00001",
+      "name": "Ha Giang Loop Explorer",
+      "startDate": {
+        "$date": "2026-05-12T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "b27c40266703b6365380b904"
+    },
+    "bookingDate": {
+      "$date": "2026-03-20T18:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "3700000.0"
+    },
+    "status": "Cancelled",
+    "paymentStatus": "Unpaid",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Hoang Quang Linh",
+        "birthDate": {
+          "$date": "1981-05-15T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000002100"
+      }
+    ],
+    "contactInfo": {
+      "name": "Hoang Quang Linh",
+      "email": "hoang-quang-linh.1019@yahoo.com",
+      "phone": "0972366299"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-20T18:00:00.000Z"
+        },
+        "user": "Hoang Quang Linh",
+        "note": "Reserved 1 seats on Ha Giang Loop Explorer."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-20T18:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to hoang-quang-linh.1019@yahoo.com."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-03-22T02:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260320180000020 was created for Ha Giang Loop Explorer.",
+        "occurredAt": {
+          "$date": "2026-03-20T18:00:00.000Z"
+        },
+        "actor": "Hoang Quang Linh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-20T18:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-03-22T02:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260320180000020-183500",
+        "reference": "PAY-HV20260320180000020",
+        "amount": {
+          "$numberDecimal": "1850000.0"
+        },
+        "status": "Rejected",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260320180000020|TXN-HV20260320180000020-183500|Unpaid|1850000",
+        "createdAt": {
+          "$date": "2026-03-20T18:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-03-21T20:00:00.000Z"
+      },
+      "requestedBy": "Hoang Quang Linh",
+      "processedAt": {
+        "$date": "2026-03-22T02:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-20T18:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-20T18:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "33107475ca8622250b36e356"
+    },
+    "bookingCode": "HV20260128200000021",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-05T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "b41b31438b10550cd5704f32"
+    },
+    "bookingDate": {
+      "$date": "2026-01-28T20:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "8400000.0"
+    },
+    "status": "Refunded",
+    "paymentStatus": "Refunded",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Hoang Giang Long",
+        "birthDate": {
+          "$date": "1963-01-11T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000002200"
+      },
+      {
+        "fullName": "Hoang Trang Vy",
+        "birthDate": {
+          "$date": "1974-03-24T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "E000002201"
+      }
+    ],
+    "contactInfo": {
+      "name": "Hoang Giang Long",
+      "email": "hoang-giang-long.1012@yahoo.com",
+      "phone": "0978084124"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-28T20:00:00.000Z"
+        },
+        "user": "Hoang Giang Long",
+        "note": "Reserved 2 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-28T20:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to hoang-giang-long.1012@yahoo.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-01-29T03:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 8,400,000 VND via CreditCard."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-01-30T23:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      },
+      {
+        "action": "Refund settled",
+        "timestamp": {
+          "$date": "2026-01-30T23:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Finance completed the refund back to the original payment channel."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260128200000021 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-01-28T20:00:00.000Z"
+        },
+        "actor": "Hoang Giang Long",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-28T20:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-01-29T03:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-01-30T23:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "refund",
+        "title": "Refund settled",
+        "description": "Funds were returned after the approved cancellation workflow finished.",
+        "occurredAt": {
+          "$date": "2026-01-30T23:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260128200000021-030000",
+        "reference": "PAY-HV20260128200000021",
+        "amount": {
+          "$numberDecimal": "8400000.0"
+        },
+        "status": "Refunded",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260128200000021|TXN-HV20260128200000021-030000|Refunded|8400000",
+        "createdAt": {
+          "$date": "2026-01-28T20:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-01-29T03:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-01-29T22:00:00.000Z"
+      },
+      "requestedBy": "Hoang Giang Long",
+      "processedAt": {
+        "$date": "2026-01-30T23:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": false,
+    "receiptNumber": "HVT-HV20260128200000021",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-28T20:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-30T23:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "e3b563606fdc0bad5e368127"
+    },
+    "bookingCode": "HV20260227020000022",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-04-15T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "f065c817687a48509d9b6231"
+    },
+    "bookingDate": {
+      "$date": "2026-02-27T02:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "11424000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Do Chi Mai",
+        "birthDate": {
+          "$date": "1970-09-21T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "P000002300"
+      },
+      {
+        "fullName": "Do Hoa Bao",
+        "birthDate": {
+          "$date": "1962-01-07T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "E000002301"
+      },
+      {
+        "fullName": "Do Vy Bao",
+        "birthDate": {
+          "$date": "2014-11-13T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "C000002302"
+      }
+    ],
+    "contactInfo": {
+      "name": "Do Chi Mai",
+      "email": "do-chi-mai.1057@yahoo.com",
+      "phone": "0905377351"
+    },
+    "notes": "The guide confirmed weather conditions were suitable for the outdoor segment.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-27T02:00:00.000Z"
+        },
+        "user": "Do Chi Mai",
+        "note": "Reserved 3 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-27T02:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to do-chi-mai.1057@yahoo.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-28T04:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 11,424,000 VND via BankTransfer."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260227020000022 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-02-27T02:00:00.000Z"
+        },
+        "actor": "Do Chi Mai",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-27T02:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-28T04:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260227020000022-040000",
+        "reference": "PAY-HV20260227020000022",
+        "amount": {
+          "$numberDecimal": "11424000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260227020000022|TXN-HV20260227020000022-040000|Full|11424000",
+        "createdAt": {
+          "$date": "2026-02-27T02:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-28T04:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260227020000022",
+    "transferProofFileName": "hv20260227020000022-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-02-27T02:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-02-28T04:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "b0946d2a2aa93b436d15f16f"
+    },
+    "bookingCode": "HV20260228010000023",
+    "tourId": {
+      "$oid": "d58842dea2bc372f7412b293"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00003",
+      "name": "Ha Long Bay Heritage Cruise",
+      "startDate": {
+        "$date": "2026-04-25T12:00:00.000Z"
+      },
+      "duration": "2 Days 1 Nights"
+    },
+    "customerId": {
+      "$oid": "61b1cd2262801c4510435a10"
+    },
+    "bookingDate": {
+      "$date": "2026-02-28T01:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "13760000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Do Linh Phuc",
+        "birthDate": {
+          "$date": "1991-07-27T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "N000002400"
+      },
+      {
+        "fullName": "Do Minh Hoa",
+        "birthDate": {
+          "$date": "1997-08-31T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "C000002401"
+      },
+      {
+        "fullName": "Do Phuc Giang",
+        "birthDate": {
+          "$date": "2011-11-03T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "E000002402"
+      },
+      {
+        "fullName": "Do Binh Khanh",
+        "birthDate": {
+          "$date": "2015-10-27T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "N000002403"
+      }
+    ],
+    "contactInfo": {
+      "name": "Do Linh Phuc",
+      "email": "do-linh-phuc.1001@company.vn",
+      "phone": "0968480184"
+    },
+    "notes": "This package performs well with returning guests who value comfort and clear logistics.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-28T01:00:00.000Z"
+        },
+        "user": "Do Linh Phuc",
+        "note": "Reserved 4 seats on Ha Long Bay Heritage Cruise."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-28T01:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to do-linh-phuc.1001@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-28T21:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 13,760,000 VND via EWallet."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-03-02T04:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-04-26T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260228010000023 was created for Ha Long Bay Heritage Cruise.",
+        "occurredAt": {
+          "$date": "2026-02-28T01:00:00.000Z"
+        },
+        "actor": "Do Linh Phuc",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-28T01:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-28T21:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-03-02T04:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-04-26T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260228010000023-210000",
+        "reference": "PAY-HV20260228010000023",
+        "amount": {
+          "$numberDecimal": "13760000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260228010000023|TXN-HV20260228010000023-210000|Full|13760000",
+        "createdAt": {
+          "$date": "2026-02-28T01:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-28T21:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260228010000023",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-03-02T04:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-04-26T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-02-28T01:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-26T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "f2a9dc8aca9e4a62fae3114b"
+    },
+    "bookingCode": "HV20260216100000024",
+    "tourId": {
+      "$oid": "e9c349e03602f8ac10f1bc81"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00005",
+      "name": "Phu Quoc Family Beach Escape",
+      "startDate": {
+        "$date": "2026-04-21T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "c16d83edad81f8bd402913ec"
+    },
+    "bookingDate": {
+      "$date": "2026-02-16T10:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "5800000.0"
+    },
+    "status": "Completed",
+    "paymentStatus": "Full",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Do Ha Phuc",
+        "birthDate": {
+          "$date": "1980-05-30T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "N000002500"
+      }
+    ],
+    "contactInfo": {
+      "name": "Do Ha Phuc",
+      "email": "do-ha-phuc.1053@fpt.vn",
+      "phone": "0982104709"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-02-16T10:00:00.000Z"
+        },
+        "user": "Do Ha Phuc",
+        "note": "Reserved 1 seats on Phu Quoc Family Beach Escape."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-02-16T10:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to do-ha-phuc.1053@fpt.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-02-16T19:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 5,800,000 VND via CreditCard."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-02-18T08:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      },
+      {
+        "action": "Trip completed",
+        "timestamp": {
+          "$date": "2026-04-24T18:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "The itinerary was marked complete after guide handoff."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260216100000024 was created for Phu Quoc Family Beach Escape.",
+        "occurredAt": {
+          "$date": "2026-02-16T10:00:00.000Z"
+        },
+        "actor": "Do Ha Phuc",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-02-16T10:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-02-16T19:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-02-18T08:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "trip-completed",
+        "title": "Trip completed",
+        "description": "The trip finished successfully and post-trip follow-up was queued.",
+        "occurredAt": {
+          "$date": "2026-04-24T18:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260216100000024-190000",
+        "reference": "PAY-HV20260216100000024",
+        "amount": {
+          "$numberDecimal": "5800000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260216100000024|TXN-HV20260216100000024-190000|Full|5800000",
+        "createdAt": {
+          "$date": "2026-02-16T10:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-02-16T19:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260216100000024",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-02-18T08:00:00.000Z"
+    },
+    "completedAt": {
+      "$date": "2026-04-24T18:00:00.000Z"
+    },
+    "createdAt": {
+      "$date": "2026-02-16T10:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-04-24T18:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "a52964ffc74cc8903c6a3174"
+    },
+    "bookingCode": "HV20260505230000025",
+    "tourId": {
+      "$oid": "27cd813047229389571aa876"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00001",
+      "name": "Ha Giang Loop Explorer",
+      "startDate": {
+        "$date": "2026-05-22T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "93676a024fdc6e1bedcb8cb6"
+    },
+    "bookingDate": {
+      "$date": "2026-05-05T23:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "7400000.0"
+    },
+    "status": "Paid",
+    "paymentStatus": "Full",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Tran Ngoc Anh",
+        "birthDate": {
+          "$date": "1979-07-22T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000002600"
+      },
+      {
+        "fullName": "Tran Dung Phuc",
+        "birthDate": {
+          "$date": "1975-03-25T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "D000002601"
+      }
+    ],
+    "contactInfo": {
+      "name": "Tran Ngoc Anh",
+      "email": "tran-ngoc-anh.1029@fpt.vn",
+      "phone": "0966319314"
+    },
+    "notes": "The customer preferred a later departure so the group could avoid morning traffic.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-05-05T23:00:00.000Z"
+        },
+        "user": "Tran Ngoc Anh",
+        "note": "Reserved 2 seats on Ha Giang Loop Explorer."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-05-05T23:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to tran-ngoc-anh.1029@fpt.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-05-06T02:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Recorded 7,400,000 VND via BankTransfer."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260505230000025 was created for Ha Giang Loop Explorer.",
+        "occurredAt": {
+          "$date": "2026-05-05T23:00:00.000Z"
+        },
+        "actor": "Tran Ngoc Anh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-05-05T23:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "ManualTransfer confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-05-06T02:00:00.000Z"
+        },
+        "actor": "ManualTransfer",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260505230000025-020000",
+        "reference": "PAY-HV20260505230000025",
+        "amount": {
+          "$numberDecimal": "7400000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260505230000025|TXN-HV20260505230000025-020000|Full|7400000",
+        "createdAt": {
+          "$date": "2026-05-05T23:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-05-06T02:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260505230000025",
+    "transferProofFileName": "hv20260505230000025-proof.png",
+    "transferProofContentType": "image/png",
+    "transferProofBase64": "cHJvb2Y=",
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-05-05T23:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-05-06T02:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "3fe68c9c4758367ba6499cdc"
+    },
+    "bookingCode": "HV20260316170000026",
+    "tourId": {
+      "$oid": "27cd813047229389571aa876"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00001",
+      "name": "Ha Giang Loop Explorer",
+      "startDate": {
+        "$date": "2026-05-12T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "dbccc47709e9db0adf465290"
+    },
+    "bookingDate": {
+      "$date": "2026-03-16T17:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "10064000.0"
+    },
+    "status": "Pending",
+    "paymentStatus": "Pending",
+    "participantsCount": 3,
+    "passengers": [
+      {
+        "fullName": "Ho Chi Lan",
+        "birthDate": {
+          "$date": "2000-05-30T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "D000002700"
+      },
+      {
+        "fullName": "Ho Long Lam",
+        "birthDate": {
+          "$date": "1979-08-26T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "C000002701"
+      },
+      {
+        "fullName": "Ho Dung Minh",
+        "birthDate": {
+          "$date": "2014-09-10T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "E000002702"
+      }
+    ],
+    "contactInfo": {
+      "name": "Ho Chi Lan",
+      "email": "ho-chi-lan.1016@icloud.com",
+      "phone": "0913754330"
+    },
+    "notes": "Our operations team confirmed pickup details before the final departure note went out.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-03-16T17:00:00.000Z"
+        },
+        "user": "Ho Chi Lan",
+        "note": "Reserved 3 seats on Ha Giang Loop Explorer."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-03-16T17:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to ho-chi-lan.1016@icloud.com."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260316170000026 was created for Ha Giang Loop Explorer.",
+        "occurredAt": {
+          "$date": "2026-03-16T17:00:00.000Z"
+        },
+        "actor": "Ho Chi Lan",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-03-16T17:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260316170000026-173500",
+        "reference": "PAY-HV20260316170000026",
+        "amount": {
+          "$numberDecimal": "5032000.0"
+        },
+        "status": "Pending",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260316170000026|TXN-HV20260316170000026-173500|Pending|5032000",
+        "createdAt": {
+          "$date": "2026-03-16T17:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-03-16T17:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-03-16T17:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "fc902838d8741408f7b217c7"
+    },
+    "bookingCode": "HV20260124060000027",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-05-05T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "c7b5b2bc5a8aaeca1a50aec3"
+    },
+    "bookingDate": {
+      "$date": "2026-01-24T06:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "14448000.0"
+    },
+    "status": "Confirmed",
+    "paymentStatus": "Full",
+    "participantsCount": 4,
+    "passengers": [
+      {
+        "fullName": "Do Hanh Quang",
+        "birthDate": {
+          "$date": "1971-07-21T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "N000002800"
+      },
+      {
+        "fullName": "Do Chi Hoa",
+        "birthDate": {
+          "$date": "1986-04-13T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "N000002801"
+      },
+      {
+        "fullName": "Do Phuc Huy",
+        "birthDate": {
+          "$date": "2012-12-20T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Female",
+        "passportNumber": "C000002802"
+      },
+      {
+        "fullName": "Do Binh Long",
+        "birthDate": {
+          "$date": "2017-08-16T12:00:00.000Z"
+        },
+        "type": "Child",
+        "gender": "Male",
+        "passportNumber": "C000002803"
+      }
+    ],
+    "contactInfo": {
+      "name": "Do Hanh Quang",
+      "email": "do-hanh-quang.1015@company.vn",
+      "phone": "0969232260"
+    },
+    "notes": "The customer preferred a later departure so the group could avoid morning traffic.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-24T06:00:00.000Z"
+        },
+        "user": "Do Hanh Quang",
+        "note": "Reserved 4 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-24T06:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "CreditCard instructions were sent to do-hanh-quang.1015@company.vn."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-01-25T08:00:00.000Z"
+        },
+        "user": "HVPay",
+        "note": "Recorded 14,448,000 VND via CreditCard."
+      },
+      {
+        "action": "Booking confirmed",
+        "timestamp": {
+          "$date": "2026-01-26T07:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Operations confirmed rooming and departure details."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260124060000027 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-01-24T06:00:00.000Z"
+        },
+        "actor": "Do Hanh Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "CreditCard instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-24T06:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "HVPay confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-01-25T08:00:00.000Z"
+        },
+        "actor": "HVPay",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-confirmed",
+        "title": "Booking confirmed",
+        "description": "The service team confirmed logistics for this booking.",
+        "occurredAt": {
+          "$date": "2026-01-26T07:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "HVPay",
+        "method": "CreditCard",
+        "transactionId": "TXN-HV20260124060000027-080000",
+        "reference": "PAY-HV20260124060000027",
+        "amount": {
+          "$numberDecimal": "14448000.0"
+        },
+        "status": "Completed",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260124060000027|TXN-HV20260124060000027-080000|Full|14448000",
+        "createdAt": {
+          "$date": "2026-01-24T06:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-01-25T08:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": null,
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260124060000027",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": {
+      "$date": "2026-01-26T07:00:00.000Z"
+    },
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-24T06:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-26T07:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "d9f2dd0d4cc9f5f2e42e5037"
+    },
+    "bookingCode": "HV20260108090000028",
+    "tourId": {
+      "$oid": "4b0dbb418d5288f1142c3fe8"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00002",
+      "name": "Da Nang & Hoi An Discovery",
+      "startDate": {
+        "$date": "2026-04-15T12:00:00.000Z"
+      },
+      "duration": "4 Days 3 Nights"
+    },
+    "customerId": {
+      "$oid": "f920264c0763fcd01f15c7b6"
+    },
+    "bookingDate": {
+      "$date": "2026-01-08T09:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "4200000.0"
+    },
+    "status": "Cancelled",
+    "paymentStatus": "Unpaid",
+    "participantsCount": 1,
+    "passengers": [
+      {
+        "fullName": "Vo Trang Mai",
+        "birthDate": {
+          "$date": "1967-07-10T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "E000002900"
+      }
+    ],
+    "contactInfo": {
+      "name": "Vo Trang Mai",
+      "email": "vo-trang-mai.1044@fpt.vn",
+      "phone": "0973248086"
+    },
+    "notes": "The route works well for first-time visitors who want food, scenery, and easy transfers.",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-08T09:00:00.000Z"
+        },
+        "user": "Vo Trang Mai",
+        "note": "Reserved 1 seats on Da Nang & Hoi An Discovery."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-08T09:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "BankTransfer instructions were sent to vo-trang-mai.1044@fpt.vn."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-01-09T17:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260108090000028 was created for Da Nang & Hoi An Discovery.",
+        "occurredAt": {
+          "$date": "2026-01-08T09:00:00.000Z"
+        },
+        "actor": "Vo Trang Mai",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "BankTransfer instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-08T09:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-01-09T17:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "ManualTransfer",
+        "method": "BankTransfer",
+        "transactionId": "TXN-HV20260108090000028-093500",
+        "reference": "PAY-HV20260108090000028",
+        "amount": {
+          "$numberDecimal": "2100000.0"
+        },
+        "status": "Rejected",
+        "receivedFromWebhook": false,
+        "payloadHash": "HV20260108090000028|TXN-HV20260108090000028-093500|Unpaid|2100000",
+        "createdAt": {
+          "$date": "2026-01-08T09:35:00.000Z"
+        },
+        "processedAt": null
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-01-09T11:00:00.000Z"
+      },
+      "requestedBy": "Vo Trang Mai",
+      "processedAt": {
+        "$date": "2026-01-09T17:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": false,
+    "receiptNumber": null,
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-08T09:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-08T09:35:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  },
+  {
+    "_id": {
+      "$oid": "77a7e8b75e70f65f9280c5aa"
+    },
+    "bookingCode": "HV20260112000000029",
+    "tourId": {
+      "$oid": "6123fdf77656af7229d4beef"
+    },
+    "tourSnapshot": {
+      "code": "TOUR-00004",
+      "name": "Hue Royal Heritage Journey",
+      "startDate": {
+        "$date": "2026-04-30T12:00:00.000Z"
+      },
+      "duration": "3 Days 2 Nights"
+    },
+    "customerId": {
+      "$oid": "033d2bce575aed2ca5c5650c"
+    },
+    "bookingDate": {
+      "$date": "2026-01-12T00:00:00.000Z"
+    },
+    "totalAmount": {
+      "$numberDecimal": "6400000.0"
+    },
+    "status": "Refunded",
+    "paymentStatus": "Refunded",
+    "participantsCount": 2,
+    "passengers": [
+      {
+        "fullName": "Phan Binh Minh",
+        "birthDate": {
+          "$date": "1970-12-19T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Female",
+        "passportNumber": "C000003000"
+      },
+      {
+        "fullName": "Phan Dung Hanh",
+        "birthDate": {
+          "$date": "1972-03-29T12:00:00.000Z"
+        },
+        "type": "Adult",
+        "gender": "Male",
+        "passportNumber": "E000003001"
+      }
+    ],
+    "contactInfo": {
+      "name": "Phan Binh Minh",
+      "email": "phan-binh-minh.1030@icloud.com",
+      "phone": "0961657262"
+    },
+    "notes": "",
+    "historyLog": [
+      {
+        "action": "Booking created",
+        "timestamp": {
+          "$date": "2026-01-12T00:00:00.000Z"
+        },
+        "user": "Phan Binh Minh",
+        "note": "Reserved 2 seats on Hue Royal Heritage Journey."
+      },
+      {
+        "action": "Payment session opened",
+        "timestamp": {
+          "$date": "2026-01-12T00:35:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "EWallet instructions were sent to phan-binh-minh.1030@icloud.com."
+      },
+      {
+        "action": "Payment received",
+        "timestamp": {
+          "$date": "2026-01-12T18:00:00.000Z"
+        },
+        "user": "MoMo",
+        "note": "Recorded 6,400,000 VND via EWallet."
+      },
+      {
+        "action": "Cancellation approved",
+        "timestamp": {
+          "$date": "2026-01-14T03:00:00.000Z"
+        },
+        "user": "Ho Chi Quang",
+        "note": "Approved after operations reviewed inventory and fare rules."
+      },
+      {
+        "action": "Refund settled",
+        "timestamp": {
+          "$date": "2026-01-14T03:00:00.000Z"
+        },
+        "user": "Nguyen Anh Binh",
+        "note": "Finance completed the refund back to the original payment channel."
+      }
+    ],
+    "events": [
+      {
+        "type": "booking-created",
+        "title": "Booking created",
+        "description": "Booking HV20260112000000029 was created for Hue Royal Heritage Journey.",
+        "occurredAt": {
+          "$date": "2026-01-12T00:00:00.000Z"
+        },
+        "actor": "Phan Binh Minh",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment session opened",
+        "description": "EWallet instructions were shared with the guest.",
+        "occurredAt": {
+          "$date": "2026-01-12T00:35:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "payment",
+        "title": "Payment received",
+        "description": "MoMo confirmed the transaction successfully.",
+        "occurredAt": {
+          "$date": "2026-01-12T18:00:00.000Z"
+        },
+        "actor": "MoMo",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "booking-cancelled",
+        "title": "Cancellation approved",
+        "description": "Date no longer matches the travel party schedule.",
+        "occurredAt": {
+          "$date": "2026-01-14T03:00:00.000Z"
+        },
+        "actor": "Ho Chi Quang",
+        "visibleToCustomer": true
+      },
+      {
+        "type": "refund",
+        "title": "Refund settled",
+        "description": "Funds were returned after the approved cancellation workflow finished.",
+        "occurredAt": {
+          "$date": "2026-01-14T03:00:00.000Z"
+        },
+        "actor": "Nguyen Anh Binh",
+        "visibleToCustomer": true
+      }
+    ],
+    "paymentTransactions": [
+      {
+        "provider": "MoMo",
+        "method": "EWallet",
+        "transactionId": "TXN-HV20260112000000029-180000",
+        "reference": "PAY-HV20260112000000029",
+        "amount": {
+          "$numberDecimal": "6400000.0"
+        },
+        "status": "Refunded",
+        "receivedFromWebhook": true,
+        "payloadHash": "HV20260112000000029|TXN-HV20260112000000029-180000|Refunded|6400000",
+        "createdAt": {
+          "$date": "2026-01-12T00:35:00.000Z"
+        },
+        "processedAt": {
+          "$date": "2026-01-12T18:00:00.000Z"
+        }
+      }
+    ],
+    "cancellationRequest": {
+      "status": "Approved",
+      "reason": "Date no longer matches the travel party schedule.",
+      "requestedAt": {
+        "$date": "2026-01-13T02:00:00.000Z"
+      },
+      "requestedBy": "Phan Binh Minh",
+      "processedAt": {
+        "$date": "2026-01-14T03:00:00.000Z"
+      },
+      "resolutionNote": "Approved after operations reviewed inventory and fare rules."
+    },
+    "publicLookupEnabled": true,
+    "receiptNumber": "HVT-HV20260112000000029",
+    "transferProofFileName": null,
+    "transferProofContentType": null,
+    "transferProofBase64": null,
+    "confirmedAt": null,
+    "completedAt": null,
+    "createdAt": {
+      "$date": "2026-01-12T00:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2026-01-14T03:00:00.000Z"
+    },
+    "isDeleted": false,
+    "deletedBy": null,
+    "deletedAt": null
+  }
+]

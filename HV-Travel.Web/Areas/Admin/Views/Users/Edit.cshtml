@@ -87,73 +87,29 @@
         <!-- Role -->
         <div>
             <label for="Role" class="label-text">Vai Trò <span class="text-red-500">*</span></label>
-            <div class="relative custom-select-container" data-id="Role">
-                <div class="custom-select-trigger" onclick="toggleCustomSelect('Role')">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <span class="custom-select-leading material-symbols-outlined">badge</span>
-                        <div class="custom-select-meta">
-                            <span class="custom-select-caption">Role</span>
-                        <span class="selected-label">@(Model.Role == "Staff" ? "Nhân viên" : Model.Role == "Manager" ? "Quản lý" : Model.Role == "Guide" ? "Hướng dẫn viên" : "Quản trị viên")</span>
-                        </div>
-                    </div>
-                    <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                </div>
-                <div class="options-menu">
-                    <div class="custom-option @(Model.Role == "Staff" ? "selected" : "")" data-value="Staff" data-label="Nhân viên" onclick="selectCustomOption('Role', 'Staff', 'Nhân viên')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Nhân viên</span></span>
-                        @if (Model.Role == "Staff") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                    <div class="custom-option @(Model.Role == "Manager" ? "selected" : "")" data-value="Manager" data-label="Quản lý" onclick="selectCustomOption('Role', 'Manager', 'Quản lý')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Quản lý</span></span>
-                        @if (Model.Role == "Manager") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                    <div class="custom-option @(Model.Role == "Guide" ? "selected" : "")" data-value="Guide" data-label="Hướng dẫn viên" onclick="selectCustomOption('Role', 'Guide', 'Hướng dẫn viên')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Hướng dẫn viên</span></span>
-                        @if (Model.Role == "Guide") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                    <div class="custom-option @(Model.Role == "Admin" ? "selected" : "")" data-value="Admin" data-label="Quản trị viên" onclick="selectCustomOption('Role', 'Admin', 'Quản trị viên')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Quản trị viên</span></span>
-                        @if (Model.Role == "Admin") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                </div>
-                <select asp-for="Role" class="hidden">
-                    <option value="Staff">Nhân viên</option>
-                    <option value="Manager">Quản lý</option>
-                    <option value="Guide">Hướng dẫn viên</option>
-                    <option value="Admin">Quản trị viên</option>
-                </select>
-            </div>
+            <select asp-for="Role"
+                    class="w-full"
+                    data-admin-select="default"
+                    data-admin-select-caption="Role"
+                    data-admin-select-icon="badge">
+                <option value="Staff">Nhân viên</option>
+                <option value="Manager">Quản lý</option>
+                <option value="Guide">Hướng dẫn viên</option>
+                <option value="Admin">Quản trị viên</option>
+            </select>
         </div>
 
         <!-- Status -->
         <div>
             <label for="Status" class="label-text">Trạng Thái</label>
-            <div class="relative custom-select-container" data-id="Status">
-                <div class="custom-select-trigger" onclick="toggleCustomSelect('Status')">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <span class="custom-select-leading material-symbols-outlined">toggle_on</span>
-                        <div class="custom-select-meta">
-                            <span class="custom-select-caption">Status</span>
-                        <span class="selected-label">@(Model.Status == "Active" ? "Hoạt động" : "Vô hiệu")</span>
-                        </div>
-                    </div>
-                    <span class="material-symbols-outlined transition-transform duration-300 arrow-icon">expand_more</span>
-                </div>
-                <div class="options-menu">
-                    <div class="custom-option @(Model.Status == "Active" ? "selected" : "")" data-value="Active" data-label="Hoạt động" onclick="selectCustomOption('Status', 'Active', 'Hoạt động')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Hoạt động</span></span>
-                        @if (Model.Status == "Active") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                    <div class="custom-option @(Model.Status == "Inactive" ? "selected" : "")" data-value="Inactive" data-label="Vô hiệu" onclick="selectCustomOption('Status', 'Inactive', 'Vô hiệu')">
-                        <span class="custom-option-main"><span class="custom-option-dot"></span><span>Vô hiệu</span></span>
-                        @if (Model.Status == "Inactive") { <span class="material-symbols-outlined text-lg check-icon">check</span> }
-                    </div>
-                </div>
-                <select asp-for="Status" class="hidden">
-                    <option value="Active">Hoạt động</option>
-                    <option value="Inactive">Vô hiệu</option>
-                </select>
-            </div>
+            <select asp-for="Status"
+                    class="w-full"
+                    data-admin-select="default"
+                    data-admin-select-caption="Status"
+                    data-admin-select-icon="toggle_on">
+                <option value="Active">Hoạt động</option>
+                <option value="Inactive">Vô hiệu</option>
+            </select>
         </div>
 
         <!-- Avatar URL (Optional) -->

@@ -106,13 +106,13 @@
                         <h2 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.BookingCode</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">@Model.TourName</p>
                     </div>
-                    <div class="rounded-2xl bg-primary/10 text-primary px-4 py-2 text-sm font-bold">@Model.PaymentStatus</div>
+                    <div class="rounded-2xl bg-primary/10 text-primary px-4 py-2 text-sm font-bold">@BookingDisplayTextHelper.PaymentStatus(Model.PaymentStatus)</div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6">
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
                         <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@bookingStatusLabel</p>
-                        <p class="font-bold text-slate-900 dark:text-white">@Model.BookingStatus</p>
+                        <p class="font-bold text-slate-900 dark:text-white">@BookingDisplayTextHelper.BookingStatus(Model.BookingStatus)</p>
                     </div>
                     <div class="rounded-2xl bg-surface-muted-light dark:bg-surface-elevated-dark px-4 py-4">
                         <p class="text-slate-400 text-xs uppercase tracking-wider mb-1">@startDateLabel</p>

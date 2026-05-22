@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
+using HVTravel.Application.Interfaces;
 using HVTravel.Domain.Entities;
 using HVTravel.Domain.Interfaces;
 using HVTravel.Web.Models;
@@ -14,13 +15,16 @@ public class CustomerAuthController : Controller
     private const string QrBrowserNonceCookieName = "hvtravel_qr_browser_nonce";
     private readonly IRepository<Customer> _customerRepository;
     private readonly IWebQrLoginService _webQrLoginService;
+    private readonly ISearchIndexingService? _searchIndexingService;
 
     public CustomerAuthController(
         IRepository<Customer> customerRepository,
-        IWebQrLoginService webQrLoginService)
+        IWebQrLoginService webQrLoginService,
+        ISearchIndexingService? searchIndexingService = null)
     {
         _customerRepository = customerRepository;
         _webQrLoginService = webQrLoginService;
+        _searchIndexingService = searchIndexingService;
     }
 
     [HttpGet]
@@ -65,7 +69,7 @@ public class CustomerAuthController : Controller
             return View(model);
         }
 
-        var customers = await _customerRepository.FindAsync(c => c.Email == model.Email.Trim());
+        var customers = await _customerRepository.FindAsync(customer => customer.Email == model.Email.Trim());
         var customer = customers.FirstOrDefault();
 
         if (customer == null || string.IsNullOrWhiteSpace(customer.PasswordHash) || !BCrypt.Net.BCrypt.Verify(model.Password, customer.PasswordHash))
@@ -105,7 +109,7 @@ public class CustomerAuthController : Controller
         }
 
         var normalizedEmail = model.Email.Trim();
-        var existingCustomers = await _customerRepository.FindAsync(c => c.Email == normalizedEmail);
+        var existingCustomers = await _customerRepository.FindAsync(customer => customer.Email == normalizedEmail);
         if (existingCustomers.Any())
         {
             ModelState.AddModelError(nameof(model.Email), "Email này đã được sử dụng.");
@@ -141,6 +145,7 @@ public class CustomerAuthController : Controller
         };
 
         await _customerRepository.AddAsync(customer);
+        await (_searchIndexingService?.UpsertCustomerAsync(customer) ?? Task.CompletedTask);
         TempData["AuthSuccessMessage"] = "Tạo tài khoản thành công. Bạn có thể đăng nhập ngay bây giờ.";
         return RedirectToAction(nameof(Login), new { email = normalizedEmail });
     }

@@ -1,4 +1,5 @@
 @model HVTravel.Domain.Entities.Booking
+@using HVTravel.Web.Services
 @{
     ViewData["Title"] = "Chi tiết Đơn đặt vé";
 
@@ -22,6 +23,14 @@
         "Cancelled" => "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
         "Refunded" => "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
         _ => "bg-slate-100 text-slate-700"
+    };
+
+    string GetAdminStatusText(string status) => BookingDisplayTextHelper.BookingStatus(status);
+
+    string GetAdminStatusClass(string status) => status switch
+    {
+        "PendingPayment" => "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        _ => GetStatusClass(status)
     };
 
     string GetPaymentStatusText(string status) => status switch
@@ -88,8 +97,8 @@
             <h1 class="text-2xl leading-none font-bold text-slate-900 dark:text-white">
                 Chi tiết Đơn đặt vé
             </h1>
-            <span class="px-3 py-1 @GetStatusClass(Model.Status) text-[10px] font-black rounded-full uppercase">
-                @GetStatusText(Model.Status)
+            <span class="px-3 py-1 @GetAdminStatusClass(Model.Status) text-[10px] font-black rounded-full uppercase">
+                @GetAdminStatusText(Model.Status)
             </span>
         </div>
         <p class="text-slate-500 dark:text-slate-400 text-sm">Mã đơn hàng: <span class="font-bold text-slate-900 dark:text-white">#@Model.BookingCode</span> • Đặt lúc @Model.BookingDate.ToLocalTime().ToString("HH:mm, dd/MM/yyyy")</p>

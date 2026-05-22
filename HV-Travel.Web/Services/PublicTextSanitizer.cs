@@ -79,11 +79,28 @@ public static class PublicTextSanitizer
             departure.Status = NormalizeText(departure.Status);
         }
 
+        if (tour.Routing?.Stops != null)
+        {
+            foreach (var stop in tour.Routing.Stops)
+            {
+                stop.Name = NormalizeText(stop.Name);
+                stop.Type = NormalizeText(stop.Type);
+                stop.Note = NormalizeText(stop.Note);
+            }
+        }
+
         foreach (var item in tour.Schedule ?? [])
         {
             item.Title = NormalizeText(item.Title);
             item.Description = NormalizeText(item.Description);
             item.Activities = NormalizeList(item.Activities);
+        }
+
+        foreach (var stop in tour.Routing?.Stops ?? [])
+        {
+            stop.Name = NormalizeText(stop.Name).Trim();
+            stop.Type = NormalizeText(stop.Type).Trim();
+            stop.Note = NormalizeText(stop.Note).Trim();
         }
 
         return tour;

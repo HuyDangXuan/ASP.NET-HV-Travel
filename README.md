@@ -44,6 +44,14 @@ Hệ thống quản lý và bán tour du lịch xây dựng trên **ASP.NET Core
 - Khách đã đăng nhập có thể vào chat trực tiếp
 - Hỗ trợ `Enter để gửi`, `Shift + Enter để xuống dòng`
 
+### AI Integration Status
+
+- Da co `Tour AI Chatbot` voi controller, hub, background worker va LLM client qua Groq OpenAI-compatible API
+- Da co `route intelligence` va `trip planner` o muc traffic-aware heuristic
+- Chua co `OCR`, `voice assistant`, `VR` va search engine chuyen dung nhu `Elasticsearch` hoac `Meilisearch`
+- Uu tien phase tiep theo: `Meilisearch` cho tim kiem tour
+- Audit chi tiet: `docs/ai-integration-audit.md`
+
 ## Kiến trúc dự án
 
 Repo được tách thành 4 project chính:

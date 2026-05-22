@@ -1,0 +1,15 @@
+Warning: Could not ensure commerce indexes: Value cannot be null. (Parameter 'databaseName')
+Warning: Could not ensure booking indexes: Value cannot be null. (Parameter 'databaseName')
+SEED ERROR - see seed_error_log.txt for details
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[63]
+      User profile is available. Using 'C:\Users\admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+warn: Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware[16]
+      The WebRootPath was not found: E:\Clone Repo\ASP.NET-HV-Travel\wwwroot. Static files may be unavailable.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: E:\Clone Repo\ASP.NET-HV-Travel
