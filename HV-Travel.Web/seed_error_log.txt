@@ -1,4 +1,3 @@
 === SEED ERROR ===
-[MongoDB.Bson.BsonSerializationException] An error occurred while serializing the BookingId property of class HVTravel.Domain.Entities.Review: '' is not a valid 24 digit hex string.
-[System.FormatException] '' is not a valid 24 digit hex string.
+[System.ArgumentOutOfRangeException] List of configured name servers must not be empty. (Parameter 'servers')
 === END SEED ERROR ===

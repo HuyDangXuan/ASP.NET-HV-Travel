@@ -1,4 +1,4 @@
-﻿@model HVTravel.Domain.Entities.Tour
+@model HVTravel.Domain.Entities.Tour
 @{
     ViewData["Title"] = "Chỉnh sửa Tour";
     
@@ -114,6 +114,24 @@
                          <div>
                              <label class="label-text">Vùng / Miền</label>
                              <input asp-for="Destination.Region" class="input-field" placeholder="Ví dụ: Miền Bắc" type="text" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="label-text">
+                                <span class="material-symbols-outlined text-sm align-[-3px] text-primary mr-1">location_on</span>
+                                Vĩ độ (Latitude)
+                            </label>
+                            <input asp-for="Destination.Coordinates.Lat" class="input-field font-mono" placeholder="Ví dụ: 20.9101" type="number" step="0.0001" />
+                            <p class="text-xs text-slate-400 mt-1">Dùng cho AI tìm lộ trình tối ưu (TSP)</p>
+                        </div>
+                        <div>
+                            <label class="label-text">
+                                <span class="material-symbols-outlined text-sm align-[-3px] text-primary mr-1">location_on</span>
+                                Kinh độ (Longitude)
+                            </label>
+                            <input asp-for="Destination.Coordinates.Lng" class="input-field font-mono" placeholder="Ví dụ: 107.0353" type="number" step="0.0001" />
+                            <p class="text-xs text-slate-400 mt-1">Tra tọa độ tại <a href="https://maps.google.com" target="_blank" class="text-primary underline">Google Maps</a> hoặc <a href="https://www.latlong.net" target="_blank" class="text-primary underline">latlong.net</a></p>
                         </div>
                     </div>
                     <div>

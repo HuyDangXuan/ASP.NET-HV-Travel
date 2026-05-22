@@ -32,6 +32,7 @@ builder.Services.AddScoped<ISupportChatService, SupportChatService>();
 builder.Services.AddScoped<ITourAiChatService, TourAiChatService>();
 builder.Services.AddScoped<CustomerPortalService>();
 builder.Services.AddScoped<BookingWorkflowService>();
+builder.Services.AddScoped<IWebQrLoginService, WebQrLoginService>();
 
 // Add Authentication
 builder.Services
