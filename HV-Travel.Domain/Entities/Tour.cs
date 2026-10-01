@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -89,6 +89,25 @@ namespace HVTravel.Domain.Entities
         
         [BsonElement("region")]
         public string Region { get; set; }
+
+        /// <summary>
+        /// Tọa độ GPS của điểm đến chính. Dùng cho thuật toán TSP và AI Gợi ý.
+        /// </summary>
+        [BsonElement("coordinates")]
+        public GeoLocation Coordinates { get; set; }
+    }
+
+    /// <summary>
+    /// Tọa độ địa lý theo chuẩn WGS84 (Google Maps / OpenRouteService compatible).
+    /// </summary>
+    [BsonIgnoreExtraElements]
+    public class GeoLocation
+    {
+        [BsonElement("lat")]
+        public double Lat { get; set; }
+
+        [BsonElement("lng")]
+        public double Lng { get; set; }
     }
 
     [BsonIgnoreExtraElements]

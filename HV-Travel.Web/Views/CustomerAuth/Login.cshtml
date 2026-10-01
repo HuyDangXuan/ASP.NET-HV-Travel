@@ -37,29 +37,85 @@
                         <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">@TempData["AuthSuccessMessage"]</div>
                     }
 
-                    <form asp-action="Login" method="post" class="space-y-5">
-                        @Html.AntiForgeryToken()
-                        <input asp-for="ReturnUrl" type="hidden" />
-                        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 empty:hidden"></div>
-                        <div>
-                            <label asp-for="Email" class="mb-2 block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("emailLabel", "Email")</label>
-                            <input asp-for="Email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@vidu.com"))" />
-                            <span asp-validation-for="Email" class="mt-2 block text-sm text-red-500"></span>
-                        </div>
-                        <div>
-                            <div class="mb-2 flex items-center justify-between gap-4">
-                                <label asp-for="Password" class="block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("passwordLabel", "Mật khẩu")</label>
-                                <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary">@formIntro?.Fields.GetVisibleFieldValue("forgotPasswordText", "Quên mật khẩu?")</a>
+                    <div id="password-login-panel">
+                        <form asp-action="Login" method="post" class="space-y-5">
+                            @Html.AntiForgeryToken()
+                            <input asp-for="ReturnUrl" type="hidden" />
+                            <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 empty:hidden"></div>
+                            <div>
+                                <label asp-for="Email" class="mb-2 block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("emailLabel", "Email")</label>
+                                <input asp-for="Email" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("emailPlaceholder", "email@vidu.com"))" />
+                                <span asp-validation-for="Email" class="mt-2 block text-sm text-red-500"></span>
                             </div>
-                            <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("passwordPlaceholder", "Nhập mật khẩu của bạn"))" />
-                            <span asp-validation-for="Password" class="mt-2 block text-sm text-red-500"></span>
+                            <div>
+                                <div class="mb-2 flex items-center justify-between gap-4">
+                                    <label asp-for="Password" class="block text-sm font-bold">@formIntro?.Fields.GetVisibleFieldValue("passwordLabel", "Mật khẩu")</label>
+                                    <a asp-area="Admin" asp-controller="Auth" asp-action="ForgotPassword" class="text-xs font-semibold text-primary">@formIntro?.Fields.GetVisibleFieldValue("forgotPasswordText", "Quên mật khẩu?")</a>
+                                </div>
+                                <input asp-for="Password" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm dark:border-slate-700 dark:bg-slate-950" placeholder="@(formIntro?.Fields.GetVisibleFieldValue("passwordPlaceholder", "Nhập mật khẩu của bạn"))" />
+                                <span asp-validation-for="Password" class="mt-2 block text-sm text-red-500"></span>
+                            </div>
+                            <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-surface-elevated-dark/85">
+                                <label class="flex items-center gap-3 text-sm font-medium"><input asp-for="RememberMe" class="rounded border-slate-300 text-primary" />@formIntro?.Fields.GetVisibleFieldValue("rememberMeLabel", "Ghi nhớ đăng nhập")</label>
+                                <span class="text-xs text-slate-400">@formIntro?.Fields.GetVisibleFieldValue("cookieHint", "Cookie tối đa 14 ngày")</span>
+                            </div>
+                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-sm font-extrabold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "submitText")">@formIntro?.Fields.GetVisibleFieldValue("submitText", "Đăng nhập")</button>
+                        </form>
+
+                        <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm font-extrabold text-slate-900 dark:text-white">Đăng nhập bằng app HV Travel</p>
+                                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">Không cần nhập tài khoản và mật khẩu trên web. Tạo mã QR rồi xác nhận trên điện thoại.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    id="qr-login-start"
+                                    class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.2em] text-white dark:bg-white dark:text-slate-900">
+                                    Tạo mã QR
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-surface-elevated-dark/85">
-                            <label class="flex items-center gap-3 text-sm font-medium"><input asp-for="RememberMe" class="rounded border-slate-300 text-primary" />@formIntro?.Fields.GetVisibleFieldValue("rememberMeLabel", "Ghi nhớ đăng nhập")</label>
-                            <span class="text-xs text-slate-400">@formIntro?.Fields.GetVisibleFieldValue("cookieHint", "Cookie tối đa 14 ngày")</span>
+                    </div>
+
+                    <div id="qr-login-panel" class="mt-2 hidden rounded-2xl border border-dashed border-slate-300 bg-white p-4 dark:border-slate-600 dark:bg-slate-900/60">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.25em] text-primary">Đăng nhập nhanh</p>
+                                <p class="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">Quét mã bằng ứng dụng HV Travel</p>
+                            </div>
+                            <button
+                                type="button"
+                                id="qr-login-back"
+                                class="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 dark:border-slate-600 dark:text-slate-200">
+                                Quay lại
+                            </button>
                         </div>
-                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 text-sm font-extrabold text-white" style="@ContentPresentationViewHelper.GetFieldTextStyle(formIntro, "submitText")">@formIntro?.Fields.GetVisibleFieldValue("submitText", "Đăng nhập")</button>
-                    </form>
+
+                        <div class="grid gap-4 sm:grid-cols-[220px,1fr] sm:items-center">
+                            <div class="flex justify-center">
+                                <img id="qr-login-image" class="h-[220px] w-[220px] rounded-2xl border border-slate-200 bg-white p-3 shadow-sm" alt="Mã QR đăng nhập HV Travel" />
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <p id="qr-login-status" class="mt-2 text-sm font-semibold text-slate-800 dark:text-slate-100">Đang tạo mã QR...</p>
+                                    <p id="qr-login-expiry" class="mt-1 text-xs text-slate-500 dark:text-slate-400"></p>
+                                    <p id="qr-login-browser" class="mt-1 text-xs text-slate-500 dark:text-slate-400"></p>
+                                </div>
+                                <div class="rounded-2xl bg-slate-50 p-3 text-xs leading-6 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                    Mở ứng dụng HV Travel trên điện thoại, vào mục <span class="font-bold text-slate-700 dark:text-slate-200">Đăng nhập nhanh QR</span>, quét mã và xác nhận.
+                                </div>
+                                <div class="flex flex-wrap gap-3">
+                                    <button
+                                        type="button"
+                                        id="qr-login-refresh"
+                                        class="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.18em] text-slate-700 dark:border-slate-600 dark:text-slate-200">
+                                        Tạo mã mới
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 @ContentPresentationViewHelper.GetSectionTextClass(registerPrompt)" style="@ContentPresentationViewHelper.GetSectionStyle(registerPrompt)">
                         <span style="@ContentPresentationViewHelper.GetFieldTextStyle(registerPrompt, "title")">@registerPrompt?.Fields.GetVisibleFieldValue("title", "Chưa có tài khoản? Tạo mới để lưu lịch sử đặt tour và hồ sơ liên hệ.")</span>
@@ -73,5 +129,189 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const startButton = document.getElementById("qr-login-start");
+            const backButton = document.getElementById("qr-login-back");
+            const refreshButton = document.getElementById("qr-login-refresh");
+            const passwordPanel = document.getElementById("password-login-panel");
+            const panel = document.getElementById("qr-login-panel");
+            const image = document.getElementById("qr-login-image");
+            const status = document.getElementById("qr-login-status");
+            const expiry = document.getElementById("qr-login-expiry");
+            const browser = document.getElementById("qr-login-browser");
+
+            if (!startButton || !backButton || !refreshButton || !passwordPanel || !panel || !image || !status || !expiry || !browser) {
+                return;
+            }
+
+            const createUrl = "@Url.Action("CreateQrSession", "CustomerAuth")";
+            const statusUrl = "@Url.Action("GetQrSessionStatus", "CustomerAuth")";
+            const completeUrl = "@Url.Action("CompleteQrSession", "CustomerAuth")";
+            const returnUrl = "@Model.ReturnUrl";
+
+            let currentSessionId = null;
+            let pollTimer = null;
+            let pollIntervalMs = 2000;
+            let isCompleting = false;
+
+            const showQrPanel = () => {
+                passwordPanel.classList.add("hidden");
+                panel.classList.remove("hidden");
+            };
+
+            const showPasswordPanel = () => {
+                clearPolling();
+                isCompleting = false;
+                passwordPanel.classList.remove("hidden");
+                panel.classList.add("hidden");
+            };
+
+            const clearPolling = () => {
+                if (pollTimer) {
+                    window.clearTimeout(pollTimer);
+                    pollTimer = null;
+                }
+            };
+
+            const setStatus = (message, tone) => {
+                status.textContent = message;
+                status.className = "mt-2 text-sm font-semibold";
+
+                if (tone === "success") {
+                    status.classList.add("text-emerald-600", "dark:text-emerald-400");
+                    return;
+                }
+
+                if (tone === "danger") {
+                    status.classList.add("text-rose-600", "dark:text-rose-400");
+                    return;
+                }
+
+                status.classList.add("text-slate-800", "dark:text-slate-100");
+            };
+
+            const setExpiry = (expiresAt) => {
+                if (!expiresAt) {
+                    expiry.textContent = "";
+                    return;
+                }
+
+                const date = new Date(expiresAt);
+                expiry.textContent = `Hiệu lực đến ${date.toLocaleTimeString("vi-VN")}`;
+            };
+
+            const schedulePoll = () => {
+                clearPolling();
+
+                if (!currentSessionId) {
+                    return;
+                }
+
+                pollTimer = window.setTimeout(loadStatus, pollIntervalMs);
+            };
+
+            const loadStatus = async () => {
+                if (!currentSessionId || isCompleting) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${statusUrl}?sessionId=${encodeURIComponent(currentSessionId)}`);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data?.message || "Không đọc được trạng thái đăng nhập QR.");
+                    }
+
+                    setStatus(
+                        data.message || "Đang chờ ứng dụng xác nhận.",
+                        data.status === "denied" ? "danger" : data.status === "approved" ? "success" : "default"
+                    );
+                    setExpiry(data.expiresAt);
+
+                    if (data.status === "approved") {
+                        await completeSession();
+                        return;
+                    }
+
+                    if (data.status === "expired" || data.status === "denied" || data.status === "consumed") {
+                        clearPolling();
+                        return;
+                    }
+
+                    schedulePoll();
+                } catch (error) {
+                    setStatus(error.message || "Không thể cập nhật trạng thái QR.", "danger");
+                    schedulePoll();
+                }
+            };
+
+            const completeSession = async () => {
+                if (!currentSessionId || isCompleting) {
+                    return;
+                }
+
+                isCompleting = true;
+                setStatus("Đang hoàn tất đăng nhập trên trình duyệt...", "success");
+                clearPolling();
+
+                try {
+                    const response = await fetch(completeUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ sessionId: currentSessionId })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data?.message || "Không thể hoàn tất đăng nhập.");
+                    }
+
+                    window.location.href = data.redirectUrl || "/";
+                } catch (error) {
+                    isCompleting = false;
+                    setStatus(error.message || "Không thể hoàn tất đăng nhập.", "danger");
+                }
+            };
+
+            const createSession = async () => {
+                clearPolling();
+                isCompleting = false;
+                currentSessionId = null;
+                showQrPanel();
+                setStatus("Đang tạo mã QR...", "default");
+                expiry.textContent = "";
+                browser.textContent = "";
+
+                try {
+                    const response = await fetch(createUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ returnUrl })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data?.message || "Không thể tạo mã QR.");
+                    }
+
+                    currentSessionId = data.sessionId;
+                    pollIntervalMs = data.pollIntervalMs || 2000;
+                    image.src = data.qrImageUrl;
+                    browser.textContent = data.browserLabel ? `Thiết bị chờ đăng nhập: ${data.browserLabel}` : "";
+                    setExpiry(data.expiresAt);
+                    setStatus("Đưa mã này vào ứng dụng HV Travel để quét.", "default");
+                    schedulePoll();
+                } catch (error) {
+                    setStatus(error.message || "Không thể tạo mã QR.", "danger");
+                }
+            };
+
+            startButton.addEventListener("click", createSession);
+            refreshButton.addEventListener("click", createSession);
+            backButton.addEventListener("click", showPasswordPanel);
+        })();
+    </script>
 }
 
